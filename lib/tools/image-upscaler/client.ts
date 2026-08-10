@@ -153,6 +153,45 @@ export async function fetchUpscaleJobStatus(
   }
 }
 
+/** Wait between poll attempts; re-poll immediately when the tab becomes visible again. */
+export function waitForUpscaleJobPollDelay(signal?: AbortSignal): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const timeout = window.setTimeout(resolve, UPSCALE_JOB_POLL_INTERVAL_MS);
+
+    const cleanup = () => {
+      window.clearTimeout(timeout);
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+      }
+      signal?.removeEventListener("abort", onAbort);
+    };
+
+    const onAbort = () => {
+      cleanup();
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        cleanup();
+        resolve();
+      }
+    };
+
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", onVisibilityChange);
+    }
+
+    if (signal) {
+      if (signal.aborted) {
+        onAbort();
+        return;
+      }
+      signal.addEventListener("abort", onAbort, { once: true });
+    }
+  });
+}
+
 export async function waitForUpscaleJobCompletion(
   jobId: string,
   onProgress: (status: UpscaleJobPublicStatus) => void,
@@ -181,22 +220,7 @@ export async function waitForUpscaleJobCompletion(
       return result;
     }
 
-    await new Promise<void>((resolve, reject) => {
-      const timeout = window.setTimeout(resolve, UPSCALE_JOB_POLL_INTERVAL_MS);
-      if (!signal) return;
-
-      const onAbort = () => {
-        window.clearTimeout(timeout);
-        reject(new DOMException("Aborted", "AbortError"));
-      };
-
-      if (signal.aborted) {
-        onAbort();
-        return;
-      }
-
-      signal.addEventListener("abort", onAbort, { once: true });
-    });
+    await waitForUpscaleJobPollDelay(signal);
   }
 }
 
@@ -210,7 +234,7 @@ export async function fetchUpscaleJobResult(
 
   try {
     response = await fetch(
-      `/api/tools/image/upscale/jobs/${encodeURIComponent(jobId)}/result`,
+      `/api/tools/image/upscale/jobs/${encodeURIComponent(jobId)}/result?_=${Date.now()}`,
       { method: "GET", cache: "no-store" },
     );
   } catch (error) {

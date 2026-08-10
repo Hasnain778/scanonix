@@ -8,6 +8,8 @@ import { resolveUpscaleJobStatus } from "@/lib/upscale-jobs/terminal-status";
 import { outputMimeForFormat } from "@/lib/tools/shared/image-validate";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 export const runtime = "nodejs";
 
 const ROUTE = "/api/tools/image/upscale/jobs/[id]/result";

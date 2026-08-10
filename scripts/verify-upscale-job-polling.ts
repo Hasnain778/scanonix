@@ -165,13 +165,19 @@ async function main(): Promise<void> {
     assert.equal(getUpscaleJobPollAction(status), "fetch-result");
   });
 
-  test("status polling route disables caching", () => {
-    const routeSource = readFileSync(
+  test("status and result polling routes disable caching", () => {
+    const statusRoute = readFileSync(
       join(root, "app/api/tools/image/upscale/jobs/[id]/route.ts"),
       "utf8",
     );
-    assert.match(routeSource, /Cache-Control.*no-store/);
-    assert.match(routeSource, /revalidate = 0/);
+    const resultRoute = readFileSync(
+      join(root, "app/api/tools/image/upscale/jobs/[id]/result/route.ts"),
+      "utf8",
+    );
+    assert.match(statusRoute, /Cache-Control.*no-store/);
+    assert.match(statusRoute, /revalidate = 0/);
+    assert.match(statusRoute, /fetchCache = "force-no-store"/);
+    assert.match(resultRoute, /fetchCache = "force-no-store"/);
   });
 
   test("browser polling client busts cache on each request", () => {
@@ -181,6 +187,39 @@ async function main(): Promise<void> {
     );
     assert.match(clientSource, /Date\.now\(\)/);
     assert.match(clientSource, /cache: "no-store"/);
+    assert.match(clientSource, /visibilitychange/);
+  });
+
+  test("production job 1f438ab4 completed row resolves to fetch-result", () => {
+    const status = toPublicJobStatus(
+      makeJob({
+        id: "1f438ab4-65df-4f2d-b9ca-57aa0faefdaf",
+        user_id: "da1a1b0a-035d-4444-8933-d74eb8a485c9",
+        status: "completed",
+        stage: "completed",
+        progress: 100,
+        output_storage_path:
+          "da1a1b0a-035d-4444-8933-d74eb8a485c9/upscale-jobs/1f438ab4-65df-4f2d-b9ca-57aa0faefdaf/output.jpg",
+        output_width: 4416,
+        output_height: 2484,
+        output_format: "jpg",
+        output_size_bytes: 1_777_221,
+        worker_id: "runpod-realesrgan",
+        started_at: "2026-08-10T02:34:32.711333+00:00",
+        completed_at: "2026-08-10T02:34:48.375701+00:00",
+        created_at: "2026-08-10T02:24:46.288802+00:00",
+      }),
+    );
+
+    assert.equal(status.jobId, "1f438ab4-65df-4f2d-b9ca-57aa0faefdaf");
+    assert.equal(status.status, "completed");
+    assert.equal(status.progress, 100);
+    assert.equal(status.label, "Completed");
+    assert.equal(
+      status.outputStoragePath,
+      "da1a1b0a-035d-4444-8933-d74eb8a485c9/upscale-jobs/1f438ab4-65df-4f2d-b9ca-57aa0faefdaf/output.jpg",
+    );
+    assert.equal(getUpscaleJobPollAction(status), "fetch-result");
   });
 
   console.log(`\n${passed}/${passed} upscale job polling checks passed.`);

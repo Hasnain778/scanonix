@@ -6,6 +6,7 @@ import { toPublicJobStatus } from "@/lib/upscale-jobs/public-status";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const fetchCache = "force-no-store";
 export const runtime = "nodejs";
 
 const NO_STORE_HEADERS = {

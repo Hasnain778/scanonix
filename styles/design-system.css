@@ -1,0 +1,248 @@
+/* Scanonix design system — spacing, typography, surfaces, motion */
+
+:root {
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  --space-page-x: 1.25rem;
+  --space-section-y: 2rem;
+  --space-section-y-lg: 2.5rem;
+  --space-card: 1.5rem;
+
+  --transition-fast: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --input-height: 2.75rem;
+  --button-height-sm: 2rem;
+  --button-height-md: 2.5rem;
+  --button-height-lg: 2.875rem;
+
+  --shadow-card:
+    0 1px 2px color-mix(in srgb, black 30%, transparent),
+    0 8px 24px color-mix(in srgb, black 35%, transparent);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --space-page-x: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --space-page-x: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --space-page-x: 2rem;
+    --space-section-y: 2.5rem;
+    --space-section-y-lg: 3rem;
+  }
+}
+
+/* Static surface card — no hover glow */
+.surface-card {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, white 5%, transparent) 0%,
+    color-mix(in srgb, white 2%, transparent) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--scanonix-glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* Interactive cards only */
+.glass-card-interactive {
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
+}
+
+.glass-card-interactive:hover {
+  border-color: color-mix(in srgb, var(--scanonix-orange) 28%, transparent);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, black 25%, transparent),
+    0 12px 32px color-mix(in srgb, black 40%, transparent);
+}
+
+/* Typography */
+.text-eyebrow {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--scanonix-orange);
+}
+
+.text-page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.text-page-description {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--scanonix-muted);
+}
+
+.text-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.text-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.text-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.text-body {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--scanonix-muted);
+}
+
+.text-helper {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--scanonix-muted);
+}
+
+.text-table-header {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--scanonix-muted);
+}
+
+@media (min-width: 640px) {
+  .text-page-title {
+    font-size: 2rem;
+  }
+}
+
+/* Form controls */
+.input-field,
+.select-field {
+  display: block;
+  width: 100%;
+  min-height: var(--input-height);
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, white 10%, transparent);
+  background: color-mix(in srgb, black 30%, transparent);
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #fff;
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.input-field::placeholder {
+  color: color-mix(in srgb, var(--scanonix-muted) 85%, transparent);
+}
+
+.input-field:hover:not(:disabled),
+.select-field:hover:not(:disabled) {
+  border-color: color-mix(in srgb, white 18%, transparent);
+}
+
+.input-field:focus-visible,
+.select-field:focus-visible {
+  border-color: color-mix(in srgb, var(--scanonix-orange) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--scanonix-orange) 18%, transparent);
+}
+
+.input-field:disabled,
+.select-field:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.truncate-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
+}
+
+/* Focus ring utility */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--scanonix-orange) 35%, transparent);
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, white 4%, transparent) 0%,
+    color-mix(in srgb, white 10%, transparent) 50%,
+    color-mix(in srgb, white 4%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Page layout rhythm */
+.page-container {
+  margin-inline: auto;
+  max-width: 85rem;
+  padding-inline: var(--space-page-x);
+}
+
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section-y);
+}
+
+.page-stack-lg {
+  gap: var(--space-section-y-lg);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .glass-card-interactive:hover {
+    transform: none;
+  }
+
+  .skeleton {
+    animation: none;
+    background: color-mix(in srgb, white 6%, transparent);
+  }
+}

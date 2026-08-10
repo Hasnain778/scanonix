@@ -1,0 +1,543 @@
+/**
+ * Homepage tool metadata — single source for search, nav dropdowns, and category grids.
+ * Only lists working tools as clickable; unavailable tools may appear as Coming Soon in grids.
+ */
+
+export type HomepageToolCategory = "pdf" | "image" | "ai" | "security";
+
+export interface HomepageTool {
+  id: string;
+  name: string;
+  shortDescription: string;
+  description: string;
+  href: string;
+  category: HomepageToolCategory;
+  icon: string;
+  aliases: string[];
+  available: boolean;
+}
+
+export const HOMEPAGE_CATEGORY_META: Record<
+  HomepageToolCategory,
+  { label: string; heading: string; description: string; viewAllHref: string; anchor: string }
+> = {
+  pdf: {
+    label: "PDF",
+    heading: "PDF Tools",
+    description: "Merge, split, compress, convert and organise PDF documents.",
+    viewAllHref: "/tools",
+    anchor: "pdf-tools",
+  },
+  image: {
+    label: "Image",
+    heading: "Image Tools",
+    description: "Convert, edit and optimise images for web and print.",
+    viewAllHref: "/tools/image",
+    anchor: "image-tools",
+  },
+  ai: {
+    label: "AI",
+    heading: "AI Tools",
+    description: "Translate, summarise and extract text with AI assistance.",
+    viewAllHref: "/tools/ai-translate",
+    anchor: "ai-tools",
+  },
+  security: {
+    label: "Security",
+    heading: "Security Tools",
+    description: "Protect PDFs, clean metadata, redact content, and check website links.",
+    viewAllHref: "/tools/security-scan",
+    anchor: "security-tools",
+  },
+};
+
+/** All working tools included in search and navigation. */
+export const HOMEPAGE_TOOLS: HomepageTool[] = [
+  {
+    id: "merge-pdf",
+    name: "Merge PDF",
+    shortDescription: "Combine multiple PDFs into one file.",
+    description: "Join multiple PDF files into one organised document.",
+    href: "/tools/merge-pdf",
+    category: "pdf",
+    icon: "merge",
+    aliases: ["combine pdf", "join pdf", "merge documents", "merge files"],
+    available: true,
+  },
+  {
+    id: "split-pdf",
+    name: "Split PDF",
+    shortDescription: "Extract pages or divide a PDF into parts.",
+    description: "Extract selected pages or divide large PDFs into separate files.",
+    href: "/tools/split-pdf",
+    category: "pdf",
+    icon: "split",
+    aliases: ["separate pdf", "extract pages", "divide pdf"],
+    available: true,
+  },
+  {
+    id: "compress-pdf",
+    name: "Compress PDF",
+    shortDescription: "Make PDF files smaller without losing readability.",
+    description: "Reduce PDF file size while keeping text readable.",
+    href: "/tools/compress-pdf",
+    category: "pdf",
+    icon: "compress",
+    aliases: ["make pdf smaller", "reduce pdf size", "shrink pdf", "pdf compressor"],
+    available: true,
+  },
+  {
+    id: "pdf-to-word",
+    name: "PDF to Word",
+    shortDescription: "Convert PDFs into editable Word documents.",
+    description: "Convert PDFs into editable Word documents with OCR fallback.",
+    href: "/tools/pdf-to-word",
+    category: "pdf",
+    icon: "word",
+    aliases: ["pdf to docx", "pdf to doc", "convert pdf to word", "editable pdf"],
+    available: true,
+  },
+  {
+    id: "pdf-to-image",
+    name: "PDF to Image",
+    shortDescription: "Export PDF pages as JPG, PNG or WEBP.",
+    description: "Export PDF pages as high-quality JPG, PNG, or WEBP images.",
+    href: "/tools/pdf-to-image",
+    category: "pdf",
+    icon: "pdf-image",
+    aliases: ["pdf to jpg", "pdf to png", "export pdf pages"],
+    available: true,
+  },
+  {
+    id: "image-to-pdf",
+    name: "Image to PDF",
+    shortDescription: "Turn photos into a polished PDF document.",
+    description: "Combine JPG, JPEG, and PNG photos into a multi-page PDF.",
+    href: "/tools/image-to-pdf",
+    category: "pdf",
+    icon: "image-pdf",
+    aliases: ["photo into pdf", "jpg to pdf", "png to pdf", "images to pdf", "picture to pdf"],
+    available: true,
+  },
+  {
+    id: "rotate-pdf",
+    name: "Rotate PDF",
+    shortDescription: "Rotate PDF pages by 90°, 180° or 270°.",
+    description: "Rotate PDF pages by 90°, 180°, or 270°.",
+    href: "/tools/rotate-pdf",
+    category: "pdf",
+    icon: "rotate-pdf",
+    aliases: ["turn pdf pages", "flip pdf"],
+    available: true,
+  },
+  {
+    id: "word-to-pdf",
+    name: "Word to PDF",
+    shortDescription: "Convert Word documents to PDF.",
+    description: "Convert .docx Word documents into polished PDF files.",
+    href: "/tools/word-to-pdf",
+    category: "pdf",
+    icon: "word",
+    aliases: ["docx to pdf", "word to pdf", "convert word to pdf", "doc to pdf"],
+    available: true,
+  },
+  {
+    id: "image-compressor",
+    name: "Image Compressor",
+    shortDescription: "Reduce image file size with quality control.",
+    description: "Compress JPG, PNG, WEBP and HEIC images with adjustable quality.",
+    href: "/tools/image-compressor",
+    category: "image",
+    icon: "compress",
+    aliases: ["compress image", "reduce image size", "optimize image", "shrink image"],
+    available: true,
+  },
+  {
+    id: "image-resizer",
+    name: "Image Resizer",
+    shortDescription: "Resize images to exact dimensions.",
+    description: "Resize images to exact pixel dimensions with aspect ratio lock.",
+    href: "/tools/image-resizer",
+    category: "image",
+    icon: "convert",
+    aliases: ["resize image", "scale image", "change image size", "image dimensions"],
+    available: true,
+  },
+  {
+    id: "image-upscaler",
+    name: "Image Upscaler",
+    shortDescription: "Enlarge images 2× or 4× with Lanczos.",
+    description: "Upscale images 2× or 4× with high-quality Lanczos resampling.",
+    href: "/tools/image-upscaler",
+    category: "image",
+    icon: "convert",
+    aliases: ["upscale image", "enlarge image", "increase resolution", "image upscaler"],
+    available: true,
+  },
+  {
+    id: "ai-rewrite",
+    name: "AI Rewrite",
+    shortDescription: "Rewrite and improve text with AI.",
+    description: "Rewrite text in different tones and lengths with cloud AI.",
+    href: "/tools/ai-rewrite",
+    category: "ai",
+    icon: "ocr",
+    aliases: ["rewrite text", "paraphrase", "improve writing", "ai rewrite"],
+    available: true,
+  },
+  {
+    id: "background-remover",
+    name: "Background Remover",
+    shortDescription: "Remove image backgrounds instantly.",
+    description: "Remove backgrounds with on-device AI. HD free, 4K for Pro.",
+    href: "/tools/background-remover",
+    category: "image",
+    icon: "bg-remove",
+    aliases: ["remove background", "transparent background", "cut out background", "bg remover"],
+    available: true,
+  },
+  {
+    id: "png-to-jpg",
+    name: "PNG to JPG",
+    shortDescription: "Convert PNG images to JPG format.",
+    description: "Convert PNG images to JPG for smaller, compatible files.",
+    href: "/tools/png-to-jpg",
+    category: "image",
+    icon: "convert",
+    aliases: ["png to jpeg", "convert png"],
+    available: true,
+  },
+  {
+    id: "jpg-to-png",
+    name: "JPG to PNG",
+    shortDescription: "Convert JPG photos to PNG format.",
+    description: "Convert JPEG images to PNG with optional resize.",
+    href: "/tools/jpg-to-png",
+    category: "image",
+    icon: "convert",
+    aliases: ["jpeg to png", "jpg to png"],
+    available: true,
+  },
+  {
+    id: "png-to-webp",
+    name: "PNG to WEBP",
+    shortDescription: "Convert PNG to WEBP for the web.",
+    description: "Convert PNG to WEBP for efficient web delivery.",
+    href: "/tools/png-to-webp",
+    category: "image",
+    icon: "convert",
+    aliases: ["webp converter", "convert webp", "png webp"],
+    available: true,
+  },
+  {
+    id: "jpg-to-webp",
+    name: "JPG to WEBP",
+    shortDescription: "Convert JPG photos to WEBP.",
+    description: "Convert JPG photos to WEBP for faster page loads.",
+    href: "/tools/jpg-to-webp",
+    category: "image",
+    icon: "convert",
+    aliases: ["jpeg to webp"],
+    available: true,
+  },
+  {
+    id: "webp-to-jpg",
+    name: "WEBP to JPG",
+    shortDescription: "Convert WEBP images to JPG.",
+    description: "Convert WEBP images to widely supported JPG files.",
+    href: "/tools/webp-to-jpg",
+    category: "image",
+    icon: "convert",
+    aliases: ["webp to jpeg"],
+    available: true,
+  },
+  {
+    id: "heic-to-jpg",
+    name: "HEIC to JPG",
+    shortDescription: "Convert iPhone HEIC photos to JPG.",
+    description: "Convert iPhone HEIC photos to JPG instantly.",
+    href: "/tools/heic-to-jpg",
+    category: "image",
+    icon: "convert",
+    aliases: ["heic converter", "iphone photo convert", "heic to jpeg"],
+    available: true,
+  },
+  {
+    id: "heic-to-png",
+    name: "HEIC to PNG",
+    shortDescription: "Convert HEIC images to PNG.",
+    description: "Convert HEIC images to PNG for lossless editing.",
+    href: "/tools/heic-to-png",
+    category: "image",
+    icon: "convert",
+    aliases: ["heic to png"],
+    available: true,
+  },
+  {
+    id: "ai-translate",
+    name: "AI Language Translator",
+    shortDescription: "Translate text between major world languages.",
+    description: "Translate text naturally while preserving meaning and formatting.",
+    href: "/tools/ai-translate",
+    category: "ai",
+    icon: "convert",
+    aliases: ["translate", "translator", "translate document", "language translator", "translation"],
+    available: true,
+  },
+  {
+    id: "ocr",
+    name: "OCR",
+    shortDescription: "Extract searchable text from scans and photos.",
+    description: "Extract searchable text from scans, photos, and PDF documents.",
+    href: "/tools/ocr",
+    category: "ai",
+    icon: "ocr",
+    aliases: ["extract text", "scan text", "text recognition", "ocr scanner"],
+    available: true,
+  },
+  {
+    id: "ai-summary",
+    name: "AI Document Summary",
+    shortDescription: "Summarise long documents quickly.",
+    description: "Summarise long documents and OCR text with cloud AI.",
+    href: "/tools/ai-summary",
+    category: "ai",
+    icon: "ocr",
+    aliases: ["summarize", "summary", "document summary", "ai summary"],
+    available: true,
+  },
+  {
+    id: "qr-scanner",
+    name: "QR Scanner",
+    shortDescription: "Scan QR codes from camera or image.",
+    description: "Scan QR codes with your camera or upload an image.",
+    href: "/tools/qr-scanner",
+    category: "ai",
+    icon: "qr",
+    aliases: ["qr code", "scan qr", "barcode"],
+    available: true,
+  },
+  {
+    id: "website-scanner",
+    name: "Website Scanner",
+    shortDescription: "Check any URL for security risks.",
+    description: "Scan websites for malware, phishing and security risks.",
+    href: "/tools/security-scan?type=website",
+    category: "security",
+    icon: "security",
+    aliases: ["url scan", "website security", "scan website", "security scan"],
+    available: true,
+  },
+  {
+    id: "security-scan",
+    name: "Security Scan",
+    shortDescription: "Website security scanning workspace.",
+    description: "Scan websites for security risks with saved reports.",
+    href: "/tools/security-scan",
+    category: "security",
+    icon: "security",
+    aliases: ["threat scan", "security check"],
+    available: true,
+  },
+  {
+    id: "website-monitoring",
+    name: "Website Monitoring",
+    shortDescription: "Monitor sites and get alerts over time.",
+    description: "Track websites over time and get alerts when issues appear.",
+    href: "/monitors",
+    category: "security",
+    icon: "security",
+    aliases: ["monitor website", "uptime monitor", "site monitoring"],
+    available: true,
+  },
+  {
+    id: "protect-pdf",
+    name: "Protect PDF",
+    shortDescription: "Password-protect PDF files.",
+    description: "Encrypt PDFs with a password. Passwords are never stored.",
+    href: "/tools/protect-pdf",
+    category: "security",
+    icon: "compress",
+    aliases: ["encrypt pdf", "pdf password", "lock pdf"],
+    available: true,
+  },
+  {
+    id: "unlock-pdf",
+    name: "Unlock PDF",
+    shortDescription: "Remove PDF password protection.",
+    description: "Unlock password-protected PDFs with the correct password.",
+    href: "/tools/unlock-pdf",
+    category: "security",
+    icon: "compress",
+    aliases: ["decrypt pdf", "remove pdf password"],
+    available: true,
+  },
+  {
+    id: "watermark-pdf",
+    name: "Watermark PDF",
+    shortDescription: "Add text or image watermarks.",
+    description: "Apply customizable watermarks to PDF pages.",
+    href: "/tools/watermark-pdf",
+    category: "security",
+    icon: "word",
+    aliases: ["pdf watermark", "stamp pdf"],
+    available: true,
+  },
+  {
+    id: "redact-pdf",
+    name: "Redact PDF",
+    shortDescription: "Permanently hide sensitive text.",
+    description: "Permanently redact sensitive content from PDF documents.",
+    href: "/tools/redact-pdf",
+    category: "security",
+    icon: "word",
+    aliases: ["pdf redaction", "black out pdf text"],
+    available: true,
+  },
+  {
+    id: "metadata-cleaner",
+    name: "Metadata Cleaner",
+    shortDescription: "Remove hidden file metadata.",
+    description: "Strip EXIF and PDF metadata while preserving content.",
+    href: "/tools/metadata-cleaner",
+    category: "security",
+    icon: "security",
+    aliases: ["exif remover", "strip metadata", "privacy cleaner"],
+    available: true,
+  },
+];
+
+export interface HomepageCategoryGridItem {
+  id: string;
+  name: string;
+  shortDescription: string;
+  href?: string;
+  icon: string;
+  comingSoon?: boolean;
+  proOnly?: boolean;
+}
+
+export const HOMEPAGE_CATEGORY_GRIDS: Record<HomepageToolCategory, HomepageCategoryGridItem[]> = {
+  pdf: [
+    { id: "merge-pdf", name: "Merge PDF", shortDescription: "Combine PDFs into one file.", href: "/tools/merge-pdf", icon: "merge" },
+    { id: "split-pdf", name: "Split PDF", shortDescription: "Extract or divide PDF pages.", href: "/tools/split-pdf", icon: "split" },
+    { id: "compress-pdf", name: "Compress PDF", shortDescription: "Reduce PDF file size.", href: "/tools/compress-pdf", icon: "compress" },
+    { id: "pdf-to-word", name: "PDF to Word", shortDescription: "Convert to editable Word.", href: "/tools/pdf-to-word", icon: "word" },
+    { id: "word-to-pdf", name: "Word to PDF", shortDescription: "Convert Word documents to PDF.", href: "/tools/word-to-pdf", icon: "word" },
+    { id: "pdf-to-image", name: "PDF to Image", shortDescription: "Export pages as images.", href: "/tools/pdf-to-image", icon: "pdf-image" },
+    { id: "image-to-pdf", name: "Image to PDF", shortDescription: "Turn photos into PDF.", href: "/tools/image-to-pdf", icon: "image-pdf" },
+    { id: "protect-pdf", name: "Protect PDF", shortDescription: "Password-protect your PDF.", href: "/tools/protect-pdf", icon: "compress", proOnly: true },
+  ],
+  image: [
+    { id: "background-remover", name: "Background Remover", shortDescription: "Remove image backgrounds.", href: "/tools/background-remover", icon: "bg-remove" },
+    { id: "image-compressor", name: "Image Compressor", shortDescription: "Reduce image file size.", href: "/tools/image-compressor", icon: "compress" },
+    { id: "image-resizer", name: "Image Resizer", shortDescription: "Resize images to exact dimensions.", href: "/tools/image-resizer", icon: "convert" },
+    { id: "jpg-to-png", name: "JPG to PNG", shortDescription: "Convert JPG to PNG.", href: "/tools/jpg-to-png", icon: "convert" },
+    { id: "png-to-jpg", name: "PNG to JPG", shortDescription: "Convert PNG to JPG.", href: "/tools/png-to-jpg", icon: "convert" },
+    { id: "webp-converter", name: "WEBP Converter", shortDescription: "Convert to and from WEBP.", href: "/tools/png-to-webp", icon: "convert" },
+    { id: "heic-converter", name: "HEIC Converter", shortDescription: "Convert iPhone HEIC photos.", href: "/tools/heic-to-jpg", icon: "convert" },
+    { id: "image-upscaler", name: "Image Upscaler", shortDescription: "Enhance image resolution.", href: "/tools/image-upscaler", icon: "convert", proOnly: true },
+  ],
+  ai: [
+    { id: "ai-translate", name: "AI Language Translator", shortDescription: "Translate between languages.", href: "/tools/ai-translate", icon: "convert" },
+    { id: "ocr", name: "OCR", shortDescription: "Extract text from images.", href: "/tools/ocr", icon: "ocr" },
+    { id: "ai-summary", name: "AI Document Summary", shortDescription: "Summarise long documents.", href: "/tools/ai-summary", icon: "ocr" },
+    { id: "ai-rewrite", name: "AI Rewrite", shortDescription: "Rewrite and improve text.", href: "/tools/ai-rewrite", icon: "ocr", proOnly: true },
+    { id: "qr-scanner", name: "QR Scanner", shortDescription: "Scan QR codes instantly.", href: "/tools/qr-scanner", icon: "qr" },
+  ],
+  security: [
+    { id: "protect-pdf", name: "Protect PDF", shortDescription: "Password-protect PDF files.", href: "/tools/protect-pdf", icon: "compress", proOnly: true },
+    { id: "unlock-pdf", name: "Unlock PDF", shortDescription: "Remove PDF passwords.", href: "/tools/unlock-pdf", icon: "compress", proOnly: true },
+    { id: "watermark-pdf", name: "Watermark PDF", shortDescription: "Add watermarks to PDFs.", href: "/tools/watermark-pdf", icon: "word", proOnly: true },
+    { id: "redact-pdf", name: "Redact PDF", shortDescription: "Permanently hide sensitive text.", href: "/tools/redact-pdf", icon: "word", proOnly: true },
+    { id: "metadata-cleaner", name: "Metadata Cleaner", shortDescription: "Remove hidden file metadata.", href: "/tools/metadata-cleaner", icon: "security", proOnly: true },
+    { id: "website-scanner", name: "Website Scanner", shortDescription: "Scan URLs for threats.", href: "/tools/security-scan?type=website", icon: "security", proOnly: true },
+    { id: "website-monitoring", name: "Website Monitoring", shortDescription: "Monitor sites over time.", href: "/monitors", icon: "security", proOnly: true },
+  ],
+};
+
+export const POPULAR_TOOL_IDS = [
+  "merge-pdf",
+  "compress-pdf",
+  "pdf-to-word",
+  "image-to-pdf",
+  "ocr",
+  "ai-translate",
+  "background-remover",
+  "split-pdf",
+] as const;
+
+export const HERO_QUICK_SUGGESTIONS = [
+  "merge-pdf",
+  "compress-pdf",
+  "pdf-to-word",
+  "image-to-pdf",
+  "ai-translate",
+  "background-remover",
+] as const;
+
+export function getPopularTools(): HomepageTool[] {
+  return POPULAR_TOOL_IDS.map((id) => HOMEPAGE_TOOLS.find((tool) => tool.id === id)).filter(
+    (tool): tool is HomepageTool => tool !== undefined,
+  );
+}
+
+export function getToolById(id: string): HomepageTool | undefined {
+  return HOMEPAGE_TOOLS.find((tool) => tool.id === id);
+}
+
+/** Nav dropdown items — top tools per category. */
+export const NAV_DROPDOWN_TOOLS: Record<
+  HomepageToolCategory,
+  { label: string; href: string; viewAllHref: string; tools: { name: string; href: string }[] }
+> = {
+  pdf: {
+    label: "PDF Tools",
+    href: "/#pdf-tools",
+    viewAllHref: "/tools",
+    tools: [
+      { name: "Merge PDF", href: "/tools/merge-pdf" },
+      { name: "Compress PDF", href: "/tools/compress-pdf" },
+      { name: "Split PDF", href: "/tools/split-pdf" },
+      { name: "PDF to Word", href: "/tools/pdf-to-word" },
+      { name: "Word to PDF", href: "/tools/word-to-pdf" },
+      { name: "Image to PDF", href: "/tools/image-to-pdf" },
+    ],
+  },
+  image: {
+    label: "Image Tools",
+    href: "/#image-tools",
+    viewAllHref: "/tools/image",
+    tools: [
+      { name: "Background Remover", href: "/tools/background-remover" },
+      { name: "Image Compressor", href: "/tools/image-compressor" },
+      { name: "PNG to JPG", href: "/tools/png-to-jpg" },
+      { name: "HEIC to JPG", href: "/tools/heic-to-jpg" },
+      { name: "JPG to WEBP", href: "/tools/jpg-to-webp" },
+      { name: "All image tools", href: "/tools/image" },
+    ],
+  },
+  ai: {
+    label: "AI Tools",
+    href: "/#ai-tools",
+    viewAllHref: "/tools/ai-translate",
+    tools: [
+      { name: "AI Language Translator", href: "/tools/ai-translate" },
+      { name: "OCR", href: "/tools/ocr" },
+      { name: "AI Document Summary", href: "/tools/ai-summary" },
+      { name: "AI Rewrite", href: "/tools/ai-rewrite" },
+      { name: "QR Scanner", href: "/tools/qr-scanner" },
+    ],
+  },
+  security: {
+    label: "Security",
+    href: "/#security-tools",
+    viewAllHref: "/tools/security-scan",
+    tools: [
+      { name: "Protect PDF", href: "/tools/protect-pdf" },
+      { name: "Website Scanner", href: "/tools/security-scan?type=website" },
+      { name: "Website Monitoring", href: "/monitors" },
+      { name: "Metadata Cleaner", href: "/tools/metadata-cleaner" },
+    ],
+  },
+};

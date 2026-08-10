@@ -1,0 +1,238 @@
+Vercel CLI 56.2.1 (Node.js 24.18.0)
+WARNING! Build not running on Vercel. System environment variables will not be available.
+WARNING: You should not upload the `.next` directory.
+Installing dependencies...
+
+up to date in 1s
+
+155 packages are looking for funding
+  run `npm fund` for details
+npm warn allow-scripts 5 packages have install scripts not yet covered by allowScripts:
+npm warn allow-scripts   core-js@3.49.0 (install: (install scripts present))
+npm warn allow-scripts   protobufjs@7.6.5 (install: (install scripts present))
+npm warn allow-scripts   sharp@0.34.5 (install: (install scripts present))
+npm warn allow-scripts   tesseract.js@7.0.0 (install: (install scripts present))
+npm warn allow-scripts   unrs-resolver@1.12.2 (install: (install scripts present))
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+Detected Next.js version: 16.2.10
+Running "npm run build"
+
+> scanonix-website@0.1.0 build
+> next build
+
+▲ Next.js 16.2.10 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · optimizePackageImports
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 13.0s
+  Running TypeScript ...
+  Finished TypeScript in 9.4s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/32) ...
+  Generating static pages using 11 workers (8/32) 
+  Generating static pages using 11 workers (16/32) 
+  Generating static pages using 11 workers (24/32) 
+✓ Generating static pages using 11 workers (32/32) in 2.2s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /account
+├ ƒ /account/billing
+├ ƒ /account/profile
+├ ƒ /account/security
+├ ƒ /account/settings
+├ ƒ /admin
+├ ƒ /admin/analytics
+├ ƒ /admin/monitoring
+├ ƒ /admin/scans
+├ ƒ /admin/subscriptions
+├ ƒ /admin/system
+├ ƒ /admin/users
+├ ƒ /api/account/deletion-request
+├ ƒ /api/account/export
+├ ƒ /api/account/notifications
+├ ƒ /api/account/scan-history
+├ ƒ /api/admin/analytics
+├ ƒ /api/admin/dashboard
+├ ƒ /api/admin/monitoring
+├ ƒ /api/admin/scans
+├ ƒ /api/admin/scans/[id]
+├ ƒ /api/admin/subscriptions
+├ ƒ /api/admin/system
+├ ƒ /api/admin/users
+├ ƒ /api/admin/users/[id]
+├ ƒ /api/ai/status
+├ ƒ /api/ai/summary
+├ ƒ /api/ai/translate
+├ ƒ /api/billing/status
+├ ƒ /api/billing/sync-session
+├ ƒ /api/cron/monitors/run
+├ ƒ /api/health
+├ ƒ /api/health/supabase
+├ ƒ /api/monitors
+├ ƒ /api/monitors/[id]
+├ ƒ /api/monitors/[id]/timeline
+├ ƒ /api/monitors/summary
+├ ƒ /api/notifications
+├ ƒ /api/reports/[id]/pdf
+├ ƒ /api/reports/authorize-export
+├ ƒ /api/scan-history
+├ ƒ /api/scan-history/[id]
+├ ƒ /api/scan-history/summary
+├ ƒ /api/scans/[id]/assistant
+├ ƒ /api/scans/[id]/assistant/regenerate
+├ ƒ /api/scans/run
+├ ƒ /api/stripe/create-checkout-session
+├ ƒ /api/stripe/create-portal-session
+├ ƒ /api/stripe/webhook
+├ ƒ /api/tools/background-remover/authorize-export
+├ ƒ /api/usage/consume
+├ ƒ /api/usage/summary
+├ ƒ /auth/callback
+├ ○ /auth/reset-password
+├ ○ /billing/success
+├ ○ /contact
+├ ƒ /dashboard
+├ ○ /forgot-password
+├ ƒ /history
+├ ○ /icon.png
+├ ○ /login
+├ ƒ /monitors
+├ ƒ /monitors/[id]
+├ ƒ /monitors/[id]/history
+├ ƒ /pricing
+├ ○ /privacy
+├ ƒ /register
+├ ○ /reset-password
+├ ○ /robots.txt
+├ ƒ /saved-files
+├ ƒ /scan-history
+├ ƒ /scan-results
+├ ƒ /scan-results/[id]
+├ ○ /sitemap.xml
+├ ○ /terms
+├ ○ /tools
+├ ○ /tools/ai-summary
+├ ○ /tools/ai-translate
+├ ○ /tools/background-remover
+├ ○ /tools/compress-pdf
+├ ○ /tools/image-to-pdf
+├ ○ /tools/jpg-to-png
+├ ○ /tools/merge-pdf
+├ ○ /tools/ocr
+├ ○ /tools/pdf-to-image
+├ ○ /tools/pdf-to-word
+├ ○ /tools/qr-scanner
+├ ○ /tools/rotate-pdf
+├ ƒ /tools/security-scan
+└ ○ /tools/split-pdf
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+Traced Next.js server files in: 55.849ms
+Tracing entries due to missing build traces:
+[
+  "D:/Scanonix/scanonix-website/.next/server/app/_global-error/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/_not-found/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/account/billing/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/account/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/account/profile/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/account/security/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/account/settings/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/admin/analytics/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/admin/monitoring/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/admin/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/admin/scans/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/admin/subscriptions/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/admin/system/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/admin/users/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/auth/reset-password/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/billing/success/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/contact/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/dashboard/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/forgot-password/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/history/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/login/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/monitors/[id]/history/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/monitors/[id]/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/monitors/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/pricing/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/privacy/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/register/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/reset-password/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/saved-files/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/scan-history/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/scan-results/[id]/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/scan-results/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/terms/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/ai-summary/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/ai-translate/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/background-remover/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/compress-pdf/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/image-to-pdf/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/jpg-to-png/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/merge-pdf/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/ocr/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/pdf-to-image/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/pdf-to-word/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/qr-scanner/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/rotate-pdf/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/security-scan/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/tools/split-pdf/page.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/account/deletion-request/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/account/export/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/account/notifications/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/account/scan-history/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/analytics/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/dashboard/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/monitoring/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/scans/[id]/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/scans/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/subscriptions/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/system/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/users/[id]/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/admin/users/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/ai/status/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/ai/summary/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/ai/translate/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/billing/status/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/billing/sync-session/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/cron/monitors/run/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/health/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/health/supabase/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/monitors/[id]/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/monitors/[id]/timeline/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/monitors/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/monitors/summary/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/notifications/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/reports/[id]/pdf/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/reports/authorize-export/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/scan-history/[id]/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/scan-history/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/scan-history/summary/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/scans/[id]/assistant/regenerate/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/scans/[id]/assistant/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/scans/run/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/stripe/create-checkout-session/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/stripe/create-portal-session/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/stripe/webhook/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/tools/background-remover/authorize-export/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/usage/consume/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/api/usage/summary/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/auth/callback/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/icon.png/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/robots.txt/route.js",
+  "D:/Scanonix/scanonix-website/.next/server/app/sitemap.xml/route.js"
+]: 211.001ms
+Created all serverless functions in: 358.812ms
+Error: Unable to find lambda for route: /auth/reset-password

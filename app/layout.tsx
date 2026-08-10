@@ -1,0 +1,69 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { SITE } from "@/config/site";
+import { createOrganizationJsonLd, createPageMetadata } from "@/lib/utils/seo";
+import { Providers } from "./providers";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Free Online PDF, Image & AI Document Tools | Scanonix",
+    description: SITE.description,
+    path: "/",
+    keywords: [
+      "PDF tools",
+      "merge PDF",
+      "compress PDF",
+      "image tools",
+      "background remover",
+      "OCR",
+      "PDF to Word",
+      "Word to PDF",
+      "AI document tools",
+      "Scanonix",
+    ],
+  }),
+  title: {
+    default: "Free Online PDF, Image & AI Document Tools | Scanonix",
+    template: "%s",
+  },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
+};
+
+const organizationJsonLd = createOrganizationJsonLd();
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth overflow-x-clip antialiased`}
+    >
+      <body className="relative flex min-h-full flex-col overflow-x-clip bg-background text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}

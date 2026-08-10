@@ -1,0 +1,312 @@
+{
+  "timestamp": "2026-08-08T03:32:13.862Z",
+  "baseUrl": "https://www.scanonix.com",
+  "vercelInspect": {
+    "available": true,
+    "error": "Unexpected token 'V', \"Vercel CLI\"... is not valid JSON"
+  },
+  "health": {
+    "/api/health": {
+      "status": 200,
+      "snippet": "{\"ok\":true,\"status\":\"healthy\",\"timestamp\":\"2026-08-08T03:32:10.780Z\"}"
+    },
+    "/api/ai/status": {
+      "status": 200,
+      "snippet": "{\"configured\":true}"
+    },
+    "/api/health/supabase": {
+      "status": 401,
+      "snippet": "{\"error\":\"Unauthorized.\"}"
+    }
+  },
+  "toolRoutes": [
+    {
+      "route": "/api/tools/background-remover/authorize-export",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 200,
+        "snippet": "{\"ok\":true,\"allowedResolution\":\"hd\",\"plan\":\"free\"}"
+      }
+    },
+    {
+      "route": "/api/tools/background-remover/remove",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 503,
+        "snippet": "{\"error\":\"Background removal requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      },
+      "postMultipart": {
+        "status": 503,
+        "snippet": "{\"error\":\"Background removal requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      }
+    },
+    {
+      "route": "/api/tools/image/compress",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 400,
+        "snippet": "{\"error\":\"Invalid multipart request.\"}"
+      }
+    },
+    {
+      "route": "/api/tools/image/resize",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 400,
+        "snippet": "{\"error\":\"Invalid multipart request.\"}"
+      }
+    },
+    {
+      "route": "/api/tools/image/upscale",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 503,
+        "snippet": "{\"error\":\"Image upscaling requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      },
+      "postMultipart": {
+        "status": 503,
+        "snippet": "{\"error\":\"Image upscaling requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      }
+    },
+    {
+      "route": "/api/tools/pdf-to-word",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 400,
+        "snippet": "{\"error\":\"Invalid multipart request.\"}"
+      }
+    },
+    {
+      "route": "/api/tools/pdf/compress",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 503,
+        "snippet": "{\"error\":\"PDF compression requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      },
+      "postMultipart": {
+        "status": 503,
+        "snippet": "{\"error\":\"PDF compression requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      }
+    },
+    {
+      "route": "/api/tools/security/metadata-cleaner",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 401,
+        "snippet": "{\"error\":\"Authentication required.\"}"
+      }
+    },
+    {
+      "route": "/api/tools/security/protect-pdf",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 401,
+        "snippet": "{\"error\":\"Authentication required.\"}"
+      }
+    },
+    {
+      "route": "/api/tools/security/redact-pdf",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 503,
+        "snippet": "{\"error\":\"Secure PDF redaction requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      },
+      "postMultipart": {
+        "status": 503,
+        "snippet": "{\"error\":\"Secure PDF redaction requires an external worker service in production. Configure the corresponding *_SERVICE_URL environment variable on Vercel.\",\"code\":\"NOT_CONFIGURED\"}"
+      }
+    },
+    {
+      "route": "/api/tools/security/unlock-pdf",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 401,
+        "snippet": "{\"error\":\"Authentication required.\"}"
+      }
+    },
+    {
+      "route": "/api/tools/security/watermark-pdf",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 401,
+        "snippet": "{\"error\":\"Authentication required.\"}"
+      }
+    },
+    {
+      "route": "/api/tools/word-to-pdf",
+      "get": {
+        "status": 405
+      },
+      "postEmpty": {
+        "status": 400,
+        "snippet": "{\"error\":\"Invalid multipart request.\"}"
+      }
+    }
+  ],
+  "protectedRoutes": [
+    {
+      "path": "/api/billing/status",
+      "status": 401,
+      "snippet": "{\"error\":\"Authentication required.\"}"
+    },
+    {
+      "path": "/api/admin/system",
+      "status": 401,
+      "snippet": "{\"error\":\"Authentication required.\"}"
+    },
+    {
+      "path": "/api/account/export",
+      "status": 401,
+      "snippet": "{\"error\":\"Authentication required.\"}"
+    },
+    {
+      "path": "/api/usage/consume",
+      "status": 401,
+      "snippet": "{\"error\":\"Authentication required.\"}"
+    },
+    {
+      "path": "/api/stripe/create-checkout-session",
+      "status": 401,
+      "snippet": "{\"error\":\"Authentication required.\"}"
+    },
+    {
+      "path": "/api/cron/monitors/run",
+      "status": 401,
+      "snippet": "{\"error\":\"Unauthorized.\"}"
+    }
+  ],
+  "publicPages": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/tools",
+      "status": 200
+    },
+    {
+      "path": "/pricing",
+      "status": 200
+    },
+    {
+      "path": "/privacy",
+      "status": 200
+    },
+    {
+      "path": "/terms",
+      "status": 200
+    },
+    {
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "path": "/register",
+      "status": 200
+    },
+    {
+      "path": "/tools/pdf-to-word",
+      "status": 200
+    },
+    {
+      "path": "/tools/word-to-pdf",
+      "status": 200
+    },
+    {
+      "path": "/tools/word-to-word",
+      "status": 404
+    }
+  ],
+  "bundleSecretScan": {
+    "chunksScanned": 0,
+    "sk_live": "NO",
+    "service_role": "NO",
+    "CLOUDCONVERT_API_KEY_assignment": "NO",
+    "SUPABASE_SERVICE_ROLE_KEY_value": "NO"
+  },
+  "envExampleCheck": {
+    "hasRealSecrets": false,
+    "flaggedKeys": []
+  },
+  "failures": [],
+  "passes": [
+    ".env.local.example has no real secrets",
+    "/api/health → 200",
+    "/api/ai/status → 200",
+    "/api/health/supabase → 401 (protected in production)",
+    "/api/tools/background-remover/authorize-export GET → 405",
+    "/api/tools/background-remover/remove GET → 405",
+    "/api/tools/background-remover/remove POST empty → 503",
+    "/api/tools/background-remover/remove POST multipart → 503",
+    "/api/tools/image/compress GET → 405",
+    "/api/tools/image/compress POST empty → 400",
+    "/api/tools/image/resize GET → 405",
+    "/api/tools/image/resize POST empty → 400",
+    "/api/tools/image/upscale GET → 405",
+    "/api/tools/image/upscale POST empty → 503",
+    "/api/tools/image/upscale POST multipart → 503",
+    "/api/tools/pdf-to-word GET → 405",
+    "/api/tools/pdf-to-word POST empty → 400",
+    "/api/tools/pdf/compress GET → 405",
+    "/api/tools/pdf/compress POST empty → 503",
+    "/api/tools/pdf/compress POST multipart → 503",
+    "/api/tools/security/metadata-cleaner GET → 405",
+    "/api/tools/security/metadata-cleaner POST empty → 401",
+    "/api/tools/security/protect-pdf GET → 405",
+    "/api/tools/security/protect-pdf POST empty → 401",
+    "/api/tools/security/redact-pdf GET → 405",
+    "/api/tools/security/redact-pdf POST empty → 503",
+    "/api/tools/security/redact-pdf POST multipart → 503",
+    "/api/tools/security/unlock-pdf GET → 405",
+    "/api/tools/security/unlock-pdf POST empty → 401",
+    "/api/tools/security/watermark-pdf GET → 405",
+    "/api/tools/security/watermark-pdf POST empty → 401",
+    "/api/tools/word-to-pdf GET → 405",
+    "/api/tools/word-to-pdf POST empty → 400",
+    "/api/billing/status anonymous → 401",
+    "/api/admin/system anonymous → 401",
+    "/api/account/export anonymous → 401",
+    "/api/usage/consume anonymous → 401",
+    "/api/stripe/create-checkout-session anonymous → 401",
+    "/api/cron/monitors/run anonymous → 401",
+    "/ → 200",
+    "/tools → 200",
+    "/pricing → 200",
+    "/privacy → 200",
+    "/terms → 200",
+    "/login → 200",
+    "/register → 200",
+    "/tools/pdf-to-word → 200",
+    "/tools/word-to-pdf → 200",
+    "Production client bundles: no leaked secret patterns detected"
+  ],
+  "toolRouteCount": 13,
+  "summary": {
+    "passCount": 49,
+    "failCount": 0
+  }
+}

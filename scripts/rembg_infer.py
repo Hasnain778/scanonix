@@ -15,8 +15,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", required=True, help="Output PNG path")
     parser.add_argument(
         "--model",
-        default="isnet-general-use",
-        help="rembg model name (default: isnet-general-use)",
+        default="birefnet-general",
+        help="rembg model name (default: birefnet-general)",
     )
     parser.add_argument(
         "--model-dir",

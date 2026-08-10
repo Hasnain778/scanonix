@@ -109,7 +109,7 @@ async function runRembgPython(input: Buffer, mimeType: string): Promise<{ buffer
   }
 
   const ext = extensionForMime(mimeType);
-  const model = env.rembgModel || "isnet-general-use";
+  const model = env.rembgModel || "birefnet-general";
 
   return withTempWorkspace(input, `.${ext}`, async (workspace) => {
     const outputPath = workspace.outputPath.replace(/\.[^.]+$/, ".png");
@@ -185,7 +185,7 @@ export async function removeBackgroundWithRembg(
     options.processingMaxLongEdge,
   );
 
-  const model = env.rembgModel || "isnet-general-use";
+  const model = env.rembgModel || "birefnet-general";
   const mode = resolveNativeProviderMode(env.rembgServiceUrl, env.rembgPython);
 
   const { buffer: rawOutput, model: usedModel } =

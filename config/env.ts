@@ -69,7 +69,7 @@ export const env = {
   rembgPython: readEnv("REMBG_PYTHON"),
   rembgServiceUrl: readEnv("REMBG_SERVICE_URL"),
   rembgServiceSecret: readFirstEnv(["REMBG_SERVICE_SECRET", "REMBG_WORKER_SECRET"]),
-  rembgModel: readFirstEnv(["REMBG_MODEL"], "isnet-general-use"),
+  rembgModel: readFirstEnv(["REMBG_MODEL"], "birefnet-general"),
   rembgModelDir: readEnv("REMBG_MODEL_DIR"),
   realesrganBin: readEnv("REALESRGAN_BIN"),
   realesrganModelDir: readEnv("REALESRGAN_MODEL_DIR"),

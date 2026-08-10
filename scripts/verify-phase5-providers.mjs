@@ -68,7 +68,7 @@ function testConfigStatus() {
 
   console.log("\nPhase 5 provider configuration status:");
   console.log(`  rembg:         ${rembg ? readEnv("REMBG_PYTHON") : "NOT configured"}`);
-  console.log(`  rembg model:   ${readEnv("REMBG_MODEL") || "isnet-general-use (default)"}`);
+  console.log(`  rembg model:   ${readEnv("REMBG_MODEL") || "birefnet-general (default)"}`);
   console.log(
     `  Real-ESRGAN:   ${realesrgan ? readEnv("REALESRGAN_BIN") || readEnv("REALESRGAN_SERVICE_URL") : "NOT configured"}`,
   );
@@ -138,7 +138,7 @@ async function testBackgroundRemoval() {
 
   const result = await removeBackgroundWithRembg(input, "image/jpeg");
   assert.equal(result.provider, "rembg");
-  assert.equal(result.model, readEnv("REMBG_MODEL") || "isnet-general-use");
+  assert.equal(result.model, readEnv("REMBG_MODEL") || "birefnet-general");
   assert.equal(result.width, inputWidth, "width not preserved");
   assert.equal(result.height, inputHeight, "height not preserved");
   assert.equal(result.buffer.slice(0, 4).toString("hex"), "89504e47", "output is not PNG");

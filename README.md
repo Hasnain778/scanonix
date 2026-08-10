@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# Scanonix
 
-## Getting Started
+Scanonix is a collection of simple online tools for working with PDFs, images, documents, and everyday files directly from your browser.
 
-First, run the development server:
+**Website:** https://www.scanonix.com
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Online Tools
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Scanonix includes tools for:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- PDF conversion and document utilities
+- OCR and text extraction
+- Image conversion and optimization
+- Background removal
+- QR scanning
+- File metadata cleaning
+- Security scanning
+- AI-powered writing utilities
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Popular Scanonix Tools
 
-## Learn More
+- [Online OCR](https://www.scanonix.com/tools/ocr)
+- [PDF to Word](https://www.scanonix.com/tools/pdf-to-word)
+- [Image to PDF](https://www.scanonix.com/tools/image-to-pdf)
+- [Background Remover](https://www.scanonix.com/tools/background-remover)
+- [Security Scan](https://www.scanonix.com/tools/security-scan)
 
-To learn more about Next.js, take a look at the following resources:
+## About
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The goal of Scanonix is to make common file tasks quick and straightforward without requiring complicated desktop software.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Visit **[Scanonix.com](https://www.scanonix.com)** to explore the available tools.

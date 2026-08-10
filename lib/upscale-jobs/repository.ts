@@ -43,6 +43,22 @@ export async function createJob(input: CreateUpscaleJobInput): Promise<UpscaleJo
   return mapRow(data);
 }
 
+export async function getJobById(jobId: string): Promise<UpscaleJobRecord | null> {
+  const admin = createAdminClient();
+
+  const { data, error } = await admin
+    .from("upscale_jobs")
+    .select("*")
+    .eq("id", jobId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ? mapRow(data) : null;
+}
+
 export async function getJobForUser(
   userId: string,
   jobId: string,

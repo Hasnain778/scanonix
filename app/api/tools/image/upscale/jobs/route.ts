@@ -118,14 +118,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ jobId }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not create upscale job.";
-    const isWorkerTriggerFailure = message.includes("Could not start upscaling worker");
+    const isWorkerDispatchFailure =
+      message.includes("Could not start upscaling worker") ||
+      message.includes("did not start in time");
 
     return NextResponse.json(
       {
         error: message,
-        code: isWorkerTriggerFailure ? "WORKER_TRIGGER_FAILED" : "JOB_CREATE_FAILED",
+        code: isWorkerDispatchFailure ? "WORKER_TRIGGER_FAILED" : "JOB_CREATE_FAILED",
       },
-      { status: isWorkerTriggerFailure ? 503 : 500 },
+      { status: isWorkerDispatchFailure ? 503 : 500 },
     );
   }
 }

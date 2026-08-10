@@ -139,7 +139,9 @@ async function main(): Promise<void> {
 
     assert.match(routeSource, /WORKER_TRIGGER_FAILED/);
     assert.match(triggerWorkerSource, /worker_trigger_failed/);
-    assert.match(triggerWorkerSource, /updateJob/);
+    assert.match(triggerWorkerSource, /worker_claim_timeout/);
+    assert.match(triggerWorkerSource, /dispatchUpscaleWorkerWithClaimVerification/);
+    assert.match(triggerWorkerSource, /getJobById/);
   });
 
   await test("no RunPod API key exposure to client bundles", () => {

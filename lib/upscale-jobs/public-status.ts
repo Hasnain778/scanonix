@@ -1,12 +1,14 @@
 import { getUpscaleJobProgressSnapshot } from "./progress";
+import { resolveUpscaleJobStatus } from "./terminal-status";
 import type { UpscaleJobPublicStatus, UpscaleJobRecord } from "./types";
 
 export function toPublicJobStatus(job: UpscaleJobRecord): UpscaleJobPublicStatus {
-  const snapshot = getUpscaleJobProgressSnapshot(job.status, job.stage, job.progress);
+  const status = resolveUpscaleJobStatus(job);
+  const snapshot = getUpscaleJobProgressSnapshot(status, job.stage, job.progress);
 
   return {
     jobId: job.id,
-    status: job.status,
+    status,
     stage: snapshot.stage,
     progress: snapshot.percent,
     label: snapshot.label,
@@ -16,6 +18,7 @@ export function toPublicJobStatus(job: UpscaleJobRecord): UpscaleJobPublicStatus
     outputWidth: job.output_width,
     outputHeight: job.output_height,
     outputFormat: job.output_format,
+    outputStoragePath: job.output_storage_path,
     errorCode: job.error_code,
     errorMessage: job.error_message,
     createdAt: job.created_at,

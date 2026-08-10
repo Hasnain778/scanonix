@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from "@/config/env";
 import { requirePremiumAiPlan } from "@/lib/plan/access";
 import { getJobForUser } from "@/lib/upscale-jobs/repository";
 import { getSignedResultUrl } from "@/lib/upscale-jobs/storage";
+import { resolveUpscaleJobStatus } from "@/lib/upscale-jobs/terminal-status";
 import { outputMimeForFormat } from "@/lib/tools/shared/image-validate";
 
 export const dynamic = "force-dynamic";
@@ -49,7 +50,7 @@ export async function GET(_request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Upscale job not found." }, { status: 404 });
     }
 
-    if (job.status !== "completed") {
+    if (resolveUpscaleJobStatus(job) !== "completed") {
       return NextResponse.json(
         { error: "Upscale result is not ready yet.", code: "NOT_READY" },
         { status: 409 },

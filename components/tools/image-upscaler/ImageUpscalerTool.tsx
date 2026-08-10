@@ -15,12 +15,12 @@ import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ImageUpscalerProcessingPanel } from "@/components/tools/image-upscaler/ImageUpscalerProcessingPanel";
 import { useUsageSummary } from "@/hooks/useUsageSummary";
 import { getUpscaleJobProgressSnapshot } from "@/lib/upscale-jobs/progress";
+import { getUpscaleJobPollAction } from "@/lib/upscale-jobs/terminal-status";
 import type { UpscaleJobPublicStatus } from "@/lib/upscale-jobs/types";
 import {
   clearStoredUpscaleJobId,
   fetchUpscaleJobResult,
   fetchUpscaleJobStatus,
-  isTerminalUpscaleJobStatus,
   readStoredUpscaleJobId,
   submitImageUpscaleForm,
   UPSCALE_JOB_POLL_INTERVAL_MS,
@@ -139,7 +139,8 @@ export function ImageUpscalerTool() {
 
       applyJobStatus(initial.status);
 
-      if (initial.status.status === "completed") {
+      const initialAction = getUpscaleJobPollAction(initial.status);
+      if (initialAction === "fetch-result") {
         const result = await fetchUpscaleJobResult(storedJobId);
         if (!result.ok) {
           setStatus("error");
@@ -150,7 +151,7 @@ export function ImageUpscalerTool() {
         return;
       }
 
-      if (isTerminalUpscaleJobStatus(initial.status)) {
+      if (initialAction === "stop-error") {
         clearStoredUpscaleJobId();
         setStatus("error");
         setMessage(initial.status.errorMessage ?? "Upscaling failed — please try again.");

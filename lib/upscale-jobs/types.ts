@@ -54,6 +54,7 @@ export interface UpscaleJobPublicStatus {
   outputWidth: number | null;
   outputHeight: number | null;
   outputFormat: string | null;
+  outputStoragePath: string | null;
   errorCode: string | null;
   errorMessage: string | null;
   createdAt: string;

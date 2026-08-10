@@ -16,6 +16,7 @@
     "verify:phase5-providers": "npx --yes tsx scripts/verify-phase5-providers.mjs",
     "verify:realesrgan-service-auth": "npx --yes tsx scripts/verify-realesrgan-service-auth.ts",
     "verify:upscale-runpod-trigger": "npx --yes tsx scripts/verify-upscale-runpod-trigger.ts",
+    "verify:upscale-job-polling": "npx --yes tsx scripts/verify-upscale-job-polling.ts",
     "verify:stripe": "node --env-file=.env.local scripts/verify-stripe.mjs",
     "validate:production": "node scripts/validate-production-env.mjs",
     "provision:storage": "node --env-file=.env.local scripts/provision-storage.mjs"

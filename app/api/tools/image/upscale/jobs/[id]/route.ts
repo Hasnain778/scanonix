@@ -5,7 +5,14 @@ import { getJobForUser } from "@/lib/upscale-jobs/repository";
 import { toPublicJobStatus } from "@/lib/upscale-jobs/public-status";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 export const runtime = "nodejs";
+
+const NO_STORE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+} as const;
 
 const ROUTE = "/api/tools/image/upscale/jobs/[id]";
 
@@ -37,7 +44,7 @@ export async function GET(_request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Upscale job not found." }, { status: 404 });
     }
 
-    return NextResponse.json(toPublicJobStatus(job));
+    return NextResponse.json(toPublicJobStatus(job), { headers: NO_STORE_HEADERS });
   } catch (error) {
     return NextResponse.json(
       {

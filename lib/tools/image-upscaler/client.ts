@@ -1,8 +1,15 @@
 "use client";
 
 import { formatPlanError } from "@/lib/plan/tool-gate";
+import {
+  getUpscaleJobPollAction,
+  isActiveUpscaleJobStatus,
+  isTerminalUpscaleJobStatus,
+} from "@/lib/upscale-jobs/terminal-status";
 import type { UpscaleJobPublicStatus } from "@/lib/upscale-jobs/types";
 import type { ImageToolStats } from "@/lib/tools/image/client";
+
+export { getUpscaleJobPollAction, isActiveUpscaleJobStatus, isTerminalUpscaleJobStatus };
 
 export const UPSCALE_ACTIVE_JOB_STORAGE_KEY = "scanonix:image-upscaler:active-job";
 
@@ -112,10 +119,13 @@ export async function fetchUpscaleJobStatus(
   let response: Response;
 
   try {
-    response = await fetch(`/api/tools/image/upscale/jobs/${encodeURIComponent(jobId)}`, {
-      method: "GET",
-      cache: "no-store",
-    });
+    response = await fetch(
+      `/api/tools/image/upscale/jobs/${encodeURIComponent(jobId)}?_=${Date.now()}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
   } catch (error) {
     return { ok: false, message: mapUpscaleClientError(error) };
   }
@@ -143,10 +153,6 @@ export async function fetchUpscaleJobStatus(
   }
 }
 
-export function isTerminalUpscaleJobStatus(status: UpscaleJobPublicStatus): boolean {
-  return status.status === "completed" || status.status === "failed" || status.status === "cancelled";
-}
-
 export async function waitForUpscaleJobCompletion(
   jobId: string,
   onProgress: (status: UpscaleJobPublicStatus) => void,
@@ -164,13 +170,14 @@ export async function waitForUpscaleJobCompletion(
 
     onProgress(result.status);
 
-    if (isTerminalUpscaleJobStatus(result.status)) {
-      if (result.status.status === "failed") {
-        return {
-          ok: false,
-          message: result.status.errorMessage ?? "Upscaling failed — please try again.",
-        };
-      }
+    const pollAction = getUpscaleJobPollAction(result.status);
+    if (pollAction === "stop-error") {
+      return {
+        ok: false,
+        message: result.status.errorMessage ?? "Upscaling failed — please try again.",
+      };
+    }
+    if (pollAction === "fetch-result") {
       return result;
     }
 

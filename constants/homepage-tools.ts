@@ -392,7 +392,7 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     category: "security",
     icon: "word",
     aliases: ["pdf redaction", "black out pdf text"],
-    available: true,
+    available: false,
   },
   {
     id: "metadata-cleaner",
@@ -449,7 +449,7 @@ export const HOMEPAGE_CATEGORY_GRIDS: Record<HomepageToolCategory, HomepageCateg
     { id: "protect-pdf", name: "Protect PDF", shortDescription: "Password-protect PDF files.", href: "/tools/protect-pdf", icon: "compress", proOnly: true },
     { id: "unlock-pdf", name: "Unlock PDF", shortDescription: "Remove PDF passwords.", href: "/tools/unlock-pdf", icon: "compress", proOnly: true },
     { id: "watermark-pdf", name: "Watermark PDF", shortDescription: "Add watermarks to PDFs.", href: "/tools/watermark-pdf", icon: "word", proOnly: true },
-    { id: "redact-pdf", name: "Redact PDF", shortDescription: "Permanently hide sensitive text.", href: "/tools/redact-pdf", icon: "word", proOnly: true },
+    { id: "redact-pdf", name: "Redact PDF", shortDescription: "Permanently hide sensitive text.", icon: "word", proOnly: true, comingSoon: true },
     { id: "metadata-cleaner", name: "Metadata Cleaner", shortDescription: "Remove hidden file metadata.", href: "/tools/metadata-cleaner", icon: "security", proOnly: true },
     { id: "website-scanner", name: "Website Scanner", shortDescription: "Scan URLs for threats.", href: "/tools/security-scan?type=website", icon: "security", proOnly: true },
     { id: "website-monitoring", name: "Website Monitoring", shortDescription: "Monitor sites over time.", href: "/monitors", icon: "security", proOnly: true },

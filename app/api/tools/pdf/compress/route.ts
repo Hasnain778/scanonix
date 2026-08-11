@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { PDFDocument } from "pdf-lib";
 import { isGhostscriptConfigured } from "@/config/env";
 import { resolveFreeToolAccess } from "@/lib/plan/access";
 import { assertPdfBytes } from "@/lib/image/validate-binary";
@@ -11,9 +12,12 @@ import {
   PdfCompressionFailedError,
   PdfCompressionNotConfiguredError,
 } from "@/lib/providers/pdf/compression/types";
-import { nativeProviderUnavailableMessage } from "@/lib/providers/runtime/production-guards";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
-import type { CompressionLevel } from "@/lib/tools/compress-pdf/compression-levels";
+import { compressPdfBytes } from "@/lib/tools/compress-pdf/compress-pdf";
+import {
+  type CompressionLevel,
+  PdfCompressionError,
+} from "@/lib/tools/compress-pdf/compression-levels";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -33,18 +37,6 @@ export async function POST(request: Request) {
     windowMs: 60_000,
   });
   if (rateLimited) return rateLimited;
-
-  const provider = getPdfCompressionProvider();
-  const configured = await provider.isConfigured();
-  if (!configured || !isGhostscriptConfigured()) {
-    return NextResponse.json(
-      {
-        error: nativeProviderUnavailableMessage("PDF compression"),
-        code: "NOT_CONFIGURED",
-      },
-      { status: 503 },
-    );
-  }
 
   let formData: FormData;
   try {
@@ -94,22 +86,45 @@ export async function POST(request: Request) {
     );
   }
 
+  const baseName = file.name.replace(/\.pdf$/i, "") || "document";
+  const provider = getPdfCompressionProvider();
+  const ghostscriptReady =
+    isGhostscriptConfigured() && (await provider.isConfigured());
+
   try {
-    const result = await compressPdfWithProvider({
-      input,
-      level: mapLegacyCompressionLevel(level),
-    });
+    if (ghostscriptReady) {
+      const result = await compressPdfWithProvider({
+        input,
+        level: mapLegacyCompressionLevel(level),
+      });
 
-    const baseName = file.name.replace(/\.pdf$/i, "") || "document";
+      return new NextResponse(new Uint8Array(result.output), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="${encodeURIComponent(baseName)}-compressed.pdf"`,
+          "Cache-Control": "no-store",
+          "X-Scanonix-Provider": result.provider,
+          "X-Scanonix-Page-Count": String(result.outputPageCount),
+        },
+      });
+    }
 
-    return new NextResponse(new Uint8Array(result.output), {
+    const inputArrayBuffer = input.buffer.slice(
+      input.byteOffset,
+      input.byteOffset + input.byteLength,
+    ) as ArrayBuffer;
+    const compressed = await compressPdfBytes(inputArrayBuffer, level);
+    const pdfDoc = await PDFDocument.load(compressed, { ignoreEncryption: true });
+
+    return new NextResponse(new Uint8Array(compressed), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${encodeURIComponent(baseName)}-compressed.pdf"`,
         "Cache-Control": "no-store",
-        "X-Scanonix-Provider": result.provider,
-        "X-Scanonix-Page-Count": String(result.outputPageCount),
+        "X-Scanonix-Provider": "pdf-lib",
+        "X-Scanonix-Page-Count": String(pdfDoc.getPageCount()),
       },
     });
   } catch (error) {
@@ -127,6 +142,15 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: error.message, code: "COMPRESSION_FAILED" },
         { status: 422 },
+      );
+    }
+
+    if (error instanceof PdfCompressionError) {
+      const status =
+        error.code === "TOO_LARGE" ? 413 : error.code === "PASSWORD" ? 422 : 422;
+      return NextResponse.json(
+        { error: error.message, code: error.code },
+        { status },
       );
     }
 

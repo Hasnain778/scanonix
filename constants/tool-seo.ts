@@ -239,12 +239,12 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/pdf-to-word",
     seoTitle: toolTitle("PDF to Word Converter Online", "PDF to DOCX"),
     metaDescription:
-      "Convert PDF to Word online and download an editable DOCX file. Native text extraction with OCR for scanned PDFs — runs locally in your browser.",
+      "Convert PDF to Word online and download an editable DOCX file. Secure server-side conversion with OCR support for scanned PDFs.",
     h1: "Convert PDF to Word Online",
     headerDescription:
-      "Turn PDF files into editable Word documents. Upload a PDF, get DOCX output, and edit in Word or Google Docs — with OCR for scanned pages.",
+      "Turn PDF files into editable Word documents. Upload a PDF, get DOCX output, and edit in Word or Google Docs.",
     pageDescription:
-      "Convert PDF to Word or DOCX while keeping headings, paragraphs, and tables editable where possible. Scanonix reads native PDF text first and uses OCR when pages are scanned images.",
+      "Convert PDF to Word or DOCX while keeping headings, paragraphs, and tables editable where possible. Your PDF is securely uploaded and converted using Scanonix's conversion service.",
     howToSteps: [
       "Upload your PDF file.",
       "Scanonix extracts text, headings, and tables into DOCX format.",
@@ -272,7 +272,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "DOCX output for Word and Google Docs",
       "Native text extraction with OCR fallback",
       "Headings, paragraphs, and tables where detected",
-      "Local browser processing",
+      "Secure server-side conversion",
     ],
     faqs: [
       {
@@ -303,7 +303,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       {
         question: "Is PDF to Word free?",
         answer:
-          "Yes. PDF to Word is free in your browser with standard daily usage limits for signed-in users.",
+          "PDF to Word requires a signed-in account and counts toward your plan usage limits. Upload your PDF securely for server-side conversion.",
       },
     ],
     relatedToolIds: ["ocr", "word-to-pdf", "compress-pdf", "merge-pdf"],

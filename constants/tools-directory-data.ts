@@ -110,7 +110,7 @@ export const SCANONIX_TOOLS: ToolDirectoryEntry[] = [
     icon: "word",
     category: "pdf",
     categories: ["pdf"],
-    privacyBadge: "Local processing",
+    privacyBadge: "Server processing",
   },
   {
     id: "jpg-to-png",

@@ -102,7 +102,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Merge combines whole PDF files. Use Split PDF first if you need to extract specific pages before combining.",
       },
     ],
-    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "image-to-pdf"],
+    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf"],
     keywords: ["merge pdf", "combine pdf files", "join pdf online", "pdf merger free"],
   },
   "split-pdf": {
@@ -156,7 +156,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Yes. Split PDF is free to use in your browser with standard usage limits for heavy workflows.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "pdf-to-image"],
+    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf"],
     keywords: ["split pdf", "extract pdf pages", "divide pdf online", "split pdf free"],
   },
   "compress-pdf": {
@@ -226,7 +226,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "If you combined files first, compress the final PDF. Use Merge PDF or Split PDF when you need to reorganise pages beforehand.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "protect-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf"],
     keywords: [
       "compress pdf without losing quality",
       "reduce pdf size",
@@ -306,7 +306,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "PDF to Word requires a signed-in account and counts toward your plan usage limits. Upload your PDF securely for server-side conversion.",
       },
     ],
-    relatedToolIds: ["ocr", "word-to-pdf", "compress-pdf", "merge-pdf"],
+    relatedToolIds: ["ocr", "word-to-pdf", "compress-pdf", "sign-pdf"],
     keywords: [
       "pdf to word without losing formatting",
       "pdf to docx",
@@ -519,8 +519,85 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. The downloaded PDF saves pages in the new orientation.",
       },
     ],
-    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "pdf-to-image"],
+    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf"],
     keywords: ["rotate pdf", "turn pdf pages", "fix pdf orientation"],
+  },
+  "sign-pdf": {
+    id: "sign-pdf",
+    path: "/tools/sign-pdf",
+    seoTitle: "Sign PDF Online — Add a Signature to PDF | Scanonix",
+    metaDescription:
+      "Sign PDF documents online by drawing, typing, or uploading a signature. Place and resize signatures on any page and download the signed PDF.",
+    h1: "Sign PDF",
+    headerDescription:
+      "Add signatures to PDF documents in your browser. Draw, type, or upload a signature, place it on any page, and download — processed locally on your device.",
+    pageDescription:
+      "Sign PDF files online without desktop software. Create a signature by drawing, typing, or uploading an image, place it on any page, resize and reposition as needed, then download the signed PDF — all processed locally in your browser.",
+    howToSteps: [
+      "Upload the PDF you want to sign.",
+      "Create a signature by drawing, typing, or uploading an image.",
+      "Place the signature on any page, resize and reposition as needed.",
+      "Download the signed PDF.",
+    ],
+    whyUse: [
+      "Sign contracts, forms, and agreements without printing and scanning.",
+      "Add a personal signature to PDFs before sharing or submitting.",
+      "Processing happens locally so your document stays on your device.",
+      "Place signatures on multiple pages when a document needs repeated signing.",
+    ],
+    keyFeatures: [
+      "Draw, type, or upload signatures",
+      "Place signatures on any page",
+      "Drag and resize signature placement",
+      "Local browser processing",
+      "Instant download of signed PDF",
+    ],
+    faqs: [
+      {
+        question: "How do I sign a PDF?",
+        answer:
+          "Upload your PDF, create a signature by drawing, typing, or uploading an image, place it on the page where you need it, then download the signed PDF.",
+      },
+      {
+        question: "Can I draw my signature?",
+        answer:
+          "Yes. Use the Draw tab in the signature creator to draw your signature with a mouse, trackpad, or touch screen.",
+      },
+      {
+        question: "Can I type my signature?",
+        answer:
+          "Yes. Choose the Type tab, enter your name, and pick a handwriting-style font for a typed signature.",
+      },
+      {
+        question: "Can I upload a signature image?",
+        answer:
+          "Yes. Upload a PNG or JPG image of your signature and place it on the PDF like any other signature.",
+      },
+      {
+        question: "Can I sign multiple pages?",
+        answer:
+          "Yes. Navigate to each page and add signature placements wherever you need them before downloading.",
+      },
+      {
+        question: "Is my PDF uploaded to Scanonix servers?",
+        answer:
+          "PDF and signature processing for this tool occurs locally in your browser.",
+      },
+      {
+        question: "Does Sign PDF create a certificate-based digital signature?",
+        answer:
+          "No. Sign PDF adds a visual signature overlay to your document. It does not apply a cryptographic digital signature or certificate-based e-signature recognized by Adobe Acrobat or legal PKI systems.",
+      },
+    ],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word"],
+    keywords: [
+      "sign pdf",
+      "pdf signature",
+      "add signature to pdf",
+      "sign pdf online",
+      "electronic signature pdf",
+      "draw signature on pdf",
+    ],
   },
   "protect-pdf": {
     id: "protect-pdf",

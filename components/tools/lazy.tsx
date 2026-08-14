@@ -37,6 +37,14 @@ export const LazyRotatePdfTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazySignPdfTool = dynamic(
+  () =>
+    import("@/components/tools/sign-pdf/SignPdfTool").then((m) => ({
+      default: m.SignPdfTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazyImageToPdfTool = dynamic(
   () =>
     import("@/components/tools/image-to-pdf/ImageToPdfTool").then((m) => ({

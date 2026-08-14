@@ -92,6 +92,17 @@ export const SCANONIX_TOOLS: ToolDirectoryEntry[] = [
     privacyBadge: "Local processing",
   },
   {
+    id: "sign-pdf",
+    name: "Sign PDF",
+    description:
+      "Add drawn, typed, or uploaded signatures to PDF documents directly in your browser.",
+    href: "/tools/sign-pdf",
+    icon: "sign-pdf",
+    category: "pdf",
+    categories: ["pdf"],
+    privacyBadge: "Local processing",
+  },
+  {
     id: "compress-pdf",
     name: "Compress PDF",
     description: "Reduce PDF file size while keeping text readable.",

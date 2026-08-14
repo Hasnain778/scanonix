@@ -52,6 +52,14 @@ export function ToolIcon({ type, className = "h-6 w-6" }: ToolIconProps) {
           <rect {...common} x="6" y="6" width="12" height="16" rx="2" />
         </svg>
       );
+    case "sign-pdf":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="4" y="3" width="16" height="18" rx="2" />
+          <path {...common} d="M8 7h8M8 11h6" />
+          <path {...common} d="M6 18c3-2 5-2 8 0 3-2 5-2 8 0" />
+        </svg>
+      );
     case "compress":
       return (
         <svg viewBox="0 0 24 24" className={className} aria-hidden="true">

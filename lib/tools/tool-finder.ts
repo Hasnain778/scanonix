@@ -74,6 +74,7 @@ const SYNONYM_GROUPS: string[][] = [
   ["upscale", "enlarge", "enhance", "resolution", "upscaler"],
   ["rewrite", "rephrase", "paraphrase", "improve", "polish"],
   ["word", "docx", "doc"],
+  ["sign", "signature", "autograph", "e-sign", "esign"],
 ];
 
 const TOOL_INTENT_PHRASES: Record<string, string[]> = {
@@ -111,6 +112,15 @@ const TOOL_INTENT_PHRASES: Record<string, string[]> = {
     "images to pdf",
   ],
   "rotate-pdf": ["rotate pdf", "turn pdf pages", "flip pdf"],
+  "sign-pdf": [
+    "sign pdf",
+    "pdf signature",
+    "add signature to pdf",
+    "sign document",
+    "signature",
+    "draw signature",
+    "electronic signature",
+  ],
   "background-remover": [
     "remove background",
     "remove image background",

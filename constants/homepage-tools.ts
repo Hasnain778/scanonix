@@ -131,6 +131,25 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "sign-pdf",
+    name: "Sign PDF",
+    shortDescription: "Add drawn, typed, or uploaded signatures to PDFs.",
+    description:
+      "Add drawn, typed, or uploaded signatures to PDF documents directly in your browser.",
+    href: "/tools/sign-pdf",
+    category: "pdf",
+    icon: "sign-pdf",
+    aliases: [
+      "sign pdf",
+      "pdf signature",
+      "add signature to pdf",
+      "sign document",
+      "draw signature",
+      "electronic signature",
+    ],
+    available: true,
+  },
+  {
     id: "word-to-pdf",
     name: "Word to PDF",
     shortDescription: "Convert Word documents to PDF.",

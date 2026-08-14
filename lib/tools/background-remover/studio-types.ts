@@ -44,19 +44,58 @@ export function getResolutionPreset(id: ResolutionPresetId): ResolutionPreset {
   return preset;
 }
 
+/**
+ * Export target long edge for a preset.
+ * HD always targets 1920px. 4K upscales small images to 3840px, preserves native
+ * size between 1921–3840px, and downscales above 3840px.
+ */
+function resolveExportTargetLongEdge(
+  sourceWidth: number,
+  sourceHeight: number,
+  presetId: ResolutionPresetId,
+): number {
+  const preset = getResolutionPreset(presetId);
+  const longEdge = Math.max(sourceWidth, sourceHeight);
+
+  if (presetId === "hd") {
+    return preset.maxLongEdge;
+  }
+
+  const hdMaxLongEdge = getResolutionPreset("hd").maxLongEdge;
+
+  if (longEdge > preset.maxLongEdge) {
+    return preset.maxLongEdge;
+  }
+
+  if (longEdge > hdMaxLongEdge) {
+    return longEdge;
+  }
+
+  return preset.maxLongEdge;
+}
+
 export function calculateOutputDimensions(
   sourceWidth: number,
   sourceHeight: number,
   presetId: ResolutionPresetId,
 ): { width: number; height: number } {
-  const preset = getResolutionPreset(presetId);
   const longEdge = Math.max(sourceWidth, sourceHeight);
 
-  if (longEdge <= preset.maxLongEdge) {
+  if (longEdge <= 0) {
+    return { width: 1, height: 1 };
+  }
+
+  const targetLongEdge = resolveExportTargetLongEdge(
+    sourceWidth,
+    sourceHeight,
+    presetId,
+  );
+
+  if (longEdge === targetLongEdge) {
     return { width: sourceWidth, height: sourceHeight };
   }
 
-  const scale = preset.maxLongEdge / longEdge;
+  const scale = targetLongEdge / longEdge;
   return {
     width: Math.max(1, Math.round(sourceWidth * scale)),
     height: Math.max(1, Math.round(sourceHeight * scale)),

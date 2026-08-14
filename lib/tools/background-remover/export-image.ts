@@ -118,6 +118,9 @@ export async function renderStudioImage(
       throw new Error("Canvas is not supported in this browser");
     }
 
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+
     paintBackground(context, width, height, background, backgroundImage);
     context.drawImage(subject, 0, 0, width, height);
 

@@ -274,9 +274,9 @@ export const PRICING_COMPARISON: PricingComparisonRow[] = [
   },
   {
     feature: "Daily processing limit",
-    free: "25 files",
-    pro: "Unlimited",
-    business: "Unlimited",
+    free: "10 / day",
+    pro: "500 / month",
+    business: "2,500 / month",
   },
   {
     feature: "Advanced OCR",
@@ -286,9 +286,9 @@ export const PRICING_COMPARISON: PricingComparisonRow[] = [
   },
   {
     feature: "Background removal",
-    free: "5 / day",
-    pro: "Unlimited",
-    business: "Unlimited",
+    free: "HD export",
+    pro: "4K export + expanded limits",
+    business: "4K export + expanded limits",
   },
   {
     feature: "Cloud sync",
@@ -342,12 +342,12 @@ export const PRICING_PLANS = [
     name: "Premium Monthly",
     price: "£4.99",
     period: "per month",
-    description: "Full access to every tool with no daily limits.",
+    description: "Full access to every tool with expanded monthly limits.",
     editable: false,
     highlighted: true,
     features: [
       "All PDF & conversion tools",
-      "Unlimited scans",
+      "Expanded monthly usage limits",
       "Advanced OCR",
       "Priority processing",
       "No watermarks",
@@ -389,7 +389,7 @@ export const FAQ_ITEMS = [
   {
     question: "How does pricing work?",
     answer:
-      "Start free with essential tools and daily limits. Pro unlocks unlimited processing, full AI workspace access, and priority support. Business adds team features, SSO, and dedicated support.",
+      "Start free with essential tools and daily limits. Pro unlocks expanded monthly processing (500 operations/month), full AI workspace access, and priority support. Business adds higher limits (2,500 operations/month), team features, SSO, and dedicated support.",
   },
   {
     question: "Is there a mobile app?",

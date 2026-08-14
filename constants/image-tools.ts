@@ -232,7 +232,7 @@ export const IMAGE_HUB_EDIT_TOOLS: ImageHubTool[] = [
   {
     id: "background-remover",
     title: "Background Remover",
-    description: "Remove backgrounds with on-device AI. HD free, 4K on Pro.",
+    description: "Remove backgrounds with AI. HD free, 4K on Pro.",
     href: "/tools/background-remover",
     fileSupport: "PNG, JPG, WEBP",
     badge: "Premium",

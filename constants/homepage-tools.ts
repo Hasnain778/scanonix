@@ -189,7 +189,7 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     id: "background-remover",
     name: "Background Remover",
     shortDescription: "Remove image backgrounds instantly.",
-    description: "Remove backgrounds with on-device AI. HD free, 4K for Pro.",
+    description: "Remove backgrounds with AI. HD free, 4K for Pro.",
     href: "/tools/background-remover",
     category: "image",
     icon: "bg-remove",

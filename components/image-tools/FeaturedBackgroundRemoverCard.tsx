@@ -18,8 +18,8 @@ export function FeaturedBackgroundRemoverCard() {
             Background Remover
           </h2>
           <p className="mt-3 max-w-lg text-sm leading-relaxed text-scanonix-muted sm:text-base">
-            Remove backgrounds with on-device AI. Clean cut-outs for product photos, portraits,
-            and documents.
+            Remove backgrounds with secure server-side AI. Clean cut-outs for product photos,
+            portraits, and documents.
           </p>
           <p className="mt-4 text-xs font-medium text-scanonix-muted">4K export available on Pro</p>
           <div className="mt-8">

@@ -171,7 +171,7 @@ export function deriveAiInsights(
 export function getPlanBenefits(plan: string): string[] {
   switch (plan) {
     case "business":
-      return ["Unlimited scans", "Priority monitoring", "Team workspace", "Dedicated support"];
+      return ["2,500 ops/month", "Priority monitoring", "Team workspace", "Dedicated support"];
     case "pro":
       return ["Advanced scans", "Site monitoring", "AI assistant", "Priority support"];
     default:

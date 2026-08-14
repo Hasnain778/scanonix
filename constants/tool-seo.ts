@@ -750,12 +750,12 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/background-remover",
     seoTitle: toolTitle("Remove Background from Image Online"),
     metaDescription:
-      "Remove image backgrounds online and download a transparent PNG. Upload JPG, PNG, or WEBP — on-device cutout with before/after preview. HD free, 4K on Pro.",
+      "Remove image backgrounds online and download a transparent PNG. Upload JPG, PNG, or WEBP — secure server-side cutout with before/after preview. HD free, 4K on Pro.",
     h1: "Remove Image Background Online",
     headerDescription:
-      "Upload a JPG, PNG, or WEBP image and download a transparent-background PNG. On-device processing with side-by-side preview.",
+      "Upload a JPG, PNG, or WEBP image and download a transparent-background PNG. Secure server-side processing with side-by-side preview.",
     pageDescription:
-      "Remove the background from product photos, portraits, and graphics, then export a cutout with a transparent background. Scanonix runs background removal on-device in your browser.",
+      "Remove the background from product photos, portraits, and graphics, then export a cutout with a transparent background. Scanonix processes your image on secure servers to generate the cutout.",
     howToSteps: [
       "Upload a JPG, PNG, or WEBP image.",
       "Wait for Scanonix to detect the subject and remove the background.",
@@ -780,7 +780,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "4K export requires a Pro plan; HD export is available on Free.",
     ],
     keyFeatures: [
-      "On-device AI processing",
+      "Secure server-side AI processing",
       "Before/after preview slider",
       "Transparent PNG download",
       "HD export on Free; 4K on Pro",
@@ -803,7 +803,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       {
         question: "Is background removal done on my device?",
         answer:
-          "Yes. This workflow runs on-device in your browser rather than uploading the image for server-side processing.",
+          "No. Your image is uploaded and processed on Scanonix servers to generate the cutout. The result is returned for preview and download in your browser.",
       },
       {
         question: "What should I use after removing the background?",

@@ -238,12 +238,12 @@ export const SCANONIX_TOOLS: ToolDirectoryEntry[] = [
     id: "background-remover",
     name: "AI Background Remover",
     description:
-      "Remove backgrounds with on-device AI. HD free, 4K for Pro.",
+      "Remove backgrounds with AI. HD free, 4K for Pro.",
     href: "/tools/background-remover",
     icon: "bg-remove",
     category: "image",
     categories: ["image"],
-    privacyBadge: "Local processing",
+    privacyBadge: "Server processing",
     featured: true,
   },
   {

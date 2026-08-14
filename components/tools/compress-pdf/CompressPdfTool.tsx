@@ -223,7 +223,7 @@ export function CompressPdfTool() {
             hint="or click to browse — one PDF at a time"
             icon={<PdfDropIcon />}
           />
-          <PrivacyNotice />
+          <PrivacyNotice message="Your file is securely processed on Scanonix servers to compress the PDF." />
         </>
       )}
 
@@ -311,7 +311,7 @@ export function CompressPdfTool() {
             </div>
 
             <div className="mt-4 border-t border-scanonix-border pt-4">
-              <PrivacyNotice />
+              <PrivacyNotice message="Your file is securely processed on Scanonix servers to compress the PDF." />
             </div>
           </div>
         </>

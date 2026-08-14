@@ -164,7 +164,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/compress-pdf",
     seoTitle: toolTitle("Compress PDF Online", "Reduce PDF File Size"),
     metaDescription:
-      "Compress PDF files online to reduce file size for email and uploads. Choose Light, Recommended, or Strong compression in your browser.",
+      "Compress PDF files online to reduce file size for email and uploads. Choose Light, Recommended, or Strong compression with secure server-side processing.",
     h1: "Compress PDF Without Losing Quality",
     headerDescription:
       "Reduce PDF file size with adjustable compression levels. Upload a PDF, pick Light, Recommended, or Strong, then download a smaller file.",
@@ -178,7 +178,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     whyUse: [
       "Light compression keeps text sharp while trimming image-heavy pages.",
       "Pick the level that fits your file — reports, scans, or photo PDFs.",
-      "Processing runs locally in your browser.",
+      "Compression is performed on Scanonix servers.",
       "Download a smaller PDF ready for email, uploads, or storage.",
     ],
     useCases: [
@@ -196,7 +196,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     keyFeatures: [
       "Light, Recommended, and Strong compression levels",
       "Size preview before download",
-      "Local browser processing",
+      "Secure server-side PDF compression",
       "Readable text at lighter settings",
     ],
     faqs: [
@@ -218,7 +218,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       {
         question: "Are my files uploaded to Scanonix servers?",
         answer:
-          "Compress PDF runs locally in your browser. Your document stays on your device during processing.",
+          "Yes. Your PDF is uploaded securely and compressed on Scanonix servers. The compressed file is returned for download in your browser.",
       },
       {
         question: "What should I use after compressing a large merged PDF?",

@@ -94,11 +94,7 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
     processing: "server",
     route: "unlock-pdf",
   },
-  "watermark-pdf": {
-    ...PRO_SECURITY,
-    processing: "server",
-    route: "watermark-pdf",
-  },
+  "watermark-pdf": { ...FREE_CLIENT, route: "watermark-pdf" },
   "redact-pdf": {
     ...PRO_SECURITY,
     processing: "server",

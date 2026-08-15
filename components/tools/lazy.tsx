@@ -165,6 +165,16 @@ export const LazyWatermarkPdfTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyWatermarkPdfClientTool = dynamic(
+  () =>
+    import("@/components/tools/watermark-pdf-client/WatermarkPdfClientTool").then(
+      (m) => ({
+        default: m.WatermarkPdfClientTool,
+      }),
+    ),
+  { loading: toolLoading },
+);
+
 export const LazyRedactPdfTool = dynamic(
   () =>
     import("@/components/tools/security/RedactPdfTool").then((m) => ({

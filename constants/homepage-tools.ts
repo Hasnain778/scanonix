@@ -546,7 +546,7 @@ export const HOMEPAGE_CATEGORY_GRIDS: Record<HomepageToolCategory, HomepageCateg
   security: [
     { id: "protect-pdf", name: "Protect PDF", shortDescription: "Password-protect PDF files.", href: "/tools/protect-pdf", icon: "compress", proOnly: true },
     { id: "unlock-pdf", name: "Unlock PDF", shortDescription: "Remove PDF passwords.", href: "/tools/unlock-pdf", icon: "compress", proOnly: true },
-    { id: "watermark-pdf", name: "Watermark PDF", shortDescription: "Add watermarks to PDFs.", href: "/tools/watermark-pdf", icon: "word", proOnly: true },
+    { id: "watermark-pdf", name: "Watermark PDF", shortDescription: "Add watermarks to PDFs.", href: "/tools/watermark-pdf", icon: "word" },
     { id: "redact-pdf", name: "Redact PDF", shortDescription: "Permanently hide sensitive text.", icon: "word", proOnly: true, comingSoon: true },
     { id: "metadata-cleaner", name: "Metadata Cleaner", shortDescription: "Remove hidden file metadata.", href: "/tools/metadata-cleaner", icon: "security", proOnly: true },
     { id: "website-scanner", name: "Website Scanner", shortDescription: "Scan URLs for threats.", href: "/tools/security-scan?type=website", icon: "security", proOnly: true },

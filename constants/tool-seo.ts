@@ -1030,39 +1030,67 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
   "watermark-pdf": {
     id: "watermark-pdf",
     path: "/tools/watermark-pdf",
-    seoTitle: toolTitle("Watermark PDF Online", "Add Text or Image Watermarks"),
+    seoTitle: "Watermark PDF Online | Scanonix",
     metaDescription:
-      "Add text or image watermarks to PDF pages online. Mark drafts, confidential copies, or branded documents before sharing.",
+      "Add text or image watermarks to PDF pages online. Customize position, rotation, opacity, size, and page range with local browser processing.",
     h1: "Watermark PDF",
+    headerDescription:
+      "Add text or image watermarks to PDF pages — customize position, rotation, opacity, and page range, processed locally in your browser.",
     pageDescription:
-      "Apply customizable text or image watermarks across PDF pages before you share or publish.",
+      "Add text or image watermarks to PDF pages online in your browser. Upload a PDF, choose text or an image watermark, adjust placement, rotation, opacity, and page range, then download — all processed locally on your device.",
     howToSteps: [
-      "Upload the PDF to watermark.",
-      "Configure text or image watermark settings.",
-      "Download the watermarked PDF.",
+      "Upload the PDF you want to watermark.",
+      "Choose a text or image watermark and adjust position, rotation, and opacity.",
+      "Select all pages or a custom page range, then download the watermarked PDF.",
     ],
     whyUse: [
-      "Mark draft or confidential versions clearly.",
-      "Add company branding to shared PDFs.",
-      "Discourage unauthorised copying of preview documents.",
+      "Mark draft or confidential versions clearly before sharing.",
+      "Add company branding to shared PDFs with a logo image watermark.",
+      "Processing happens locally so your PDF stays on your device.",
+      "Preview watermarks live on each page before export.",
     ],
     keyFeatures: [
-      "Text and image watermarks",
-      "Adjustable placement and opacity",
-      "Applies across pages",
-      "Download ready-to-share PDF",
+      "Text or image watermarks",
+      "Nine-position placement grid",
+      "Adjustable rotation and opacity",
+      "Custom page range selection",
+      "Live PDF preview",
+      "Local browser processing",
+    ],
+    limitations: [
+      "PDF uploads are limited to 10 MB.",
+      "Password-protected PDFs must be unlocked before watermarking.",
+      "Apply one text watermark or one image watermark per export — not both at once.",
+      "Very large page counts may be limited by browser memory.",
     ],
     faqs: [
       {
+        question: "Is my PDF uploaded to Scanonix servers?",
+        answer:
+          "No. Watermark PDF runs locally in your browser, so your document is not uploaded to Scanonix servers during processing.",
+      },
+      {
         question: "Can I watermark every page at once?",
-        answer: "Yes. Watermarks can be applied across all pages in the document.",
+        answer:
+          "Yes. Choose all pages or enter a custom page range such as 1-5, 8, or 10-12.",
       },
       {
         question: "Can I use my logo as a watermark?",
-        answer: "Yes. Upload an image watermark such as a company logo.",
+        answer:
+          "Yes. Switch to image mode and upload a PNG or JPEG logo as your watermark.",
+      },
+      {
+        question: "Can I add text and an image watermark together?",
+        answer:
+          "Each export supports one text watermark or one image watermark. Run the tool again if you need a different watermark type.",
+      },
+      {
+        question: "What happens with password-protected PDFs?",
+        answer:
+          "Password-protected PDFs cannot be watermarked in the browser. Unlock the PDF first with Unlock PDF, then watermark the unlocked copy.",
       },
     ],
-    relatedToolIds: ["protect-pdf", "redact-pdf", "merge-pdf", "compress-pdf"],
+    relatedToolIds: ["protect-pdf", "redact-pdf", "merge-pdf", "compress-pdf", "crop-pdf"],
     keywords: ["watermark pdf", "stamp pdf", "add watermark to pdf"],
   },
   "redact-pdf": {

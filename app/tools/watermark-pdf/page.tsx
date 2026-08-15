@@ -1,4 +1,4 @@
-import { LazyWatermarkPdfTool } from "@/components/tools/lazy";
+import { LazyWatermarkPdfClientTool } from "@/components/tools/lazy";
 import { ToolRoute } from "@/components/workspace";
 import { ToolIcon } from "@/components/ui/ToolIcon";
 import { createToolPageMetadata } from "@/lib/utils/tool-page";
@@ -11,7 +11,7 @@ export default function WatermarkPdfPage() {
       toolId="watermark-pdf"
       icon={<ToolIcon type="word" className="h-7 w-7" />}
     >
-      <LazyWatermarkPdfTool />
+      <LazyWatermarkPdfClientTool />
     </ToolRoute>
   );
 }

@@ -13,6 +13,8 @@ export interface FileDropZoneProps {
   onInvalidFiles?: (files: File[]) => void;
   icon?: ReactNode;
   className?: string;
+  inputId?: string;
+  inputDataAttributes?: Record<string, string>;
 }
 
 function DefaultFileIcon() {
@@ -45,6 +47,8 @@ export function FileDropZone({
   onInvalidFiles,
   icon,
   className = "",
+  inputId,
+  inputDataAttributes,
 }: FileDropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -113,11 +117,13 @@ export function FileDropZone({
     >
       <input
         ref={inputRef}
+        id={inputId}
         type="file"
         accept={accept}
         multiple={multiple}
         disabled={disabled}
         className="sr-only"
+        {...inputDataAttributes}
         onChange={(event) => {
           handleFiles(event.target.files);
           event.target.value = "";

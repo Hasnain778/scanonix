@@ -102,7 +102,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Merge combines whole PDF files. Use Split PDF first if you need to extract specific pages before combining.",
       },
     ],
-    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf"],
+    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf"],
     keywords: ["merge pdf", "combine pdf files", "join pdf online", "pdf merger free"],
   },
   "split-pdf": {
@@ -156,7 +156,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Yes. Split PDF is free to use in your browser with standard usage limits for heavy workflows.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf", "organize-pdf"],
+    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf", "organize-pdf", "crop-pdf"],
     keywords: ["split pdf", "extract pdf pages", "divide pdf online", "split pdf free"],
   },
   "compress-pdf": {
@@ -226,7 +226,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "If you combined files first, compress the final PDF. Use Merge PDF or Split PDF when you need to reorganise pages beforehand.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf"],
     keywords: [
       "compress pdf without losing quality",
       "reduce pdf size",
@@ -519,7 +519,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. The downloaded PDF saves pages in the new orientation.",
       },
     ],
-    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf"],
+    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf", "crop-pdf"],
     keywords: ["rotate pdf", "turn pdf pages", "fix pdf orientation"],
   },
   "organize-pdf": {
@@ -578,13 +578,96 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Organize PDF combines reordering, rotation, and deletion in one workflow. Use Split PDF to extract ranges into separate files, or Rotate PDF when you only need to fix orientation.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "sign-pdf", "compress-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "sign-pdf", "compress-pdf", "crop-pdf"],
     keywords: [
       "organize pdf",
       "reorder pdf pages",
       "arrange pdf pages",
       "delete pdf pages",
       "pdf page organizer",
+    ],
+  },
+  "crop-pdf": {
+    id: "crop-pdf",
+    path: "/tools/crop-pdf",
+    seoTitle: "Crop PDF Online — Trim PDF Page Margins | Scanonix",
+    metaDescription:
+      "Crop PDF pages online by selecting the visible area you want to keep. Crop individual or multiple pages locally in your browser with Scanonix.",
+    h1: "Crop PDF",
+    headerDescription:
+      "Crop PDF pages online by selecting the visible area you want to keep — processed locally in your browser.",
+    pageDescription:
+      "Crop PDF pages online by selecting the visible area you want to keep. Upload a PDF, adjust the crop area on individual or multiple pages, then download the trimmed document — all processed locally in your browser.",
+    howToSteps: [
+      "Upload the PDF you want to crop.",
+      "Select a page and drag the crop handles to define the visible area you want to keep.",
+      "Apply the same crop to other pages or adjust each page individually.",
+      "Export and download your cropped PDF.",
+    ],
+    whyUse: [
+      "Remove unwanted margins or scanner borders from PDF pages.",
+      "Focus on the content area without desktop PDF software.",
+      "Crop multiple pages with per-page or shared crop settings.",
+      "Processing happens locally so your PDF stays on your device.",
+    ],
+    keyFeatures: [
+      "Interactive crop overlay with drag handles",
+      "Per-page or apply-to-all cropping",
+      "Reset individual pages or all crops",
+      "Local browser processing",
+      "Instant download",
+    ],
+    faqs: [
+      {
+        question: "How do I crop a PDF online?",
+        answer:
+          "Upload your PDF, drag the crop handles to select the visible area you want to keep, then export and download the cropped document.",
+      },
+      {
+        question: "Can I crop individual PDF pages?",
+        answer:
+          "Yes. Select each page and adjust its crop area, or apply one crop setting to all pages at once.",
+      },
+      {
+        question: "Can I trim PDF margins?",
+        answer:
+          "Yes. Drag the crop handles inward to remove excess margins, scanner borders, or blank edges from each page.",
+      },
+      {
+        question: "Is my PDF uploaded to Scanonix servers?",
+        answer:
+          "No. Your PDF is cropped locally in your browser and is not uploaded to Scanonix servers.",
+      },
+      {
+        question: "How is Crop PDF different from Split PDF or Organize PDF?",
+        answer:
+          "Crop PDF changes the visible page area by trimming margins or edges. Use Split PDF to extract pages into separate files, or Organize PDF to reorder, rotate, or delete pages.",
+      },
+      {
+        question: "Can I use Crop PDF to securely redact sensitive information?",
+        answer:
+          "No. Crop PDF only changes the visible page area. It is not a substitute for secure redaction and does not remove hidden text, metadata, or content outside the crop box.",
+      },
+      {
+        question: "Does cropping rasterize or flatten my PDF?",
+        answer:
+          "No. Crop PDF preserves text and vector content within the visible area. It adjusts the page crop box rather than converting pages to flat images.",
+      },
+    ],
+    relatedToolIds: [
+      "organize-pdf",
+      "rotate-pdf",
+      "split-pdf",
+      "merge-pdf",
+      "sign-pdf",
+      "redact-pdf",
+    ],
+    keywords: [
+      "crop pdf",
+      "trim pdf margins",
+      "clip pdf pages",
+      "pdf crop online",
+      "cut pdf margins",
     ],
   },
   "sign-pdf": {
@@ -654,7 +737,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "No. Sign PDF adds a visual signature overlay to your document. It does not apply a cryptographic digital signature or certificate-based e-signature recognized by Adobe Acrobat or legal PKI systems.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word", "organize-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word", "organize-pdf", "crop-pdf"],
     keywords: [
       "sign pdf",
       "pdf signature",
@@ -845,7 +928,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. Draw redaction areas over sensitive regions in scanned pages.",
       },
     ],
-    relatedToolIds: ["protect-pdf", "metadata-cleaner", "watermark-pdf", "compress-pdf"],
+    relatedToolIds: ["protect-pdf", "metadata-cleaner", "watermark-pdf", "compress-pdf", "crop-pdf"],
     keywords: ["redact pdf", "black out pdf text", "pdf redaction online"],
   },
   "metadata-cleaner": {

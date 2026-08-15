@@ -103,6 +103,17 @@ export const SCANONIX_TOOLS: ToolDirectoryEntry[] = [
     privacyBadge: "Local processing",
   },
   {
+    id: "crop-pdf",
+    name: "Crop PDF",
+    description:
+      "Crop PDF pages online by selecting the visible area you want to keep.",
+    href: "/tools/crop-pdf",
+    icon: "crop-pdf",
+    category: "pdf",
+    categories: ["pdf"],
+    privacyBadge: "Local processing",
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     description:

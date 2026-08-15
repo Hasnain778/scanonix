@@ -39,6 +39,7 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "split-pdf": { ...FREE_CLIENT, route: "split-pdf" },
   "rotate-pdf": { ...FREE_CLIENT, route: "rotate-pdf" },
   "organize-pdf": { ...FREE_CLIENT, route: "organize-pdf" },
+  "crop-pdf": { ...FREE_CLIENT, route: "crop-pdf" },
   "sign-pdf": { ...FREE_CLIENT, route: "sign-pdf" },
   "pdf-to-word": {
     ...PRO_SECURITY,

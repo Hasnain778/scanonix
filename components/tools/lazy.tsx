@@ -37,6 +37,14 @@ export const LazyRotatePdfTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyCropPdfTool = dynamic(
+  () =>
+    import("@/components/tools/crop-pdf/CropPdfTool").then((m) => ({
+      default: m.CropPdfTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazySignPdfTool = dynamic(
   () =>
     import("@/components/tools/sign-pdf/SignPdfTool").then((m) => ({

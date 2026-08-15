@@ -150,6 +150,26 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "crop-pdf",
+    name: "Crop PDF",
+    shortDescription:
+      "Crop PDF pages online by selecting the visible area you want to keep.",
+    description:
+      "Crop PDF pages online by selecting the visible area you want to keep.",
+    href: "/tools/crop-pdf",
+    category: "pdf",
+    icon: "crop-pdf",
+    aliases: [
+      "crop pdf",
+      "trim pdf",
+      "trim pdf margins",
+      "clip pdf pages",
+      "cut pdf margins",
+      "pdf crop tool",
+    ],
+    available: true,
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     shortDescription: "Add drawn, typed, or uploaded signatures to PDFs.",

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { protectPdfWithPassword } from "@/lib/security-tools/pdf/protect";
+import { ProtectPdfError, protectPdfWithPassword } from "@/lib/security-tools/pdf/protect";
 import {
   handleSecurityToolRequest,
   pdfDownloadResponse,
@@ -28,6 +28,13 @@ export async function POST(request: Request) {
       const baseName = fileInput.file.name.replace(/\.pdf$/i, "") || "document";
       return pdfDownloadResponse(output, `${baseName}-protected.pdf`);
     } catch (error) {
+      if (error instanceof ProtectPdfError) {
+        return NextResponse.json(
+          { error: error.message, code: error.code },
+          { status: 422 },
+        );
+      }
+
       return NextResponse.json(
         { error: error instanceof Error ? error.message : "Could not protect PDF." },
         { status: 422 },

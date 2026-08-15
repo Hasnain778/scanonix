@@ -41,6 +41,7 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "organize-pdf": { ...FREE_CLIENT, route: "organize-pdf" },
   "crop-pdf": { ...FREE_CLIENT, route: "crop-pdf" },
   "add-page-numbers": { ...FREE_CLIENT, route: "add-page-numbers" },
+  "fill-pdf": { ...FREE_CLIENT, route: "fill-pdf" },
   "sign-pdf": { ...FREE_CLIENT, route: "sign-pdf" },
   "pdf-to-word": {
     ...PRO_SECURITY,

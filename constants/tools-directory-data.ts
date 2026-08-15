@@ -125,6 +125,17 @@ export const SCANONIX_TOOLS: ToolDirectoryEntry[] = [
     privacyBadge: "Local processing",
   },
   {
+    id: "fill-pdf",
+    name: "Fill PDF Form",
+    description:
+      "Fill interactive PDF form fields online in your browser — text, checkboxes, radio buttons, and dropdowns.",
+    href: "/tools/fill-pdf",
+    icon: "fill-pdf",
+    category: "pdf",
+    categories: ["pdf"],
+    privacyBadge: "Local processing",
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     description:

@@ -53,6 +53,14 @@ export const LazyAddPageNumbersTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyFillPdfTool = dynamic(
+  () =>
+    import("@/components/tools/fill-pdf/FillPdfTool").then((m) => ({
+      default: m.FillPdfTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazySignPdfTool = dynamic(
   () =>
     import("@/components/tools/sign-pdf/SignPdfTool").then((m) => ({

@@ -190,6 +190,26 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "fill-pdf",
+    name: "Fill PDF Form",
+    shortDescription:
+      "Fill interactive PDF form fields online — text, checkboxes, and dropdowns.",
+    description:
+      "Fill interactive PDF form fields online in your browser — text, checkboxes, radio buttons, and dropdowns.",
+    href: "/tools/fill-pdf",
+    category: "pdf",
+    icon: "fill-pdf",
+    aliases: [
+      "fill pdf",
+      "fill form",
+      "pdf form",
+      "acroform",
+      "fill pdf form",
+      "pdf form filler",
+    ],
+    available: true,
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     shortDescription: "Add drawn, typed, or uploaded signatures to PDFs.",

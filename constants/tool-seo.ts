@@ -102,7 +102,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Merge combines whole PDF files. Use Split PDF first if you need to extract specific pages before combining.",
       },
     ],
-    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
+    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers", "fill-pdf"],
     keywords: ["merge pdf", "combine pdf files", "join pdf online", "pdf merger free"],
   },
   "split-pdf": {
@@ -156,7 +156,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Yes. Split PDF is free to use in your browser with standard usage limits for heavy workflows.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
+    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers", "fill-pdf"],
     keywords: ["split pdf", "extract pdf pages", "divide pdf online", "split pdf free"],
   },
   "compress-pdf": {
@@ -226,7 +226,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "If you combined files first, compress the final PDF. Use Merge PDF or Split PDF when you need to reorganise pages beforehand.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers", "fill-pdf"],
     keywords: [
       "compress pdf without losing quality",
       "reduce pdf size",
@@ -519,7 +519,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. The downloaded PDF saves pages in the new orientation.",
       },
     ],
-    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
+    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers", "fill-pdf"],
     keywords: ["rotate pdf", "turn pdf pages", "fix pdf orientation"],
   },
   "organize-pdf": {
@@ -578,7 +578,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Organize PDF combines reordering, rotation, and deletion in one workflow. Use Split PDF to extract ranges into separate files, or Rotate PDF when you only need to fix orientation.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "sign-pdf", "compress-pdf", "crop-pdf", "add-page-numbers"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "sign-pdf", "compress-pdf", "crop-pdf", "add-page-numbers", "fill-pdf"],
     keywords: [
       "organize pdf",
       "reorder pdf pages",
@@ -661,6 +661,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "merge-pdf",
       "sign-pdf",
       "add-page-numbers",
+      "fill-pdf",
       "redact-pdf",
     ],
     keywords: [
@@ -746,6 +747,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "split-pdf",
       "merge-pdf",
       "sign-pdf",
+      "fill-pdf",
     ],
     keywords: [
       "add page numbers to pdf",
@@ -753,6 +755,91 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "number pdf pages",
       "page numbering pdf",
       "insert page numbers pdf",
+    ],
+  },
+  "fill-pdf": {
+    id: "fill-pdf",
+    path: "/tools/fill-pdf",
+    seoTitle: "Fill PDF Form Online | Scanonix",
+    metaDescription:
+      "Fill interactive PDF form fields online in your browser. Edit supported AcroForm fields and download the completed PDF with local browser processing.",
+    h1: "Fill PDF Form",
+    headerDescription:
+      "Fill interactive PDF form fields online — text, checkboxes, radio buttons, and dropdowns — processed locally in your browser.",
+    pageDescription:
+      "Fill interactive PDF form fields online in your browser. Upload a PDF with AcroForm fields, edit text, checkboxes, radio buttons, and dropdowns directly on the document, then download the completed PDF — all processed locally on your device.",
+    howToSteps: [
+      "Upload a PDF that contains interactive form fields.",
+      "Click fields directly on the PDF preview to enter text or select options.",
+      "Use the Fields navigator if you need to jump to a specific field.",
+      "Export and download your filled PDF.",
+    ],
+    whyUse: [
+      "Complete government, tax, and application forms without desktop PDF software.",
+      "Edit fields directly on the PDF instead of a separate form panel.",
+      "Processing happens locally so your document stays on your device.",
+      "Download an interactive PDF you can reopen and continue editing.",
+    ],
+    keyFeatures: [
+      "Direct on-PDF field editing",
+      "Text, checkbox, radio, dropdown, and option-list fields",
+      "AcroForm support with local browser processing",
+      "Text formatting with font size, bold, and italic",
+      "Fields navigator for quick field access",
+      "Instant download of filled PDF",
+    ],
+    faqs: [
+      {
+        question: "How do I fill a PDF form online?",
+        answer:
+          "Upload your PDF, click the form fields directly on the document preview, enter your answers, then export and download the completed PDF.",
+      },
+      {
+        question: "Is my PDF uploaded to Scanonix servers?",
+        answer:
+          "No. Fill PDF Form runs locally in your browser, so your document stays on your device during processing.",
+      },
+      {
+        question: "Can I fill any PDF?",
+        answer:
+          "This tool supports PDFs with interactive AcroForm fields. Static PDFs that are only images or plain text may not contain editable form fields.",
+      },
+      {
+        question: "Does Fill PDF support XFA forms?",
+        answer:
+          "No. Fill PDF Form supports standard AcroForm fields only. PDFs that use XFA forms are not supported in this version.",
+      },
+      {
+        question: "Will my filled PDF remain editable?",
+        answer:
+          "Yes. By default, exported PDFs keep interactive form fields so you can reopen and edit them later.",
+      },
+      {
+        question: "Can I sign a PDF with this tool?",
+        answer:
+          "Fill PDF Form is for editing form field values. Use Sign PDF to add drawn, typed, or uploaded signatures.",
+      },
+      {
+        question: "Does Fill PDF support underline formatting?",
+        answer:
+          "Bold, italic, and font size controls are supported for text fields. Underline is not supported in this version.",
+      },
+    ],
+    relatedToolIds: [
+      "sign-pdf",
+      "add-page-numbers",
+      "crop-pdf",
+      "organize-pdf",
+      "merge-pdf",
+      "split-pdf",
+    ],
+    keywords: [
+      "fill pdf",
+      "fill pdf form",
+      "pdf form filler",
+      "fill out pdf online",
+      "acroform",
+      "pdf form fields",
     ],
   },
   "sign-pdf": {
@@ -822,7 +909,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "No. Sign PDF adds a visual signature overlay to your document. It does not apply a cryptographic digital signature or certificate-based e-signature recognized by Adobe Acrobat or legal PKI systems.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word", "organize-pdf", "crop-pdf", "add-page-numbers"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word", "organize-pdf", "crop-pdf", "add-page-numbers", "fill-pdf"],
     keywords: [
       "sign pdf",
       "pdf signature",

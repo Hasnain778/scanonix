@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { unlockPdfWithPassword } from "@/lib/security-tools/pdf/unlock";
+import { UnlockPdfError, unlockPdfWithPassword } from "@/lib/security-tools/pdf/unlock";
 import {
   handleSecurityToolRequest,
   pdfDownloadResponse,
@@ -19,6 +19,13 @@ export async function POST(request: Request) {
       const baseName = fileInput.file.name.replace(/\.pdf$/i, "") || "document";
       return pdfDownloadResponse(output, `${baseName}-unlocked.pdf`);
     } catch (error) {
+      if (error instanceof UnlockPdfError) {
+        return NextResponse.json(
+          { error: error.message, code: error.code },
+          { status: 422 },
+        );
+      }
+
       return NextResponse.json(
         { error: error instanceof Error ? error.message : "Could not unlock PDF." },
         { status: 422 },

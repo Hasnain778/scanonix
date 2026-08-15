@@ -45,6 +45,14 @@ export const LazyCropPdfTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyOrganizePdfTool = dynamic(
+  () =>
+    import("@/components/tools/organize-pdf/OrganizePdfTool").then((m) => ({
+      default: m.OrganizePdfTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazyAddPageNumbersTool = dynamic(
   () =>
     import("@/components/tools/add-page-numbers/AddPageNumbersTool").then((m) => ({

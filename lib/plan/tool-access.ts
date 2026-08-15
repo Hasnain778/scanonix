@@ -97,7 +97,7 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "watermark-pdf": { ...FREE_CLIENT, route: "watermark-pdf" },
   "redact-pdf": {
     ...PRO_SECURITY,
-    processing: "server",
+    processing: "client",
     route: "redact-pdf",
   },
   "metadata-cleaner": {

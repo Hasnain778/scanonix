@@ -183,6 +183,26 @@ export const LazyRedactPdfTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyRedactPdfClientTool = dynamic(
+  () =>
+    import("@/components/tools/redact-pdf-client/RedactPdfClientTool").then(
+      (m) => ({
+        default: m.RedactPdfClientTool,
+      }),
+    ),
+  { loading: toolLoading },
+);
+
+export const LazyRedactPdfProClientTool = dynamic(
+  () =>
+    import("@/components/tools/redact-pdf-client/RedactPdfProClientTool").then(
+      (m) => ({
+        default: m.RedactPdfProClientTool,
+      }),
+    ),
+  { loading: toolLoading },
+);
+
 export const LazyMetadataCleanerTool = dynamic(
   () =>
     import("@/components/tools/security/MetadataCleanerTool").then((m) => ({

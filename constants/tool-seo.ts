@@ -1096,36 +1096,59 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
   "redact-pdf": {
     id: "redact-pdf",
     path: "/tools/redact-pdf",
-    seoTitle: toolTitle("Redact PDF Online", "Permanently Hide Sensitive Text"),
+    seoTitle: toolTitle("Redact PDF Online", "Secure Page-Region Redaction"),
     metaDescription:
-      "Redact PDF content online. Permanently black out names, account numbers, and other sensitive text before sharing documents.",
+      "Redact sensitive PDF content with manual area selection. Draw redaction boxes on pages — processed locally in your browser with secure hybrid rasterization.",
     h1: "Redact PDF",
+    headerDescription:
+      "Draw redaction areas on PDF pages to permanently hide sensitive content — processed locally in your browser after Pro authorization.",
     pageDescription:
-      "Permanently redact sensitive content from PDF documents before you share or publish them.",
+      "Redact sensitive PDF content online by drawing areas over names, account numbers, or other sensitive regions. Upload a PDF, mark areas to redact on each page, then download — redaction processing happens locally in your browser.",
     howToSteps: [
-      "Upload the PDF containing sensitive information.",
-      "Select text or areas to redact.",
-      "Download the redacted PDF with content permanently removed.",
+      "Upload the PDF containing sensitive information (up to 10 MB).",
+      "Draw redaction rectangles over sensitive areas on each page.",
+      "Apply redactions and download the redacted PDF.",
     ],
     whyUse: [
-      "Share documents while hiding personal or financial details.",
-      "Prepare FOIA, legal, or compliance copies safely.",
-      "Remove sensitive strings permanently, not just visually.",
+      "Share documents while hiding personal or financial details in marked regions.",
+      "Prepare FOIA, legal, or compliance copies with irreversible page-region redaction.",
+      "Redaction processing runs locally so document bytes stay on your device.",
+      "Secure hybrid rasterization removes underlying content in marked areas.",
     ],
     keyFeatures: [
-      "Permanent redaction",
-      "Select text or regions",
-      "Preview before export",
-      "Safe sharing workflow",
+      "Manual draw-to-redact on any page",
+      "Irreversible page-region redaction",
+      "Live PDF preview with move and resize",
+      "Local browser processing",
+      "Pro security tool",
+    ],
+    limitations: [
+      "PDF uploads are limited to 10 MB.",
+      "Draw redaction areas manually — text search redaction is not available.",
+      "Pages containing redactions are rebuilt as images; text on those pages may no longer be selectable.",
+      "Page-region redaction does not remove document metadata, attachments, or hidden data outside selected areas.",
+      "Password-protected PDFs must be unlocked before redacting.",
     ],
     faqs: [
       {
+        question: "Is my PDF uploaded to Scanonix servers for redaction?",
+        answer:
+          "Your PDF is redacted locally in your browser and is not uploaded to Scanonix servers for redaction processing. Pro authorization may require sign-in.",
+      },
+      {
         question: "Is redaction reversible?",
-        answer: "No. Redacted content is permanently removed from the exported PDF.",
+        answer:
+          "No. Redacted content in marked regions is permanently removed from the exported PDF.",
       },
       {
         question: "Can I redact scanned PDFs?",
-        answer: "Yes. Draw redaction areas over sensitive regions in scanned pages.",
+        answer:
+          "Yes. Draw redaction areas over sensitive regions in scanned or image-based pages.",
+      },
+      {
+        question: "Does redaction remove all hidden document data?",
+        answer:
+          "No. Page-region redaction targets selected visible areas on pages. Metadata, attachments, and other hidden information outside those areas are not automatically removed.",
       },
     ],
     relatedToolIds: ["protect-pdf", "metadata-cleaner", "watermark-pdf", "compress-pdf", "crop-pdf"],

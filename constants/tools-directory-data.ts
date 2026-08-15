@@ -114,6 +114,17 @@ export const SCANONIX_TOOLS: ToolDirectoryEntry[] = [
     privacyBadge: "Local processing",
   },
   {
+    id: "add-page-numbers",
+    name: "Add Page Numbers",
+    description:
+      "Add page numbers to PDF pages online with custom position, format, range, and starting number.",
+    href: "/tools/add-page-numbers",
+    icon: "add-page-numbers",
+    category: "pdf",
+    categories: ["pdf"],
+    privacyBadge: "Local processing",
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     description:

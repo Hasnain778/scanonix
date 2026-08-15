@@ -170,6 +170,26 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "add-page-numbers",
+    name: "Add Page Numbers",
+    shortDescription:
+      "Add page numbers to PDF pages with custom position, format, and range.",
+    description:
+      "Add page numbers to PDF pages online with custom position, format, range, and starting number.",
+    href: "/tools/add-page-numbers",
+    category: "pdf",
+    icon: "add-page-numbers",
+    aliases: [
+      "page numbers",
+      "add page numbers",
+      "number pdf",
+      "number pages",
+      "pdf page numbers",
+      "page numbering",
+    ],
+    available: true,
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     shortDescription: "Add drawn, typed, or uploaded signatures to PDFs.",

@@ -102,7 +102,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Merge combines whole PDF files. Use Split PDF first if you need to extract specific pages before combining.",
       },
     ],
-    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf"],
+    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
     keywords: ["merge pdf", "combine pdf files", "join pdf online", "pdf merger free"],
   },
   "split-pdf": {
@@ -156,7 +156,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Yes. Split PDF is free to use in your browser with standard usage limits for heavy workflows.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf", "organize-pdf", "crop-pdf"],
+    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
     keywords: ["split pdf", "extract pdf pages", "divide pdf online", "split pdf free"],
   },
   "compress-pdf": {
@@ -226,7 +226,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "If you combined files first, compress the final PDF. Use Merge PDF or Split PDF when you need to reorganise pages beforehand.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
     keywords: [
       "compress pdf without losing quality",
       "reduce pdf size",
@@ -519,7 +519,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. The downloaded PDF saves pages in the new orientation.",
       },
     ],
-    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf", "crop-pdf"],
+    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers"],
     keywords: ["rotate pdf", "turn pdf pages", "fix pdf orientation"],
   },
   "organize-pdf": {
@@ -578,7 +578,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Organize PDF combines reordering, rotation, and deletion in one workflow. Use Split PDF to extract ranges into separate files, or Rotate PDF when you only need to fix orientation.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "sign-pdf", "compress-pdf", "crop-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "sign-pdf", "compress-pdf", "crop-pdf", "add-page-numbers"],
     keywords: [
       "organize pdf",
       "reorder pdf pages",
@@ -660,6 +660,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "split-pdf",
       "merge-pdf",
       "sign-pdf",
+      "add-page-numbers",
       "redact-pdf",
     ],
     keywords: [
@@ -668,6 +669,90 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "clip pdf pages",
       "pdf crop online",
       "cut pdf margins",
+    ],
+  },
+  "add-page-numbers": {
+    id: "add-page-numbers",
+    path: "/tools/add-page-numbers",
+    seoTitle: "Add Page Numbers to PDF Online | Scanonix",
+    metaDescription:
+      "Add page numbers to PDF files online. Choose page range, starting number, format and position, then export locally in your browser with Scanonix.",
+    h1: "Add Page Numbers",
+    headerDescription:
+      "Add page numbers to PDF pages online with custom position, format, range, and starting number — processed locally in your browser.",
+    pageDescription:
+      "Add page numbers to PDF pages online with custom position, format, range, and starting number. Upload a PDF, choose which pages to number, set the format and placement, then download — all processed locally in your browser.",
+    howToSteps: [
+      "Upload the PDF you want to number.",
+      "Choose all pages or a custom page range, starting number, format, and position.",
+      "Preview page numbers on each page and adjust font size, margin, or color if needed.",
+      "Export and download your numbered PDF.",
+    ],
+    whyUse: [
+      "Number reports, contracts, and scanned documents without desktop software.",
+      "Choose from multiple formats such as plain numbers or page X of Y.",
+      "Place numbers in six positions with adjustable margin and font size.",
+      "Processing happens locally so your PDF stays on your device.",
+    ],
+    keyFeatures: [
+      "Custom page range or all pages",
+      "Multiple number formats",
+      "Six position presets with margin control",
+      "Adjustable font size and color",
+      "Local browser processing",
+      "Instant download",
+    ],
+    faqs: [
+      {
+        question: "How do I add page numbers to a PDF online?",
+        answer:
+          "Upload your PDF, choose the pages to number, set the starting number, format, and position, then export and download the numbered document.",
+      },
+      {
+        question: "Is my PDF uploaded to Scanonix servers?",
+        answer:
+          "No. Add Page Numbers runs locally in your browser, so your document stays on your device during processing.",
+      },
+      {
+        question: "Does adding page numbers rasterize or flatten my PDF?",
+        answer:
+          "No. Page numbers are added as text overlays. Your original page content is not converted to flat images.",
+      },
+      {
+        question: "Can I number only selected pages?",
+        answer:
+          "Yes. Choose all pages or enter a custom range such as 1-5 or 1,3,5 to number only the pages you need.",
+      },
+      {
+        question: "What number formats are supported?",
+        answer:
+          "You can use plain numbers (1), page labels (Page 1), totals (1 of 10), or combined labels (Page 1 of 10).",
+      },
+      {
+        question: "Where can page numbers be placed?",
+        answer:
+          "Choose from six positions: top-left, top-center, top-right, bottom-left, bottom-center, or bottom-right, with adjustable margin.",
+      },
+      {
+        question: "Can I change the starting page number?",
+        answer:
+          "Yes. Set any starting number so numbering can begin at 1, continue from a previous section, or match your document structure.",
+      },
+    ],
+    relatedToolIds: [
+      "organize-pdf",
+      "crop-pdf",
+      "rotate-pdf",
+      "split-pdf",
+      "merge-pdf",
+      "sign-pdf",
+    ],
+    keywords: [
+      "add page numbers to pdf",
+      "pdf page numbers",
+      "number pdf pages",
+      "page numbering pdf",
+      "insert page numbers pdf",
     ],
   },
   "sign-pdf": {
@@ -737,7 +822,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "No. Sign PDF adds a visual signature overlay to your document. It does not apply a cryptographic digital signature or certificate-based e-signature recognized by Adobe Acrobat or legal PKI systems.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word", "organize-pdf", "crop-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word", "organize-pdf", "crop-pdf", "add-page-numbers"],
     keywords: [
       "sign pdf",
       "pdf signature",

@@ -68,6 +68,14 @@ export function ToolIcon({ type, className = "h-6 w-6" }: ToolIconProps) {
           <path {...common} d="M3 8V3h5M21 8V3h-5M3 16v5h5M21 16v5h-5" />
         </svg>
       );
+    case "add-page-numbers":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="5" y="3" width="14" height="18" rx="2" />
+          <path {...common} d="M8 7h8M8 11h8M8 15h5" />
+          <path {...common} d="M16 17h2M17 16v2" strokeWidth={2} />
+        </svg>
+      );
     case "sign-pdf":
       return (
         <svg viewBox="0 0 24 24" className={className} aria-hidden="true">

@@ -77,6 +77,7 @@ const SYNONYM_GROUPS: string[][] = [
   ["word", "docx", "doc"],
   ["sign", "signature", "autograph", "e-sign", "esign"],
   ["crop", "trim", "margins", "clip", "cut"],
+  ["number", "numbers", "numbering", "paginate", "page-number"],
 ];
 
 const TOOL_INTENT_PHRASES: Record<string, string[]> = {
@@ -129,6 +130,14 @@ const TOOL_INTENT_PHRASES: Record<string, string[]> = {
     "clip pdf pages",
     "cut pdf margins",
     "pdf crop tool",
+  ],
+  "add-page-numbers": [
+    "page numbers",
+    "add page numbers",
+    "number pdf",
+    "number pages",
+    "pdf page numbers",
+    "page numbering",
   ],
   "sign-pdf": [
     "sign pdf",

@@ -45,6 +45,14 @@ export const LazyCropPdfTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyAddPageNumbersTool = dynamic(
+  () =>
+    import("@/components/tools/add-page-numbers/AddPageNumbersTool").then((m) => ({
+      default: m.AddPageNumbersTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazySignPdfTool = dynamic(
   () =>
     import("@/components/tools/sign-pdf/SignPdfTool").then((m) => ({

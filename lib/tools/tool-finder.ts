@@ -70,6 +70,7 @@ const SYNONYM_GROUPS: string[][] = [
   ["summarize", "summarise", "summary", "summaries", "tldr"],
   ["qr", "barcode", "qrcode"],
   ["rotate", "turn", "flip", "orientation"],
+  ["organize", "reorder", "arrange", "sort", "order"],
   ["resize", "scale", "dimension", "dimensions", "resizer"],
   ["upscale", "enlarge", "enhance", "resolution", "upscaler"],
   ["rewrite", "rephrase", "paraphrase", "improve", "polish"],
@@ -112,6 +113,14 @@ const TOOL_INTENT_PHRASES: Record<string, string[]> = {
     "images to pdf",
   ],
   "rotate-pdf": ["rotate pdf", "turn pdf pages", "flip pdf"],
+  "organize-pdf": [
+    "organize pdf",
+    "reorder pdf pages",
+    "arrange pdf pages",
+    "delete pdf pages",
+    "remove pdf pages",
+    "pdf page organizer",
+  ],
   "sign-pdf": [
     "sign pdf",
     "pdf signature",

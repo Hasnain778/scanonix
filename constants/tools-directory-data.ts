@@ -92,6 +92,17 @@ export const SCANONIX_TOOLS: ToolDirectoryEntry[] = [
     privacyBadge: "Local processing",
   },
   {
+    id: "organize-pdf",
+    name: "Organize PDF",
+    description:
+      "Reorder, rotate, and delete PDF pages — arrange your document in the browser.",
+    href: "/tools/organize-pdf",
+    icon: "organize-pdf",
+    category: "pdf",
+    categories: ["pdf"],
+    privacyBadge: "Local processing",
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     description:

@@ -131,6 +131,25 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "organize-pdf",
+    name: "Organize PDF",
+    shortDescription: "Reorder, rotate, and delete PDF pages.",
+    description:
+      "Reorder, rotate, and delete PDF pages in your browser — processed locally on your device.",
+    href: "/tools/organize-pdf",
+    category: "pdf",
+    icon: "organize-pdf",
+    aliases: [
+      "organize pdf",
+      "reorder pdf pages",
+      "arrange pdf pages",
+      "delete pdf pages",
+      "remove pdf pages",
+      "pdf page organizer",
+    ],
+    available: true,
+  },
+  {
     id: "sign-pdf",
     name: "Sign PDF",
     shortDescription: "Add drawn, typed, or uploaded signatures to PDFs.",

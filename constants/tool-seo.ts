@@ -102,7 +102,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Merge combines whole PDF files. Use Split PDF first if you need to extract specific pages before combining.",
       },
     ],
-    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf"],
+    relatedToolIds: ["compress-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf"],
     keywords: ["merge pdf", "combine pdf files", "join pdf online", "pdf merger free"],
   },
   "split-pdf": {
@@ -156,7 +156,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Yes. Split PDF is free to use in your browser with standard usage limits for heavy workflows.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf"],
+    relatedToolIds: ["merge-pdf", "compress-pdf", "rotate-pdf", "sign-pdf", "organize-pdf"],
     keywords: ["split pdf", "extract pdf pages", "divide pdf online", "split pdf free"],
   },
   "compress-pdf": {
@@ -226,7 +226,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "If you combined files first, compress the final PDF. Use Merge PDF or Split PDF when you need to reorganise pages beforehand.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "pdf-to-word", "sign-pdf", "organize-pdf"],
     keywords: [
       "compress pdf without losing quality",
       "reduce pdf size",
@@ -519,8 +519,73 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. The downloaded PDF saves pages in the new orientation.",
       },
     ],
-    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf"],
+    relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf"],
     keywords: ["rotate pdf", "turn pdf pages", "fix pdf orientation"],
+  },
+  "organize-pdf": {
+    id: "organize-pdf",
+    path: "/tools/organize-pdf",
+    seoTitle: "Organize PDF Online — Reorder, Rotate & Delete Pages | Scanonix",
+    metaDescription:
+      "Organize PDF pages online by reordering, rotating, and deleting pages. Process your PDF locally in your browser with Scanonix.",
+    h1: "Organize PDF",
+    headerDescription:
+      "Reorder, rotate, and remove pages from a PDF — processed locally in your browser.",
+    pageDescription:
+      "Organize PDF pages online by reordering, rotating, and deleting pages. Upload a PDF, arrange pages in the order you want, rotate or remove unwanted pages, then download — all processed locally in your browser.",
+    howToSteps: [
+      "Upload the PDF you want to organize.",
+      "Drag pages to reorder, rotate individual pages, or delete pages you do not need.",
+      "Export and download your organized PDF.",
+    ],
+    whyUse: [
+      "Fix page order after scanning or merging documents.",
+      "Remove blank or duplicate pages without desktop software.",
+      "Rotate misaligned pages while rearranging the full document.",
+      "Processing happens locally so your PDF stays on your device.",
+    ],
+    keyFeatures: [
+      "Drag-and-drop page reordering",
+      "Rotate pages by 90° increments",
+      "Delete unwanted pages",
+      "Local browser processing",
+      "Instant download",
+    ],
+    faqs: [
+      {
+        question: "How do I reorder PDF pages online?",
+        answer:
+          "Upload your PDF, drag pages into the order you want, then export and download the reorganized document.",
+      },
+      {
+        question: "Can I delete pages from a PDF?",
+        answer:
+          "Yes. Remove unwanted pages before exporting, and the downloaded PDF will contain only the remaining pages.",
+      },
+      {
+        question: "Can I rotate pages while organizing a PDF?",
+        answer:
+          "Yes. Rotate individual pages by 90° increments while reordering or before export.",
+      },
+      {
+        question: "Is my PDF uploaded to Scanonix servers?",
+        answer:
+          "No. Organize PDF runs locally in your browser, so your document stays on your device during processing.",
+      },
+      {
+        question: "How is Organize PDF different from Split PDF or Rotate PDF?",
+        answer:
+          "Organize PDF combines reordering, rotation, and deletion in one workflow. Use Split PDF to extract ranges into separate files, or Rotate PDF when you only need to fix orientation.",
+      },
+    ],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "sign-pdf", "compress-pdf"],
+    keywords: [
+      "organize pdf",
+      "reorder pdf pages",
+      "arrange pdf pages",
+      "delete pdf pages",
+      "pdf page organizer",
+    ],
   },
   "sign-pdf": {
     id: "sign-pdf",
@@ -589,7 +654,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "No. Sign PDF adds a visual signature overlay to your document. It does not apply a cryptographic digital signature or certificate-based e-signature recognized by Adobe Acrobat or legal PKI systems.",
       },
     ],
-    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word"],
+    relatedToolIds: ["merge-pdf", "split-pdf", "rotate-pdf", "compress-pdf", "pdf-to-word", "organize-pdf"],
     keywords: [
       "sign pdf",
       "pdf signature",

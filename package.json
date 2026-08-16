@@ -21,7 +21,14 @@
     "verify:upscale-job-polling": "npx --yes tsx scripts/verify-upscale-job-polling.ts",
     "verify:stripe": "node --env-file=.env.local scripts/verify-stripe.mjs",
     "validate:production": "node scripts/validate-production-env.mjs",
-    "provision:storage": "node --env-file=.env.local scripts/provision-storage.mjs"
+    "provision:storage": "node --env-file=.env.local scripts/provision-storage.mjs",
+    "seo:auth": "npx --yes tsx scripts/seo/auth.ts",
+    "seo:report": "npx --yes tsx scripts/seo/report.ts",
+    "seo:gsc": "npm run seo:report",
+    "seo:index-audit": "npx --yes tsx scripts/seo/index-audit.ts",
+    "verify:seo-129b": "npx --yes tsx scripts/verify-seo-129b.ts",
+    "verify:seo-129c": "npx --yes tsx scripts/verify-seo-129c.ts",
+    "verify:seo-canonical-host": "npx --yes tsx scripts/verify-seo-canonical-host.ts"
   },
   "dependencies": {
     "@imgly/background-removal": "^1.7.0",
@@ -57,6 +64,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "googleapis": "^144.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

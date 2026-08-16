@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE, PLAY_STORE_URL } from "@/config/site";
+import { SOCIAL_LINKS } from "@/constants/social-links";
 
 export interface PageSeoOptions {
   title: string;
@@ -62,6 +63,7 @@ export function createOrganizationJsonLd() {
     name: SITE.name,
     url: SITE.url,
     logo: `${SITE.url}/icon.png`,
+    sameAs: SOCIAL_LINKS.map((link) => link.href),
   };
 }
 

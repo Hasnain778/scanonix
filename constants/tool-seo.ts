@@ -311,7 +311,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "pdf to word without losing formatting",
       "pdf to docx",
       "convert pdf to word online",
-      "pdf to word free",
+      "pdf to docx converter",
     ],
   },
   "word-to-pdf": {
@@ -1025,7 +1025,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       },
     ],
     relatedToolIds: ["protect-pdf", "merge-pdf", "compress-pdf", "redact-pdf"],
-    keywords: ["unlock pdf", "remove pdf password", "decrypt pdf online", "pdf unlock free"],
+    keywords: ["unlock pdf", "remove pdf password", "decrypt pdf online", "pdf password remover"],
   },
   "watermark-pdf": {
     id: "watermark-pdf",
@@ -1774,9 +1774,9 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
   "ai-summary": {
     id: "ai-summary",
     path: "/tools/ai-summary",
-    seoTitle: toolTitle("AI Document Summary Online", "Summarise Text Free"),
+    seoTitle: toolTitle("AI Document Summary Online", "Summarise Long Text"),
     metaDescription:
-      "Summarise long documents online with AI. Turn lengthy reports, articles, and OCR text into concise summaries quickly.",
+      "Summarise long documents online with Scanonix AI. Turn lengthy reports, articles, and OCR text into concise summaries — Pro feature with usage limits.",
     h1: "AI Document Summary",
     pageDescription:
       "Summarise long documents and OCR text with cloud AI to capture key points in seconds.",
@@ -1804,6 +1804,11 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       {
         question: "Should I verify AI summaries?",
         answer: "Yes. Review summaries before using them for decisions or publication.",
+      },
+      {
+        question: "Is AI Document Summary free?",
+        answer:
+          "No. AI Document Summary is a Pro feature. Sign in with a Pro plan to summarise documents within your usage limits.",
       },
     ],
     relatedToolIds: ["ocr", "ai-translate", "ai-rewrite", "pdf-to-word"],

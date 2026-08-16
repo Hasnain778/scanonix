@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { ToolsDirectoryHeroHeader } from "@/components/tools/directory/ToolsDirectoryHeroHeader";
 import { LazyToolsDirectory } from "@/components/tools/lazy";
 import { ToolLayout, ToolShell } from "@/components/workspace";
 import { createPageMetadata } from "@/lib/utils/seo";
@@ -22,9 +23,9 @@ export const metadata = createPageMetadata({
   ],
 });
 
-function ToolsDirectoryFallback() {
+function ToolsDirectoryControlsFallback() {
   return (
-    <div className="py-16 text-center text-sm text-scanonix-muted">
+    <div className="py-8 text-center text-sm text-scanonix-muted">
       Loading tools directory…
     </div>
   );
@@ -34,9 +35,14 @@ export default function ToolsPage() {
   return (
     <ToolShell>
       <ToolLayout>
-        <Suspense fallback={<ToolsDirectoryFallback />}>
-          <LazyToolsDirectory />
-        </Suspense>
+        <div className="tools-directory-page space-y-8 sm:space-y-10">
+          <div className="tools-directory-hero-zone">
+            <ToolsDirectoryHeroHeader />
+            <Suspense fallback={<ToolsDirectoryControlsFallback />}>
+              <LazyToolsDirectory />
+            </Suspense>
+          </div>
+        </div>
       </ToolLayout>
     </ToolShell>
   );

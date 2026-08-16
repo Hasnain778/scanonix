@@ -1,25 +1,20 @@
-import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { ToolShell } from "@/components/tools/ToolShell";
 import { CONTACT_CATEGORIES, SUPPORT_EMAIL } from "@/lib/legal/content";
+import { createPageMetadata } from "@/lib/utils/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Contact Scanonix — Support & Enquiries",
   description:
     "Contact Scanonix for technical support, billing questions, feature requests, business enquiries, and privacy requests.",
+  path: "/contact",
   keywords: [
     "Contact Scanonix",
     "Scanonix support",
     "document tools support",
     "Scanonix help",
   ],
-  openGraph: {
-    title: "Contact Scanonix",
-    description:
-      "Get in touch with Scanonix for support, billing, feature requests, and privacy enquiries.",
-    type: "website",
-  },
-};
+});
 
 export default function ContactPage() {
   return (

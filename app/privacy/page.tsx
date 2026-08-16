@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import { LegalDocumentLayout } from "@/components/legal/LegalDocumentLayout";
 import { ToolShell } from "@/components/tools/ToolShell";
 import {
   PRIVACY_LAST_UPDATED,
   PRIVACY_SECTIONS,
 } from "@/lib/legal/content";
+import { createPageMetadata } from "@/lib/utils/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Privacy Policy — Scanonix",
   description:
     "Learn how Scanonix handles your data, including local browser processing for PDF and image tools, cookies, analytics, account information, and your privacy rights.",
+  path: "/privacy",
   keywords: [
     "Scanonix privacy policy",
     "local browser processing",
@@ -17,13 +18,7 @@ export const metadata: Metadata = {
     "data protection",
     "OCR privacy",
   ],
-  openGraph: {
-    title: "Privacy Policy — Scanonix",
-    description:
-      "How Scanonix collects, uses, and protects information — including local processing for many PDF and image tools.",
-    type: "website",
-  },
-};
+});
 
 export default function PrivacyPage() {
   return (

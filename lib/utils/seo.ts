@@ -44,7 +44,14 @@ export function createPageMetadata(options: PageSeoOptions): Metadata {
       siteName: SITE.name,
       locale: SITE.locale,
       type,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: fullTitle }],
+      images: [
+        {
+          url: ogImage,
+          width: SITE.ogImageWidth,
+          height: SITE.ogImageHeight,
+          alt: SITE.defaultOgImageAlt,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",

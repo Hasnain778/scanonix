@@ -10,7 +10,10 @@ export const SITE = {
   locale: "en_GB",
   twitterHandle: "@scanonix",
   supportEmail: "support@scanonix.com",
-  defaultOgImage: "/icon.png",
+  defaultOgImage: "/og-scanonix.png",
+  defaultOgImageAlt: "Scanonix — Online PDF, Image and AI Document Tools",
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
 } as const;
 
 export const PLAY_STORE_URL =

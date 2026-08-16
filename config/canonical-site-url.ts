@@ -1,11 +1,11 @@
-/** Canonical public origin for Scanonix (non-www). */
-export const CANONICAL_SITE_ORIGIN = "https://scanonix.com";
+/** Canonical public origin for Scanonix (www — matches production 308 redirect target). */
+export const CANONICAL_SITE_ORIGIN = "https://www.scanonix.com";
 
 const LOCAL_DEV_ORIGIN = "http://localhost:3000";
 
 /**
  * Resolve the site URL used for SEO canonicals, sitemap, robots, and structured data.
- * Production scanonix.com / www.scanonix.com always normalizes to non-www.
+ * Production scanonix.com / www.scanonix.com always normalizes to www.
  */
 export function resolveCanonicalSiteUrl(rawUrl?: string): string {
   const trimmed = rawUrl?.trim().replace(/\/$/, "");

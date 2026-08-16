@@ -27,6 +27,10 @@ interface ToolPageHeaderProps {
   description: string;
   icon?: ReactNode;
   showBreadcrumbs?: boolean;
+  categoryBreadcrumb?: {
+    label: string;
+    href: string;
+  };
 }
 
 export function ToolPageHeader({
@@ -34,11 +38,12 @@ export function ToolPageHeader({
   description,
   icon,
   showBreadcrumbs = false,
+  categoryBreadcrumb,
 }: ToolPageHeaderProps) {
   return (
     <div className="mb-10 sm:mb-12">
       {showBreadcrumbs ? (
-        <ToolBreadcrumbs title={title} />
+        <ToolBreadcrumbs title={title} category={categoryBreadcrumb} />
       ) : (
         <Link
           href="/tools"

@@ -1,9 +1,17 @@
 /**
- * Homepage tool metadata — single source for search, nav dropdowns, and category grids.
- * Only lists working tools as clickable; unavailable tools may appear as Coming Soon in grids.
+ * Homepage tool metadata — search, nav dropdowns, and category grids.
+ * Primary categories are derived from constants/tool-categories.ts.
  */
 
-export type HomepageToolCategory = "pdf" | "image" | "ai" | "security";
+import {
+  getPrimaryCategory,
+  NAV_ONLY_TOOL_CATEGORIES,
+  type PrimaryToolCategory,
+} from "@/constants/tool-categories";
+import { getToolAccess } from "@/lib/plan/tool-access";
+import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
+
+export type HomepageToolCategory = PrimaryToolCategory;
 
 export interface HomepageTool {
   id: string;
@@ -25,28 +33,28 @@ export const HOMEPAGE_CATEGORY_META: Record<
     label: "PDF",
     heading: "PDF Tools",
     description: "Merge, split, compress, convert and organise PDF documents.",
-    viewAllHref: "/tools",
+    viewAllHref: getToolsCategoryHref("pdf"),
     anchor: "pdf-tools",
   },
   image: {
     label: "Image",
     heading: "Image Tools",
     description: "Convert, edit and optimise images for web and print.",
-    viewAllHref: "/tools/image",
+    viewAllHref: getToolsCategoryHref("image"),
     anchor: "image-tools",
   },
   ai: {
     label: "AI",
     heading: "AI Tools",
     description: "Translate, summarise and extract text with AI assistance.",
-    viewAllHref: "/tools/ai-translate",
+    viewAllHref: getToolsCategoryHref("ai"),
     anchor: "ai-tools",
   },
   security: {
     label: "Security",
     heading: "Security Tools",
     description: "Protect PDFs, clean metadata, redact content, and check website links.",
-    viewAllHref: "/tools/security-scan",
+    viewAllHref: getToolsCategoryHref("security"),
     anchor: "security-tools",
   },
 };
@@ -350,6 +358,17 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "webp-to-png",
+    name: "WEBP to PNG",
+    shortDescription: "Convert WEBP images to PNG format.",
+    description: "Convert WEBP images to PNG for editing workflows.",
+    href: "/tools/webp-to-png",
+    category: "image",
+    icon: "convert",
+    aliases: ["webp png", "convert webp", "webp to png", "webp image converter"],
+    available: true,
+  },
+  {
     id: "heic-to-jpg",
     name: "HEIC to JPG",
     shortDescription: "Convert iPhone HEIC photos to JPG.",
@@ -454,7 +473,7 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     shortDescription: "Password-protect PDF files.",
     description: "Encrypt PDFs with a password. Passwords are never stored.",
     href: "/tools/protect-pdf",
-    category: "security",
+    category: "pdf",
     icon: "compress",
     aliases: ["encrypt pdf", "pdf password", "lock pdf"],
     available: true,
@@ -465,7 +484,7 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     shortDescription: "Remove PDF password protection.",
     description: "Unlock password-protected PDFs with the correct password.",
     href: "/tools/unlock-pdf",
-    category: "security",
+    category: "pdf",
     icon: "compress",
     aliases: ["decrypt pdf", "remove pdf password"],
     available: true,
@@ -476,7 +495,7 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     shortDescription: "Add text or image watermarks.",
     description: "Apply customizable watermarks to PDF pages.",
     href: "/tools/watermark-pdf",
-    category: "security",
+    category: "pdf",
     icon: "word",
     aliases: ["pdf watermark", "stamp pdf"],
     available: true,
@@ -487,7 +506,7 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     shortDescription: "Permanently hide sensitive text.",
     description: "Permanently redact sensitive content from PDF documents.",
     href: "/tools/redact-pdf",
-    category: "security",
+    category: "pdf",
     icon: "word",
     aliases: ["pdf redaction", "black out pdf text"],
     available: true,
@@ -498,12 +517,20 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     shortDescription: "Remove hidden file metadata.",
     description: "Strip EXIF and PDF metadata while preserving content.",
     href: "/tools/metadata-cleaner",
-    category: "security",
+    category: "pdf",
     icon: "security",
     aliases: ["exif remover", "strip metadata", "privacy cleaner"],
     available: true,
   },
 ];
+
+/** Sync homepage category fields with canonical tool-categories matrix. */
+for (const tool of HOMEPAGE_TOOLS) {
+  const primary = getPrimaryCategory(tool.id) ?? NAV_ONLY_TOOL_CATEGORIES[tool.id];
+  if (primary) {
+    tool.category = primary;
+  }
+}
 
 export interface HomepageCategoryGridItem {
   id: string;
@@ -515,43 +542,62 @@ export interface HomepageCategoryGridItem {
   proOnly?: boolean;
 }
 
-export const HOMEPAGE_CATEGORY_GRIDS: Record<HomepageToolCategory, HomepageCategoryGridItem[]> = {
+const HOMEPAGE_GRID_TOOL_IDS: Record<HomepageToolCategory, string[]> = {
   pdf: [
-    { id: "merge-pdf", name: "Merge PDF", shortDescription: "Combine PDFs into one file.", href: "/tools/merge-pdf", icon: "merge" },
-    { id: "split-pdf", name: "Split PDF", shortDescription: "Extract or divide PDF pages.", href: "/tools/split-pdf", icon: "split" },
-    { id: "compress-pdf", name: "Compress PDF", shortDescription: "Reduce PDF file size.", href: "/tools/compress-pdf", icon: "compress" },
-    { id: "pdf-to-word", name: "PDF to Word", shortDescription: "Convert to editable Word.", href: "/tools/pdf-to-word", icon: "word" },
-    { id: "word-to-pdf", name: "Word to PDF", shortDescription: "Convert Word documents to PDF.", href: "/tools/word-to-pdf", icon: "word" },
-    { id: "pdf-to-image", name: "PDF to Image", shortDescription: "Export pages as images.", href: "/tools/pdf-to-image", icon: "pdf-image" },
-    { id: "image-to-pdf", name: "Image to PDF", shortDescription: "Turn photos into PDF.", href: "/tools/image-to-pdf", icon: "image-pdf" },
-    { id: "protect-pdf", name: "Protect PDF", shortDescription: "Password-protect your PDF.", href: "/tools/protect-pdf", icon: "compress", proOnly: true },
+    "merge-pdf",
+    "split-pdf",
+    "compress-pdf",
+    "pdf-to-word",
+    "word-to-pdf",
+    "pdf-to-image",
+    "image-to-pdf",
+    "sign-pdf",
   ],
   image: [
-    { id: "background-remover", name: "Background Remover", shortDescription: "Remove image backgrounds.", href: "/tools/background-remover", icon: "bg-remove" },
-    { id: "image-compressor", name: "Image Compressor", shortDescription: "Reduce image file size.", href: "/tools/image-compressor", icon: "compress" },
-    { id: "image-resizer", name: "Image Resizer", shortDescription: "Resize images to exact dimensions.", href: "/tools/image-resizer", icon: "convert" },
-    { id: "jpg-to-png", name: "JPG to PNG", shortDescription: "Convert JPG to PNG.", href: "/tools/jpg-to-png", icon: "convert" },
-    { id: "png-to-jpg", name: "PNG to JPG", shortDescription: "Convert PNG to JPG.", href: "/tools/png-to-jpg", icon: "convert" },
-    { id: "webp-converter", name: "WEBP Converter", shortDescription: "Convert to and from WEBP.", href: "/tools/png-to-webp", icon: "convert" },
-    { id: "heic-converter", name: "HEIC Converter", shortDescription: "Convert iPhone HEIC photos.", href: "/tools/heic-to-jpg", icon: "convert" },
-    { id: "image-upscaler", name: "Image Upscaler", shortDescription: "Enhance image resolution.", href: "/tools/image-upscaler", icon: "convert", proOnly: true },
+    "background-remover",
+    "image-compressor",
+    "image-resizer",
+    "jpg-to-png",
+    "png-to-jpg",
+    "png-to-webp",
+    "heic-to-jpg",
+    "image-upscaler",
   ],
-  ai: [
-    { id: "ai-translate", name: "AI Language Translator", shortDescription: "Translate between languages.", href: "/tools/ai-translate", icon: "convert" },
-    { id: "ocr", name: "OCR", shortDescription: "Extract text from images.", href: "/tools/ocr", icon: "ocr" },
-    { id: "ai-summary", name: "AI Document Summary", shortDescription: "Summarise long documents.", href: "/tools/ai-summary", icon: "ocr" },
-    { id: "ai-rewrite", name: "AI Rewrite", shortDescription: "Rewrite and improve text.", href: "/tools/ai-rewrite", icon: "ocr", proOnly: true },
-    { id: "qr-scanner", name: "QR Scanner", shortDescription: "Scan QR codes instantly.", href: "/tools/qr-scanner", icon: "qr" },
-  ],
+  ai: ["ai-translate", "ocr", "ai-summary", "ai-rewrite", "qr-scanner"],
   security: [
-    { id: "protect-pdf", name: "Protect PDF", shortDescription: "Password-protect PDF files.", href: "/tools/protect-pdf", icon: "compress", proOnly: true },
-    { id: "unlock-pdf", name: "Unlock PDF", shortDescription: "Remove PDF passwords.", href: "/tools/unlock-pdf", icon: "compress", proOnly: true },
-    { id: "watermark-pdf", name: "Watermark PDF", shortDescription: "Add watermarks to PDFs.", href: "/tools/watermark-pdf", icon: "word" },
-    { id: "redact-pdf", name: "Redact PDF", shortDescription: "Permanently hide sensitive text.", href: "/tools/redact-pdf", icon: "word", proOnly: true },
-    { id: "metadata-cleaner", name: "Metadata Cleaner", shortDescription: "Remove hidden file metadata.", href: "/tools/metadata-cleaner", icon: "security", proOnly: true },
-    { id: "website-scanner", name: "Website Scanner", shortDescription: "Scan URLs for threats.", href: "/tools/security-scan?type=website", icon: "security", proOnly: true },
-    { id: "website-monitoring", name: "Website Monitoring", shortDescription: "Monitor sites over time.", href: "/monitors", icon: "security", proOnly: true },
+    "protect-pdf",
+    "unlock-pdf",
+    "watermark-pdf",
+    "redact-pdf",
+    "metadata-cleaner",
+    "website-scanner",
+    "website-monitoring",
   ],
+};
+
+function buildHomepageGridItem(id: string): HomepageCategoryGridItem {
+  const tool = HOMEPAGE_TOOLS.find((entry) => entry.id === id);
+  if (!tool) {
+    throw new Error(`Missing homepage tool for grid item: ${id}`);
+  }
+
+  const access = getToolAccess(id);
+
+  return {
+    id: tool.id,
+    name: tool.name,
+    shortDescription: tool.shortDescription,
+    href: tool.href,
+    icon: tool.icon,
+    proOnly: access?.requiresPro === true,
+  };
+}
+
+export const HOMEPAGE_CATEGORY_GRIDS: Record<HomepageToolCategory, HomepageCategoryGridItem[]> = {
+  pdf: HOMEPAGE_GRID_TOOL_IDS.pdf.map(buildHomepageGridItem),
+  image: HOMEPAGE_GRID_TOOL_IDS.image.map(buildHomepageGridItem),
+  ai: HOMEPAGE_GRID_TOOL_IDS.ai.map(buildHomepageGridItem),
+  security: HOMEPAGE_GRID_TOOL_IDS.security.map(buildHomepageGridItem),
 };
 
 export const POPULAR_TOOL_IDS = [
@@ -584,7 +630,7 @@ export function getToolById(id: string): HomepageTool | undefined {
   return HOMEPAGE_TOOLS.find((tool) => tool.id === id);
 }
 
-/** Nav dropdown items — top tools per category. */
+/** Nav dropdown items — category links aligned with /tools filter semantics. */
 export const NAV_DROPDOWN_TOOLS: Record<
   HomepageToolCategory,
   { label: string; href: string; viewAllHref: string; tools: { name: string; href: string }[] }
@@ -592,33 +638,33 @@ export const NAV_DROPDOWN_TOOLS: Record<
   pdf: {
     label: "PDF Tools",
     href: "/#pdf-tools",
-    viewAllHref: "/tools",
+    viewAllHref: getToolsCategoryHref("pdf"),
     tools: [
-      { name: "Merge PDF", href: "/tools/merge-pdf" },
-      { name: "Compress PDF", href: "/tools/compress-pdf" },
-      { name: "Split PDF", href: "/tools/split-pdf" },
-      { name: "PDF to Word", href: "/tools/pdf-to-word" },
-      { name: "Word to PDF", href: "/tools/word-to-pdf" },
-      { name: "Image to PDF", href: "/tools/image-to-pdf" },
+      { name: "Organize PDF", href: getToolsCategoryHref("organize-pdf") },
+      { name: "Convert PDF", href: getToolsCategoryHref("convert-pdf") },
+      { name: "Edit PDF", href: getToolsCategoryHref("edit-pdf") },
+      { name: "Optimize PDF", href: getToolsCategoryHref("optimize-pdf") },
+      { name: "Security", href: getToolsCategoryHref("security") },
+      { name: "All PDF Tools", href: getToolsCategoryHref("pdf") },
     ],
   },
   image: {
     label: "Image Tools",
     href: "/#image-tools",
-    viewAllHref: "/tools/image",
+    viewAllHref: getToolsCategoryHref("image"),
     tools: [
       { name: "Background Remover", href: "/tools/background-remover" },
       { name: "Image Compressor", href: "/tools/image-compressor" },
       { name: "PNG to JPG", href: "/tools/png-to-jpg" },
       { name: "HEIC to JPG", href: "/tools/heic-to-jpg" },
       { name: "JPG to WEBP", href: "/tools/jpg-to-webp" },
-      { name: "All image tools", href: "/tools/image" },
+      { name: "All image tools", href: getToolsCategoryHref("image") },
     ],
   },
   ai: {
     label: "AI Tools",
     href: "/#ai-tools",
-    viewAllHref: "/tools/ai-translate",
+    viewAllHref: getToolsCategoryHref("ai"),
     tools: [
       { name: "AI Language Translator", href: "/tools/ai-translate" },
       { name: "OCR", href: "/tools/ocr" },
@@ -630,7 +676,7 @@ export const NAV_DROPDOWN_TOOLS: Record<
   security: {
     label: "Security",
     href: "/#security-tools",
-    viewAllHref: "/tools/security-scan",
+    viewAllHref: getToolsCategoryHref("security"),
     tools: [
       { name: "Protect PDF", href: "/tools/protect-pdf" },
       { name: "Website Scanner", href: "/tools/security-scan?type=website" },

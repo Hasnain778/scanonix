@@ -1,7 +1,6 @@
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { PopularToolsSection, ToolCategoriesSection } from "@/components/home/PopularToolsSection";
-import { HomeAndroidPromo } from "@/components/sections/HomeAndroidPromo";
 import { HomeHero } from "@/components/sections/HomeHero";
 import {
   createPageMetadata,
@@ -48,7 +47,6 @@ export default function Home() {
       <main className="relative z-10 bg-[#0a0a0a]">
         <HomeHero />
         <PopularToolsSection />
-        <HomeAndroidPromo />
         <ToolCategoriesSection />
       </main>
       <Footer />

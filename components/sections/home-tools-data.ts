@@ -162,8 +162,9 @@ function mapDirectoryCategory(
 ): Exclude<HomeToolFilter, "all"> {
   if (category === "pdf") return "pdf";
   if (category === "image") return "image";
-  if (category === "ocr-ai") return "ai";
-  return "security";
+  if (category === "ai" || category === "ocr-ai") return "ai";
+  if (category === "security") return "security";
+  return "ai";
 }
 
 export function getHomeToolsForFilter(filter: HomeToolFilter): HomeToolEntry[] {

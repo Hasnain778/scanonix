@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LazyToolsDirectory } from "@/components/tools/lazy";
 import { ToolLayout, ToolShell } from "@/components/workspace";
 import { createPageMetadata } from "@/lib/utils/seo";
@@ -21,11 +22,21 @@ export const metadata = createPageMetadata({
   ],
 });
 
+function ToolsDirectoryFallback() {
+  return (
+    <div className="py-16 text-center text-sm text-scanonix-muted">
+      Loading tools directory…
+    </div>
+  );
+}
+
 export default function ToolsPage() {
   return (
     <ToolShell>
       <ToolLayout>
-        <LazyToolsDirectory />
+        <Suspense fallback={<ToolsDirectoryFallback />}>
+          <LazyToolsDirectory />
+        </Suspense>
       </ToolLayout>
     </ToolShell>
   );

@@ -12,7 +12,6 @@ import {
   NavbarCategoryDropdown,
 } from "@/components/layout/NavbarCategoryDropdown";
 import { UserMenu } from "@/components/layout/UserMenu";
-import { PlayStoreLink } from "@/components/marketing/PlayStoreLink";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 import { ScanonixLogo } from "@/components/ui/ScanonixLogo";
 import { NAV_PRICING_LINK } from "@/lib/constants";
@@ -184,15 +183,6 @@ export function Navbar() {
                     {NAV_PRICING_LINK.label}
                   </Link>
 
-                  <PlayStoreLink
-                    location="mobile-nav"
-                    markSize={20}
-                    className={`${mobileLinkClass(false)} !justify-start`}
-                    onClick={closeMenu}
-                  >
-                    Get the Android App
-                  </PlayStoreLink>
-
                   {showAuthenticated ? (
                     <>
                       <Link
@@ -276,10 +266,10 @@ export function Navbar() {
       >
         <div className="mx-auto h-20 max-w-[1440px] px-5 sm:px-6 lg:px-8">
           {/* Mobile + tablet: logo left, hamburger right */}
-          <div className="flex h-full items-center justify-between lg:hidden">
+          <div className="flex h-full items-center justify-between gap-2 lg:hidden">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+              className="inline-flex min-w-0 items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
               aria-label="Scanonix home"
               onClick={closeMenu}
             >
@@ -322,14 +312,6 @@ export function Navbar() {
             </div>
 
             <div className="flex items-center justify-end gap-4">
-              <PlayStoreLink
-                location="navbar"
-                markSize={16}
-                className="hidden rounded-lg border border-white/10 bg-[#121212] px-3 py-1.5 text-sm font-medium text-neutral-300 transition-[border-color,box-shadow] hover:border-scanonix-orange/30 hover:text-white hover:shadow-[0_0_0_1px_rgba(255,106,0,0.2)] lg:inline-flex"
-              >
-                Get App
-              </PlayStoreLink>
-
               {showAuthenticated ? (
                 <>
                   <Link

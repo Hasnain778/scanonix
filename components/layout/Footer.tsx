@@ -2,13 +2,14 @@ import Link from "next/link";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 import { ScanonixLogo } from "@/components/ui/ScanonixLogo";
 import { PLAY_STORE_URL } from "@/config/site";
+import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
 
 const PRODUCT_LINKS = [
-  { label: "All Tools", href: "/tools" },
-  { label: "PDF Tools", href: "/#pdf-tools" },
-  { label: "Image Tools", href: "/#image-tools" },
-  { label: "AI Tools", href: "/#ai-tools" },
-  { label: "Security Tools", href: "/#security-tools" },
+  { label: "All Tools", href: getToolsCategoryHref("all") },
+  { label: "PDF Tools", href: getToolsCategoryHref("pdf") },
+  { label: "Image Tools", href: getToolsCategoryHref("image") },
+  { label: "AI Tools", href: getToolsCategoryHref("ai") },
+  { label: "Security Tools", href: getToolsCategoryHref("security") },
   { label: "Pricing", href: "/pricing" },
 ] as const;
 

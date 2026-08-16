@@ -1,38 +1,67 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useId, useMemo, useState } from "react";
 import { ToolCard } from "@/components/tools/directory/ToolCard";
 import { ToolsEmptyState } from "@/components/tools/directory/ToolsEmptyState";
 import {
+  getActivePdfSubcategoryFilter,
+  getCategoryFilterLabel,
+  isPdfCategoryFilter,
+  PDF_SUBCATEGORY_FILTERS,
+} from "@/constants/tool-categories";
+import {
   filterTools,
+  getCategoryCounts,
   getFeaturedTools,
   SCANONIX_TOOLS,
   TOOL_CATEGORY_FILTERS,
   type ToolCategoryFilterId,
 } from "@/lib/tools-directory";
+import {
+  getToolsCategoryHref,
+  parseToolsCategoryParam,
+} from "@/lib/navigation/tool-category-urls";
 
 export function ToolsDirectory() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const searchId = useId();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<ToolCategoryFilterId>("all");
 
+  const category = parseToolsCategoryParam(searchParams.get("category"));
+  const showPdfSubfilters = isPdfCategoryFilter(category);
+  const activePdfSubcategory = getActivePdfSubcategoryFilter(category);
+
+  const categoryCounts = useMemo(() => getCategoryCounts(), []);
   const featuredTools = useMemo(() => getFeaturedTools(), []);
   const filteredTools = useMemo(
     () => filterTools(SCANONIX_TOOLS, query, category),
     [query, category],
   );
 
-  const activeCategoryLabel =
-    TOOL_CATEGORY_FILTERS.find((item) => item.id === category)?.label ?? "All";
+  const activeCategoryLabel = getCategoryFilterLabel(category);
 
   const showFeatured = category === "all" && !query.trim();
   const gridTools = showFeatured
     ? filteredTools.filter((tool) => !tool.featured)
     : filteredTools;
 
+  const setCategory = useCallback(
+    (next: ToolCategoryFilterId) => {
+      router.push(getToolsCategoryHref(next), { scroll: false });
+    },
+    [router],
+  );
+
   const handleClearFilters = () => {
     setQuery("");
-    setCategory("all");
+    router.push(getToolsCategoryHref("all"), { scroll: false });
+  };
+
+  const topLevelActive = (id: ToolCategoryFilterId) => {
+    if (id === "pdf") return isPdfCategoryFilter(category);
+    return category === id;
   };
 
   return (
@@ -84,10 +113,11 @@ export function ToolsDirectory() {
         <div
           role="tablist"
           aria-label="Filter tools by category"
-          className="flex flex-wrap gap-2"
+          className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible"
         >
           {TOOL_CATEGORY_FILTERS.map((item) => {
-            const isActive = category === item.id;
+            const isActive = topLevelActive(item.id);
+            const count = categoryCounts[item.id];
             return (
               <button
                 key={item.id}
@@ -95,17 +125,50 @@ export function ToolsDirectory() {
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setCategory(item.id)}
-                className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${
+                className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${
                   isActive
                     ? "border-scanonix-orange bg-scanonix-orange/15 text-white shadow-sm shadow-scanonix-orange/20"
                     : "border-white/10 bg-black/20 text-scanonix-muted hover:border-scanonix-orange/40 hover:text-white"
                 }`}
               >
                 {item.label}
+                {item.id !== "all" ? (
+                  <span className="ml-1.5 text-xs opacity-70">({count})</span>
+                ) : null}
               </button>
             );
           })}
         </div>
+
+        {showPdfSubfilters ? (
+          <div
+            role="tablist"
+            aria-label="Filter PDF tools by type"
+            className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible"
+          >
+            {PDF_SUBCATEGORY_FILTERS.map((item) => {
+              const isActive = activePdfSubcategory === item.id;
+              const count = categoryCounts[item.id];
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setCategory(item.id)}
+                  className={`shrink-0 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 sm:text-sm ${
+                    isActive
+                      ? "border-scanonix-orange/60 bg-scanonix-orange/10 text-white"
+                      : "border-white/8 bg-black/15 text-scanonix-muted hover:border-scanonix-orange/30 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                  <span className="ml-1 opacity-70">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
 
       {showFeatured && (

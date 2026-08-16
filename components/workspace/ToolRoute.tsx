@@ -1,7 +1,9 @@
 import { type ReactNode } from "react";
 import { ToolUsageHeader } from "@/components/plan/ToolUsageHeader";
+import { getToolById, HOMEPAGE_CATEGORY_META } from "@/constants/homepage-tools";
 import { getToolSeo } from "@/constants/tool-seo";
 import { env } from "@/config/env";
+import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
 import {
   createBreadcrumbJsonLd,
   createFaqJsonLd,
@@ -26,6 +28,29 @@ export function ToolRoute({
   jsonLd,
 }: ToolRouteProps) {
   const tool = getToolSeo(toolId);
+  const homepageTool = getToolById(toolId);
+  const categoryMeta = homepageTool
+    ? HOMEPAGE_CATEGORY_META[homepageTool.category]
+    : undefined;
+  const categoryBreadcrumb = categoryMeta
+    ? {
+        label: categoryMeta.heading,
+        href: getToolsCategoryHref(homepageTool!.category),
+      }
+    : undefined;
+  const breadcrumbItems = [
+    { name: "Home", url: env.siteUrl },
+    { name: "Tools", url: `${env.siteUrl}/tools` },
+    ...(categoryMeta
+      ? [
+          {
+            name: categoryMeta.heading,
+            url: `${env.siteUrl}${getToolsCategoryHref(homepageTool!.category)}`,
+          },
+        ]
+      : []),
+    { name: tool.h1, url: `${env.siteUrl}${tool.path}` },
+  ];
   const defaultJsonLd = (
     <>
       <script
@@ -43,13 +68,7 @@ export function ToolRoute({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            createBreadcrumbJsonLd([
-              { name: "Home", url: env.siteUrl },
-              { name: "Tools", url: `${env.siteUrl}/tools` },
-              { name: tool.h1, url: `${env.siteUrl}${tool.path}` },
-            ]),
-          ),
+          __html: JSON.stringify(createBreadcrumbJsonLd(breadcrumbItems)),
         }}
       />
       {createFaqJsonLd(tool.faqs) ? (
@@ -72,6 +91,7 @@ export function ToolRoute({
           description={tool.headerDescription ?? tool.pageDescription}
           icon={icon}
           showBreadcrumbs
+          categoryBreadcrumb={categoryBreadcrumb}
         />
         <ToolUsageHeader />
         {children}

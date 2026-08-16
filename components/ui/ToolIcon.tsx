@@ -174,6 +174,191 @@ export function ToolIcon({ type, className = "h-6 w-6" }: ToolIconProps) {
           <path {...common} d="M9.5 12.5l1.8 1.8 3.7-3.8" />
         </svg>
       );
+    case "protect-pdf":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="5" y="3" width="14" height="18" rx="2" />
+          <path {...common} d="M8 7h8M8 11h6" />
+          <path {...common} d="M12 14v4M10 16h4" strokeWidth={2} />
+          <path {...common} d="M9 16.5c0-1.5 1.5-2.5 3-2.5s3 1 3 2.5" />
+        </svg>
+      );
+    case "unlock-pdf":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="5" y="3" width="14" height="18" rx="2" />
+          <path {...common} d="M8 7h8M8 11h6" />
+          <path {...common} d="M10 15h4M11 14v3" strokeWidth={2} />
+          <path {...common} d="M10 14.5c0-1.2 1-2 2-2s2 .8 2 2" />
+        </svg>
+      );
+    case "watermark-pdf":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="4" y="3" width="16" height="18" rx="2" />
+          <path {...common} d="M8 7h8M8 11h8" opacity="0.35" />
+          <path {...common} d="M7 17l3-3 2 2 5-5" strokeWidth={2} />
+        </svg>
+      );
+    case "redact-pdf":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="4" y="3" width="16" height="18" rx="2" />
+          <path {...common} d="M8 7h8M8 11h8M8 15h5" />
+          <rect {...common} x="7" y="13" width="10" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.5" />
+        </svg>
+      );
+    case "metadata-cleaner":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="4" y="3" width="16" height="18" rx="2" />
+          <path {...common} d="M8 7h8M8 11h6" />
+          <path {...common} d="M15 16l4 4M19 16l-4 4" strokeWidth={2} />
+        </svg>
+      );
+    case "pdf-to-word":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="4" width="10" height="14" rx="1.5" />
+          <path {...common} d="M6 8h6M6 11h5" />
+          <path {...common} d="M15 8h6v8h-6z" />
+          <path {...common} d="M17 10l1.5 4 1.5-4 1.5 4" />
+        </svg>
+      );
+    case "word-to-pdf":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <path {...common} d="M3 8h6v8H3z" />
+          <path {...common} d="M5 10l1 4 1-2.5 1 2.5 1-4" />
+          <rect {...common} x="11" y="4" width="10" height="14" rx="1.5" />
+          <path {...common} d="M14 8h5M14 11h4" />
+        </svg>
+      );
+    case "image-compress":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="4" y="5" width="16" height="14" rx="2" />
+          <circle {...common} cx="9" cy="10" r="2" />
+          <path {...common} d="M4 17l5-5 3 3 4-4 4 4" />
+          <path {...common} d="M17 3v3M20 6h-3M7 21v-3M4 18h3" />
+        </svg>
+      );
+    case "image-resize":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="6" y="6" width="12" height="12" rx="1.5" />
+          <path {...common} d="M3 9V3h6M21 15v6h-6M3 15v6h6M21 9V3h-6" />
+        </svg>
+      );
+    case "image-upscale":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="5" y="8" width="8" height="8" rx="1" />
+          <rect {...common} x="11" y="4" width="10" height="10" rx="1.5" />
+          <path {...common} d="M13 9l2 2 4-4" strokeWidth={2} />
+        </svg>
+      );
+    case "png-to-jpg":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <text x="5" y="12" fill="currentColor" stroke="none" fontSize="5" fontWeight="700">P</text>
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <text x="14" y="17" fill="currentColor" stroke="none" fontSize="5" fontWeight="700">J</text>
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "jpg-to-png":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <text x="5" y="12" fill="currentColor" stroke="none" fontSize="5" fontWeight="700">J</text>
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <text x="14" y="17" fill="currentColor" stroke="none" fontSize="5" fontWeight="700">P</text>
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "png-to-webp":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <path {...common} d="M5 9h5M14 14h5" strokeWidth={1.5} />
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "jpg-to-webp":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <path {...common} d="M5 11h4M14 14h6" strokeWidth={1.5} />
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "webp-to-jpg":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <path {...common} d="M4 11h6M14 14h5" strokeWidth={1.5} />
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "webp-to-png":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <path {...common} d="M4 11h6M14 14h5" strokeWidth={1.5} />
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "heic-to-jpg":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <circle {...common} cx="7.5" cy="9.5" r="1.5" />
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <path {...common} d="M14 14h5" strokeWidth={1.5} />
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "heic-to-png":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="5" width="9" height="9" rx="1.5" />
+          <circle {...common} cx="7.5" cy="9.5" r="1.5" />
+          <rect {...common} x="12" y="10" width="9" height="9" rx="1.5" />
+          <path {...common} d="M14 14h4" strokeWidth={1.5} />
+          <path {...common} d="M12 9l2 2" />
+        </svg>
+      );
+    case "ai-translate":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <path {...common} d="M4 5h8M4 9h5" />
+          <path {...common} d="M6 5v8M10 5l-2 4" />
+          <rect {...common} x="13" y="4" width="8" height="10" rx="1.5" />
+          <path {...common} d="M15 7h4M15 10h3" />
+          <path {...common} d="M8 17l2 2 4-4" strokeWidth={2} />
+        </svg>
+      );
+    case "ai-summary":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="4" y="3" width="16" height="18" rx="2" />
+          <path {...common} d="M8 8h8M8 12h6M8 16h4" />
+          <path {...common} d="M17 6l1 1 2-2" strokeWidth={2} />
+        </svg>
+      );
+    case "ai-rewrite":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <path {...common} d="M4 6h12M4 10h8M4 14h10" />
+          <path {...common} d="M16 8l4 4-4 4M18 12H10" />
+        </svg>
+      );
     default:
       return (
         <svg viewBox="0 0 24 24" className={className} aria-hidden="true">

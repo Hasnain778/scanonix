@@ -67,19 +67,19 @@ export function DashboardPlanCard({
   return (
     <section
       aria-labelledby="plan-card-heading"
-      className="rounded-xl border border-white/8 bg-[#0c0c0c]/40 p-5 sm:p-6"
+      className="surface-card p-5 sm:p-6"
     >
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-sm text-scanonix-muted">Current plan</p>
+          <p className="text-eyebrow text-xs uppercase tracking-[0.18em]">Your plan</p>
           <div className="mt-2 flex flex-wrap items-center gap-3">
-            <h2 id="plan-card-heading" className="text-xl font-semibold capitalize text-white sm:text-2xl">
-              {plan}
+            <h2 id="plan-card-heading" className="text-page-title text-xl capitalize sm:text-2xl">
+              {plan === "free" ? "Free" : plan === "pro" ? "Pro" : plan}
             </h2>
             <span
               className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold capitalize ${getPlanBadgeClass(plan)}`}
             >
-              {isPaid ? "Active" : "Free tier"}
+              {isPaid ? "Active subscription" : "Free tier"}
             </span>
           </div>
 
@@ -96,7 +96,7 @@ export function DashboardPlanCard({
         </div>
 
         <div className="w-full shrink-0 lg:max-w-sm">
-          <div className="rounded-2xl border border-white/8 bg-black/25 p-5">
+          <div className="rounded-xl border border-white/8 bg-black/20 p-5">
             <div className="mb-3 flex items-end justify-between gap-3">
               <p className="text-sm font-medium text-white">Usage</p>
               {usage ? (

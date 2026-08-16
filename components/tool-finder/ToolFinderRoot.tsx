@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Sparkles, X } from "lucide-react";
-import { ToolIcon } from "@/components/ui/ToolIcon";
+import { ToolVisual } from "@/components/tools/ToolVisual";
 import { HOMEPAGE_CATEGORY_META } from "@/constants/homepage-tools";
 import { findTools, type ToolFinderMatch } from "@/lib/tools/tool-finder";
 
@@ -239,7 +239,7 @@ export function ToolFinderRoot() {
                                 onClick={handleOpenTool}
                                 className="flex items-center gap-3 rounded-xl border border-white/8 bg-black/30 px-3 py-2.5 text-sm text-white transition-colors hover:border-scanonix-orange/30 hover:bg-scanonix-orange/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
                               >
-                                <ToolIcon type={tool.icon} className="h-4 w-4 shrink-0 text-scanonix-orange" />
+                                <ToolVisual slug={tool.id} icon={tool.icon} size="sm" />
                                 <span>{tool.name}</span>
                               </Link>
                             </li>
@@ -260,11 +260,11 @@ export function ToolFinderRoot() {
           aria-controls="tool-finder-panel"
           aria-label={open ? "Close Tool Finder" : "Open Tool Finder"}
           onClick={open ? close : openPanel}
-          className="pointer-events-auto flex h-14 items-center gap-2 rounded-full border border-scanonix-orange/30 bg-[#111111]/95 px-4 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(255,106,0,0.28)] backdrop-blur-xl transition-colors hover:border-scanonix-orange/50 hover:bg-[#161616] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 sm:px-5"
+          className="tool-finder-launcher pointer-events-auto flex h-14 items-center gap-2 rounded-full px-4 text-sm font-semibold text-white backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 sm:px-5"
           whileHover={reduceMotion ? undefined : { scale: 1.03 }}
           whileTap={reduceMotion ? undefined : { scale: 0.97 }}
         >
-          <Sparkles className="h-5 w-5 text-scanonix-orange" aria-hidden="true" />
+          <Sparkles className="tool-finder-launcher__icon h-5 w-5 text-scanonix-orange" aria-hidden="true" />
           <span className="hidden sm:inline">Find a Tool</span>
           <span className="sm:hidden">Tools</span>
         </motion.button>
@@ -287,12 +287,12 @@ function MatchCard({
   return (
     <li className="rounded-2xl border border-white/10 bg-black/30 p-4">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-scanonix-orange/12">
-          <ToolIcon type={match.tool.icon} className="h-5 w-5 text-scanonix-orange" />
+        <div className="shrink-0">
+          <ToolVisual slug={match.tool.id} icon={match.tool.icon} size="md" animated />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-semibold text-white">{match.tool.name}</p>
+            <p className="text-tool-name text-sm">{match.tool.name}</p>
             {rank === 1 ? (
               <span className="rounded-full bg-scanonix-orange/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-scanonix-orange">
                 Best match

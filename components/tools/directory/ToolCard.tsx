@@ -1,5 +1,11 @@
-import { Button } from "@/components/ui/Button";
-import { ToolIcon } from "@/components/ui/ToolIcon";
+import Link from "next/link";
+import type { CSSProperties } from "react";
+import { ArrowRight } from "lucide-react";
+import { ToolVisual } from "@/components/tools/ToolVisual";
+import { ProBadge } from "@/components/ui/ProBadge";
+import { resolveToolVisual } from "@/constants/tool-visuals";
+import { FEATURED_TOOL_IDS } from "@/constants/tools-directory-data";
+import { getToolAccess } from "@/lib/plan/tool-access";
 import {
   getCategoryLabel,
   type ToolDirectoryEntry,
@@ -11,63 +17,52 @@ interface ToolCardProps {
 }
 
 export function ToolCard({ tool, featured = false }: ToolCardProps) {
-  return (
-    <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl glass-card glass-card-interactive transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 ${
-        featured ? "p-6 sm:p-7" : "p-5 sm:p-6"
-      }`}
-    >
-      <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-scanonix-orange/5 transition-transform duration-200 group-hover:scale-125" />
+  const visual = resolveToolVisual(tool.id, tool.icon);
+  const access = getToolAccess(tool.id);
+  const isPopular = (FEATURED_TOOL_IDS as readonly string[]).includes(tool.id);
 
-      <div className="relative mb-4 flex items-start justify-between gap-3">
-        <div
-          className={`flex shrink-0 items-center justify-center rounded-xl bg-scanonix-orange/10 text-scanonix-orange transition-colors duration-300 group-hover:bg-scanonix-orange group-hover:text-white group-hover:shadow-lg group-hover:shadow-scanonix-orange/25 ${
-            featured ? "h-14 w-14" : "h-12 w-12"
-          }`}
-        >
-          <ToolIcon type={tool.icon} className={featured ? "h-7 w-7" : "h-6 w-6"} />
-        </div>
+  const cardStyle = {
+    "--tool-accent": visual.accentColor,
+    "--tool-glow": visual.glowColor,
+  } as CSSProperties;
+
+  return (
+    <Link
+      href={tool.href}
+      className="tool-card-neon group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+      style={cardStyle}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <ToolVisual
+          slug={tool.id}
+          icon={tool.icon}
+          size={featured ? "lg" : "md"}
+          animated
+        />
 
         <div className="flex flex-wrap justify-end gap-1.5">
-          <span className="rounded-full border border-scanonix-orange/30 bg-scanonix-orange/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-scanonix-orange">
-            {getCategoryLabel(tool.category)}
-          </span>
-          {tool.privacyBadge && (
-            <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
-              {tool.privacyBadge}
-            </span>
-          )}
+          {isPopular ? (
+            <span className="tool-badge-popular">Popular</span>
+          ) : null}
+          {access?.requiresPro ? <ProBadge /> : null}
+          <span className="tool-badge-category">{getCategoryLabel(tool.category)}</span>
         </div>
       </div>
 
-      <h3
-        className={`relative text-card-title ${featured ? "text-xl" : "text-lg"}`}
-      >
+      <h3 className={`text-tool-name mt-4 ${featured ? "text-[0.9375rem] sm:text-base" : "text-sm sm:text-[0.9375rem]"}`}>
         {tool.name}
       </h3>
-      <p className="relative mt-2 flex-1 text-body">
+      <p className="text-body-bright mt-1 flex-1 text-sm leading-relaxed line-clamp-2">
         {tool.description}
       </p>
 
-      <div className="relative mt-5">
-        <Button href={tool.href} size={featured ? "lg" : "md"} className="w-full">
-          Open Tool
-          <svg
-            className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13 7l5 5m0 0l-5 5m5-5H6"
-            />
-          </svg>
-        </Button>
-      </div>
-    </article>
+      <span className="mt-3.5 inline-flex items-center gap-1.5 text-sm font-medium text-scanonix-orange-light transition-colors group-hover:text-scanonix-orange">
+        Open tool
+        <ArrowRight
+          className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      </span>
+    </Link>
   );
 }

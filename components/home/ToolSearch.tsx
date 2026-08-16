@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { ToolIcon } from "@/components/ui/ToolIcon";
+import { ToolVisual } from "@/components/tools/ToolVisual";
 import {
   HOMEPAGE_CATEGORY_META,
+  HOMEPAGE_TOOLS,
   type HomepageTool,
 } from "@/constants/homepage-tools";
 import { highlightMatch, searchHomeTools } from "@/lib/tools/search-home-tools";
@@ -15,13 +16,14 @@ interface ToolSearchProps {
   suggestions: readonly { id: string; name: string; href: string }[];
 }
 
+const TOOL_SEARCH_COUNT = HOMEPAGE_TOOLS.filter((tool) => tool.available).length;
+
 const ROTATING_PLACEHOLDERS = [
+  "What do you want to do?",
+  `Search ${TOOL_SEARCH_COUNT} tools…`,
   "compress PDF",
-  "translate document",
   "remove background",
-  "convert JPG to PDF",
-  "scan text",
-  "protect PDF",
+  "translate document",
 ] as const;
 
 function ResultLabel({ text, query }: { text: string; query: string }) {
@@ -140,12 +142,13 @@ export function ToolSearch({ suggestions }: ToolSearchProps) {
       <label htmlFor="home-tool-search" className="sr-only">
         Search tools
       </label>
-      <div className="home-hero-search relative">
+      <div className="home-hero-search search-focus-wrap relative">
+        <div className="search-focus-glow rounded-2xl" aria-hidden="true" />
         <div className="home-hero-search-focus-glow pointer-events-none absolute inset-0 rounded-2xl" aria-hidden="true" />
-        <div className="home-hero-search-pulse-glow pointer-events-none absolute inset-0 rounded-2xl" aria-hidden="true" />
+        <div className="home-hero-search-pulse-glow pointer-events-none absolute inset-0 rounded-2xl opacity-40" aria-hidden="true" />
 
         <Search
-          className="pointer-events-none absolute left-4 top-1/2 z-[2] h-5 w-5 -translate-y-1/2 text-scanonix-muted"
+          className="pointer-events-none absolute left-4 top-1/2 z-[2] h-5 w-5 -translate-y-1/2 text-[#e8e8ec]"
           aria-hidden="true"
         />
 
@@ -187,7 +190,7 @@ export function ToolSearch({ suggestions }: ToolSearchProps) {
           aria-expanded={open}
           aria-controls="home-tool-search-results"
           aria-autocomplete="list"
-          className="home-hero-search-input relative z-[1] w-full rounded-2xl border border-white/12 bg-[#111111] py-4 pl-12 pr-4 text-base text-white focus:border-scanonix-orange/60 focus:outline-none sm:text-lg"
+          className="home-hero-search-input relative z-[1] w-full rounded-2xl border border-white/12 bg-[#0a0908]/90 py-4 pl-12 pr-4 text-base text-white focus:border-scanonix-orange/60 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/15 sm:text-lg"
         />
       </div>
 
@@ -215,8 +218,8 @@ export function ToolSearch({ suggestions }: ToolSearchProps) {
                       index === activeIndex ? "bg-scanonix-orange/10" : "hover:bg-white/[0.04]"
                     }`}
                   >
-                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-scanonix-orange">
-                      <ToolIcon type={tool.icon} className="h-4 w-4" />
+                    <span className="mt-0.5 shrink-0">
+                      <ToolVisual slug={tool.id} icon={tool.icon} size="sm" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium text-white">

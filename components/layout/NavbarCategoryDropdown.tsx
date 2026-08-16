@@ -42,23 +42,23 @@ export function NavbarCategoryDropdown({ category, onNavigate }: NavbarCategoryD
     <div ref={rootRef} className="relative">
       <button
         type="button"
-        className="inline-flex items-center gap-1 rounded-lg px-1 py-2 text-sm font-medium text-neutral-300 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+        className="nav-link-premium inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen((value) => !value)}
       >
         {menu.label}
-        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open ? (
-        <div className="absolute left-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-[#111111] py-2 shadow-xl shadow-black/40">
+        <div className="absolute left-0 top-full z-[var(--z-dropdown)] mt-2 w-60 overflow-hidden rounded-xl border border-white/10 bg-[#111111]/95 py-1.5 shadow-xl shadow-black/40 backdrop-blur-md">
           <ul>
             {menu.tools.map((tool) => (
               <li key={tool.href}>
                 <Link
                   href={tool.href}
-                  className="block px-4 py-2.5 text-sm text-neutral-200 transition-colors hover:bg-scanonix-orange/10 hover:text-white"
+                  className="block px-3.5 py-2 text-sm text-neutral-200 transition-colors hover:bg-scanonix-orange/10 hover:text-white focus-visible:outline-none focus-visible:bg-scanonix-orange/10"
                   onClick={() => {
                     close();
                     onNavigate?.();
@@ -72,7 +72,7 @@ export function NavbarCategoryDropdown({ category, onNavigate }: NavbarCategoryD
           <div className="mt-1 border-t border-white/8 pt-1">
             <Link
               href={menu.viewAllHref}
-              className="block px-4 py-2.5 text-sm font-medium text-scanonix-orange hover:underline"
+              className="block px-3.5 py-2 text-sm font-semibold text-scanonix-orange transition-colors hover:bg-scanonix-orange/5 focus-visible:outline-none focus-visible:bg-scanonix-orange/5"
               onClick={() => {
                 close();
                 onNavigate?.();

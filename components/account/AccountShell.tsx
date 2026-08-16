@@ -10,11 +10,11 @@ interface AccountShellProps {
 
 export function AccountShell({ title, description, children }: AccountShellProps) {
   return (
-    <div className="grid gap-8 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-10">
+    <div className="grid gap-6 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-8">
       <AccountNav />
-      <div>
+      <div className="min-w-0">
         <PageHeader title={title} description={description} />
-        <div className="space-y-6">{children}</div>
+        <div className="mt-6 space-y-6">{children}</div>
       </div>
     </div>
   );

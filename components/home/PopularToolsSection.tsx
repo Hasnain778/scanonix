@@ -1,70 +1,39 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileText, ImageIcon, Shield, Sparkles } from "lucide-react";
 import { HomeToolCard } from "@/components/home/HomeToolCard";
 import {
   getPopularTools,
   HOMEPAGE_CATEGORY_GRIDS,
   HOMEPAGE_CATEGORY_META,
+  POPULAR_TOOL_IDS,
   type HomepageToolCategory,
 } from "@/constants/homepage-tools";
+
+const CATEGORY_ICONS: Record<HomepageToolCategory, typeof FileText> = {
+  pdf: FileText,
+  image: ImageIcon,
+  ai: Sparkles,
+  security: Shield,
+};
 
 export function PopularToolsSection() {
   const tools = getPopularTools();
 
   return (
-    <section id="popular-tools" className="border-t border-white/8 py-14 sm:py-16">
+    <section id="popular-tools" className="border-t border-white/8 py-12 sm:py-14">
       <div className="page-container">
-        <div className="mb-10 flex items-end justify-between gap-4 sm:mb-12">
+        <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Popular tools</h2>
-            <p className="mt-3 text-sm text-scanonix-muted sm:text-base">
+            <h2 className="text-section-title text-2xl sm:text-3xl">Popular tools</h2>
+            <p className="mt-2 text-sm text-body-bright sm:text-base">
               The most-used tools to get started quickly.
             </p>
           </div>
           <Link
             href="/tools"
-            className="hidden items-center gap-1 text-sm font-medium text-scanonix-orange hover:underline sm:inline-flex"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-scanonix-orange transition-colors hover:text-scanonix-orange-light"
           >
-            View all
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-          {tools.map((tool) => (
-            <HomeToolCard
-              key={tool.id}
-              name={tool.name}
-              shortDescription={tool.shortDescription}
-              href={tool.href}
-              icon={tool.icon}
-              category={tool.category}
-              premium
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CategoryBlock({ category }: { category: HomepageToolCategory }) {
-  const meta = HOMEPAGE_CATEGORY_META[category];
-  const tools = HOMEPAGE_CATEGORY_GRIDS[category];
-
-  return (
-    <section id={meta.anchor} className="border-t border-white/8 py-14 sm:py-16">
-      <div className="page-container">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">{meta.heading}</h2>
-            <p className="mt-2 max-w-2xl text-sm text-scanonix-muted sm:text-base">{meta.description}</p>
-          </div>
-          <Link
-            href={meta.viewAllHref}
-            className="inline-flex items-center gap-1 text-sm font-medium text-scanonix-orange hover:underline"
-          >
-            View all
+            Browse all tools
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
@@ -73,13 +42,13 @@ function CategoryBlock({ category }: { category: HomepageToolCategory }) {
           {tools.map((tool) => (
             <HomeToolCard
               key={tool.id}
+              toolId={tool.id}
               name={tool.name}
               shortDescription={tool.shortDescription}
               href={tool.href}
               icon={tool.icon}
-              category={category}
-              comingSoon={tool.comingSoon}
-              proOnly={tool.proOnly}
+              category={tool.category}
+              popular={(POPULAR_TOOL_IDS as readonly string[]).includes(tool.id)}
             />
           ))}
         </div>
@@ -88,14 +57,66 @@ function CategoryBlock({ category }: { category: HomepageToolCategory }) {
   );
 }
 
+function CategoryDiscoveryCard({ category }: { category: HomepageToolCategory }) {
+  const meta = HOMEPAGE_CATEGORY_META[category];
+  const toolCount = HOMEPAGE_CATEGORY_GRIDS[category].filter((tool) => !tool.comingSoon).length;
+  const Icon = CATEGORY_ICONS[category];
+
+  return (
+    <Link
+      href={meta.viewAllHref}
+      className="category-discovery-card group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+    >
+      <span className="category-discovery-card__icon">
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+      <span>
+        <span className="block text-base font-semibold text-white">{meta.heading}</span>
+        <span className="mt-1.5 block text-sm leading-relaxed text-body-bright">
+          {meta.description}
+        </span>
+      </span>
+      <span className="mt-auto flex items-center justify-between gap-2 pt-1 text-sm">
+        <span className="text-body-bright">
+          {toolCount} tool{toolCount === 1 ? "" : "s"}
+        </span>
+        <span className="inline-flex items-center gap-1 font-medium text-scanonix-orange">
+          Explore
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 export function ToolCategoriesSection() {
   const categories: HomepageToolCategory[] = ["pdf", "image", "ai", "security"];
 
   return (
-    <>
-      {categories.map((category) => (
-        <CategoryBlock key={category} category={category} />
-      ))}
-    </>
+    <section id="browse-categories" className="border-t border-white/8 py-12 sm:py-14">
+      <div className="page-container">
+        <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-section-title text-2xl sm:text-3xl">Browse by category</h2>
+            <p className="mt-2 max-w-2xl text-sm text-body-bright sm:text-base">
+              Jump straight into PDF, image, AI, or security tools.
+            </p>
+          </div>
+          <Link
+            href="/tools"
+            className="btn-primary inline-flex gap-2 px-5 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+          >
+            Browse All Tools
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.map((category) => (
+            <CategoryDiscoveryCard key={category} category={category} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

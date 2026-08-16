@@ -1,86 +1,45 @@
-"use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { buttonTap, staggerContainer } from "@/components/dashboard/dashboard-motion";
+import { ArrowRight, Search } from "lucide-react";
 
-interface QuickAction {
-  href: string;
-  emoji: string;
-  label: string;
-  description: string;
-}
-
-function buildQuickActions(latestScanId?: string | null): QuickAction[] {
-  const assistantHref = latestScanId
-    ? `/scan-results/${latestScanId}`
-    : "/tools/security-scan";
-
-  return [
-    {
-      href: "/tools/security-scan?type=website",
-      emoji: "🌐",
-      label: "Website Scan",
-      description: "Check any URL for threats",
-    },
-    {
-      href: "/monitors",
-      emoji: "📊",
-      label: "Monitoring",
-      description: "Watch sites for changes",
-    },
-    {
-      href: assistantHref,
-      emoji: "🤖",
-      label: "AI Assistant",
-      description: latestScanId
-        ? "Ask about your latest scan"
-        : "Run a scan to get AI help",
-    },
-  ];
-}
-
-interface DashboardQuickActionsProps {
-  latestScanId?: string | null;
-}
-
-export function DashboardQuickActions({ latestScanId }: DashboardQuickActionsProps) {
-  const actions = buildQuickActions(latestScanId);
-
+export function DashboardQuickActions() {
   return (
-    <section aria-labelledby="quick-actions-heading">
-      <div className="mb-5">
-        <h2 id="quick-actions-heading" className="text-lg font-semibold text-white">
-          Quick actions
-        </h2>
-      </div>
+    <section aria-labelledby="dashboard-quick-actions-heading" className="surface-card p-5 sm:p-6">
+      <h2 id="dashboard-quick-actions-heading" className="text-section-title">
+        Quick actions
+      </h2>
+      <p className="mt-1.5 text-body-bright text-sm">
+        Find a tool or jump into the full directory.
+      </p>
 
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-      >
-        {actions.map((action) => (
-          <motion.div key={action.label} {...buttonTap}>
-            <Link
-              href={action.href}
-              className="dashboard-scan-card group flex h-full flex-col rounded-2xl border border-white/10 bg-linear-to-br from-white/5 to-transparent p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
-            >
-              <div
-                className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-scanonix-orange/12 text-3xl transition-transform group-hover:scale-105 group-hover:shadow-[0_0_24px_rgba(255,106,0,0.2)]"
-                aria-hidden="true"
-              >
-                {action.emoji}
-              </div>
-              <h3 className="text-base font-semibold text-white">{action.label}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-scanonix-muted">
-                {action.description}
-              </p>
-            </Link>
-          </motion.div>
-        ))}
-      </motion.div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/tools"
+          className="dashboard-quick-action group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+        >
+          <span className="dashboard-quick-action__icon">
+            <Search className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="text-tool-name block text-sm">Find a Tool</span>
+            <span className="mt-0.5 block text-xs text-body-bright">Search and filter the workspace</span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-scanonix-muted transition-all group-hover:translate-x-0.5 group-hover:text-scanonix-orange-light" aria-hidden="true" />
+        </Link>
+
+        <Link
+          href="/tools"
+          className="dashboard-quick-action group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+        >
+          <span className="dashboard-quick-action__icon bg-white/5 text-white">
+            <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="text-tool-name block text-sm">Browse All Tools</span>
+            <span className="mt-0.5 block text-xs text-body-bright">Open the full tools directory</span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-scanonix-muted transition-all group-hover:translate-x-0.5 group-hover:text-scanonix-orange-light" aria-hidden="true" />
+        </Link>
+      </div>
     </section>
   );
 }

@@ -65,51 +65,140 @@ export function ToolsDirectory() {
   };
 
   return (
-    <div className="space-y-12 sm:space-y-16">
-      <header className="max-w-3xl">
-        <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-scanonix-orange">
-          <span className="h-px w-6 bg-scanonix-orange/60" />
-          Scanonix Workspace
-        </p>
-        <h1 className="text-balance text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-          All Scanonix Tools
-        </h1>
-        <p className="mt-5 text-base leading-relaxed text-scanonix-muted sm:text-lg">
-          Scan, convert, organise, and understand your documents — every live
-          tool in one premium directory. Process files locally in your browser
-          whenever possible.
-        </p>
-      </header>
-
-      <div className="space-y-4">
-        <label htmlFor={searchId} className="sr-only">
-          Search tools
-        </label>
-        <div className="relative">
+    <div className="tools-directory-page space-y-8 sm:space-y-10">
+      <div className="tools-directory-hero-zone">
+        {/* Layer 1 — background light trails */}
+        <div className="tools-directory-light-trails" aria-hidden="true">
           <svg
-            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-scanonix-muted"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.75}
-            aria-hidden="true"
+            className="tools-light-trail-svg"
+            viewBox="0 0 1200 280"
+            preserveAspectRatio="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
+            <defs>
+              <filter id="tools-trail-glow" x="-20%" y="-200%" width="140%" height="500%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <linearGradient id="tools-trail-gradient-left" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(255,106,0,0)" />
+                <stop offset="8%" stopColor="rgba(255,106,0,0.55)" />
+                <stop offset="16%" stopColor="rgba(255,180,100,0.9)" />
+                <stop offset="24%" stopColor="rgba(255,133,51,0.45)" />
+                <stop offset="34%" stopColor="rgba(255,106,0,0.06)" />
+                <stop offset="100%" stopColor="rgba(255,106,0,0)" />
+              </linearGradient>
+              <linearGradient id="tools-trail-gradient-right" x1="100%" y1="0%" x2="0%" y2="0%">
+                <stop offset="0%" stopColor="rgba(255,106,0,0)" />
+                <stop offset="8%" stopColor="rgba(255,106,0,0.5)" />
+                <stop offset="16%" stopColor="rgba(255,160,90,0.85)" />
+                <stop offset="24%" stopColor="rgba(255,122,69,0.4)" />
+                <stop offset="34%" stopColor="rgba(255,106,0,0.05)" />
+                <stop offset="100%" stopColor="rgba(255,106,0,0)" />
+              </linearGradient>
+              <linearGradient id="tools-trail-gradient-left-low" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(255,106,0,0)" />
+                <stop offset="10%" stopColor="rgba(255,106,0,0.35)" />
+                <stop offset="20%" stopColor="rgba(255,143,90,0.55)" />
+                <stop offset="30%" stopColor="rgba(255,106,0,0.08)" />
+                <stop offset="100%" stopColor="rgba(255,106,0,0)" />
+              </linearGradient>
+              <radialGradient id="tools-trail-flare-gradient">
+                <stop offset="0%" stopColor="rgba(255,200,140,0.85)" />
+                <stop offset="100%" stopColor="rgba(255,106,0,0)" />
+              </radialGradient>
+            </defs>
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              className="tools-light-trail-path tools-light-trail-path--left"
+              d="M-60,52 Q140,18 320,62 Q420,88 480,120"
+            />
+            <path
+              className="tools-light-trail-path tools-light-trail-path--right"
+              d="M1260,78 Q1080,42 900,72 Q780,98 720,128"
+            />
+            <path
+              className="tools-light-trail-path tools-light-trail-path--left-low"
+              d="M-40,168 Q160,148 340,178 Q400,192 440,210"
+            />
+            <circle
+              className="tools-light-trail-flare"
+              cx="148"
+              cy="52"
+              r="3.5"
+              fill="url(#tools-trail-flare-gradient)"
+            />
+            <circle
+              className="tools-light-trail-flare tools-light-trail-flare--2"
+              cx="1052"
+              cy="78"
+              r="3"
+              fill="url(#tools-trail-flare-gradient)"
+            />
+            <circle
+              className="tools-light-trail-flare tools-light-trail-flare--3"
+              cx="180"
+              cy="168"
+              r="2.5"
+              fill="url(#tools-trail-flare-gradient)"
             />
           </svg>
-          <input
-            id={searchId}
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search tools..."
-            className="w-full rounded-2xl border border-white/10 bg-black/30 py-4 pl-12 pr-4 text-base text-white placeholder:text-scanonix-muted/70 focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
-          />
         </div>
 
+        {/* Layer 2 — ambient glow */}
+        <div className="tools-directory-ambient-glow" aria-hidden="true" />
+
+        {/* Layer 3 — hero content backplate + text */}
+        <header className="tools-directory-hero tools-directory-header">
+          <div className="tools-hero-content-backplate" aria-hidden="true" />
+          <h1 className="text-page-title tools-hero-title">All Tools</h1>
+          <p className="text-page-description">
+            36 powerful tools for PDF, image and document workflows.
+          </p>
+        </header>
+
+        {/* Layer 4 — search */}
+        <div className="tools-directory-search-zone">
+          <label htmlFor={searchId} className="sr-only">
+            Search tools
+          </label>
+          <div className="search-focus-wrap tools-search-field-wrap rounded-2xl">
+            <div className="search-focus-glow rounded-2xl" aria-hidden="true" />
+            <div className="tools-search-field">
+              <span className="tools-search-icon-slot" aria-hidden="true">
+                <svg
+                  className="tools-search-icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  />
+                </svg>
+              </span>
+              <input
+                id={searchId}
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search tools — merge, compress, Word to PDF..."
+                className="tools-search-input"
+              />
+              <kbd className="tools-search-kbd-hint" aria-hidden="true">
+                /
+              </kbd>
+            </div>
+          </div>
+        </div>
+
+        {/* Layer 5 — category controls */}
+        <div className="tools-directory-controls-zone space-y-3">
         <div
           role="tablist"
           aria-label="Filter tools by category"
@@ -125,10 +214,8 @@ export function ToolsDirectory() {
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setCategory(item.id)}
-                className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${
-                  isActive
-                    ? "border-scanonix-orange bg-scanonix-orange/15 text-white shadow-sm shadow-scanonix-orange/20"
-                    : "border-white/10 bg-black/20 text-scanonix-muted hover:border-scanonix-orange/40 hover:text-white"
+                className={`tool-category-pill focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${
+                  isActive ? "tool-category-pill--active" : ""
                 }`}
               >
                 {item.label}
@@ -156,10 +243,8 @@ export function ToolsDirectory() {
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => setCategory(item.id)}
-                  className={`shrink-0 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 sm:text-sm ${
-                    isActive
-                      ? "border-scanonix-orange/60 bg-scanonix-orange/10 text-white"
-                      : "border-white/8 bg-black/15 text-scanonix-muted hover:border-scanonix-orange/30 hover:text-white"
+                  className={`tool-category-pill tool-category-pill--sub focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${
+                    isActive ? "tool-category-pill--active" : ""
                   }`}
                 >
                   {item.label}
@@ -169,28 +254,26 @@ export function ToolsDirectory() {
             })}
           </div>
         ) : null}
+        </div>
       </div>
 
       {showFeatured && (
         <section aria-labelledby="featured-tools-heading">
-          <div className="mb-6 flex items-end justify-between gap-4">
+          <div className="mb-4 flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-scanonix-orange">
-                Popular Tools
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-scanonix-orange">
+                Popular
               </p>
               <h2
                 id="featured-tools-heading"
-                className="mt-2 text-2xl font-bold text-white sm:text-3xl"
+                className="mt-1.5 text-section-title text-xl sm:text-2xl"
               >
                 Start with the essentials
               </h2>
             </div>
-            <p className="hidden text-sm text-scanonix-muted sm:block">
-              {featuredTools.length} featured
-            </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="tools-grid-neon">
             {featuredTools.map((tool) => (
               <ToolCard key={tool.id} tool={tool} featured />
             ))}
@@ -199,20 +282,19 @@ export function ToolsDirectory() {
       )}
 
       <section aria-labelledby="all-tools-heading">
-        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 id="all-tools-heading" className="text-2xl font-bold text-white">
+            <h2 id="all-tools-heading" className="text-section-title text-xl sm:text-2xl">
               {showFeatured ? "All tools" : `${activeCategoryLabel} tools`}
             </h2>
-            <p className="mt-1 text-sm text-scanonix-muted">
-              {gridTools.length} tool{gridTools.length === 1 ? "" : "s"}{" "}
-              available
+            <p className="mt-0.5 text-sm text-body-bright">
+              {gridTools.length} tool{gridTools.length === 1 ? "" : "s"} available
             </p>
           </div>
         </div>
 
         {gridTools.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="tools-grid-neon">
             {gridTools.map((tool) => (
               <ToolCard key={tool.id} tool={tool} />
             ))}

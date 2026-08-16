@@ -190,11 +190,16 @@ function run() {
     toolFinderSource.includes('"redact-pdf":'),
   );
 
-  // N. Pro badge preserved in discovery
+  // N. Pro badge preserved in discovery (derived at runtime via buildHomepageGridItem)
+  assert(
+    "N buildHomepageGridItem derives proOnly from tool-access",
+    homepageSource.includes("function buildHomepageGridItem") &&
+      homepageSource.includes("proOnly: access?.requiresPro === true") &&
+      homepageSource.includes('"redact-pdf"'),
+  );
   assert(
     "N homepage security grid proOnly for redact-pdf",
-    homepageSource.includes('id: "redact-pdf"') &&
-      Boolean(homepageSource.match(/id: "redact-pdf"[\s\S]*?proOnly: true/)),
+    securityGrid?.proOnly === true && access?.requiresPro === true,
   );
 
   // O. no duplicate Redact tool

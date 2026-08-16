@@ -2,15 +2,15 @@
 @import "./design-system.css";
 
 :root {
-  --background: #121212;
+  --background: #0a0908;
   --foreground: #ffffff;
   --scanonix-orange: #ff6a00;
   --scanonix-orange-light: #ff8533;
   --scanonix-orange-dark: #e05e00;
-  --scanonix-surface: #1b1b1b;
-  --scanonix-surface-elevated: #242424;
+  --scanonix-surface: #141312;
+  --scanonix-surface-elevated: #1c1a18;
   --scanonix-border: rgba(255, 255, 255, 0.08);
-  --scanonix-muted: #a3a3a3;
+  --scanonix-muted: #c4c4cc;
   --scanonix-glass: rgba(27, 27, 27, 0.72);
   --scanonix-glass-border: rgba(255, 255, 255, 0.1);
 }

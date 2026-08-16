@@ -1,6 +1,7 @@
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { PopularToolsSection, ToolCategoriesSection } from "@/components/home/PopularToolsSection";
+import { ScanonixProPromo } from "@/components/home/ScanonixProPromo";
 import { HomeHero } from "@/components/sections/HomeHero";
 import {
   createPageMetadata,
@@ -48,6 +49,7 @@ export default function Home() {
         <HomeHero />
         <PopularToolsSection />
         <ToolCategoriesSection />
+        <ScanonixProPromo />
       </main>
       <Footer />
     </>

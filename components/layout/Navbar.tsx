@@ -31,17 +31,8 @@ function useMounted() {
   );
 }
 
-function isNavLinkActive(pathname: string, href: string): boolean {
-  if (href.startsWith("/#")) {
-    return pathname === "/";
-  }
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
 function navLinkClass(active: boolean) {
-  return active
-    ? "text-white"
-    : "text-neutral-300 transition-colors hover:text-white";
+  return active ? "nav-link-premium nav-link-premium--active" : "nav-link-premium";
 }
 
 function mobileLinkClass(active: boolean) {
@@ -258,13 +249,13 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-[80] transition-[background-color,border-color] duration-200 ${
+        className={`fixed inset-x-0 top-0 z-[var(--z-header)] transition-[background-color,border-color,box-shadow] duration-200 ${
           scrolled || menuOpen
-            ? "border-b border-white/6 bg-[#0a0a0a]/95"
+            ? "border-b border-white/6 bg-[#0a0908]/95 shadow-[var(--shadow-xs)] backdrop-blur-md"
             : "border-b border-transparent bg-transparent"
         }`}
       >
-        <div className="mx-auto h-20 max-w-[1440px] px-5 sm:px-6 lg:px-8">
+        <div className="mx-auto h-16 max-w-[1440px] px-4 sm:px-6 lg:px-8">
           {/* Mobile + tablet: logo left, hamburger right */}
           <div className="flex h-full items-center justify-between gap-2 lg:hidden">
             <Link
@@ -279,7 +270,7 @@ export function Navbar() {
 
             <button
               type="button"
-              className="nav-menu-trigger flex h-12 w-12 items-center justify-center"
+              className="nav-menu-trigger flex h-10 w-10 items-center justify-center"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation-panel"
@@ -298,25 +289,25 @@ export function Navbar() {
               <NavbarBrand onNavigate={closeMenu} />
             </div>
 
-            <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center justify-center gap-1 xl:gap-1.5">
               <NavbarCategoryDropdown category="pdf" />
               <NavbarCategoryDropdown category="image" />
               <NavbarCategoryDropdown category="ai" />
               <NavbarCategoryDropdown category="security" />
               <Link
                 href={NAV_PRICING_LINK.href}
-                className={`rounded-lg px-1 py-2 text-sm font-medium ${navLinkClass(pathname === NAV_PRICING_LINK.href)}`}
+                className={`rounded-lg px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${navLinkClass(pathname === NAV_PRICING_LINK.href)}`}
               >
                 {NAV_PRICING_LINK.label}
               </Link>
             </div>
 
-            <div className="flex items-center justify-end gap-4">
+            <div className="flex items-center justify-end gap-3">
               {showAuthenticated ? (
                 <>
                   <Link
                     href="/dashboard"
-                    className={`rounded-lg px-1 py-2 text-sm font-medium ${navLinkClass(pathname.startsWith("/dashboard"))}`}
+                    className={`rounded-lg px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${navLinkClass(pathname.startsWith("/dashboard"))}`}
                   >
                     Dashboard
                   </Link>
@@ -326,13 +317,13 @@ export function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className="rounded-lg px-1 py-2 text-sm font-medium text-neutral-300 transition-colors hover:text-white"
+                    className="nav-link-premium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
                   >
                     Log in
                   </Link>
                   <Link
                     href="/register"
-                    className="inline-flex items-center justify-center rounded-xl bg-scanonix-orange px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-scanonix-orange-light"
+                    className="inline-flex items-center justify-center rounded-lg bg-scanonix-orange px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-scanonix-orange-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
                   >
                     Create account
                   </Link>

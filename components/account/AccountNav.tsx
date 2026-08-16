@@ -14,7 +14,7 @@ export function AccountNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Account sections" className="surface-card rounded-2xl p-2 lg:sticky lg:top-28">
+    <nav aria-label="Account sections" className="surface-card h-fit rounded-xl p-1.5 lg:sticky lg:top-28">
       <ul className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
         {NAV_ITEMS.map((item) => {
           const isActive =
@@ -25,9 +25,9 @@ export function AccountNav() {
             <li key={item.href} className="shrink-0 lg:shrink">
               <Link
                 href={item.href}
-                className={`block whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 ${
+                className={`block whitespace-nowrap rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${
                   isActive
-                    ? "bg-white/8 text-white"
+                    ? "bg-scanonix-orange/10 text-white"
                     : "text-scanonix-muted hover:bg-white/4 hover:text-white"
                 }`}
                 aria-current={isActive ? "page" : undefined}

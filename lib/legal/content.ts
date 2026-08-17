@@ -10,7 +10,7 @@ export const LEGAL_REVIEW_NOTICE =
 
 export const SUPPORT_EMAIL = "support@scanonix.com";
 
-export const PRIVACY_LAST_UPDATED = "14 July 2026";
+export const PRIVACY_LAST_UPDATED = "17 August 2026";
 
 export const PRIVACY_SECTIONS: LegalSection[] = [
   {
@@ -59,9 +59,11 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     id: "analytics",
     title: "Analytics",
     paragraphs: [
-      "We may use analytics tools to understand how visitors use our website and products, improve performance, diagnose errors, and measure feature adoption.",
-      "Analytics data may include page views, referral sources, device and browser characteristics, and aggregated interaction events. We configure analytics to avoid collecting unnecessary personal information where possible.",
-      "You may be able to limit certain analytics through browser settings, cookie preferences, or opt-out mechanisms offered by specific providers.",
+      "Scanonix may use Google Analytics 4 to understand how visitors use our website — for example, which pages are viewed, how visitors reach Scanonix, and general device or browser characteristics.",
+      "Analytics on scanonix.com is optional and consent-based. Google Analytics is loaded only after you accept analytics through our cookie banner or the Cookie preferences control in the website footer. If you reject analytics, or have not yet made a choice, Scanonix does not load Google Analytics for your visit.",
+      "You can change or withdraw your analytics choice at any time using Cookie preferences. Withdrawing consent stops further Google Analytics collection on future visits in that browser, subject to any analytics cookies already set until they expire or are cleared.",
+      "When analytics consent is granted, Google Analytics may process usage information such as pages visited, referral sources, device and browser type, screen resolution, approximate location derived from IP address, and configured page-interaction events. We configure Google Analytics to avoid collecting unnecessary personal information. Scanonix does not send names, email addresses, uploaded file names, document contents, OCR or PDF text, passwords, payment card details, or other tool-file data to Google Analytics.",
+      "Google provides analytics services to us as a service provider and may act as a data processor where applicable. Google may process analytics information according to its own privacy policy and data processing terms. You may also use browser settings or provider opt-out tools where available, in addition to our Cookie preferences control.",
     ],
   },
   {
@@ -69,8 +71,8 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     title: "Cookies",
     paragraphs: [
       "Scanonix uses cookies and similar technologies to operate the website, remember preferences, maintain sessions, and support analytics or security functions.",
-      "Essential cookies are used to provide core functionality. Optional cookies, where used, help us understand usage patterns or improve marketing effectiveness.",
-      "You can control cookies through your browser settings. Disabling certain cookies may affect site functionality or saved preferences.",
+      "Essential cookies are used to provide core functionality. Optional analytics cookies, where used, are set only after you accept analytics and help us measure website usage through Google Analytics 4.",
+      "Your analytics consent preference may be stored locally in your browser (for example, using local storage) so Scanonix can remember your choice between visits. You can control cookies through your browser settings and through Cookie preferences on our website. Disabling certain cookies may affect site functionality or saved preferences.",
     ],
   },
   {

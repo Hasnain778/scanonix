@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConsentPreferencesLink } from "@/components/analytics/ConsentPreferencesLink";
 import { FooterSocialLinks } from "@/components/layout/FooterSocialLinks";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 import { ScanonixLogo } from "@/components/ui/ScanonixLogo";
@@ -48,6 +49,11 @@ function FooterColumn({
             </Link>
           </li>
         ))}
+        {title === "Company" ? (
+          <li>
+            <ConsentPreferencesLink />
+          </li>
+        ) : null}
       </ul>
     </div>
   );

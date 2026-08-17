@@ -77,6 +77,8 @@ GSC_SITE_URL=https://www.scanonix.com/
 | Symptom | Action |
 |--------|--------|
 | `HUMAN_SETUP_REQUIRED` | Complete steps 1–3 above |
+| `ERR_CONNECTION_REFUSED` after Google login | Desktop OAuth redirects to the URI in `client_secret.json` (often `http://localhost`). Re-run `npm run seo:auth` — the listener must match that exact host/port/path. Run `npm run verify:seo-gsc-auth` to confirm alignment. |
+| Port 80 bind error on Windows | Close services using port 80 or run the terminal as Administrator, then retry `npm run seo:auth` |
 | No properties listed | Verify Google account has GSC access |
 | Write scope error | Delete `token.json`, re-run `seo:auth` with read-only scope |
 | Empty analytics | Normal for new/low-volume sites — see EARLY SIGNAL rules in SPECIALIST-RULES.md |

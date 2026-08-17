@@ -9,21 +9,62 @@ import {
   resolveGscCredentialPaths,
 } from "@/lib/seo/local/credentials";
 
-export function loadOAuthClient(cwd = process.cwd()) {
+type OAuthClientConfig = {
+  client_id: string;
+  client_secret: string;
+  redirect_uris?: string[];
+};
+
+type OAuthClientSecretFile = {
+  installed?: OAuthClientConfig;
+  web?: OAuthClientConfig;
+};
+
+/** Loopback target derived from the Desktop OAuth client redirect URI. */
+export interface OAuthRedirectTarget {
+  redirectUri: string;
+  hostname: string;
+  port: number;
+  pathname: string;
+}
+
+function readOAuthClientConfig(cwd = process.cwd()): OAuthClientConfig {
   const { clientSecretPath } = resolveGscCredentialPaths(cwd);
   const raw = readFileSync(clientSecretPath, "utf8");
-  const config = JSON.parse(raw) as {
-    installed?: { client_id: string; client_secret: string; redirect_uris?: string[] };
-    web?: { client_id: string; client_secret: string; redirect_uris?: string[] };
-  };
+  const config = JSON.parse(raw) as OAuthClientSecretFile;
 
   const credentials = config.installed ?? config.web;
   if (!credentials?.client_id || !credentials.client_secret) {
     throw new Error("Invalid OAuth client JSON — expected installed or web credentials.");
   }
 
-  const redirectUri =
-    credentials.redirect_uris?.[0] ?? "http://127.0.0.1:42813/oauth2callback";
+  return credentials;
+}
+
+export function resolveOAuthRedirectUri(cwd = process.cwd()): string {
+  const credentials = readOAuthClientConfig(cwd);
+  return credentials.redirect_uris?.[0] ?? "http://127.0.0.1:42813/oauth2callback";
+}
+
+export function resolveOAuthRedirectTarget(cwd = process.cwd()): OAuthRedirectTarget {
+  const redirectUri = resolveOAuthRedirectUri(cwd);
+  const parsed = new URL(redirectUri);
+
+  return {
+    redirectUri,
+    hostname: parsed.hostname,
+    port: parsed.port
+      ? Number(parsed.port)
+      : parsed.protocol === "https:"
+        ? 443
+        : 80,
+    pathname: parsed.pathname || "/",
+  };
+}
+
+export function loadOAuthClient(cwd = process.cwd()) {
+  const credentials = readOAuthClientConfig(cwd);
+  const redirectUri = resolveOAuthRedirectUri(cwd);
 
   return new google.auth.OAuth2(
     credentials.client_id,

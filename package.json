@@ -26,6 +26,7 @@
     "seo:report": "npx --yes tsx scripts/seo/report.ts",
     "seo:gsc": "npm run seo:report",
     "seo:index-audit": "npx --yes tsx scripts/seo/index-audit.ts",
+    "verify:seo-gsc-auth": "npx --yes tsx scripts/verify-seo-gsc-auth.ts",
     "verify:seo-129b": "npx --yes tsx scripts/verify-seo-129b.ts",
     "verify:seo-129c": "npx --yes tsx scripts/verify-seo-129c.ts",
     "verify:seo-129d": "npx --yes tsx scripts/verify-seo-129d.ts",

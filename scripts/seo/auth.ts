@@ -14,11 +14,9 @@ import {
 import {
   exchangeCodeForToken,
   getAuthUrl,
+  resolveOAuthRedirectTarget,
 } from "@/lib/seo/local/auth";
 import { GSC_READONLY_SCOPE } from "@/lib/seo/local/constants";
-
-const REDIRECT_PORT = 42813;
-const REDIRECT_PATH = "/oauth2callback";
 
 async function main() {
   console.log("\nScanonix GSC OAuth (read-only)\n");
@@ -32,13 +30,14 @@ async function main() {
     process.exit(1);
   }
 
+  const redirectTarget = resolveOAuthRedirectTarget();
   const authUrl = getAuthUrl();
 
   await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
       try {
-        const requestUrl = new URL(req.url ?? "/", `http://127.0.0.1:${REDIRECT_PORT}`);
-        if (requestUrl.pathname !== REDIRECT_PATH) {
+        const requestUrl = new URL(req.url ?? "/", redirectTarget.redirectUri);
+        if (requestUrl.pathname !== redirectTarget.pathname) {
           res.writeHead(404);
           res.end("Not found");
           return;
@@ -77,15 +76,35 @@ async function main() {
       }
     });
 
-    server.listen(REDIRECT_PORT, "127.0.0.1", () => {
-      console.log("1. Open this URL in your browser:\n");
+    server.listen(redirectTarget.port, redirectTarget.hostname, () => {
+      console.log(`OAuth redirect URI: ${redirectTarget.redirectUri}`);
+      console.log("\n1. Open this URL in your browser:\n");
       console.log(authUrl);
       console.log("\n2. Sign in with the Google account that has Scanonix Search Console access.");
       console.log("3. Approve READ-ONLY access only.");
-      console.log(`\nWaiting for callback on http://127.0.0.1:${REDIRECT_PORT}${REDIRECT_PATH} ...\n`);
+      console.log(
+        `\nWaiting for callback on ${redirectTarget.redirectUri} ...\n`,
+      );
     });
 
-    server.on("error", reject);
+    server.on("error", (error) => {
+      if (
+        redirectTarget.port === 80 &&
+        error instanceof Error &&
+        (error.message.includes("EACCES") || error.message.includes("EADDRINUSE"))
+      ) {
+        reject(
+          new Error(
+            `Cannot bind to ${redirectTarget.redirectUri} (${error.message}). ` +
+              "Port 80 may require elevated permissions or be in use. " +
+              "Close other services on port 80 or run the terminal as Administrator, then retry.",
+          ),
+        );
+        return;
+      }
+
+      reject(error);
+    });
   });
 }
 

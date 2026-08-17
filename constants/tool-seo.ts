@@ -1932,58 +1932,75 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
   ocr: {
     id: "ocr",
     path: "/tools/ocr",
-    seoTitle: toolTitle("OCR Online", "Extract Text from Images & PDFs"),
+    seoTitle: toolTitle("OCR Scan Online", "Extract Text from Scanned Documents & Images"),
     metaDescription:
-      "Extract text from scanned PDFs and images with online OCR. Choose a language, recognise text in your browser, then copy or download the result.",
+      "Use Scanonix as an online OCR reader to scan documents and images, extract text from scanned PDF pages and photos, and copy or download editable text from your browser.",
     h1: "Extract Text from Scanned PDFs and Images",
     headerDescription:
-      "Turn scanned PDF pages and photos into editable text. Upload a file, choose the language, and copy or download the OCR result from your browser.",
+      "Run OCR on scanned documents and image files to pull out readable text. Upload a scan or photo, choose the document language, and copy or download the extracted text from your browser.",
     pageDescription:
-      "Pull readable text from scanned PDF pages, phone photos, and image files. Select the document language, run OCR locally in your browser, and copy or download the extracted text.",
+      "Scanonix OCR turns scanned PDF pages, phone photos, and image files into copyable text. Upload a document scan or picture of printed text, select the language, and run OCR locally in your browser to extract the words without retyping. The result is plain text you can search, edit, paste into another app, or pass to PDF to Word or AI Translate when you need a different output format.",
     howToSteps: [
-      "Upload a scanned PDF, photo, or image file.",
-      "Choose the language printed in the document.",
-      "Run OCR, then copy or download the extracted text.",
+      "Upload a scanned PDF, photo, screenshot, or image file containing printed text.",
+      "Choose the language printed in the document — correct language selection improves recognition.",
+      "Run OCR to extract the text, then copy it to your clipboard or download it as a file.",
     ],
     whyUse: [
-      "Recover text from scanned contracts, forms, and receipts.",
-      "Search or quote content trapped inside image-only PDF pages.",
-      "Avoid retyping printed documents line by line.",
-      "Use the output with PDF to Word when you need an editable document.",
+      "Recover text from scanned contracts, forms, receipts, and letters without manual retyping.",
+      "Search or quote content trapped inside image-only PDF pages or photo scans.",
+      "Turn a photographed page, sign, or printed handout into editable text in seconds.",
+      "Processing runs locally in your browser with Tesseract.js — your file stays on your device.",
     ],
     useCases: [
-      "Extract text from a scanned multi-page PDF for editing or quoting.",
-      "Digitise a photographed whiteboard or handwritten meeting notes page.",
-      "Copy text from a screenshot of a printed invoice or letter.",
-      "Prepare OCR output before translation or summarisation in other Scanonix tools.",
+      "Extract text from a scanned multi-page PDF before editing or quoting sections in email.",
+      "Digitise a clear photo of a printed whiteboard, flyer, or typed meeting handout.",
+      "Copy text from a screenshot of an invoice, letter, or form shared in chat.",
+      "Pull readable text from a phone photo of a book page, receipt, or shipping label.",
+      "Prepare OCR output before translation, summarisation, or conversion with other Scanonix tools.",
     ],
     limitations: [
       "OCR works best on clear, printed text. Handwriting and low-contrast scans are harder to read accurately.",
       "Skewed, blurry, or heavily compressed images reduce recognition quality.",
       "Complex page layouts may extract text out of visual reading order.",
-      "OCR returns text content — it does not rebuild the original PDF layout.",
+      "OCR returns text content — it does not rebuild the original PDF layout or formatting.",
+      "Choose the correct document language before running OCR — mismatched language settings reduce accuracy.",
     ],
     keyFeatures: [
-      "Scanned PDF and image support",
-      "Multiple language selection",
+      "Scanned PDF and image file support",
+      "Multiple language selection for printed text",
       "Local browser OCR via Tesseract.js",
       "Copy or download extracted text",
     ],
     faqs: [
       {
+        question: "What is an online OCR reader?",
+        answer:
+          "An online OCR reader recognises printed text inside uploaded files and returns it as editable text. Scanonix lets you upload a scanned PDF or image, run OCR in your browser, and copy or download the extracted words.",
+      },
+      {
+        question: "How do I scan a document and extract text online?",
+        answer:
+          "Upload your scanned PDF or a photo of the printed page, select the language shown in the document, and run OCR. Scanonix returns the recognised text for copying or download.",
+      },
+      {
         question: "Can OCR extract text from an image?",
         answer:
-          "Yes. Upload a photo or screenshot of printed text, select the language, and Scanonix returns the recognised text.",
+          "Yes. Upload a photo or screenshot of printed text, select the language, and Scanonix returns the recognised text. Clear, well-lit images of typed or printed content work best.",
       },
       {
         question: "How do I extract text from a scanned PDF?",
         answer:
-          "Upload the scanned PDF or page image, select the correct language, and run OCR. Scanonix returns the recognised text for copying or download.",
+          "Upload the scanned PDF or a single page image, select the correct language, and run OCR. Scanonix returns the recognised text for copying or download.",
+      },
+      {
+        question: "What is OCR text extraction?",
+        answer:
+          "OCR text extraction is the process of reading printed characters from a scan or image and outputting them as searchable, copyable text. Scanonix performs this locally in your browser.",
       },
       {
         question: "Can OCR read text from a photo?",
         answer:
-          "Yes. Clear photos of printed documents, signs, or pages work well. Blurry or angled shots may reduce accuracy.",
+          "Yes. Clear photos of printed documents, signs, or pages work well. Blurry, angled, or low-contrast shots may reduce accuracy.",
       },
       {
         question: "Does Scanonix OCR run online in the cloud?",
@@ -2003,9 +2020,10 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     ],
     relatedToolIds: ["pdf-to-word", "ai-translate", "image-to-pdf", "compress-pdf"],
     keywords: [
+      "ocr scan online",
+      "online ocr reader",
       "extract text from scanned pdf",
-      "image to text",
-      "online ocr",
+      "ocr text extraction",
       "extract text from image",
     ],
   },
@@ -2147,40 +2165,47 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
   "qr-scanner": {
     id: "qr-scanner",
     path: "/tools/qr-scanner",
-    seoTitle: toolTitle("QR Scanner Online", "Scan QR Codes from Camera or Image"),
+    seoTitle: toolTitle("QR Code Scanner Online", "Decode QR Codes from Camera or Image"),
     metaDescription:
-      "Scan QR codes online using your camera or an uploaded image. Decode links, text, and contact details instantly in your browser.",
-    h1: "QR Scanner",
+      "Scan and decode QR codes online using your camera or an uploaded image. This tool reads QR codes only — for text extraction from scanned documents, use Scanonix OCR.",
+    h1: "QR Code Scanner",
+    headerDescription:
+      "Decode QR codes from your camera or an uploaded image. This tool reads QR barcodes — not document pages. To extract text from a scanned PDF or photo, use the OCR tool.",
     pageDescription:
-      "Scan QR codes with your camera or upload an image to decode links and text instantly.",
+      "Scan QR codes with your camera or upload a QR code image to decode links, text, and contact details instantly. Scanonix QR Code Scanner is for reading QR barcodes only. If you need to extract printed text from a scanned document or photo, use the OCR tool instead.",
     howToSteps: [
       "Allow camera access or upload a QR code image.",
-      "Point the camera at the code or select the image.",
+      "Point the camera at the QR code or select the image.",
       "Copy or open the decoded result.",
     ],
     whyUse: [
-      "Decode QR codes on desktop without a phone app.",
+      "Decode QR codes on desktop without installing a phone app.",
       "Extract links from QR images shared in chat or email.",
-      "Works locally for quick everyday scanning.",
+      "Works locally in your browser for quick everyday QR reading.",
     ],
     keyFeatures: [
-      "Camera and image upload modes",
-      "Instant decode",
+      "Camera and QR image upload modes",
+      "Instant QR decode",
       "Local processing",
       "Copy decoded content",
     ],
     faqs: [
       {
         question: "Do I need to install an app?",
-        answer: "No. Scanonix QR Scanner runs in your browser.",
+        answer: "No. Scanonix QR Code Scanner runs in your browser.",
+      },
+      {
+        question: "Is this a document or photo scanner?",
+        answer:
+          "No. This tool decodes QR codes only. To extract text from a scanned PDF, receipt photo, or image of printed text, use Scanonix OCR.",
       },
       {
         question: "Can it scan blurry QR images?",
-        answer: "Clear, well-lit codes work best; very blurry images may fail to decode.",
+        answer: "Clear, well-lit QR codes work best; very blurry images may fail to decode.",
       },
     ],
     relatedToolIds: ["ocr", "metadata-cleaner", "image-compressor", "ai-translate"],
-    keywords: ["qr scanner online", "scan qr code", "qr decoder"],
+    keywords: ["qr code scanner online", "scan qr code", "qr decoder", "decode qr code"],
   },
   "security-scan": {
     id: "security-scan",

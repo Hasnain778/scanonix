@@ -239,56 +239,57 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/pdf-to-word",
     seoTitle: toolTitle("PDF to Word Converter Online", "PDF to DOCX"),
     metaDescription:
-      "Convert PDF to Word online and download an editable DOCX file. Secure server-side conversion with OCR support for scanned PDFs.",
+      "Convert PDF to Word online and download an editable DOCX file. Pro server-side conversion via CloudConvert — strongest results from text-based PDFs; scanned files may need cleanup.",
     h1: "Convert PDF to Word Online",
     headerDescription:
-      "Turn PDF files into editable Word documents. Upload a PDF, get DOCX output, and edit in Word or Google Docs.",
+      "Turn PDF files into editable Word documents. Upload a PDF, convert to DOCX on Scanonix servers, and edit the result in Word or Google Docs.",
     pageDescription:
-      "Convert PDF to Word or DOCX while keeping headings, paragraphs, and tables editable where possible. Your PDF is securely uploaded and converted using Scanonix's conversion service.",
+      "Convert PDF to Word or DOCX when you need an editable document instead of a fixed layout. Text-based PDFs usually produce the most usable headings, paragraphs, and tables. Scanned or image-only PDFs can also be uploaded, but conversion quality depends on scan clarity and may require manual cleanup afterward. Scanonix performs conversion securely on its servers via CloudConvert, then returns a DOCX file you can open in Microsoft Word, Google Docs, or LibreOffice.",
     howToSteps: [
       "Upload your PDF file.",
-      "Scanonix extracts text, headings, and tables into DOCX format.",
+      "Scanonix converts it to DOCX format on secure servers via CloudConvert.",
       "Download the Word file and edit it in Microsoft Word, Google Docs, or LibreOffice.",
     ],
     whyUse: [
       "Edit contracts, forms, and reports that arrived as PDF.",
       "Recover workable structure instead of retyping page by page.",
-      "Handle scanned PDFs with built-in OCR fallback.",
-      "Open the output DOCX in the word processor you already use.",
+      "Convert archive PDFs into a format your team can comment on and revise.",
+      "Use the output in the word processor you already rely on day to day.",
     ],
     useCases: [
       "Update an old PDF résumé or proposal without starting from scratch.",
       "Extract tables from a PDF report into an editable Word document.",
-      "Convert a scanned paper form so you can fill it digitally.",
-      "Move archive PDFs into a format your team can comment on and revise.",
+      "Turn a client PDF brief into a DOCX file your team can revise together.",
+      "Move archive PDFs into a format suitable for tracked changes and comments.",
     ],
     limitations: [
       "Complex magazine-style layouts, multi-column designs, and custom fonts may need manual cleanup.",
-      "Scanned pages rely on OCR, so accuracy depends on scan quality and language.",
+      "Scanned or image-only PDFs often produce rougher DOCX output than text-based PDFs.",
       "Password-protected PDFs must be unlocked before conversion.",
-      "Embedded images and exact pixel-perfect spacing may not match the original PDF.",
+      "Embedded images, exact spacing, and pixel-perfect layout may not match the original PDF.",
+      "Conversion runs via CloudConvert on Scanonix servers — not locally in your browser.",
     ],
     keyFeatures: [
       "DOCX output for Word and Google Docs",
-      "Native text extraction with OCR fallback",
-      "Headings, paragraphs, and tables where detected",
-      "Secure server-side conversion",
+      "Server-side CloudConvert PDF to DOCX conversion",
+      "Headings, paragraphs, and tables where the source PDF allows",
+      "Secure upload with files deleted after processing",
     ],
     faqs: [
       {
         question: "Can I convert a scanned PDF to Word?",
         answer:
-          "Yes. Scanonix detects image-only pages and runs OCR before building the DOCX file.",
+          "You can upload scanned PDFs, but results vary more than with text-based files. CloudConvert builds the DOCX from what it can read in the PDF, so blurry scans, skewed pages, or handwriting may need cleanup afterward.",
       },
       {
         question: "Can I convert PDF to Word without losing formatting?",
         answer:
-          "Scanonix keeps headings, paragraphs, and tables when they can be read from the PDF. Complex designs may need minor edits after conversion.",
+          "Scanonix aims to keep headings, paragraphs, and tables when the PDF contains readable structure. Complex designs, custom fonts, and multi-column layouts often need minor edits after conversion.",
       },
       {
-        question: "Does this work on scanned PDFs?",
+        question: "Does PDF to Word use Scanonix OCR automatically?",
         answer:
-          "Yes. When a page is an image of text, Scanonix runs OCR to extract editable content before building the DOCX file.",
+          "No. This tool converts the PDF to DOCX through CloudConvert on Scanonix servers. It does not run the standalone Scanonix OCR tool first. Use OCR separately if you only need plain extracted text.",
       },
       {
         question: "Will tables transfer to Word?",
@@ -296,14 +297,14 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Tables usually carry over when the PDF contains structured table data. Very complex or merged layouts may need adjustment.",
       },
       {
-        question: "Should I run OCR before converting to Word?",
+        question: "When should I use OCR instead of PDF to Word?",
         answer:
-          "The tool handles OCR automatically for scanned pages. Use the standalone OCR tool if you only need plain text extraction.",
+          "Choose OCR when you only need copyable text from a scan or photo. Choose PDF to Word when you want an editable DOCX document you can work with in Word or Google Docs.",
       },
       {
         question: "Is PDF to Word free?",
         answer:
-          "PDF to Word requires a signed-in account and counts toward your plan usage limits. Upload your PDF securely for server-side conversion.",
+          "PDF to Word is a Pro feature. Sign in, upgrade if required, and conversions count toward your plan usage limits.",
       },
     ],
     relatedToolIds: ["ocr", "word-to-pdf", "compress-pdf", "sign-pdf"],

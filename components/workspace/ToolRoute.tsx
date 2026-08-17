@@ -3,7 +3,7 @@ import { ToolUsageHeader } from "@/components/plan/ToolUsageHeader";
 import { getToolById, HOMEPAGE_CATEGORY_META } from "@/constants/homepage-tools";
 import { getToolSeo } from "@/constants/tool-seo";
 import { env } from "@/config/env";
-import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
+import { getCategoryBreadcrumbHref } from "@/lib/navigation/category-hub-urls";
 import {
   createBreadcrumbJsonLd,
   createFaqJsonLd,
@@ -35,7 +35,7 @@ export function ToolRoute({
   const categoryBreadcrumb = categoryMeta
     ? {
         label: categoryMeta.heading,
-        href: getToolsCategoryHref(homepageTool!.category),
+        href: getCategoryBreadcrumbHref(homepageTool!.category),
       }
     : undefined;
   const breadcrumbItems = [
@@ -45,7 +45,7 @@ export function ToolRoute({
       ? [
           {
             name: categoryMeta.heading,
-            url: `${env.siteUrl}${getToolsCategoryHref(homepageTool!.category)}`,
+            url: `${env.siteUrl}${getCategoryBreadcrumbHref(homepageTool!.category)}`,
           },
         ]
       : []),

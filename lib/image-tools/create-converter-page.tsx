@@ -5,6 +5,7 @@ import { ConverterToolExtras } from "@/components/image-tools/ConverterToolExtra
 import { ImageFormatConverterTool } from "@/components/image-tools/ImageFormatConverterTool";
 import { ToolRoute } from "@/components/workspace";
 import { env } from "@/config/env";
+import { IMAGE_TOOLS_HUB_PATH } from "@/lib/navigation/category-hub-urls";
 import {
   createBreadcrumbJsonLd,
   createFaqJsonLd,
@@ -26,6 +27,7 @@ function ConverterJsonLd({ config }: { config: ImageConverterDefinition }) {
   const breadcrumbJsonLd = createBreadcrumbJsonLd([
     { name: "Home", url: env.siteUrl },
     { name: "Tools", url: `${env.siteUrl}/tools` },
+    { name: "Image Tools", url: `${env.siteUrl}${IMAGE_TOOLS_HUB_PATH}` },
     { name: config.title, url: `${env.siteUrl}${path}` },
   ]);
   const faqJsonLd = createFaqJsonLd(config.faq);

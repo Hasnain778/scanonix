@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useId, useMemo, useState } from "react";
 import { ToolCard } from "@/components/tools/directory/ToolCard";
@@ -22,6 +23,7 @@ import {
   getToolsCategoryHref,
   parseToolsCategoryParam,
 } from "@/lib/navigation/tool-category-urls";
+import { getImageToolsHubHref } from "@/lib/navigation/category-hub-urls";
 
 export function ToolsDirectory() {
   const router = useRouter();
@@ -160,6 +162,18 @@ export function ToolsDirectory() {
               );
             })}
           </div>
+        ) : null}
+
+        {category === "image" ? (
+          <p className="text-sm text-body-bright">
+            <Link
+              href={getImageToolsHubHref()}
+              className="font-medium text-scanonix-orange transition-colors hover:text-scanonix-orange-light"
+            >
+              Browse Image Tools hub
+            </Link>
+            <span className="text-scanonix-muted"> — converters, editors, and format guides in one place.</span>
+          </p>
         ) : null}
         </div>
 

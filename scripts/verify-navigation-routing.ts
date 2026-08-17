@@ -259,14 +259,14 @@ function run() {
       !homepageSource.includes('from "@/components/sections/HomeAndroidPromo"'),
   );
 
-  // 20. Breadcrumb category links use category URLs
+  // 20. Breadcrumb category links use hub for image, filter URLs elsewhere
   const breadcrumbSource = readFileSync(
     join(root, "components", "workspace", "ToolRoute.tsx"),
     "utf8",
   );
   assert(
-    "20 breadcrumb PDF Tools uses getToolsCategoryHref",
-    breadcrumbSource.includes("getToolsCategoryHref"),
+    "20 breadcrumb uses getCategoryBreadcrumbHref for category links",
+    breadcrumbSource.includes("getCategoryBreadcrumbHref"),
   );
 
   // 21. Search result → canonical route

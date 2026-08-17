@@ -8,6 +8,7 @@ import {
   POPULAR_TOOL_IDS,
   type HomepageToolCategory,
 } from "@/constants/homepage-tools";
+import { getImageToolsHubHref } from "@/lib/navigation/category-hub-urls";
 
 const CATEGORY_ICONS: Record<HomepageToolCategory, typeof FileText> = {
   pdf: FileText,
@@ -61,10 +62,11 @@ function CategoryDiscoveryCard({ category }: { category: HomepageToolCategory })
   const meta = HOMEPAGE_CATEGORY_META[category];
   const toolCount = HOMEPAGE_CATEGORY_GRIDS[category].filter((tool) => !tool.comingSoon).length;
   const Icon = CATEGORY_ICONS[category];
+  const cardHref = category === "image" ? getImageToolsHubHref() : meta.viewAllHref;
 
   return (
     <Link
-      href={meta.viewAllHref}
+      href={cardHref}
       className="category-discovery-card group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
     >
       <span className="category-discovery-card__icon">
@@ -81,7 +83,7 @@ function CategoryDiscoveryCard({ category }: { category: HomepageToolCategory })
           {toolCount} tool{toolCount === 1 ? "" : "s"}
         </span>
         <span className="inline-flex items-center gap-1 font-medium text-scanonix-orange">
-          Explore
+          {category === "image" ? "Explore hub" : "Explore"}
           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </span>
       </span>

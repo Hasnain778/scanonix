@@ -40,7 +40,10 @@ export const metadata: Metadata = {
     template: "%s",
   },
   icons: {
-    icon: "/icon.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
+    ],
     apple: "/icon.png",
   },
 };

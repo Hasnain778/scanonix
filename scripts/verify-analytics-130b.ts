@@ -182,7 +182,7 @@ assert("5 no analytics SDK dependency", !packageJson.includes("@vercel/analytics
 assert("5 verify script registered", packageJson.includes("verify:analytics-130b"));
 
 const envExample = readSource(".env.local.example");
-assert("5 no GA measurement env in template", !envExample.includes("NEXT_PUBLIC_GA"));
+assert("5 GA measurement env documented in template", envExample.includes("NEXT_PUBLIC_GA_MEASUREMENT_ID"));
 
 // 6. GSC untouched
 assert("6 GSC auth script preserved", existsSync(join(root, "scripts/seo/auth.ts")));
@@ -226,11 +226,13 @@ if (existsSync(analyticsDir)) {
     "10 analytics components limited to consent infrastructure",
     analyticsFiles.every((file) =>
       [
+        "AnalyticsProvider.tsx",
         "ConsentBanner.tsx",
         "ConsentContext.tsx",
         "ConsentPreferencesLink.tsx",
         "ConsentPreferencesPanel.tsx",
         "ConsentRoot.tsx",
+        "GoogleAnalytics.tsx",
       ].includes(file),
     ),
   );

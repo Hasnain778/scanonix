@@ -14,7 +14,16 @@ export const publicEnv = {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
     "",
   stripePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
+  gaMeasurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "",
 } as const;
+
+export function getGaMeasurementId(): string {
+  return publicEnv.gaMeasurementId.trim();
+}
+
+export function isGaMeasurementConfigured(): boolean {
+  return getGaMeasurementId().length > 0;
+}
 
 export function isSupabaseConfiguredClient(): boolean {
   return Boolean(publicEnv.supabaseUrl && publicEnv.supabasePublishableKey);

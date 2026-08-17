@@ -72,16 +72,20 @@ const runtimeSources = runtimeDirs.flatMap((dir) => walkRuntimeSources(dir)).map
 const runtimeCombined = runtimeSources.join("\n");
 
 const analyticsRuntimePatterns = [
-  /googletagmanager\.com/,
   /google-analytics\.com/,
-  /gtag\s*\(/,
   /@vercel\/analytics/,
-  /NEXT_PUBLIC_GA_MEASUREMENT_ID/,
 ];
 
 for (const pattern of analyticsRuntimePatterns) {
   assert(`2 no runtime analytics pattern ${pattern}`, !pattern.test(runtimeCombined));
 }
+
+const ga4Source = readSource("lib/analytics/ga4.ts");
+const googleAnalyticsSource = readSource("components/analytics/GoogleAnalytics.tsx");
+assert("2 ga4 helper module exists", ga4Source.includes("send_page_view: false"));
+assert("2 GoogleAnalytics consent-gates script load", googleAnalyticsSource.includes('decision !== "accepted"'));
+assert("2 GoogleAnalytics uses env measurement ID", googleAnalyticsSource.includes("getMeasurementId()"));
+assert("2 no hardcoded measurement ID in GoogleAnalytics", !googleAnalyticsSource.includes(MEASUREMENT_ID));
 
 assert(`2 measurement ID absent from runtime code`, !runtimeCombined.includes(MEASUREMENT_ID));
 assert("2 measurement ID absent from app/layout.tsx", !readSource("app/layout.tsx").includes(MEASUREMENT_ID));
@@ -89,7 +93,7 @@ assert("2 measurement ID absent from providers.tsx", !readSource("app/providers.
 assert("2 measurement ID absent from consent module", !readSource("lib/analytics/consent.ts").includes(MEASUREMENT_ID));
 
 const envExample = readSource(".env.local.example");
-assert("2 no GA env in template yet", !envExample.includes("NEXT_PUBLIC_GA"));
+assert("2 GA env documented in template", envExample.includes("NEXT_PUBLIC_GA_MEASUREMENT_ID"));
 
 const consentSource = readSource("lib/analytics/consent.ts");
 assert("3 130B consent key preserved", consentSource.includes("scanonix_consent_v1"));

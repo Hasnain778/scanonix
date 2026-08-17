@@ -3,6 +3,8 @@
  * Stores preference only — no analytics scripts, IDs, or tracking data.
  */
 
+import { clearGaCookies, disableAnalyticsTracking, enableAnalyticsTracking } from "@/lib/analytics/ga4";
+
 export const CONSENT_STORAGE_KEY = "scanonix_consent_v1";
 export const CONSENT_VERSION = 1;
 export const CONSENT_CHANGE_EVENT = "scanonix-consent-change";
@@ -78,12 +80,14 @@ function writeConsent(analytics: boolean): ConsentState {
 }
 
 export function acceptAnalyticsConsent(): ConsentState {
+  enableAnalyticsTracking();
   return writeConsent(true);
 }
 
 export function rejectAnalyticsConsent(): ConsentState {
+  disableAnalyticsTracking();
   const state = writeConsent(false);
-  clearAnalyticsCookies();
+  clearGaCookies();
   return state;
 }
 
@@ -95,16 +99,15 @@ export function withdrawAnalyticsConsent(): ConsentState {
 /** Remove stored consent so the banner reappears (testing / version resets). */
 export function resetAnalyticsConsent(): void {
   if (!isBrowser()) return;
+  disableAnalyticsTracking();
   localStorage.removeItem(CONSENT_STORAGE_KEY);
-  clearAnalyticsCookies();
+  clearGaCookies();
   dispatchConsentChange();
 }
 
-/**
- * Clears GA cookies when analytics consent is withdrawn.
- * No-op until GA4 is installed (Phase 130C).
- */
+/** Clears GA cookies and disables tracking. Preserves scanonix_consent_v1 unless reset. */
 export function clearAnalyticsCookies(): void {
   if (!isBrowser()) return;
-  // Reserved for 130C: remove analytics measurement cookies on withdrawal.
+  disableAnalyticsTracking();
+  clearGaCookies();
 }

@@ -29,6 +29,7 @@
     "verify:seo-129b": "npx --yes tsx scripts/verify-seo-129b.ts",
     "verify:seo-129c": "npx --yes tsx scripts/verify-seo-129c.ts",
     "verify:seo-129d": "npx --yes tsx scripts/verify-seo-129d.ts",
+    "verify:seo-129f": "npx --yes tsx scripts/verify-seo-129f.ts",
     "verify:seo-canonical-host": "npx --yes tsx scripts/verify-seo-canonical-host.ts",
     "verify:favicon": "npx --yes tsx scripts/verify-favicon.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"

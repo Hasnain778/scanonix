@@ -489,19 +489,34 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/rotate-pdf",
     seoTitle: toolTitle("Rotate PDF Online", "Turn PDF Pages Free"),
     metaDescription:
-      "Rotate PDF pages online by 90°, 180°, or 270°. Fix sideways scans and downloads — processed locally in your browser.",
+      "Rotate PDF pages online by 90°, 180°, or 270°. Fix sideways scans, upside-down downloads, and misaligned pages — free, local browser processing.",
     h1: "Rotate PDF",
+    headerDescription:
+      "Rotate PDF pages by 90°, 180°, or 270° to fix sideways scans and downloads. Choose all pages or a custom selection — processed locally in your browser.",
     pageDescription:
-      "Rotate PDF pages by 90°, 180°, or 270° — all pages or a custom selection — processed in your browser.",
+      "Rotate PDF pages when scanned documents, phone photos, or downloaded files appear sideways or upside down. Fix orientation for one page or the entire document before sharing, printing, or merging with other PDFs.",
     howToSteps: [
-      "Upload the PDF with misaligned pages.",
-      "Choose rotation angle and page selection.",
-      "Download the corrected PDF.",
+      "Upload the PDF with sideways or upside-down pages.",
+      "Choose a rotation angle and select all pages or a custom range.",
+      "Download the corrected PDF with pages saved in the new orientation.",
     ],
     whyUse: [
-      "Fix scanned documents that imported sideways.",
-      "Correct orientation before merging or sharing PDFs.",
-      "Rotate only the pages you need without re-scanning.",
+      "Fix scanned receipts, contracts, and forms that imported at the wrong angle.",
+      "Correct orientation on phone-photo PDFs before emailing or printing.",
+      "Rotate only the pages that need fixing without re-scanning the whole file.",
+      "Processing runs locally in your browser — your PDF is not uploaded to Scanonix servers.",
+    ],
+    useCases: [
+      "Turn a sideways scanned invoice right-side up before submitting it.",
+      "Fix upside-down pages in a PDF exported from a mobile scanner app.",
+      "Correct landscape pages in a mixed-orientation report before merging files.",
+      "Prepare a misaligned PDF for printing or signing without desktop software.",
+    ],
+    limitations: [
+      "Rotation is limited to 90°, 180°, and 270° increments.",
+      "Password-protected PDFs must be unlocked before rotating.",
+      "Very large PDFs may be limited by browser memory.",
+      "Use Organize PDF if you also need to reorder or delete pages.",
     ],
     keyFeatures: [
       "90°, 180°, and 270° rotation",
@@ -511,12 +526,29 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     ],
     faqs: [
       {
-        question: "Can I rotate just one page?",
-        answer: "Yes. Select specific pages instead of rotating the entire document.",
+        question: "How do I fix a sideways scanned PDF?",
+        answer:
+          "Upload the PDF, choose 90° or 270° rotation, select the affected pages, and download the corrected document with pages saved in the right orientation.",
       },
       {
-        question: "Is rotation permanent?",
-        answer: "Yes. The downloaded PDF saves pages in the new orientation.",
+        question: "Can I rotate just one page?",
+        answer:
+          "Yes. Select specific pages instead of rotating the entire document, which is useful when only a few scanned pages are misaligned.",
+      },
+      {
+        question: "Is PDF rotation permanent?",
+        answer:
+          "Yes. The downloaded PDF saves pages in the new orientation. The original upload on your device is not changed unless you replace it.",
+      },
+      {
+        question: "Is Rotate PDF free?",
+        answer:
+          "Yes. Rotate PDF is free to use in your browser with standard usage limits.",
+      },
+      {
+        question: "Is my PDF uploaded to Scanonix servers?",
+        answer:
+          "No. Rotate PDF runs locally in your browser, so your document stays on your device during processing.",
       },
     ],
     relatedToolIds: ["split-pdf", "merge-pdf", "compress-pdf", "sign-pdf", "organize-pdf", "crop-pdf", "add-page-numbers", "fill-pdf"],
@@ -1479,15 +1511,67 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/png-to-webp",
     seoTitle: toolTitle("PNG to WEBP Online", "Convert PNG to WEBP Free"),
     metaDescription:
-      "Convert PNG to WEBP online for smaller web images with transparency support. Fast browser-based conversion.",
+      "Convert PNG to WEBP online for smaller web images with transparency support. Reduce page weight and speed up image-heavy sites — free in your browser.",
     h1: "PNG to WEBP",
-    pageDescription: "Convert PNG to WEBP for efficient web delivery while keeping transparency where supported.",
-    howToSteps: ["Upload a PNG file.", "Convert to WEBP format.", "Download the optimised WEBP image."],
-    whyUse: ["Reduce page weight for websites.", "Keep transparency in a modern web format.", "Speed up image-heavy pages."],
-    keyFeatures: ["PNG to WEBP conversion", "Smaller web file sizes", "Browser processing", "Instant download"],
+    headerDescription:
+      "Convert PNG images to WEBP for smaller web files while keeping transparency. Upload, convert, and download locally in your browser.",
+    pageDescription:
+      "Convert PNG graphics and screenshots to WEBP for faster websites and lighter page loads. WEBP often shrinks file size compared with PNG while preserving transparency for logos, icons, and UI assets.",
+    howToSteps: [
+      "Upload a PNG image from your computer.",
+      "Convert the file to WEBP format in your browser.",
+      "Download the optimised WEBP image for your website or app.",
+    ],
+    whyUse: [
+      "Reduce PNG file size for faster page loads without switching formats manually.",
+      "Keep transparency for logos, icons, and UI graphics in a modern web format.",
+      "Prepare image assets for CMS uploads, landing pages, and static site builds.",
+      "Conversion runs locally in your browser — your PNG is not uploaded to Scanonix servers.",
+    ],
+    useCases: [
+      "Shrink hero images and product graphics before publishing a marketing page.",
+      "Convert UI icons or screenshots to WEBP for a Next.js or static site project.",
+      "Replace heavy PNG assets in a blog post without losing transparent backgrounds.",
+      "Modernise PNG exports from design tools before handing files to a developer.",
+    ],
+    limitations: [
+      "Very old browsers and some legacy email clients may not display WEBP.",
+      "Already-compressed PNGs may see smaller size gains than photo-heavy sources.",
+      "Animated PNG (APNG) is not supported — use static PNG input.",
+      "Convert one file at a time in the current workflow.",
+    ],
+    keyFeatures: [
+      "PNG to WEBP conversion",
+      "Transparency preserved where supported",
+      "Local browser processing",
+      "Instant download",
+    ],
     faqs: [
-      { question: "Why use WEBP instead of PNG?", answer: "WEBP often produces smaller files with similar visual quality." },
-      { question: "Do all browsers support WEBP?", answer: "All modern browsers support WEBP; use JPG fallback if needed." },
+      {
+        question: "Why convert PNG to WEBP for the web?",
+        answer:
+          "WEBP typically produces smaller files than PNG at similar visual quality, which helps pages load faster while keeping transparency for logos and graphics.",
+      },
+      {
+        question: "Does PNG to WEBP keep transparency?",
+        answer:
+          "Yes. WEBP supports transparency, so transparent PNG backgrounds can carry over to the converted file.",
+      },
+      {
+        question: "Do all browsers support WEBP?",
+        answer:
+          "All modern browsers support WEBP. If you need a fallback for older systems, use WEBP to JPG or WEBP to PNG after converting.",
+      },
+      {
+        question: "Is PNG to WEBP free?",
+        answer:
+          "Yes. PNG to WEBP is free to use in your browser with standard usage limits.",
+      },
+      {
+        question: "Does conversion happen on my device?",
+        answer:
+          "Yes. PNG to WEBP runs locally in your browser, so your image stays on your device during conversion.",
+      },
     ],
     relatedToolIds: ["webp-to-png", "jpg-to-webp", "png-to-jpg", "image-compressor"],
     keywords: ["png to webp", "convert png webp", "webp converter"],
@@ -1497,15 +1581,67 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/jpg-to-webp",
     seoTitle: toolTitle("JPG to WEBP Online", "Convert JPEG to WEBP Free"),
     metaDescription:
-      "Convert JPG to WEBP online for faster page loads and smaller image files. Simple upload-and-download workflow.",
+      "Convert JPG and JPEG photos to WEBP online for smaller image files and faster page loads. Free browser-based conversion with instant download.",
     h1: "JPG to WEBP",
-    pageDescription: "Convert JPG photos to WEBP for faster page loads and smaller image assets.",
-    howToSteps: ["Upload a JPG image.", "Convert to WEBP.", "Download the WEBP file."],
-    whyUse: ["Improve website performance.", "Keep good visual quality at smaller sizes.", "Modernise image assets for the web."],
-    keyFeatures: ["JPG and JPEG support", "Efficient WEBP output", "Fast conversion", "No install required"],
+    headerDescription:
+      "Convert JPG and JPEG photos to WEBP for lighter web assets. Upload a photo, convert in your browser, and download the WEBP file.",
+    pageDescription:
+      "Convert JPG and JPEG photos to WEBP for faster websites, lighter galleries, and modern image delivery. WEBP is well suited to photographic content and often produces smaller files than JPEG at similar visual quality.",
+    howToSteps: [
+      "Upload a JPG or JPEG photo.",
+      "Convert the image to WEBP format in your browser.",
+      "Download the WEBP file for your website, app, or CMS.",
+    ],
+    whyUse: [
+      "Shrink photo file size for faster page loads and better Core Web Vitals.",
+      "Modernise JPEG assets for websites, blogs, and e-commerce product galleries.",
+      "Keep strong visual quality while reducing bandwidth for image-heavy pages.",
+      "Conversion runs locally in your browser — your photo is not uploaded to Scanonix servers.",
+    ],
+    useCases: [
+      "Convert product photos from JPEG to WEBP before publishing an online store.",
+      "Replace blog post hero images with lighter WEBP versions for faster loading.",
+      "Prepare camera JPEGs for a static site or Jamstack deployment.",
+      "Reduce image payload before embedding photos in a web app or documentation site.",
+    ],
+    limitations: [
+      "JPG does not include transparency, so WEBP output will not add an alpha channel.",
+      "Very small or already-heavily-compressed JPEGs may see modest size reductions.",
+      "Some legacy browsers and email clients do not support WEBP display.",
+      "Convert one file at a time in the current workflow.",
+    ],
+    keyFeatures: [
+      "JPG and JPEG input support",
+      "Efficient WEBP photo output",
+      "Local browser processing",
+      "Instant download",
+    ],
     faqs: [
-      { question: "Is JPG to WEBP good for photos?", answer: "Yes. WEBP is well suited to photographic content on the web." },
-      { question: "Can I convert back to JPG?", answer: "Use the WEBP to JPG tool if you need a JPG again." },
+      {
+        question: "Is JPG to WEBP good for photos?",
+        answer:
+          "Yes. WEBP handles photographic content well and often produces smaller files than JPEG at similar visual quality, which helps web pages load faster.",
+      },
+      {
+        question: "Will converting JPG to WEBP reduce file size?",
+        answer:
+          "Usually yes, especially for photos used on websites. Exact savings depend on the original JPEG compression and image content.",
+      },
+      {
+        question: "Can I convert back to JPG later?",
+        answer:
+          "Yes. Use the WEBP to JPG tool if a workflow, email system, or app requires JPEG instead of WEBP.",
+      },
+      {
+        question: "Is JPG to WEBP free?",
+        answer:
+          "Yes. JPG to WEBP is free to use in your browser with standard usage limits.",
+      },
+      {
+        question: "Does conversion happen on my device?",
+        answer:
+          "Yes. JPG to WEBP runs locally in your browser, so your photo stays on your device during conversion.",
+      },
     ],
     relatedToolIds: ["webp-to-jpg", "png-to-webp", "image-compressor", "jpg-to-png"],
     keywords: ["jpg to webp", "jpeg to webp", "convert jpg webp online"],
@@ -1515,15 +1651,67 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/webp-to-jpg",
     seoTitle: toolTitle("WEBP to JPG Online", "Convert WEBP to JPEG Free"),
     metaDescription:
-      "Convert WEBP to JPG online for compatibility with older apps, email, and print workflows.",
+      "Convert WEBP to JPG online for compatibility with older apps, email attachments, and print workflows. Free browser conversion with instant download.",
     h1: "WEBP to JPG",
-    pageDescription: "Convert WEBP images to widely supported JPG files for sharing and editing.",
-    howToSteps: ["Upload a WEBP image.", "Convert to JPG format.", "Download the JPG file."],
-    whyUse: ["Open WEBP files in apps that only accept JPG.", "Attach images to systems with strict format rules.", "Prepare web images for print."],
-    keyFeatures: ["WEBP input support", "Universal JPG output", "Browser-based", "Instant download"],
+    headerDescription:
+      "Convert WEBP images to widely supported JPG files. Upload a WEBP photo or graphic and download a JPEG you can open almost anywhere.",
+    pageDescription:
+      "Convert WEBP images to JPG when you need broad compatibility with older apps, email clients, print services, and upload forms that only accept JPEG. Scanonix turns WEBP downloads into shareable JPG files in your browser.",
+    howToSteps: [
+      "Upload a WEBP image saved from the web or your camera roll.",
+      "Convert the file to JPG format in your browser.",
+      "Download the JPG for email, printing, or apps that require JPEG.",
+    ],
+    whyUse: [
+      "Open WEBP downloads in apps, editors, and viewers that only accept JPG or JPEG.",
+      "Attach images to email, job portals, and forms with strict JPEG-only rules.",
+      "Prepare web-sourced WEBP photos for print shops or desktop publishing tools.",
+      "Conversion runs locally in your browser — your image is not uploaded to Scanonix servers.",
+    ],
+    useCases: [
+      "Convert a WEBP product image before uploading it to a marketplace that requires JPEG.",
+      "Turn a WEBP photo from a website into a JPG you can attach to email.",
+      "Open a WEBP file in a legacy photo editor or slideshow app that lacks WEBP support.",
+      "Prepare WEBP graphics for a print order or document that expects JPG input.",
+    ],
+    limitations: [
+      "JPG is lossy, so converting from WEBP may introduce a small quality change.",
+      "Transparent WEBP backgrounds become a solid colour in JPG output.",
+      "Convert one file at a time in the current workflow.",
+      "Animated WEBP is not supported — use static WEBP input.",
+    ],
+    keyFeatures: [
+      "WEBP input support",
+      "Universal JPG output",
+      "Local browser processing",
+      "Instant download",
+    ],
     faqs: [
-      { question: "Will quality change when converting WEBP to JPG?", answer: "JPG is lossy, so a small quality change is possible depending on settings." },
-      { question: "Can I batch convert WEBP files?", answer: "Convert files one at a time in the current tool workflow." },
+      {
+        question: "Why convert WEBP to JPG?",
+        answer:
+          "JPG is supported by nearly every app, email client, and upload form. Convert WEBP to JPG when compatibility matters more than file size.",
+      },
+      {
+        question: "Will quality change when converting WEBP to JPG?",
+        answer:
+          "JPG uses lossy compression, so a small quality change is possible. Photographic WEBP files usually convert cleanly for everyday sharing and printing.",
+      },
+      {
+        question: "What happens to WEBP transparency?",
+        answer:
+          "JPG does not support transparency. Transparent areas in a WEBP image become a solid background colour in the JPG output.",
+      },
+      {
+        question: "Is WEBP to JPG free?",
+        answer:
+          "Yes. WEBP to JPG is free to use in your browser with standard usage limits.",
+      },
+      {
+        question: "Does conversion happen on my device?",
+        answer:
+          "Yes. WEBP to JPG runs locally in your browser, so your image stays on your device during conversion.",
+      },
     ],
     relatedToolIds: ["jpg-to-webp", "webp-to-png", "png-to-jpg", "image-compressor"],
     keywords: ["webp to jpg", "webp to jpeg", "convert webp online"],
@@ -1533,15 +1721,67 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/webp-to-png",
     seoTitle: toolTitle("WEBP to PNG Online", "Convert WEBP to PNG Free"),
     metaDescription:
-      "Convert WEBP to PNG online for lossless editing and design workflows. Quick browser-based conversion.",
+      "Convert WEBP to PNG online for lossless editing, transparency, and design workflows. Free browser-based conversion with instant download.",
     h1: "WEBP to PNG",
-    pageDescription: "Convert WEBP images to PNG for editing workflows that need a lossless format.",
-    howToSteps: ["Upload a WEBP file.", "Convert to PNG.", "Download the PNG image."],
-    whyUse: ["Edit WEBP assets in PNG-friendly design tools.", "Preserve sharper edges for graphics.", "Avoid compatibility issues with older software."],
-    keyFeatures: ["WEBP to PNG conversion", "Lossless PNG output", "Fast processing", "No software install"],
+    headerDescription:
+      "Convert WEBP images to lossless PNG for editing and design. Upload a WEBP file and download a PNG with transparency preserved.",
+    pageDescription:
+      "Convert WEBP images to PNG when you need a lossless format for editing, screenshots, or graphics with sharp edges. PNG is widely supported in design tools and preserves transparency from WEBP sources.",
+    howToSteps: [
+      "Upload a WEBP image from your browser download or project folder.",
+      "Convert the file to PNG format in your browser.",
+      "Download the PNG for editing in Photoshop, Figma, or other design tools.",
+    ],
+    whyUse: [
+      "Edit WEBP assets in design tools that prefer or require PNG input.",
+      "Preserve transparency and sharp edges for logos, icons, and UI graphics.",
+      "Avoid re-compression artifacts when continuing work in a lossless workflow.",
+      "Conversion runs locally in your browser — your image is not uploaded to Scanonix servers.",
+    ],
+    useCases: [
+      "Convert a WEBP logo download into PNG for a presentation or slide deck.",
+      "Turn a WEBP screenshot into PNG before annotating it in a design app.",
+      "Move WEBP UI assets into a Figma or Photoshop project that expects PNG.",
+      "Create a lossless PNG archive from WEBP files saved from a website.",
+    ],
+    limitations: [
+      "PNG files are often larger than the original WEBP, especially for photos.",
+      "Animated WEBP is not supported — use static WEBP input.",
+      "Convert one file at a time in the current workflow.",
+      "PNG is not ideal for large photographic galleries where file size matters most.",
+    ],
+    keyFeatures: [
+      "WEBP to PNG conversion",
+      "Lossless PNG output",
+      "Transparency preserved",
+      "Local browser processing",
+    ],
     faqs: [
-      { question: "When should I choose PNG over JPG?", answer: "Use PNG for graphics, screenshots, and images that need lossless editing." },
-      { question: "Does WEBP transparency carry over?", answer: "PNG supports transparency, so transparent WEBP images can remain transparent." },
+      {
+        question: "When should I convert WEBP to PNG instead of JPG?",
+        answer:
+          "Choose PNG for graphics, screenshots, logos, and images that need lossless editing or transparency. Choose JPG when you mainly need a smaller shareable photo.",
+      },
+      {
+        question: "Does WEBP transparency carry over to PNG?",
+        answer:
+          "Yes. PNG supports transparency, so transparent WEBP images can remain transparent in the converted file.",
+      },
+      {
+        question: "Will the PNG file be larger than the WEBP?",
+        answer:
+          "Often yes. PNG is lossless and usually produces bigger files than WEBP, but it is better suited to editing workflows that need pixel-accurate graphics.",
+      },
+      {
+        question: "Is WEBP to PNG free?",
+        answer:
+          "Yes. WEBP to PNG is free to use in your browser with standard usage limits.",
+      },
+      {
+        question: "Does conversion happen on my device?",
+        answer:
+          "Yes. WEBP to PNG runs locally in your browser, so your image stays on your device during conversion.",
+      },
     ],
     relatedToolIds: ["png-to-webp", "webp-to-jpg", "jpg-to-png", "image-compressor"],
     keywords: ["webp to png", "convert webp png online"],
@@ -1624,18 +1864,70 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/heic-to-png",
     seoTitle: toolTitle("HEIC to PNG Online", "Convert HEIC Images Free"),
     metaDescription:
-      "Convert HEIC to PNG online for lossless editing. Turn iPhone HEIC photos into PNG files in seconds.",
+      "Convert HEIC to PNG online for lossless iPhone photo editing. Turn Apple HEIC and HEIF images into PNG files — free, local browser conversion.",
     h1: "HEIC to PNG",
-    pageDescription: "Convert HEIC images to PNG for lossless editing and design workflows.",
-    howToSteps: ["Upload a HEIC image.", "Convert to PNG format.", "Download the PNG file."],
-    whyUse: ["Edit iPhone photos in PNG-friendly tools.", "Avoid compatibility issues with HEIC on desktop apps.", "Keep a lossless copy for design work."],
-    keyFeatures: ["HEIC support", "Lossless PNG output", "Quick conversion", "No install required"],
+    headerDescription:
+      "Convert iPhone HEIC and HEIF photos to PNG for lossless editing. Upload an Apple photo and download a PNG you can open in any design tool.",
+    pageDescription:
+      "Convert HEIC and HEIF photos from iPhone or Apple devices into PNG for lossless editing, design workflows, and apps that do not support Apple's capture format. PNG keeps strong detail for further work in Photoshop, GIMP, or Canva.",
+    howToSteps: [
+      "Upload a HEIC or HEIF photo from your iPhone or camera roll.",
+      "Convert the Apple photo to PNG format in your browser.",
+      "Download the PNG file for editing, sharing, or archiving.",
+    ],
+    whyUse: [
+      "Open iPhone HEIC photos in design tools and desktop apps that expect PNG.",
+      "Keep a lossless copy before cropping, compositing, or adding text overlays.",
+      "Avoid Windows and Android compatibility issues with Apple's HEIC format.",
+      "Conversion runs locally in your browser — your photo is not uploaded to Scanonix servers.",
+    ],
+    useCases: [
+      "Convert an iPhone portrait into PNG before editing it in Photoshop or GIMP.",
+      "Turn HEIC vacation photos into PNG for a design mockup or social graphic.",
+      "Prepare Apple camera photos for a presentation tool that only accepts PNG.",
+      "Archive iPhone HEIC images as PNG for long-term editing without further loss.",
+    ],
+    limitations: [
+      "PNG files are usually larger than HEIC or JPG equivalents.",
+      "HEIC depth data, Live Photo motion, and some Apple metadata are not carried over.",
+      "Convert one file at a time in the current workflow.",
+      "For smaller shareable files, use HEIC to JPG instead of PNG.",
+    ],
+    keyFeatures: [
+      "HEIC and HEIF input support",
+      "Lossless PNG output",
+      "Local browser processing",
+      "Instant download",
+    ],
     faqs: [
-      { question: "Is HEIC to PNG better than HEIC to JPG?", answer: "Choose PNG for editing; choose JPG for smaller shareable files." },
-      { question: "Can I convert multiple HEIC files?", answer: "Convert one file at a time in the current workflow." },
+      {
+        question: "Why convert iPhone HEIC to PNG?",
+        answer:
+          "PNG is widely supported in design and editing tools and preserves image detail without additional lossy compression, which makes it a strong choice for further editing.",
+      },
+      {
+        question: "Is HEIC to PNG better than HEIC to JPG?",
+        answer:
+          "Choose PNG when you need lossless editing or transparency workflows. Choose HEIC to JPG when you need smaller files for email, uploads, or broad sharing.",
+      },
+      {
+        question: "Can I open HEIC files on Windows without converting?",
+        answer:
+          "Many Windows apps still lack native HEIC support. Converting to PNG gives you a format that opens reliably in most editors and viewers.",
+      },
+      {
+        question: "Is HEIC to PNG free?",
+        answer:
+          "Yes. HEIC to PNG is free to use in your browser with standard usage limits.",
+      },
+      {
+        question: "Does conversion happen on my device?",
+        answer:
+          "Yes. HEIC to PNG runs locally in your browser, so your photo stays on your device during conversion.",
+      },
     ],
     relatedToolIds: ["heic-to-jpg", "jpg-to-png", "png-to-jpg", "image-compressor"],
-    keywords: ["heic to png", "convert heic online"],
+    keywords: ["heic to png", "convert heic online", "iphone heic to png"],
   },
   ocr: {
     id: "ocr",

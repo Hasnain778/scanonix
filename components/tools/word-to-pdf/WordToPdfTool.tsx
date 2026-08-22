@@ -11,6 +11,11 @@ import { submitWordToPdfForm } from "@/lib/tools/document-conversion/client";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import type { ToolStatus } from "@/lib/tools/types";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 const ACCEPT_DOCX = ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
@@ -59,6 +64,9 @@ export function WordToPdfTool() {
   const handleConvert = useCallback(async () => {
     if (!file) return;
 
+    const attempt = createProcessAttempt("word-to-pdf");
+    if (!attempt?.markStarted()) return;
+
     setStatus("loading");
     setMessage(undefined);
     setResultBlob(null);
@@ -68,6 +76,7 @@ export function WordToPdfTool() {
 
     const result = await submitWordToPdfForm(formData);
     if (!result.ok) {
+      attempt.error(planErrorMessageToCode(result.message));
       setStatus("error");
       setMessage(result.message);
       return;
@@ -75,13 +84,14 @@ export function WordToPdfTool() {
 
     setResultBlob(result.blob);
     setResultFileName(result.fileName);
+    attempt.success(1);
     setStatus("success");
     setMessage("PDF ready to download.");
   }, [file]);
 
   const handleDownload = useCallback(() => {
     if (!resultBlob) return;
-    downloadBlob(resultBlob, resultFileName ?? "document.pdf");
+    downloadBlob(resultBlob, resultFileName ?? "document.pdf", buildToolDownloadMeta("word-to-pdf", 1));
   }, [resultBlob, resultFileName]);
 
   const resetTool = useCallback(() => {

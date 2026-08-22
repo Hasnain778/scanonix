@@ -6,6 +6,8 @@ import { Check, Crown, Shield, Sparkles } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { ToolVisual } from "@/components/tools/ToolVisual";
 import { useProAccess } from "@/hooks/useProAccess";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
+import { trackEvent } from "@/lib/analytics/ga4";
 
 /** Verified Pro benefits — sourced from TOOL_ACCESS, PLAN_LIMITS, and pricing copy. */
 const PRO_BENEFITS = [
@@ -138,6 +140,12 @@ export function ScanonixProPromo() {
                     size="lg"
                     className="scanonix-pro-promo__cta-button"
                     data-pro-promo-cta="upgrade"
+                    onClick={() => {
+                      trackEvent("upgrade_click", {
+                        source_surface: ANALYTICS_SURFACES.HOME_PRO_PROMO,
+                        tier: "pro",
+                      });
+                    }}
                   >
                     Upgrade to Pro
                   </ActionButton>

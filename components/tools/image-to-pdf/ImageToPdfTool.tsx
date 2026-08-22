@@ -12,6 +12,10 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { createPdfFilename, downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -24,6 +28,7 @@ import type {
   ToolStatus,
 } from "@/lib/tools/types";
 import { ACCEPTED_IMAGE_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 export function ImageToPdfTool() {
   const [images, setImages] = useState<ImageItem[]>([]);
@@ -124,6 +129,8 @@ export function ImageToPdfTool() {
   const handleGenerate = async () => {
     if (images.length === 0 || isBusy) return;
 
+    const attempt = createProcessAttempt("image-to-pdf");
+
     const totalBytes = images.reduce((sum, item) => sum + item.file.size, 0);
     const gate = await gateToolOperation("image-to-pdf", totalBytes);
     if (!gate.ok) {
@@ -131,6 +138,8 @@ export function ImageToPdfTool() {
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setStatusMessage(undefined);
@@ -145,12 +154,14 @@ export function ImageToPdfTool() {
       );
 
       setPdfBlob(blob);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage(
         `PDF with ${images.length} page${images.length === 1 ? "" : "s"} ready to download.`,
       );
       setProgress(undefined);
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof Error ? error.message : "Failed to generate PDF",
@@ -165,7 +176,7 @@ export function ImageToPdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, createPdfFilename("scanonix-images"));
+      downloadBlob(blob, createPdfFilename("scanonix-images"), buildToolDownloadMeta("image-to-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

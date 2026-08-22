@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { getEffectivePlan } from "@/lib/auth/entitlements";
 import type { BillingInterval } from "@/types/auth";
 
@@ -295,6 +296,7 @@ export function PricingPagePlans({ activePlanKey = null }: PricingPagePlansProps
                     label={isCurrent ? "Current plan" : plan.cta.label}
                     disabled={isCurrent}
                     variant={plan.cta.variant}
+                    sourceSurface={ANALYTICS_SURFACES.PRICING}
                   />
                 ) : user ? (
                   <ActionButton href="/dashboard" variant="outline" size="lg" className="w-full">

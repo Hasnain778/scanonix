@@ -11,6 +11,10 @@ import { ImageStudioControls } from "@/components/tools/background-remover/Image
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import type { StudioBackgroundOptions } from "@/lib/tools/background-remover/export-image";
 import { renderStudioImage } from "@/lib/tools/background-remover/export-image";
 import {
@@ -45,6 +49,7 @@ import {
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import type { ToolStatus } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedImageMeta {
   file: File;
@@ -236,6 +241,8 @@ export function BackgroundRemoverTool() {
         processedPreviewRef.current = null;
       }
 
+      let attempt: ReturnType<typeof createProcessAttempt> = null;
+
       try {
         const gate = await gateToolOperation("background-remover", file.size);
         if (!gate.ok) {
@@ -246,6 +253,11 @@ export function BackgroundRemoverTool() {
           setOriginalPreviewUrl(null);
           URL.revokeObjectURL(originalUrl);
           originalPreviewRef.current = null;
+          return;
+        }
+
+        attempt = createProcessAttempt("background-remover");
+        if (!attempt?.markStarted()) {
           return;
         }
 
@@ -281,6 +293,7 @@ export function BackgroundRemoverTool() {
         setProcessedPreviewUrl(processed.previewUrl);
         setTransparentBlob(processed.transparentBlob);
         transparentBlobRef.current = processed.transparentBlob;
+        attempt?.success(1);
         setStatus("success");
         setStatusMessage(
           processed.wasOptimized
@@ -295,6 +308,11 @@ export function BackgroundRemoverTool() {
         );
         void refreshUsage();
       } catch (error) {
+        attempt?.error(
+          error instanceof BackgroundRemoverError
+            ? planErrorMessageToCode(error.message)
+            : "unknown",
+        );
         stopProgressTimer();
         setStatus("error");
         setStatusMessage(
@@ -364,7 +382,7 @@ export function BackgroundRemoverTool() {
         format: exportFormat,
         quality: exportQuality,
       });
-      downloadBlob(outputBlob, getExportFilename(exportFormat));
+      downloadBlob(outputBlob, getExportFilename(exportFormat), buildToolDownloadMeta("background-remover", 1));
     } catch {
       setStatus("error");
       setStatusMessage("Could not prepare the download. Please try again.");

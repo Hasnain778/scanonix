@@ -5,6 +5,7 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { PricingPagePlans } from "@/components/pricing/PricingPagePlans";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { getEffectivePlan } from "@/lib/auth/entitlements";
 
 interface PricingPlansProps {
@@ -119,10 +120,33 @@ export function BillingPanel() {
           or the Customer Portal.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <CheckoutButton plan="pro" interval="monthly" label="Upgrade to Pro Monthly" />
-          <CheckoutButton plan="pro" interval="yearly" label="Upgrade to Pro Yearly" variant="outline" />
-          <CheckoutButton plan="business" interval="monthly" label="Upgrade to Business Monthly" variant="outline" />
-          <CheckoutButton plan="business" interval="yearly" label="Upgrade to Business Yearly" variant="outline" />
+          <CheckoutButton
+            plan="pro"
+            interval="monthly"
+            label="Upgrade to Pro Monthly"
+            sourceSurface={ANALYTICS_SURFACES.ACCOUNT_BILLING}
+          />
+          <CheckoutButton
+            plan="pro"
+            interval="yearly"
+            label="Upgrade to Pro Yearly"
+            variant="outline"
+            sourceSurface={ANALYTICS_SURFACES.ACCOUNT_BILLING}
+          />
+          <CheckoutButton
+            plan="business"
+            interval="monthly"
+            label="Upgrade to Business Monthly"
+            variant="outline"
+            sourceSurface={ANALYTICS_SURFACES.ACCOUNT_BILLING}
+          />
+          <CheckoutButton
+            plan="business"
+            interval="yearly"
+            label="Upgrade to Business Yearly"
+            variant="outline"
+            sourceSurface={ANALYTICS_SURFACES.ACCOUNT_BILLING}
+          />
         </div>
       </section>
     </div>

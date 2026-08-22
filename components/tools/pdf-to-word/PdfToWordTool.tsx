@@ -7,6 +7,11 @@ import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PdfToWordProgressBanner } from "@/components/tools/pdf-to-word/PdfToWordProgressBanner";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  httpStatusToErrorCode,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { submitPdfToWordForm } from "@/lib/tools/document-conversion/client";
 import { downloadBlob } from "@/lib/tools/download";
@@ -18,6 +23,7 @@ import {
 } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -131,12 +137,16 @@ export function PdfToWordTool() {
   const handleConvert = async () => {
     if (!uploadedPdf || isBusy) return;
 
+    const attempt = createProcessAttempt("pdf-to-word");
+
     const gate = await gateToolOperation("pdf-to-word", uploadedPdf.file.size);
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setPhase("processing");
@@ -148,6 +158,7 @@ export function PdfToWordTool() {
 
     const result = await submitPdfToWordForm(formData);
     if (!result.ok) {
+      attempt.error(planErrorMessageToCode(result.message));
       setStatus("error");
       setPhase(undefined);
       setStatusMessage(result.message);
@@ -156,6 +167,7 @@ export function PdfToWordTool() {
 
     setDocxBlob(result.blob);
     setResultFileName(result.fileName);
+    attempt.success(1);
     setStatus("success");
     setPhase("complete");
     setStatusMessage("Complete — Word document ready to download!");
@@ -167,7 +179,7 @@ export function PdfToWordTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, resultFileName ?? "scanonix-converted.docx");
+      downloadBlob(blob, resultFileName ?? "scanonix-converted.docx", buildToolDownloadMeta("pdf-to-word", 1));
     } finally {
       setIsDownloading(false);
     }

@@ -6,12 +6,14 @@ import { useProAccess } from "@/hooks/useProAccess";
 
 interface PremiumAiToolGateProps {
   toolName: string;
+  toolSlug?: string;
   description?: string;
   children: ReactNode;
 }
 
 export function PremiumAiToolGate({
   toolName,
+  toolSlug,
   description,
   children,
 }: PremiumAiToolGateProps) {
@@ -34,6 +36,7 @@ export function PremiumAiToolGate({
           `Sign in and upgrade to Scanonix Pro to use ${toolName}. Free tools stay available without an account.`
         }
         isAuthenticated={isAuthenticated}
+        toolSlug={toolSlug}
       />
     );
   }

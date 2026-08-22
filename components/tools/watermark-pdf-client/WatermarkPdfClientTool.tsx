@@ -54,6 +54,8 @@ import { formatFileSize } from "@/lib/tools/format-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { PositionPicker } from "./PositionPicker";
 import { WatermarkPdfPreview } from "./WatermarkPdfPreview";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -398,6 +400,9 @@ export function WatermarkPdfClientTool() {
   const handleDownloadWatermarkedPdf = async () => {
     if (!uploadedPdf || !canExport || isExporting) return;
 
+    const attempt = createProcessAttempt("watermark-pdf");
+    if (!attempt?.markStarted()) return;
+
     setIsExporting(true);
     setStatus("loading");
     setStatusMessage("Watermarking PDF…");
@@ -420,10 +425,12 @@ export function WatermarkPdfClientTool() {
       const blob = new Blob([Uint8Array.from(result.bytes)], {
         type: "application/pdf",
       });
-      downloadBlob(blob, result.filename);
+      downloadBlob(blob, result.filename, buildToolDownloadMeta("watermark-pdf", 1));
+      attempt.success(1);
       setStatus("success");
       setStatusMessage("Watermarked PDF downloaded.");
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof WatermarkPdfError

@@ -4,17 +4,29 @@ import Link from "next/link";
 import { Shield, Lock } from "lucide-react";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { ProBadge } from "@/components/tools/background-remover/ProBadge";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
+import { trackEvent } from "@/lib/analytics/ga4";
 
 interface ProSecurityGateProps {
   title?: string;
   description?: string;
   isAuthenticated?: boolean;
+  toolSlug?: string;
+}
+
+function trackSecurityGateUpgradeClick(toolSlug?: string): void {
+  trackEvent("upgrade_click", {
+    source_surface: ANALYTICS_SURFACES.SECURITY_GATE,
+    tier: "pro",
+    ...(toolSlug ? { tool_slug: toolSlug } : {}),
+  });
 }
 
 export function ProSecurityGate({
   title = "Pro security feature",
   description = "Upgrade to Scanonix Pro to process files, run scans, and access advanced security tools.",
   isAuthenticated = true,
+  toolSlug,
 }: ProSecurityGateProps) {
   return (
     <div className="rounded-2xl border border-scanonix-orange/30 bg-gradient-to-br from-scanonix-orange/10 via-[#141414] to-[#0e0e0e] p-6 sm:p-8">
@@ -54,9 +66,15 @@ export function ProSecurityGate({
               </Link>
             ) : (
               <>
-                <CheckoutButton plan="pro" interval="monthly" label="Upgrade to Pro" />
+                <CheckoutButton
+                  plan="pro"
+                  interval="monthly"
+                  label="Upgrade to Pro"
+                  sourceSurface={ANALYTICS_SURFACES.SECURITY_GATE}
+                />
                 <Link
                   href="/pricing"
+                  onClick={() => trackSecurityGateUpgradeClick(toolSlug)}
                   className="text-sm font-medium text-scanonix-orange transition hover:text-orange-300"
                 >
                   Compare plans

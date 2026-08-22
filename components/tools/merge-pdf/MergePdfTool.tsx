@@ -8,6 +8,10 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
 import { createFileId, formatFileSize } from "@/lib/tools/format-utils";
@@ -15,6 +19,7 @@ import { mergePdfs } from "@/lib/tools/merge-pdf/merge-pdfs";
 import { getPdfPageCount, isAcceptedPdfFile } from "@/lib/tools/pdf-utils";
 import type { PdfFileItem, ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 function PdfDropIcon() {
   return (
@@ -140,6 +145,8 @@ export function MergePdfTool() {
   const handleMerge = async () => {
     if (!canMerge || isBusy) return;
 
+    const attempt = createProcessAttempt("merge-pdf");
+
     const totalBytes = files.reduce((sum, item) => sum + item.file.size, 0);
     const gate = await gateToolOperation("merge-pdf", totalBytes);
     if (!gate.ok) {
@@ -147,6 +154,8 @@ export function MergePdfTool() {
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setStatusMessage(undefined);
@@ -165,12 +174,14 @@ export function MergePdfTool() {
       );
 
       setMergedBlob(blob);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage(
         `Merged ${files.length} PDFs (${totalPages} pages) — ready to download.`,
       );
       setProgress(undefined);
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof Error ? error.message : "Failed to merge PDFs",
@@ -185,7 +196,7 @@ export function MergePdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, "scanonix-merged.pdf");
+      downloadBlob(blob, "scanonix-merged.pdf", buildToolDownloadMeta("merge-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

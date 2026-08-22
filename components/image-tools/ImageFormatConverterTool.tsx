@@ -16,11 +16,16 @@ import {
   detectTransparencyForFiles,
 } from "@/lib/image/convert-format";
 import { formatAcceptAttribute, validateFormatFile } from "@/lib/image/formats";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob, packageOutputsForDownload } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import { createImageId, getImageDimensions } from "@/lib/tools/image-utils";
 import type { JpgImageItem, ToolStatus } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface DownloadState {
   blob: Blob;
@@ -173,6 +178,8 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
   const handleConvert = async () => {
     if (images.length === 0 || isBusy) return;
 
+    const attempt = createProcessAttempt(config.slug);
+
     const totalBytes = images.reduce((sum, item) => sum + item.file.size, 0);
     const gate = await gateToolOperation(config.slug, totalBytes);
     if (!gate.ok) {
@@ -180,6 +187,8 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setStatusMessage(undefined);
@@ -206,12 +215,14 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
         filename,
         outputCount: outputs.length,
       });
+      attempt.success(outputs.length);
       setStatus("success");
       setStatusMessage(
         `Converted ${outputs.length} image${outputs.length === 1 ? "" : "s"} — ready to download.`,
       );
       setProgress(undefined);
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(error instanceof Error ? error.message : "Conversion failed");
       setProgress(undefined);
@@ -223,7 +234,7 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
     if (!state || isDownloading) return;
     setIsDownloading(true);
     try {
-      downloadBlob(state.blob, state.filename);
+      downloadBlob(state.blob, state.filename, buildToolDownloadMeta(config.slug, state.outputCount));
     } finally {
       setIsDownloading(false);
     }

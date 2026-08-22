@@ -13,6 +13,11 @@ import {
   AI_SUMMARY_UNAVAILABLE,
   AI_TRANSLATION_UNAVAILABLE,
 } from "@/lib/ai/messages";
+import {
+  createProcessAttempt,
+  httpStatusToErrorCode,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { formatPlanError } from "@/lib/plan/tool-gate";
 import type { ToolStatus } from "@/lib/tools/types";
 
@@ -82,7 +87,12 @@ export function CloudAiTextTool({
   const canRun =
     inputText.trim().length > 0 && !isBusy && !premiumLocked && !usageExhausted;
 
+  const toolSlug = mode === "summary" ? "ai-summary" : "ai-translate";
+
   const handleRun = useCallback(async () => {
+    const attempt = createProcessAttempt(toolSlug);
+    if (!attempt?.markStarted()) return;
+
     setStatus("loading");
     setErrorMessage(undefined);
     setOutputText("");
@@ -103,19 +113,22 @@ export function CloudAiTextTool({
 
       if (!response.ok) {
         setErrorMessage(formatAiToolError(mode, data, response.status));
+        attempt.error(httpStatusToErrorCode(response.status, data.code));
         setStatus("error");
         return;
       }
 
       setOutputText(data.text ?? "");
+      attempt.success(1);
       setStatus("success");
     } catch {
+      attempt.error("network");
       setErrorMessage(
         mode === "translate" ? AI_TRANSLATION_UNAVAILABLE : AI_SUMMARY_UNAVAILABLE,
       );
       setStatus("error");
     }
-  }, [inputText, mode, targetLanguage]);
+  }, [inputText, mode, targetLanguage, toolSlug]);
 
   async function handleCopy() {
     if (!outputText) return;

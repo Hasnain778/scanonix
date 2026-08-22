@@ -130,9 +130,19 @@ const runtimeCombined = runtimeDirs
   .join("\n");
 
 assert("4 no GTM container in runtime", !/googletagmanager\.com\/gtm\.js/i.test(runtimeCombined));
-assert("4 no custom funnel events yet", !runtimeCombined.includes("tool_view"));
-assert("4 no tool_start event yet", !runtimeCombined.includes('"tool_start"'));
-assert("4 no checkout_start event yet", !runtimeCombined.includes("checkout_start"));
+const productRuntimeCombined = runtimeDirs
+  .flatMap((dir) => walkRuntimeSources(dir))
+  .filter((path) => !path.includes(`${join(root, "lib", "analytics")}`))
+  .map((path) => readFileSync(path, "utf8"))
+  .join("\n");
+assert(
+  "4 product trackEvent routed via ga4 when present",
+  !productRuntimeCombined.includes("trackEvent(") ||
+    productRuntimeCombined.includes('@/lib/analytics/ga4'),
+);
+assert("4 no legacy tool_view funnel event", !productRuntimeCombined.includes("tool_view"));
+assert("4 custom event schema in analytics layer", existsSync(join(root, "lib", "analytics", "events.ts")));
+assert("4 trackEvent foundation in ga4", readSource("lib/analytics/ga4.ts").includes("export function trackEvent"));
 
 // 5. Privacy + 130B preserved
 const analyticsSection = PRIVACY_SECTIONS.find((section) => section.id === "analytics");

@@ -9,6 +9,10 @@ import { PdfPageGrid } from "@/components/tools/split-pdf/PdfPageGrid";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -27,6 +31,7 @@ import {
 } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -174,12 +179,16 @@ export function RotatePdfTool() {
   const handleRotate = async () => {
     if (!uploadedPdf || !canRotate) return;
 
+    const attempt = createProcessAttempt("rotate-pdf");
+
     const gate = await gateToolOperation("rotate-pdf", uploadedPdf.file.size);
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setStatusMessage(undefined);
@@ -195,6 +204,7 @@ export function RotatePdfTool() {
       );
 
       setResultBlob(blob);
+      attempt.success(1);
       setRotatedPageCount(pagesToRotate.length);
       setStatus("success");
       setStatusMessage(
@@ -202,6 +212,7 @@ export function RotatePdfTool() {
       );
       setProgress(undefined);
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof PdfRotateError
@@ -218,7 +229,7 @@ export function RotatePdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, resultFilename);
+      downloadBlob(blob, resultFilename, buildToolDownloadMeta("rotate-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

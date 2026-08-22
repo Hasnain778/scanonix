@@ -8,6 +8,11 @@ import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { submitSecurityToolForm } from "@/lib/security-tools/client";
 import { downloadBlob } from "@/lib/tools/download";
 import type { ToolStatus } from "@/lib/tools/types";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 const ACCEPTED = [".pdf", ".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif", ".tiff", ".tif"];
 
@@ -19,6 +24,9 @@ export function MetadataCleanerTool() {
   const handleClean = useCallback(async () => {
     if (!file) return;
 
+    const attempt = createProcessAttempt("metadata-cleaner");
+    if (!attempt?.markStarted()) return;
+
     setStatus("loading");
     setMessage(undefined);
 
@@ -28,12 +36,14 @@ export function MetadataCleanerTool() {
     const result = await submitSecurityToolForm("/api/tools/security/metadata-cleaner", formData);
 
     if (!result.ok) {
+      attempt.error(planErrorMessageToCode(result.message));
       setStatus("error");
       setMessage(result.message);
       return;
     }
 
-    downloadBlob(result.blob, result.fileName);
+    downloadBlob(result.blob, result.fileName, buildToolDownloadMeta("metadata-cleaner", 1));
+    attempt.success(1);
     setStatus("success");
     setMessage("Metadata removed. File content preserved.");
   }, [file]);

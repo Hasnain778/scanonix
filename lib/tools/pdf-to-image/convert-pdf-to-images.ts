@@ -1,3 +1,5 @@
+import { getPrimaryCategory } from "@/constants/tool-categories";
+import type { ToolCategory } from "@/lib/analytics/events";
 import { downloadOutputs } from "../download";
 import { formatImagePageFilename } from "../split-pdf/page-ranges";
 import type {
@@ -58,5 +60,12 @@ export async function convertPdfPagesToImages(
 }
 
 export async function downloadImageOutputs(outputs: ImageOutput[]): Promise<void> {
-  await downloadOutputs(outputs, "scanonix-pdf-images.zip");
+  const category = getPrimaryCategory("pdf-to-image");
+  await downloadOutputs(
+    outputs,
+    "scanonix-pdf-images.zip",
+    category
+      ? { tool_slug: "pdf-to-image", tool_category: category as ToolCategory }
+      : undefined,
+  );
 }

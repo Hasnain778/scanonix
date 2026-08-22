@@ -6,11 +6,12 @@ import { useProAccess } from "@/hooks/useProAccess";
 
 interface ProToolGateProps {
   toolName: string;
+  toolSlug?: string;
   description?: string;
   children: ReactNode;
 }
 
-export function ProToolGate({ toolName, description, children }: ProToolGateProps) {
+export function ProToolGate({ toolName, toolSlug, description, children }: ProToolGateProps) {
   const { loading, isAuthenticated, isPro } = useProAccess();
 
   if (loading) {
@@ -30,6 +31,7 @@ export function ProToolGate({ toolName, description, children }: ProToolGateProp
           `Sign in and upgrade to Scanonix Pro to use ${toolName}. Free tools stay available without an account.`
         }
         isAuthenticated={isAuthenticated}
+        toolSlug={toolSlug}
       />
     );
   }

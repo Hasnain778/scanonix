@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
+import { trackEvent } from "@/lib/analytics/ga4";
 import type { UsageSummaryResponse } from "@/lib/plan/client";
 
 interface UsageBannerProps {
@@ -52,7 +54,16 @@ export function UsageBanner({ summary, loading = false, className = "" }: UsageB
       {exhausted ? (
         <p className="mt-2 text-xs">
           Limit reached.{" "}
-          <Link href="/pricing" className="font-semibold text-scanonix-orange hover:underline">
+          <Link
+            href="/pricing"
+            onClick={() => {
+              trackEvent("upgrade_click", {
+                source_surface: ANALYTICS_SURFACES.USAGE_BANNER,
+                tier: "pro",
+              });
+            }}
+            className="font-semibold text-scanonix-orange hover:underline"
+          >
             Upgrade your plan
           </Link>{" "}
           for more operations.
@@ -66,7 +77,16 @@ export function UpgradeRequiredNotice({ feature }: { feature: string }) {
   return (
     <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
       {feature} requires Pro or Business.{" "}
-      <Link href="/pricing" className="font-semibold text-scanonix-orange hover:underline">
+      <Link
+        href="/pricing"
+        onClick={() => {
+          trackEvent("upgrade_click", {
+            source_surface: ANALYTICS_SURFACES.USAGE_BANNER,
+            tier: "pro",
+          });
+        }}
+        className="font-semibold text-scanonix-orange hover:underline"
+      >
         Upgrade required
       </Link>
     </div>

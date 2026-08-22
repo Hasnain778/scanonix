@@ -8,11 +8,16 @@ import { ImageToolStats } from "@/components/tools/shared/ImageToolStats";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { submitImageToolForm, type ImageToolStats as Stats } from "@/lib/tools/image/client";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import { FREE_IMAGE_MAX_BYTES } from "@/lib/tools/shared/image-validate";
 import type { ToolStatus } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 const ACCEPT_IMAGES = ".jpg,.jpeg,.png,.webp,.heic,.heif,image/*";
 const MAX_MB = Math.round(FREE_IMAGE_MAX_BYTES / (1024 * 1024));
@@ -60,6 +65,9 @@ export function ImageCompressorTool() {
   const handleCompress = useCallback(async () => {
     if (!file) return;
 
+    const attempt = createProcessAttempt("image-compressor");
+    if (!attempt?.markStarted()) return;
+
     setStatus("loading");
     setMessage(undefined);
     setResultBlob(null);
@@ -71,6 +79,7 @@ export function ImageCompressorTool() {
 
     const result = await submitImageToolForm("/api/tools/image/compress", formData);
     if (!result.ok) {
+      attempt.error(planErrorMessageToCode(result.message));
       setStatus("error");
       setMessage(result.message);
       return;
@@ -82,6 +91,7 @@ export function ImageCompressorTool() {
       ...result.stats,
       originalSize: result.stats.originalSize || file.size,
     });
+    attempt.success(1);
     setStatus("success");
   }, [file, quality]);
 
@@ -179,7 +189,7 @@ export function ImageCompressorTool() {
           title="Compression complete"
           primaryLabel="Download compressed image"
           onPrimaryClick={() => {
-            if (resultBlob) downloadBlob(resultBlob, resultFileName ?? "compressed.jpg");
+            if (resultBlob) downloadBlob(resultBlob, resultFileName ?? "compressed.jpg", buildToolDownloadMeta("image-compressor", 1));
           }}
           onStartOver={resetTool}
         >

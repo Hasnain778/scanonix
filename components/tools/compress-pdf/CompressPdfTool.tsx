@@ -18,6 +18,10 @@ import {
   PdfCompressionError,
 } from "@/lib/tools/compress-pdf/compression-levels";
 import { useProAccess } from "@/hooks/useProAccess";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -27,6 +31,7 @@ import {
 } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -141,12 +146,16 @@ export function CompressPdfTool() {
   const handleCompress = async () => {
     if (!uploadedPdf || isBusy) return;
 
+    const attempt = createProcessAttempt("compress-pdf");
+
     const gate = await gateToolOperation("compress-pdf", uploadedPdf.file.size);
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setPhase("uploading");
@@ -164,6 +173,7 @@ export function CompressPdfTool() {
       });
 
       setCompressedBlob(blob);
+      attempt.success(1);
       setStatus("success");
       setPhase("complete");
 
@@ -179,6 +189,11 @@ export function CompressPdfTool() {
       }
       setProgress(undefined);
     } catch (error) {
+      attempt.error(
+        error instanceof PdfCompressionError
+          ? planErrorMessageToCode(error.message)
+          : "unknown",
+      );
       setStatus("error");
       setPhase(undefined);
       setStatusMessage(
@@ -196,7 +211,7 @@ export function CompressPdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, "scanonix-compressed.pdf");
+      downloadBlob(blob, "scanonix-compressed.pdf", buildToolDownloadMeta("compress-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

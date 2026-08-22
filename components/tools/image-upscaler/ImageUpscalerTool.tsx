@@ -1,6 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import Link from "next/link";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { PremiumAiToolGate } from "@/components/plan/PremiumAiToolGate";
@@ -31,6 +35,7 @@ import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import { FREE_IMAGE_MAX_BYTES } from "@/lib/tools/shared/image-validate";
 import type { ToolStatus } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 const ACCEPT_IMAGES = ".jpg,.jpeg,.png,.webp,.heic,.heif,image/*";
 const MAX_MB = Math.round(FREE_IMAGE_MAX_BYTES / (1024 * 1024));
@@ -111,6 +116,7 @@ export function ImageUpscalerTool() {
     [setResultPreview],
   );
 
+  /** Restores in-flight upscale job — no process lifecycle analytics (130D-FIX1). */
   const resumeStoredJob = useCallback(async () => {
     const storedJobId = readStoredUpscaleJobId();
     if (!storedJobId || isProcessingRef.current) {
@@ -208,6 +214,9 @@ export function ImageUpscalerTool() {
   const handleUpscale = useCallback(async () => {
     if (!file || isProcessingRef.current) return;
 
+    const attempt = createProcessAttempt("image-upscaler");
+    if (!attempt?.markStarted()) return;
+
     isProcessingRef.current = true;
     abortControllerRef.current?.abort();
     abortControllerRef.current = new AbortController();
@@ -230,13 +239,16 @@ export function ImageUpscalerTool() {
         abortControllerRef.current.signal,
       );
       if (!result.ok) {
+        attempt.error(planErrorMessageToCode(result.message));
         setStatus("error");
         setMessage(result.message);
         return;
       }
 
       finalizeSuccess(result.blob, result.fileName, result.stats, file);
+      attempt.success(1);
     } catch {
+      attempt.error("unknown");
       setStatus("error");
       setMessage("Upscaling failed — please try again.");
     } finally {
@@ -387,7 +399,7 @@ export function ImageUpscalerTool() {
           title="Upscale complete"
           primaryLabel="Download upscaled image"
           onPrimaryClick={() => {
-            if (resultBlob) downloadBlob(resultBlob, resultFileName ?? "upscaled.jpg");
+            if (resultBlob) downloadBlob(resultBlob, resultFileName ?? "upscaled.jpg", buildToolDownloadMeta("image-upscaler", 1));
           }}
           onStartOver={resetTool}
         >

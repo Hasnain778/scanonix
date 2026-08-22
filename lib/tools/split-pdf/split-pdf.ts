@@ -1,5 +1,7 @@
 import { PDFDocument } from "pdf-lib";
+import { getPrimaryCategory } from "@/constants/tool-categories";
 import { loadPdfDocument } from "@/lib/pdf/core";
+import type { ToolCategory } from "@/lib/analytics/events";
 import { downloadOutputs } from "../download";
 import type { SplitOutput } from "../types";
 import { formatPageFilename, toZeroBasedIndices } from "./page-ranges";
@@ -46,5 +48,12 @@ export async function extractPdfGroups(
 }
 
 export async function downloadSplitOutputs(outputs: SplitOutput[]): Promise<void> {
-  await downloadOutputs(outputs, "scanonix-split-files.zip");
+  const category = getPrimaryCategory("split-pdf");
+  await downloadOutputs(
+    outputs,
+    "scanonix-split-files.zip",
+    category
+      ? { tool_slug: "split-pdf", tool_category: category as ToolCategory }
+      : undefined,
+  );
 }

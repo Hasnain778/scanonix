@@ -15,6 +15,12 @@ import { detectExistingDigitalSignatures, DIGITAL_SIGNATURE_WARNING } from "@/li
 import { isAcceptedPdfFile } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import {
+  createProcessAttempt,
+  httpStatusToErrorCode,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 function unlockErrorMessage(code: UnlockPdfErrorCode | undefined, fallback: string): string {
   switch (code) {
@@ -94,6 +100,9 @@ export function UnlockPdfTool() {
   const handleUnlock = useCallback(async () => {
     if (!file) return;
 
+    const attempt = createProcessAttempt("unlock-pdf");
+    if (!attempt?.markStarted()) return;
+
     setStatus("loading");
     setMessage(undefined);
 
@@ -117,6 +126,7 @@ export function UnlockPdfTool() {
 
       setStatus("error");
       setMessage(errorMessage);
+      attempt.error(httpStatusToErrorCode(response.status));
       return;
     }
 
@@ -125,7 +135,8 @@ export function UnlockPdfTool() {
     const fileName = match?.[1] ?? "document-unlocked.pdf";
     const blob = await response.blob();
 
-    downloadBlob(blob, fileName);
+    downloadBlob(blob, fileName, buildToolDownloadMeta("unlock-pdf", 1));
+    attempt.success(1);
     setStatus("success");
     setMessage(`${UNLOCK_PDF_SUCCESS} Password was not stored.`);
   }, [file, password]);

@@ -57,6 +57,8 @@ import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { RedactPdfPreview } from "./RedactPdfPreview";
 import { RedactionsDrawer } from "./RedactionsDrawer";
+import { createProcessAttempt, planErrorMessageToCode } from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface RedactPdfClientToolProps {
   /** When true, export is blocked until the user upgrades to Pro. */
@@ -379,6 +381,8 @@ export function RedactPdfClientTool({
     setStatusMessage("Applying redactions…");
     setResultBlob(null);
 
+    let attempt: ReturnType<typeof createProcessAttempt> = null;
+
     try {
       const { gateToolOperation } = await import("@/lib/plan/tool-gate");
       const gate = await gateToolOperation(toolId, uploadedPdf.file.size);
@@ -387,6 +391,9 @@ export function RedactPdfClientTool({
         setStatusMessage(gate.message);
         return;
       }
+
+      attempt = createProcessAttempt(toolId);
+      if (!attempt?.markStarted()) return;
 
       const { exportRedactedPdfFromWorkspace } = await import(
         "@/lib/tools/redact-pdf/client-export"
@@ -406,9 +413,11 @@ export function RedactPdfClientTool({
       setResultBlob(blob);
       setResultFilename(result.filename);
       setResultSize(result.bytes.byteLength);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage("Redacted PDF ready.");
     } catch (error) {
+      attempt?.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof RedactPdfError
@@ -423,7 +432,7 @@ export function RedactPdfClientTool({
   const handleDownload = useCallback(() => {
     const blob = resultBlobRef.current ?? resultBlob;
     if (!blob) return;
-    downloadBlob(blob, resultFilename);
+    downloadBlob(blob, resultFilename, buildToolDownloadMeta(toolId, 1));
   }, [resultBlob, resultFilename]);
 
   const handleFitWidth = useCallback(() => {

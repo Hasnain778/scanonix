@@ -12,6 +12,7 @@ import {
   ScanStageProgress,
 } from "@/components/tools/security-scan/ScanStageProgress";
 import { useProAccess } from "@/hooks/useProAccess";
+import { createProcessAttempt, planErrorMessageToCode } from "@/lib/analytics/process-lifecycle";
 import { runSecurityScan } from "@/lib/scan-history/client";
 
 type ScanPhase = "idle" | "running" | "complete" | "error" | "transitioning";
@@ -63,6 +64,9 @@ export function SecurityScanTool() {
   );
 
   const handleRunScan = useCallback(async () => {
+    const attempt = createProcessAttempt("security-scan");
+    if (!attempt?.markStarted()) return;
+
     const scanId = createScanId();
     setPhase("running");
     setProgress(4);
@@ -88,6 +92,7 @@ export function SecurityScanTool() {
       window.clearInterval(stageTimer);
 
       if ("error" in result && !("record" in result)) {
+        attempt.error(planErrorMessageToCode(result.error ?? "unknown"));
         setPhase("error");
         setStatusMessage(result.error);
         setProgress(0);
@@ -98,14 +103,17 @@ export function SecurityScanTool() {
       const failed = scanResult.record.status === "failed" || Boolean(scanResult.error);
 
       if (failed) {
+        attempt.error("unknown");
         setPhase("error");
         setStatusMessage(scanResult.error ?? "Scan failed — saved to history.");
         setProgress(0);
         return;
       }
 
+      attempt.success(1);
       await navigateToReport(scanResult.record.id);
     } catch (error) {
+      attempt.error("network");
       window.clearInterval(progressTimer);
       window.clearInterval(stageTimer);
       setPhase("error");

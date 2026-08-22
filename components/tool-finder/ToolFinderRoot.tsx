@@ -6,6 +6,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Sparkles, X } from "lucide-react";
 import { ToolVisual } from "@/components/tools/ToolVisual";
 import { HOMEPAGE_CATEGORY_META } from "@/constants/homepage-tools";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
+import { trackEvent } from "@/lib/analytics/ga4";
 import { findTools, type ToolFinderMatch } from "@/lib/tools/tool-finder";
 
 const EXAMPLE_PROMPTS = [
@@ -23,11 +25,29 @@ export function ToolFinderRoot() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
+  const searchSubmitGuardRef = useRef(false);
 
   const result = useMemo(
     () => (submittedQuery.trim() ? findTools(submittedQuery) : null),
     [submittedQuery],
   );
+
+  const submitSearch = useCallback((rawQuery: string) => {
+    const trimmed = rawQuery.trim();
+    if (!trimmed || searchSubmitGuardRef.current) {
+      return;
+    }
+
+    searchSubmitGuardRef.current = true;
+    const searchResult = findTools(trimmed);
+    trackEvent("find_tool_search", {
+      query_length: trimmed.length,
+      result_count: searchResult.matches.length,
+      source_surface: ANALYTICS_SURFACES.TOOL_FINDER,
+    });
+    setSubmittedQuery(trimmed);
+    searchSubmitGuardRef.current = false;
+  }, []);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -38,10 +58,8 @@ export function ToolFinderRoot() {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    const trimmed = query.trim();
-    if (!trimmed) return;
-    setSubmittedQuery(trimmed);
-  }, [query]);
+    submitSearch(query);
+  }, [query, submitSearch]);
 
   const handleOpenTool = useCallback(() => {
     close();
@@ -187,7 +205,7 @@ export function ToolFinderRoot() {
                           type="button"
                           onClick={() => {
                             setQuery(prompt);
-                            setSubmittedQuery(prompt);
+                            submitSearch(prompt);
                           }}
                           className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-scanonix-muted transition-colors hover:border-scanonix-orange/30 hover:bg-scanonix-orange/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
                         >

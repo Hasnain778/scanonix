@@ -11,6 +11,7 @@ import { isAcceptedPdfFile } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import type { WatermarkPosition } from "@/lib/security-tools/pdf/watermark";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 const POSITIONS: { value: WatermarkPosition; label: string }[] = [
   { value: "center", label: "Center" },
@@ -57,7 +58,7 @@ export function WatermarkPdfTool() {
       return;
     }
 
-    downloadBlob(result.blob, result.fileName);
+    downloadBlob(result.blob, result.fileName, buildToolDownloadMeta("watermark-pdf", 1));
     setStatus("success");
     setMessage("Watermarked PDF downloaded.");
   }, [file, fontSize, imageFile, opacity, pageSelection, position, text]);

@@ -20,6 +20,12 @@ import {
 import { formatPlanError } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
 import type { ToolStatus } from "@/lib/tools/types";
+import {
+  createProcessAttempt,
+  httpStatusToErrorCode,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 const TONE_LABELS: Record<RewriteTone, string> = {
   professional: "Professional",
@@ -69,6 +75,9 @@ export function AiRewriteTool() {
     inputText.trim().length > 0 && !isBusy && !premiumLocked && !usageExhausted;
 
   const handleRewrite = useCallback(async () => {
+    const attempt = createProcessAttempt("ai-rewrite");
+    if (!attempt?.markStarted()) return;
+
     setStatus("loading");
     setErrorMessage(undefined);
     setOutputText("");
@@ -83,13 +92,16 @@ export function AiRewriteTool() {
 
       if (!response.ok) {
         setErrorMessage(formatRewriteError(data, response.status));
+        attempt.error(httpStatusToErrorCode(response.status, data.code));
         setStatus("error");
         return;
       }
 
       setOutputText(data.text ?? "");
+      attempt.success(1);
       setStatus("success");
     } catch {
+      attempt.error("network");
       setErrorMessage(AI_REWRITE_UNAVAILABLE);
       setStatus("error");
     }
@@ -105,7 +117,7 @@ export function AiRewriteTool() {
   function handleDownload() {
     if (!outputText) return;
     const blob = new Blob([outputText], { type: "text/plain;charset=utf-8" });
-    downloadBlob(blob, "rewritten-text.txt");
+    downloadBlob(blob, "rewritten-text.txt", buildToolDownloadMeta("ai-rewrite", 1));
   }
 
   function handleStartOver() {

@@ -8,6 +8,7 @@ import { QrScannerPrivacyNotice } from "@/components/tools/qr-scanner/QrScannerP
 import { QrScannerStatusBanner } from "@/components/tools/qr-scanner/QrScannerStatusBanner";
 import { QrUploadScanner } from "@/components/tools/qr-scanner/QrUploadScanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import type {
   ParsedQrResult,
@@ -51,7 +52,11 @@ export function QrScannerTool() {
       return;
     }
 
+    const attempt = createProcessAttempt("qr-scanner");
+    if (!attempt?.markStarted()) return;
+
     setResult(detected);
+    attempt.success(1);
     setStatusMessage(undefined);
   }, []);
 

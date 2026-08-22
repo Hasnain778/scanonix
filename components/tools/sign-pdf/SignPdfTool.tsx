@@ -7,6 +7,7 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
@@ -37,6 +38,7 @@ import {
   type SignatureAssetEntry,
 } from "./SignatureAssetPalette";
 import { SignatureCreatorModal } from "./SignatureCreatorModal";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -253,6 +255,9 @@ export function SignPdfTool() {
   const handleExport = async () => {
     if (!uploadedPdf || !canExport || isExporting) return;
 
+    const attempt = createProcessAttempt("sign-pdf");
+    if (!attempt?.markStarted()) return;
+
     setIsExporting(true);
     setStatus("loading");
     setStatusMessage("Creating signed PDF…");
@@ -269,9 +274,11 @@ export function SignPdfTool() {
       );
 
       setResultBlob(blob);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage("Signed PDF ready to download.");
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof SignPdfError
@@ -289,7 +296,7 @@ export function SignPdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, resultFilename);
+      downloadBlob(blob, resultFilename, buildToolDownloadMeta("sign-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

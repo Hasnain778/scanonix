@@ -12,6 +12,7 @@ import { downloadBlob } from "@/lib/tools/download";
 import { isAcceptedPdfFile } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 async function findRedactionAreas(
   bytes: ArrayBuffer,
@@ -87,7 +88,7 @@ export function RedactPdfTool() {
         return;
       }
 
-      downloadBlob(result.blob, result.fileName);
+      downloadBlob(result.blob, result.fileName, buildToolDownloadMeta("redact-pdf", 1));
       setStatus("success");
       setMessage("Redacted PDF downloaded. Review the output before sharing.");
     } catch (error) {

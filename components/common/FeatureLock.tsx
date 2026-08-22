@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getFeature, type FeatureTier } from "@/config/features";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
+import { trackEvent } from "@/lib/analytics/ga4";
 import { PremiumBadge } from "./PremiumBadge";
 
 interface FeatureLockProps {
@@ -49,6 +51,12 @@ export function FeatureLock({
       {enabled && (
         <Link
           href="/pricing"
+          onClick={() => {
+            trackEvent("upgrade_click", {
+              source_surface: ANALYTICS_SURFACES.FEATURE_LOCK,
+              tier,
+            });
+          }}
           className="mt-5 inline-flex items-center justify-center rounded-xl bg-scanonix-orange px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-scanonix-orange-light"
         >
           View {tierLabels[tier]} plans

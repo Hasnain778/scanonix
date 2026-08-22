@@ -9,6 +9,10 @@ import { OcrProgressBanner } from "@/components/tools/ocr/OcrProgressBanner";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -27,6 +31,7 @@ import {
 import { renderPagePreviewDataUrl } from "@/lib/tools/pdf-to-image/pdf-render";
 import { getPdfPageCountFromBytes } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedOcrFile {
   file: File;
@@ -167,12 +172,16 @@ export function OcrTool() {
   const handleExtract = async () => {
     if (!uploadedFile || isBusy) return;
 
+    const attempt = createProcessAttempt("ocr");
+
     const gate = await gateToolOperation("ocr", uploadedFile.file.size);
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setOcrPhase("preparing");
@@ -193,11 +202,13 @@ export function OcrTool() {
       );
 
       setExtractedText(text);
+      attempt.success(1);
       setStatus("success");
       setOcrPhase("complete");
       setStatusMessage("Complete — text extracted successfully!");
       setProgress(undefined);
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setOcrPhase(undefined);
       setStatusMessage(
@@ -230,7 +241,7 @@ export function OcrTool() {
       const blob = new Blob([text], {
         type: "text/plain;charset=utf-8",
       });
-      downloadBlob(blob, "scanonix-ocr.txt");
+      downloadBlob(blob, "scanonix-ocr.txt", buildToolDownloadMeta("ocr", 1));
     } finally {
       setIsDownloading(false);
     }

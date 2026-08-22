@@ -7,6 +7,7 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import {
   addPageNumbersToPdf,
@@ -39,6 +40,7 @@ import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { PageNumberPreview } from "./PageNumberPreview";
 import { PositionPicker } from "./PositionPicker";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -251,6 +253,9 @@ export function AddPageNumbersTool() {
   const handleExport = async () => {
     if (!uploadedPdf || !canExport || isExporting) return;
 
+    const attempt = createProcessAttempt("add-page-numbers");
+    if (!attempt?.markStarted()) return;
+
     setIsExporting(true);
     setStatus("loading");
     setStatusMessage("Adding page numbers…");
@@ -267,9 +272,11 @@ export function AddPageNumbersTool() {
 
       const blob = new Blob([Uint8Array.from(bytes)], { type: "application/pdf" });
       setResultBlob(blob);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage("Numbered PDF ready to download.");
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof AddPageNumbersError
@@ -287,7 +294,7 @@ export function AddPageNumbersTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, resultFilename);
+      downloadBlob(blob, resultFilename, buildToolDownloadMeta("add-page-numbers", 1));
     } finally {
       setIsDownloading(false);
     }

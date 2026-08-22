@@ -7,6 +7,7 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
@@ -33,6 +34,7 @@ import {
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { OrganizePageGrid } from "./OrganizePageGrid";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -266,6 +268,9 @@ export function OrganizePdfTool() {
   const handleExport = async () => {
     if (!uploadedPdf || !canExport || isExporting) return;
 
+    const attempt = createProcessAttempt("organize-pdf");
+    if (!attempt?.markStarted()) return;
+
     setIsExporting(true);
     setStatus("loading");
     setStatusMessage("Organizing PDF pages…");
@@ -283,11 +288,13 @@ export function OrganizePdfTool() {
 
       resultBlobRef.current = blob;
       setResultBlob(blob);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage(
         `Organized PDF ready — ${pages.length} page${pages.length === 1 ? "" : "s"}.`,
       );
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(getOrganizePdfErrorMessage(error));
       setResultBlob(null);
@@ -302,7 +309,7 @@ export function OrganizePdfTool() {
 
     setIsDownloading(true);
     try {
-      await downloadBlob(resultBlob, resultFilename);
+      await downloadBlob(resultBlob, resultFilename, buildToolDownloadMeta("organize-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

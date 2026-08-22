@@ -9,6 +9,10 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import {
   downloadBlob,
@@ -34,6 +38,7 @@ import type {
   ToolStatus,
 } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -199,12 +204,16 @@ export function PdfToImageTool() {
       return;
     }
 
+    const attempt = createProcessAttempt("pdf-to-image");
+
     const gate = await gateToolOperation("pdf-to-image", uploadedPdf.file.size);
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setStatusMessage(undefined);
@@ -230,12 +239,14 @@ export function PdfToImageTool() {
         outputCount: outputs.length,
       });
 
+      attempt.success(outputs.length);
       setStatus("success");
       setStatusMessage(
         `Converted ${outputs.length} page${outputs.length === 1 ? "" : "s"} — ready to download.`,
       );
       setProgress(undefined);
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof Error ? error.message : "Failed to convert PDF",
@@ -250,7 +261,7 @@ export function PdfToImageTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(state.blob, state.filename);
+      downloadBlob(state.blob, state.filename, buildToolDownloadMeta("pdf-to-image", state.outputCount));
     } finally {
       setIsDownloading(false);
     }

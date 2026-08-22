@@ -9,6 +9,10 @@ import { SplitModePanel } from "@/components/tools/split-pdf/SplitModePanel";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob, packageOutputsForDownload } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -27,6 +31,7 @@ import {
 } from "@/lib/tools/split-pdf/split-pdf";
 import type { SplitMode, SplitOutput, ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -181,12 +186,16 @@ export function SplitPdfTool() {
       return;
     }
 
+    const attempt = createProcessAttempt("split-pdf");
+
     const gate = await gateToolOperation("split-pdf", uploadedPdf.file.size);
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);
       return;
     }
+
+    if (!attempt?.markStarted()) return;
 
     setStatus("loading");
     setStatusMessage(undefined);
@@ -211,12 +220,14 @@ export function SplitPdfTool() {
         outputCount: outputs.length,
       });
 
+      attempt.success(outputs.length);
       setStatus("success");
       setStatusMessage(
         `Created ${outputs.length} PDF${outputs.length === 1 ? "" : "s"} — ready to download.`,
       );
       setProgress(undefined);
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof Error ? error.message : "Failed to split PDF",
@@ -231,7 +242,7 @@ export function SplitPdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(state.blob, state.filename);
+      downloadBlob(state.blob, state.filename, buildToolDownloadMeta("split-pdf", state.outputCount));
     } finally {
       setIsDownloading(false);
     }

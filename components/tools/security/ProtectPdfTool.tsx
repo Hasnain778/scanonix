@@ -15,6 +15,11 @@ import { detectExistingDigitalSignatures, DIGITAL_SIGNATURE_WARNING } from "@/li
 import { isAcceptedPdfFile } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
+import {
+  createProcessAttempt,
+  planErrorMessageToCode,
+} from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 function PasswordField({
   label,
@@ -101,6 +106,9 @@ export function ProtectPdfTool() {
       return;
     }
 
+    const attempt = createProcessAttempt("protect-pdf");
+    if (!attempt?.markStarted()) return;
+
     setStatus("loading");
     setMessage(undefined);
 
@@ -112,12 +120,14 @@ export function ProtectPdfTool() {
     const result = await submitSecurityToolForm("/api/tools/security/protect-pdf", formData);
 
     if (!result.ok) {
+      attempt.error(planErrorMessageToCode(result.message));
       setStatus("error");
       setMessage(result.message);
       return;
     }
 
-    downloadBlob(result.blob, result.fileName);
+    downloadBlob(result.blob, result.fileName, buildToolDownloadMeta("protect-pdf", 1));
+    attempt.success(1);
     setStatus("success");
     setMessage(`${PROTECT_PDF_AES256_SUCCESS}. Passwords are never stored.`);
   }, [confirmPassword, file, password]);

@@ -4,6 +4,14 @@
  */
 
 import { getGaMeasurementId } from "@/config/env.public";
+import { isAnalyticsConsentGranted } from "@/lib/analytics/consent";
+import {
+  type CustomEventName,
+  type CustomEventParamsMap,
+  sanitizeCustomEvent,
+} from "@/lib/analytics/events";
+
+export type { CustomEventName, CustomEventParamsMap } from "@/lib/analytics/events";
 
 export const GA_READY_EVENT = "scanonix-ga-ready";
 
@@ -335,6 +343,56 @@ export function subscribeToGaReady(callback: () => void): () => void {
 
 export function isGtagAvailable(): boolean {
   return isBrowser() && typeof window.gtag === "function";
+}
+
+function isGaDisabledForMeasurement(measurementId: string): boolean {
+  return Boolean(gaDisableWindow()[`ga-disable-${measurementId}`]);
+}
+
+/** True when custom events may be sent (consent + GA ready + configured + not disabled). */
+export function canSendCustomAnalyticsEvent(): boolean {
+  if (!isBrowser()) return false;
+  if (!isAnalyticsConsentGranted()) return false;
+  if (!isGaConfigured() || !isGaReady() || !isGtagAvailable()) return false;
+  const measurementId = getMeasurementId();
+  if (!measurementId || isGaDisabledForMeasurement(measurementId)) return false;
+  return true;
+}
+
+/**
+ * Consent-safe custom GA4 event sender (Phase 130D Step 2A).
+ * Drops events when analytics is not ready — never queues for later.
+ * No operation-level dedupe; repeated legitimate runs may emit multiple events.
+ */
+export function trackEvent<E extends CustomEventName>(
+  eventName: E,
+  parameters: CustomEventParamsMap[E],
+): "sent" | "dropped" {
+  if (!canSendCustomAnalyticsEvent()) {
+    debugLog("custom_event dropped", `event=${eventName} reason=not-ready-or-blocked`);
+    return "dropped";
+  }
+
+  const sanitized = sanitizeCustomEvent(eventName, parameters);
+  if (!sanitized.ok) {
+    debugLog("custom_event dropped", `event=${eventName} reason=${sanitized.reason}`);
+    return "dropped";
+  }
+
+  const measurementId = getMeasurementId();
+  if (isGaDisabledForMeasurement(measurementId)) {
+    debugLog("custom_event dropped", `event=${eventName} reason=ga-disable`);
+    return "dropped";
+  }
+
+  gtag("event", sanitized.eventName, {
+    ...sanitized.params,
+    send_to: measurementId,
+  });
+
+  debugLog("custom_event sent", `event=${sanitized.eventName}`);
+  debugLogDataLayer(`after-custom-event-${sanitized.eventName}`);
+  return "sent";
 }
 
 function dispatchPageViewEvent(pagePath: string, measurementId: string): void {

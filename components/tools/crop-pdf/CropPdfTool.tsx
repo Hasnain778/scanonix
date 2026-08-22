@@ -7,6 +7,7 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
@@ -38,6 +39,7 @@ import {
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { CropPageEditor } from "./CropPageEditor";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -264,6 +266,9 @@ export function CropPdfTool() {
   const handleExport = async () => {
     if (!uploadedPdf || !canExport || isExporting) return;
 
+    const attempt = createProcessAttempt("crop-pdf");
+    if (!attempt?.markStarted()) return;
+
     setIsExporting(true);
     setStatus("loading");
     setStatusMessage("Creating cropped PDF…");
@@ -279,9 +284,11 @@ export function CropPdfTool() {
       );
 
       setResultBlob(blob);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage("Cropped PDF ready to download.");
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof CropPdfError
@@ -299,7 +306,7 @@ export function CropPdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, resultFilename);
+      downloadBlob(blob, resultFilename, buildToolDownloadMeta("crop-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

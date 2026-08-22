@@ -7,6 +7,7 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import {
@@ -43,6 +44,7 @@ import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { FieldsNavigator } from "./FieldsNavigator";
 import { PdfFormPreview } from "./PdfFormPreview";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
   file: File;
@@ -418,6 +420,9 @@ export function FillPdfTool() {
       return;
     }
 
+    const attempt = createProcessAttempt("fill-pdf");
+    if (!attempt?.markStarted()) return;
+
     setIsExporting(true);
     setStatus("loading");
     setStatusMessage("Filling PDF form…");
@@ -432,9 +437,11 @@ export function FillPdfTool() {
       });
       setResultBlob(blob);
       setResultFilename(result.filename);
+      attempt.success(1);
       setStatus("success");
       setStatusMessage("Filled PDF ready to download.");
     } catch (error) {
+      attempt.error("unknown");
       setStatus("error");
       setStatusMessage(
         error instanceof FillPdfError
@@ -455,7 +462,7 @@ export function FillPdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, resultFilename);
+      downloadBlob(blob, resultFilename, buildToolDownloadMeta("fill-pdf", 1));
     } finally {
       setIsDownloading(false);
     }

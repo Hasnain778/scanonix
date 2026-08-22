@@ -14,3 +14,17 @@ export const ANALYTICS_SURFACES = {
 } as const;
 
 export type AnalyticsSurface = (typeof ANALYTICS_SURFACES)[keyof typeof ANALYTICS_SURFACES];
+
+/** Fallback when checkout attribution metadata is missing or invalid. */
+export const ANALYTICS_SOURCE_SURFACE_UNKNOWN = "unknown" as const;
+
+/** Phase 130D frozen custom events (7) — preserved in 130E. */
+export const FROZEN_130D_CUSTOM_EVENT_NAMES = [
+  "tool_process_start",
+  "tool_process_success",
+  "tool_process_error",
+  "tool_download",
+  "upgrade_click",
+  "checkout_start",
+  "find_tool_search",
+] as const;

@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { AuthMessage } from "@/components/auth/AuthShell";
 import { useAuth } from "@/components/auth/AuthProvider";
+import type { BillingIntervalValue } from "@/lib/analytics/events";
+import { tryTrackSubscriptionComplete } from "@/lib/analytics/subscription-complete";
 import { getEffectivePlan, hasActiveSubscription } from "@/lib/auth/entitlements";
 
 interface BillingStatusResponse {
@@ -12,6 +14,17 @@ interface BillingStatusResponse {
   storedPlan: string;
   subscriptionStatus: string | null;
   hasActiveSubscription: boolean;
+}
+
+interface SyncSessionSuccessResponse extends BillingStatusResponse {
+  ok?: boolean;
+  billing_interval?: BillingIntervalValue;
+  source_surface?: string;
+  subscriptionPeriodEnd?: string | null;
+}
+
+function isPaidPlan(plan: string): plan is "pro" | "business" {
+  return plan === "pro" || plan === "business";
 }
 
 export function BillingSuccessClient() {
@@ -22,6 +35,7 @@ export function BillingSuccessClient() {
   const [confirmedPlan, setConfirmedPlan] = useState<string | null>(null);
   const [polling, setPolling] = useState(Boolean(sessionId));
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const subscriptionCompleteTrackedRef = useRef(false);
 
   const missingSessionMessage = useMemo(
     () =>
@@ -50,10 +64,19 @@ export function BillingSuccessClient() {
         });
 
         if (syncResponse.ok) {
-          const syncData = (await syncResponse.json()) as BillingStatusResponse & {
-            ok?: boolean;
-          };
-          if (syncData.hasActiveSubscription && syncData.plan !== "free") {
+          const syncData = (await syncResponse.json()) as SyncSessionSuccessResponse;
+          if (syncData.hasActiveSubscription && isPaidPlan(syncData.plan)) {
+            if (!subscriptionCompleteTrackedRef.current) {
+              subscriptionCompleteTrackedRef.current = true;
+              if (syncData.billing_interval) {
+                tryTrackSubscriptionComplete({
+                  tier: syncData.plan,
+                  billing_interval: syncData.billing_interval,
+                  source_surface: syncData.source_surface ?? "unknown",
+                  subscriptionPeriodEnd: syncData.subscriptionPeriodEnd ?? null,
+                });
+              }
+            }
             setConfirmedPlan(syncData.plan);
             setPolling(false);
             await refresh();

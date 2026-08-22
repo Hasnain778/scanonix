@@ -12,6 +12,7 @@ import {
   sanitizeCustomEvent,
   type ToolProcessErrorParams,
 } from "../lib/analytics/events";
+import { FROZEN_130D_CUSTOM_EVENT_NAMES } from "../lib/analytics/surfaces";
 
 const root = process.cwd();
 
@@ -66,18 +67,17 @@ const productRuntime = productRuntimeSource();
 
 // 1. Event allowlist
 assert("1 events.ts exists", eventsSource.length > 0);
-assert("1 exactly 7 approved events", CUSTOM_EVENT_NAMES.length === 7);
+assert("1 exactly 8 approved events", CUSTOM_EVENT_NAMES.length === 8);
+assert(
+  "1 130D frozen event names preserved",
+  FROZEN_130D_CUSTOM_EVENT_NAMES.every((name) => CUSTOM_EVENT_NAMES.includes(name)),
+);
 assert(
   "1 approved event names match spec",
   CUSTOM_EVENT_NAMES.join(",") ===
     [
-      "tool_process_start",
-      "tool_process_success",
-      "tool_process_error",
-      "tool_download",
-      "upgrade_click",
-      "checkout_start",
-      "find_tool_search",
+      ...FROZEN_130D_CUSTOM_EVENT_NAMES,
+      "subscription_complete",
     ].join(","),
 );
 assert("1 no find_tool_open yet", !eventsSource.includes("find_tool_open"));

@@ -56,6 +56,8 @@ export type BillingInterval = "monthly" | "yearly";
 export interface CheckoutPlanRequest {
   plan: BillingPlan;
   interval: BillingInterval;
+  /** Bounded analytics checkout surface (optional; server validates allowlist). */
+  source_surface?: string;
 }
 
 export interface NotificationPreferences {

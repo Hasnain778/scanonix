@@ -5,6 +5,7 @@
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { FROZEN_130D_CUSTOM_EVENT_NAMES } from "../lib/analytics/surfaces";
 import {
   CUSTOM_EVENT_NAMES,
   ERROR_CODES,
@@ -207,14 +208,14 @@ for (const event of step2bEvents) {
   assert(`10 Step2B ${event} still present`, productRuntime.includes(`trackEvent("${event}"`));
 }
 
-const implementedInProduct = CUSTOM_EVENT_NAMES.filter((name) =>
+const implemented130dInProduct = FROZEN_130D_CUSTOM_EVENT_NAMES.filter((name) =>
   productRuntime.includes(`trackEvent("${name}"`) ||
   (name.startsWith("tool_process_") && lifecycleSource.includes(`trackEvent("${name}"`)),
 );
 assert(
-  "10 all 7 custom events implemented",
-  implementedInProduct.length === CUSTOM_EVENT_NAMES.length,
-  implementedInProduct.sort().join(","),
+  "10 all 130D custom events implemented",
+  implemented130dInProduct.length === FROZEN_130D_CUSTOM_EVENT_NAMES.length,
+  implemented130dInProduct.sort().join(","),
 );
 
 // 11. Pageview / consent / favicon preserved

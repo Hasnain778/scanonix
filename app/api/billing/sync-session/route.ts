@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { extractCheckoutAnalyticsFromSessionMetadata } from "@/lib/analytics/checkout-metadata";
 import { getEffectivePlan, hasActiveSubscription } from "@/lib/auth/entitlements";
 import { getAuthUser } from "@/lib/auth/session";
 import {
@@ -38,7 +39,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    await syncExistingCheckoutSession(sessionId, user.id);
+    const session = await syncExistingCheckoutSession(sessionId, user.id);
+    const checkoutAnalytics = extractCheckoutAnalyticsFromSessionMetadata(session.metadata);
 
     const refreshed = await getAuthUser();
     const profile = refreshed?.profile ?? user.profile;
@@ -47,6 +49,9 @@ export async function POST(request: Request) {
       ok: true,
       plan: getEffectivePlan(profile),
       hasActiveSubscription: hasActiveSubscription(profile),
+      billing_interval: checkoutAnalytics.billing_interval,
+      source_surface: checkoutAnalytics.source_surface,
+      subscriptionPeriodEnd: profile?.subscription_current_period_end ?? null,
     });
   } catch (error) {
     if (error instanceof CheckoutSessionSyncError) {

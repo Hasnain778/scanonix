@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { env, isStripeConfigured } from "@/config/env";
+import {
+  billingIntervalToAnalytics,
+  parseCheckoutSourceSurface,
+} from "@/lib/analytics/checkout-metadata";
 import { getAuthUser } from "@/lib/auth/session";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import {
@@ -28,6 +32,8 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as CheckoutPlanRequest;
     const { plan, interval } = body;
+    const sourceSurface = parseCheckoutSourceSurface(body.source_surface);
+    const billingIntervalAnalytics = billingIntervalToAnalytics(interval);
 
     if (!isApprovedCheckoutPlan(plan, interval)) {
       return NextResponse.json(
@@ -67,12 +73,16 @@ export async function POST(request: Request) {
         supabase_user_id: user.id,
         plan,
         interval,
+        billing_interval: billingIntervalAnalytics,
+        source_surface: sourceSurface,
       },
       subscription_data: {
         metadata: {
           supabase_user_id: user.id,
           plan,
           interval,
+          billing_interval: billingIntervalAnalytics,
+          source_surface: sourceSurface,
         },
       },
     });

@@ -63,7 +63,7 @@ export function CheckoutButton({
       const response = await fetch("/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, interval }),
+        body: JSON.stringify({ plan, interval, source_surface: sourceSurface }),
       });
 
       const data = (await response.json()) as { url?: string; error?: string };

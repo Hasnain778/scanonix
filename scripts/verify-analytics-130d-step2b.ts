@@ -5,7 +5,7 @@
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { ANALYTICS_SURFACES } from "../lib/analytics/surfaces";
+import { ANALYTICS_SURFACES, FROZEN_130D_CUSTOM_EVENT_NAMES } from "../lib/analytics/surfaces";
 import {
   CUSTOM_EVENT_NAMES,
   FORBIDDEN_PARAMETER_NAMES,
@@ -251,15 +251,15 @@ assert(
   } as never).ok === false,
 );
 
-const implementedInProduct = CUSTOM_EVENT_NAMES.filter((name) => {
+const implemented130dInProduct = FROZEN_130D_CUSTOM_EVENT_NAMES.filter((name) => {
   if (name.startsWith("tool_process_")) {
     return lifecycleSource.includes(`trackEvent("${name}"`);
   }
   return productRuntime.includes(`trackEvent("${name}"`);
 });
 assert(
-  "13 all 7 custom events implemented",
-  implementedInProduct.sort().join(",") === CUSTOM_EVENT_NAMES.slice().sort().join(","),
+  "13 all 130D custom events implemented",
+  implemented130dInProduct.sort().join(",") === FROZEN_130D_CUSTOM_EVENT_NAMES.slice().sort().join(","),
 );
 
 console.log(`\n130D Step 2B verify: ${passed} passed, ${failed} failed\n`);

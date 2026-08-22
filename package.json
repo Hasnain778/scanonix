@@ -40,6 +40,7 @@
     "verify:analytics-130d-step2a": "npx --yes tsx scripts/verify-analytics-130d-step2a.ts",
     "verify:analytics-130d-step2b": "npx --yes tsx scripts/verify-analytics-130d-step2b.ts",
     "verify:analytics-130d-step2c": "npx --yes tsx scripts/verify-analytics-130d-step2c.ts",
+    "verify:analytics-130e-subscription-complete": "npx --yes tsx scripts/verify-analytics-130e-subscription-complete.ts",
     "verify:seo-canonical-host": "npx --yes tsx scripts/verify-seo-canonical-host.ts",
     "verify:favicon": "npx --yes tsx scripts/verify-favicon.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"

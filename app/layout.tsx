@@ -39,11 +39,9 @@ export const metadata: Metadata = {
     default: "Free Online PDF, Image & AI Document Tools | Scanonix",
     template: "%s",
   },
+  // Search favicon: app/favicon.ico (Next.js filesystem metadata).
+  // Apple touch + Organization schema: /icon.png (large brand asset).
   icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
-    ],
     apple: "/icon.png",
   },
 };

@@ -1,6 +1,6 @@
 /**
- * Favicon compatibility verification (Phase 129D-FIX1).
- * Run: npx tsx scripts/verify-favicon.ts
+ * Favicon verification (Phase 130C-FAV2).
+ * Run: npm run verify:favicon
  */
 
 import { existsSync, readFileSync } from "node:fs";
@@ -74,14 +74,23 @@ async function run() {
   (process.env as NodeJS.ProcessEnv & { NODE_ENV?: string }).NODE_ENV = "production";
 
   const { SITE } = await import("../config/site");
-  const { createOrganizationJsonLd, createPageMetadata } = await import("../lib/utils/seo");
+  const {
+    createOrganizationJsonLd,
+    createPageMetadata,
+    createWebSiteJsonLd,
+  } = await import("../lib/utils/seo");
   const layoutSource = readFileSync(join(root, "app", "layout.tsx"), "utf8");
+  const pageSource = readFileSync(join(root, "app", "page.tsx"), "utf8");
+  const ga4Source = existsSync(join(root, "lib", "analytics", "ga4.ts"))
+    ? readFileSync(join(root, "lib", "analytics", "ga4.ts"), "utf8")
+    : "";
 
-  console.log("\nFavicon compatibility verification (Phase 129D-FIX1)\n");
+  console.log("\nFavicon verification (Phase 130C-FAV2)\n");
 
-  // 1. favicon.ico exists and is valid ICO
+  // 1. favicon assets
   const faviconPath = join(root, "app", "favicon.ico");
   assert("1 app/favicon.ico exists", existsSync(faviconPath));
+  assert("1 app/favicon-source.png exists", existsSync(join(root, "app", "favicon-source.png")));
 
   const faviconBuffer = existsSync(faviconPath) ? readFileSync(faviconPath) : Buffer.alloc(0);
   assert("1 favicon.ico file size > 0", faviconBuffer.length > 0, String(faviconBuffer.length));
@@ -97,27 +106,31 @@ async function run() {
   assert("1 favicon.ico contains 32x32", icoSizes.includes(32), icoSizes.join(", "));
   assert("1 favicon.ico contains 48x48", icoSizes.includes(48), icoSizes.join(", "));
 
-  // 2. icon.png remains available
+  // 2. large brand assets preserved
   assert("2 app/icon.png exists", existsSync(join(root, "app", "icon.png")));
   assert(
     "2 public/scanonix_icon.png exists",
     existsSync(join(root, "public", "scanonix_icon.png")),
   );
 
-  // 3. Root layout icons metadata
-  assert("3 layout declares /favicon.ico", layoutSource.includes('url: "/favicon.ico"'));
+  // 3. consolidated metadata — filesystem favicon only for Search
   assert(
-    "3 layout declares /icon.png with sizes",
-    layoutSource.includes('url: "/icon.png"') &&
-      layoutSource.includes('sizes: "1024x1024"'),
+    "3 layout has no manual general icon metadata",
+    !layoutSource.includes('icon: [') && !layoutSource.includes('url: "/favicon.ico"'),
+  );
+  assert(
+    "3 layout does not expose /icon.png as general favicon",
+    !layoutSource.includes('url: "/icon.png"') &&
+      !layoutSource.includes('sizes: "1024x1024"'),
   );
   assert("3 layout apple icon is /icon.png", layoutSource.includes('apple: "/icon.png"'));
   assert(
     "3 layout has no conflicting shortcut icon override",
-    !layoutSource.includes('shortcut:') && !layoutSource.includes("shortcut icon"),
+    !layoutSource.includes("shortcut:") && !layoutSource.includes("shortcut icon"),
   );
+  assert("3 app/favicon.ico filesystem asset exists", existsSync(faviconPath));
 
-  // 4. Canonical www unchanged
+  // 4. canonical www unchanged
   assert("4 CANONICAL_SITE_ORIGIN is www", CANONICAL_SITE_ORIGIN === WWW_ORIGIN);
   assert("4 production siteUrl resolves to www", resolveCanonicalSiteUrl() === WWW_ORIGIN);
 
@@ -133,7 +146,7 @@ async function run() {
     homeCanonical,
   );
 
-  // 5. OG / Twitter unchanged (129D)
+  // 5. OG / Twitter unchanged
   const homeOg = getOgImageFromMetadata(homeMetadata);
   assert(
     "5 homepage og:image resolves to www og-scanonix",
@@ -148,8 +161,9 @@ async function run() {
     (homeMetadata.twitter as { card?: string } | undefined)?.card === "summary_large_image",
   );
 
-  // 6. Organization sameAs unchanged
+  // 6. structured data preserved
   const orgJsonLd = createOrganizationJsonLd();
+  const websiteJsonLd = createWebSiteJsonLd();
   assert(
     "6 Organization sameAs includes LinkedIn",
     Array.isArray(orgJsonLd.sameAs) && orgJsonLd.sameAs.includes(LINKEDIN_URL),
@@ -169,6 +183,18 @@ async function run() {
     orgJsonLd.logo === `${WWW_ORIGIN}/icon.png`,
     String(orgJsonLd.logo),
   );
+  assert("6 WebSite schema name preserved", websiteJsonLd.name === "Scanonix");
+  assert("6 WebSite schema url preserved", websiteJsonLd.url === WWW_ORIGIN);
+  assert("6 homepage renders WebSite JSON-LD", pageSource.includes("createWebSiteJsonLd"));
+
+  // 7. analytics freeze
+  assert("7 ga4 module untouched", ga4Source.includes("send_page_view: false"));
+  assert("7 no analytics edits in layout", !layoutSource.includes("GoogleAnalytics"));
+
+  // 8. generator script documents tight crop
+  const generatorSource = readFileSync(join(root, "scripts", "generate-favicon.mjs"), "utf8");
+  assert("8 generator uses favicon-source.png", generatorSource.includes("favicon-source.png"));
+  assert("8 generator preserves approved icon.png source", generatorSource.includes("icon.png"));
 
   console.log(`\n${passed} passed, ${failed} failed\n`);
   process.exit(failed > 0 ? 1 : 0);

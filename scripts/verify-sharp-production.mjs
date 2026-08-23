@@ -1,5 +1,5 @@
 /**
- * Sharp production readiness — import, decode, encode, lockfile + config checks.
+ * Sharp production readiness — import, decode, encode, lockfile, config + NFT checks.
  * Run: npm run verify:sharp-production
  */
 
@@ -9,6 +9,27 @@ import { join } from "node:path";
 import sharp from "sharp";
 
 const root = process.cwd();
+
+const SHARP_IMAGE_ROUTES = [
+  {
+    route: "/api/tools/image/compress",
+    nftPath: ".next/server/app/api/tools/image/compress/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/image/resize",
+    nftPath: ".next/server/app/api/tools/image/resize/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/background-remover/remove",
+    nftPath: ".next/server/app/api/tools/background-remover/remove/route.js.nft.json",
+  },
+];
+
+const REQUIRED_NFT_MARKERS = [
+  "@img/sharp-linux-x64",
+  "@img/sharp-libvips-linux-x64",
+  "libvips-cpp.so.8.18.3",
+];
 
 function ok(message) {
   console.log(`✓ ${message}`);
@@ -77,7 +98,7 @@ function testLockfileLinuxPackages() {
   ok("Lockfile contains matching linux-x64 sharp + libvips optional packages (0.35.3 / 1.3.2)");
 }
 
-function testNextConfigDoesNotExternalizeSharp() {
+function testNextConfigTracingIncludes() {
   const configSource = readFileSync(join(root, "next.config.ts"), "utf8");
   assert.doesNotMatch(
     configSource,
@@ -85,8 +106,14 @@ function testNextConfigDoesNotExternalizeSharp() {
     "sharp must not be listed in serverExternalPackages",
   );
   assert.match(configSource, /serverExternalPackages:\s*\["@react-pdf\/renderer"\]/);
+  assert.match(configSource, /outputFileTracingIncludes:/);
+  assert.match(configSource, /\/api\/tools\/image\/compress/);
+  assert.match(configSource, /\/api\/tools\/image\/resize/);
+  assert.match(configSource, /\/api\/tools\/background-remover\/remove/);
+  assert.match(configSource, /node_modules\/@img\/sharp-linux-x64\/\*\*\/\*/);
+  assert.match(configSource, /node_modules\/@img\/sharp-libvips-linux-x64\/\*\*\/\*/);
 
-  ok("next.config.ts keeps sharp bundled (not in serverExternalPackages)");
+  ok("next.config.ts defines targeted outputFileTracingIncludes for all three image routes");
 }
 
 function testPackageJsonPin() {
@@ -96,22 +123,52 @@ function testPackageJsonPin() {
   ok("package.json pins sharp@0.35.3 exactly");
 }
 
+function testLinuxNativeNftTraces() {
+  if (process.platform !== "linux") {
+    console.log(
+      `  (skipped Linux NFT trace checks on ${process.platform}; run on Linux after production build)`,
+    );
+    return;
+  }
+
+  for (const { route, nftPath } of SHARP_IMAGE_ROUTES) {
+    const absoluteNftPath = join(root, nftPath);
+    assert.ok(existsSync(absoluteNftPath), `missing NFT trace for ${route}: ${nftPath}`);
+
+    const nft = readJson(nftPath);
+    assert.ok(Array.isArray(nft.files), `NFT for ${route} must contain a files array`);
+
+    const tracedFiles = nft.files.join("\n");
+    for (const marker of REQUIRED_NFT_MARKERS) {
+      assert.match(
+        tracedFiles,
+        new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+        `NFT for ${route} must trace ${marker}`,
+      );
+    }
+
+    ok(`${route} NFT traces @img/sharp-linux-x64, @img/sharp-libvips-linux-x64, and libvips-cpp.so.8.18.3`);
+  }
+
+  const libvipsSoPath = join(
+    root,
+    "node_modules",
+    "@img",
+    "sharp-libvips-linux-x64",
+    "lib",
+    "libvips-cpp.so.8.18.3",
+  );
+  assert.ok(existsSync(libvipsSoPath), `libvips shared object must exist at ${libvipsSoPath}`);
+  ok(`libvips-cpp.so.8.18.3 exists on disk at node_modules/@img/sharp-libvips-linux-x64/lib/libvips-cpp.so.8.18.3`);
+}
+
 async function main() {
   try {
     testPackageJsonPin();
-    testNextConfigDoesNotExternalizeSharp();
+    testNextConfigTracingIncludes();
     testLockfileLinuxPackages();
     await testSharpRuntime();
-
-    const linuxLibvipsPath = join(root, "node_modules", "@img", "sharp-libvips-linux-x64");
-    if (process.platform === "linux") {
-      assert.ok(existsSync(linuxLibvipsPath), "linux libvips package must be installed on Linux hosts");
-      ok("Linux host has @img/sharp-libvips-linux-x64 installed locally");
-    } else {
-      console.log(
-        `  (skipped local linux libvips directory check on ${process.platform}; lockfile entries verified)`,
-      );
-    }
+    testLinuxNativeNftTraces();
 
     console.log("\nSharp production verification passed.\n");
   } catch (error) {

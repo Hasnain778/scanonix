@@ -15,9 +15,20 @@ const securityHeaders = [
     : []),
 ];
 
+const sharpLinuxNativeTraceIncludes = [
+  "node_modules/@img/sharp-linux-x64/**/*",
+  "node_modules/@img/sharp-libvips-linux-x64/**/*",
+] as const;
+
 const nextConfig: NextConfig = {
   // sharp must be traced into serverless output — externalizing breaks libvips on Vercel (130H-2)
   serverExternalPackages: ["@react-pdf/renderer"],
+  // Next.js externalizes sharp by default; libvips .so is not statically traced (130H-5)
+  outputFileTracingIncludes: {
+    "/api/tools/image/compress": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/image/resize": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/background-remover/remove": [...sharpLinuxNativeTraceIncludes],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

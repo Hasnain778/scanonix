@@ -11,6 +11,7 @@
     "verify:migration": "node --env-file=.env.local scripts/verify-supabase-migration.mjs",
     "verify:plan-enforcement": "node --env-file=.env.local scripts/verify-plan-enforcement.mjs",
     "verify:core-processing": "node scripts/verify-core-processing.mjs",
+    "verify:sharp-production": "node scripts/verify-sharp-production.mjs",
     "verify:phase4a-providers": "node scripts/verify-phase4a-providers.mjs",
     "verify:phase4b-providers": "node scripts/verify-phase4b-providers.mjs",
     "verify:phase5-providers": "npx --yes tsx scripts/verify-phase5-providers.mjs",
@@ -67,7 +68,7 @@
     "pdfjs-dist": "^6.1.200",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "sharp": "^0.35.3",
+    "sharp": "0.35.3",
     "stripe": "^22.3.1",
     "tesseract.js": "^7.0.0"
   },

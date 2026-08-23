@@ -16,7 +16,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@react-pdf/renderer", "sharp"],
+  // sharp must be traced into serverless output — externalizing breaks libvips on Vercel (130H-2)
+  serverExternalPackages: ["@react-pdf/renderer"],
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

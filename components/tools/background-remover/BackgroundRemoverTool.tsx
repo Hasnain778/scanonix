@@ -42,10 +42,8 @@ import {
   type ResolutionPresetId,
 } from "@/lib/tools/background-remover/studio-types";
 import { useUsageSummary } from "@/hooks/useUsageSummary";
-import {
-  authorizeBackgroundExport,
-  gateToolOperation,
-} from "@/lib/plan/tool-gate";
+import { authorizeBackgroundExport } from "@/lib/plan/tool-gate";
+import { validateAnonymousUploadSize } from "@/lib/plan/tool-access";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import type { ToolStatus } from "@/lib/tools/types";
@@ -244,11 +242,14 @@ export function BackgroundRemoverTool() {
       let attempt: ReturnType<typeof createProcessAttempt> = null;
 
       try {
-        const gate = await gateToolOperation("background-remover", file.size);
-        if (!gate.ok) {
+        const uploadLimitError = validateAnonymousUploadSize(
+          "background-remover",
+          file.size,
+        );
+        if (uploadLimitError) {
           stopProgressTimer();
           setStatus("error");
-          setStatusMessage(gate.message);
+          setStatusMessage(uploadLimitError);
           resetProgressState();
           setOriginalPreviewUrl(null);
           URL.revokeObjectURL(originalUrl);

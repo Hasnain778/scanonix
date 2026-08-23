@@ -19,6 +19,7 @@
     "verify:upscale-runpod-trigger": "npx --yes tsx scripts/verify-upscale-runpod-trigger.ts",
     "verify:upscale-dispatch": "npx --yes tsx scripts/verify-upscale-dispatch.ts",
     "verify:background-remover-model-config": "npx --yes tsx scripts/verify-background-remover-model-config.ts",
+    "verify:bg-remover-quota": "npx --yes tsx scripts/verify-bg-remover-quota.ts",
     "verify:upscale-job-polling": "npx --yes tsx scripts/verify-upscale-job-polling.ts",
     "verify:stripe": "node --env-file=.env.local scripts/verify-stripe.mjs",
     "validate:production": "node scripts/validate-production-env.mjs",

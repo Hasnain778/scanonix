@@ -43,7 +43,11 @@ jobs:
         run: |
           npm run verify:core-processing
           npm run verify:bg-remover-quota
-          npm run verify:background-remover-model-config
+          if [ -d ../rembg-worker ]; then
+            npm run verify:background-remover-model-config
+          else
+            echo "skip: verify:background-remover-model-config (../rembg-worker not present on CI runner)"
+          fi
           npm run verify:analytics-130e-subscription-complete
           npm run verify:seo-canonical-host
 

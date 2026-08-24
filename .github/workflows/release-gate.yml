@@ -4,7 +4,9 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches:
+      - main
+      - temp/130i-5-release-gate-validation # 130I-5 validation only — remove after merge approval
 
 concurrency:
   group: release-gate-${{ github.ref }}

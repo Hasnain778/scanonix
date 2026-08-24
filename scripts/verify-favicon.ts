@@ -32,6 +32,65 @@ function assert(name: string, condition: boolean, detail = "") {
   }
 }
 
+function decodeIcoBmpToRgba(buffer: Buffer, expectedSize: number): Buffer {
+  const width = buffer.readInt32LE(4);
+  const pixelHeight = buffer.readInt32LE(8) / 2;
+  const bitCount = buffer.readUInt16LE(14);
+  const rowBytes = Math.floor((width * bitCount + 31) / 32) * 4;
+  const offset = 40;
+  const rgba = Buffer.alloc(width * pixelHeight * 4);
+  for (let y = 0; y < pixelHeight; y += 1) {
+    const srcY = pixelHeight - 1 - y;
+    for (let x = 0; x < width; x += 1) {
+      const src = offset + srcY * rowBytes + x * 4;
+      const dst = (y * width + x) * 4;
+      rgba[dst] = buffer[src + 2];
+      rgba[dst + 1] = buffer[src + 1];
+      rgba[dst + 2] = buffer[src];
+      rgba[dst + 3] = buffer[src + 3];
+    }
+  }
+  if (width !== expectedSize || pixelHeight !== expectedSize) {
+    throw new Error(`Unexpected ICO frame size ${width}x${pixelHeight}, expected ${expectedSize}`);
+  }
+  return rgba;
+}
+
+function readIcoFrameRgba(buffer: Buffer, size: number): Buffer | null {
+  if (buffer.length < 6 || buffer.readUInt16LE(0) !== 0 || buffer.readUInt16LE(2) !== 1) {
+    return null;
+  }
+  const count = buffer.readUInt16LE(4);
+  for (let i = 0; i < count; i += 1) {
+    const offset = 6 + i * 16;
+    const width = buffer[offset] === 0 ? 256 : buffer[offset];
+    if (width !== size) continue;
+    const dataSize = buffer.readUInt32LE(offset + 8);
+    const dataOffset = buffer.readUInt32LE(offset + 12);
+    const slice = buffer.subarray(dataOffset, dataOffset + dataSize);
+    return decodeIcoBmpToRgba(slice, size);
+  }
+  return null;
+}
+
+function classifyFaviconPixel(r: number, g: number, b: number, a: number): number {
+  if (a < 128) return 0;
+  const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+  if (lum > 185 && r > 170 && g > 170 && b > 170) return 2;
+  if (lum > 45) return 1;
+  return 0;
+}
+
+function markOccupancyFromRgba(rgba: Buffer): number {
+  let mark = 0;
+  for (let i = 0; i < rgba.length; i += 4) {
+    if (classifyFaviconPixel(rgba[i], rgba[i + 1], rgba[i + 2], rgba[i + 3]) !== 0) {
+      mark += 1;
+    }
+  }
+  return (mark / (rgba.length / 4)) * 100;
+}
+
 function readIcoDimensions(buffer: Buffer): number[] {
   if (buffer.length < 6 || buffer.readUInt16LE(0) !== 0 || buffer.readUInt16LE(2) !== 1) {
     return [];
@@ -191,10 +250,44 @@ async function run() {
   assert("7 ga4 module untouched", ga4Source.includes("send_page_view: false"));
   assert("7 no analytics edits in layout", !layoutSource.includes("GoogleAnalytics"));
 
-  // 8. generator script documents tight crop
+  // 8. generator script uses approved O2 antialiased pipeline (130G-9)
   const generatorSource = readFileSync(join(root, "scripts", "generate-favicon.mjs"), "utf8");
   assert("8 generator uses favicon-source.png", generatorSource.includes("favicon-source.png"));
   assert("8 generator preserves approved icon.png source", generatorSource.includes("icon.png"));
+  assert("8 generator uses approved O2 crop", generatorSource.includes("O2_CROP"));
+  assert("8 generator uses Lanczos3", generatorSource.includes("lanczos3"));
+  assert(
+    "8 generator has no posterization pipeline",
+    !generatorSource.includes("posterizeGrid") &&
+      !generatorSource.includes("FRAME_PROFILES") &&
+      !generatorSource.includes("kernel.nearest"),
+  );
+  assert("8 generator uses RGBA-safe render", generatorSource.includes("ensureAlpha"));
+
+  // 9. favicon frame visual sanity (130G-3)
+  const minOccupancy: Record<number, number> = { 16: 20, 32: 18, 48: 18 };
+  for (const size of [16, 32, 48] as const) {
+    const rgba = readIcoFrameRgba(faviconBuffer, size);
+    assert(`9 ${size}x${size} frame decodable`, rgba !== null);
+    if (!rgba) continue;
+    const occupancy = markOccupancyFromRgba(rgba);
+    assert(
+      `9 ${size}x${size} mark occupancy >= ${minOccupancy[size]}%`,
+      occupancy >= minOccupancy[size],
+      `${occupancy.toFixed(1)}%`,
+    );
+    let orange = 0;
+    for (let i = 0; i < rgba.length; i += 4) {
+      if (classifyFaviconPixel(rgba[i], rgba[i + 1], rgba[i + 2], rgba[i + 3]) === 1) {
+        orange += 1;
+      }
+    }
+    assert(
+      `9 ${size}x${size} has orange mark pixels`,
+      orange >= Math.max(4, Math.floor(size)),
+      String(orange),
+    );
+  }
 
   console.log(`\n${passed} passed, ${failed} failed\n`);
   process.exit(failed > 0 ? 1 : 0);

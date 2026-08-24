@@ -1,6 +1,9 @@
 /**
- * Homepage Android app CTA verification (Phase 128E-FIX3).
+ * Homepage Android app CTA verification (Phase 128E-FIX3 / 130J-2B).
  * Run: npx tsx scripts/verify-homepage-app-cta.ts
+ *
+ * Approved architecture (130J tool-first homepage):
+ * - Android CTA lives in HomeAndroidPromo secondary content, not HomeHero.
  */
 
 import { readFileSync } from "node:fs";
@@ -23,17 +26,21 @@ function assert(name: string, condition: boolean, detail = "") {
 }
 
 function run() {
-  console.log("\nHomepage app CTA verification (Phase 128E-FIX3)\n");
+  console.log("\nHomepage app CTA verification (Phase 130J-2B)\n");
 
   const homepageSource = readFileSync(join(root, "app", "page.tsx"), "utf8");
   const navbarSource = readFileSync(join(root, "components", "layout", "Navbar.tsx"), "utf8");
   const heroSource = readFileSync(join(root, "components", "sections", "HomeHero.tsx"), "utf8");
+  const androidPromoSource = readFileSync(
+    join(root, "components", "sections", "HomeAndroidPromo.tsx"),
+    "utf8",
+  );
   const footerSource = readFileSync(join(root, "components", "layout", "Footer.tsx"), "utf8");
 
   assert(
-    "1 homepage body does not render HomeAndroidPromo",
-    !homepageSource.includes("<HomeAndroidPromo") &&
-      !homepageSource.includes('from "@/components/sections/HomeAndroidPromo"'),
+    "1 homepage body renders HomeAndroidPromo as secondary content",
+    homepageSource.includes("<HomeAndroidPromo") &&
+      homepageSource.includes('from "@/components/sections/HomeAndroidPromo"'),
   );
 
   assert(
@@ -56,15 +63,16 @@ function run() {
   );
 
   assert(
-    "5 homepage hero contains Get the Android App",
-    heroSource.includes("Get the Android App") &&
-      heroSource.includes('location="hero"') &&
-      heroSource.includes("PlayStoreLink"),
+    "5 homepage hero does not contain Android App CTA",
+    !heroSource.includes("Get the Android App") &&
+      !heroSource.includes('location="hero"') &&
+      !heroSource.includes("PlayStoreLink"),
   );
 
   assert(
-    "6 hero CTA uses production Play Store URL",
-    heroSource.includes("PlayStoreLink") &&
+    "6 HomeAndroidPromo uses production Play Store URL via PlayStoreLink",
+    androidPromoSource.includes("PlayStoreLink") &&
+      androidPromoSource.includes('location="promo-section"') &&
       PLAY_STORE_URL === "https://play.google.com/store/apps/details?id=com.scanonix.app",
   );
 

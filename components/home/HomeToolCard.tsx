@@ -18,8 +18,8 @@ interface HomeToolCardProps {
   comingSoon?: boolean;
   proOnly?: boolean;
   popular?: boolean;
-  /** @deprecated Use unified compact styling — kept for API compatibility */
-  premium?: boolean;
+  /** When true, tightens spacing on mobile for homepage discovery grid. */
+  compactMobile?: boolean;
 }
 
 export function HomeToolCard({
@@ -32,6 +32,7 @@ export function HomeToolCard({
   comingSoon = false,
   proOnly = false,
   popular = false,
+  compactMobile = false,
 }: HomeToolCardProps) {
   const categoryLabel = HOMEPAGE_CATEGORY_META[category].label;
   const visual = resolveToolVisual(toolId, icon);
@@ -43,17 +44,37 @@ export function HomeToolCard({
 
   const content = (
     <>
-      <ToolVisual slug={toolId} icon={icon} size="md" animated />
+      <ToolVisual
+        slug={toolId}
+        icon={icon}
+        size="md"
+        animated
+        className={compactMobile ? "max-sm:!size-9" : ""}
+      />
 
-      <span className="text-tool-name mt-4 block text-sm sm:text-[0.9375rem] group-hover:text-white">
+      <span
+        className={`text-tool-name block text-sm group-hover:text-white sm:text-[0.9375rem] ${
+          compactMobile ? "mt-2 sm:mt-4" : "mt-4"
+        }`}
+      >
         {name}
       </span>
 
-      <span className="text-body-bright mt-1 block flex-1 text-sm leading-snug line-clamp-2">
+      <span
+        className={`text-body-bright block flex-1 leading-snug line-clamp-2 ${
+          compactMobile
+            ? "mt-0.5 text-[0.8125rem] sm:mt-1 sm:text-sm"
+            : "mt-1 text-sm"
+        }`}
+      >
         {shortDescription}
       </span>
 
-      <span className="mt-3.5 flex items-center justify-between gap-2">
+      <span
+        className={`flex items-center justify-between gap-2 ${
+          compactMobile ? "mt-2 sm:mt-3.5" : "mt-3.5"
+        }`}
+      >
         <span className="flex flex-wrap items-center gap-1.5">
           {popular ? <span className="tool-badge-popular">Popular</span> : null}
           {comingSoon ? (
@@ -77,7 +98,7 @@ export function HomeToolCard({
   if (comingSoon || !href) {
     return (
       <div
-        className="tool-card-neon opacity-70"
+        className={`tool-card-neon opacity-70${compactMobile ? " max-sm:p-3.5" : ""}`}
         style={cardStyle}
         aria-disabled="true"
       >
@@ -89,7 +110,9 @@ export function HomeToolCard({
   return (
     <Link
       href={href}
-      className="tool-card-neon group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+      className={`tool-card-neon group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40${
+        compactMobile ? " max-sm:p-3.5" : ""
+      }`}
       style={cardStyle}
     >
       {content}

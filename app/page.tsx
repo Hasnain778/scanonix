@@ -1,8 +1,12 @@
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { PopularToolsSection, ToolCategoriesSection } from "@/components/home/PopularToolsSection";
+import { HomeQuickSuggestions } from "@/components/home/HomeQuickSuggestions";
+import { HomeToolDiscovery } from "@/components/home/HomeToolDiscovery";
+import { ToolCategoriesSection } from "@/components/home/PopularToolsSection";
 import { ScanonixProPromo } from "@/components/home/ScanonixProPromo";
+import { HomeAndroidPromo } from "@/components/sections/HomeAndroidPromo";
 import { HomeHero } from "@/components/sections/HomeHero";
+import { getPopularTools } from "@/constants/homepage-tools";
 import {
   createPageMetadata,
   createSoftwareApplicationJsonLd,
@@ -34,6 +38,8 @@ const websiteJsonLd = createWebSiteJsonLd();
 const softwareApplicationJsonLd = createSoftwareApplicationJsonLd();
 
 export default function Home() {
+  const popularTools = getPopularTools();
+
   return (
     <>
       <script
@@ -45,10 +51,12 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd) }}
       />
       <Navbar />
-      <main className="relative z-10 bg-[#0a0a0a]">
+      <main className="relative z-10 overflow-x-hidden bg-[#0a0a0a]">
         <HomeHero />
-        <PopularToolsSection />
+        <HomeToolDiscovery tools={popularTools} />
         <ToolCategoriesSection />
+        <HomeQuickSuggestions />
+        <HomeAndroidPromo />
         <ScanonixProPromo />
       </main>
       <Footer />

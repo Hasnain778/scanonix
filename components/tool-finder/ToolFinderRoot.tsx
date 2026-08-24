@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Sparkles, X } from "lucide-react";
+import {
+  useClientMounted,
+  useConsentDecision,
+} from "@/components/analytics/ConsentContext";
 import { ToolVisual } from "@/components/tools/ToolVisual";
 import { HOMEPAGE_CATEGORY_META } from "@/constants/homepage-tools";
 import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
@@ -19,6 +23,10 @@ const EXAMPLE_PROMPTS = [
 
 export function ToolFinderRoot() {
   const reduceMotion = useReducedMotion();
+  const mounted = useClientMounted();
+  const consentDecision = useConsentDecision();
+  /** Match ConsentBanner: hide FAB while Accept/Reject is still pending. */
+  const consentPending = mounted && consentDecision === "undecided";
   const panelRef = useRef<HTMLDivElement>(null);
   const launcherRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -100,6 +108,10 @@ export function ToolFinderRoot() {
     window.addEventListener("mousedown", onPointerDown);
     return () => window.removeEventListener("mousedown", onPointerDown);
   }, [close, open]);
+
+  if (consentPending) {
+    return null;
+  }
 
   return (
     <>

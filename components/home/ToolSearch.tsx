@@ -13,7 +13,8 @@ import {
 import { highlightMatch, searchHomeTools } from "@/lib/tools/search-home-tools";
 
 interface ToolSearchProps {
-  suggestions: readonly { id: string; name: string; href: string }[];
+  suggestions?: readonly { id: string; name: string; href: string }[];
+  showSuggestions?: boolean;
 }
 
 const TOOL_SEARCH_COUNT = HOMEPAGE_TOOLS.filter((tool) => tool.available).length;
@@ -38,7 +39,7 @@ function ResultLabel({ text, query }: { text: string; query: string }) {
   );
 }
 
-export function ToolSearch({ suggestions }: ToolSearchProps) {
+export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSearchProps) {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -190,7 +191,7 @@ export function ToolSearch({ suggestions }: ToolSearchProps) {
           aria-expanded={open}
           aria-controls="home-tool-search-results"
           aria-autocomplete="list"
-          className="home-hero-search-input relative z-[1] w-full rounded-2xl border border-white/12 bg-[#0a0908]/90 py-4 pl-12 pr-4 text-base text-white focus:border-scanonix-orange/60 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/15 sm:text-lg"
+          className="home-hero-search-input relative z-[1] w-full rounded-2xl border border-white/12 bg-[#0a0908]/90 py-2.5 pl-12 pr-4 text-base text-white focus:border-scanonix-orange/60 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/15 sm:py-3.5 sm:text-lg"
         />
       </div>
 
@@ -237,17 +238,19 @@ export function ToolSearch({ suggestions }: ToolSearchProps) {
         </div>
       ) : null}
 
-      <div className="mt-4 flex flex-wrap justify-center gap-2">
-        {suggestions.map((item) => (
-          <Link
-            key={item.id}
-            href={item.href}
-            className="home-hero-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-neutral-200 sm:text-sm"
-          >
-            {item.name}
-          </Link>
-        ))}
-      </div>
+      {showSuggestions && suggestions.length > 0 ? (
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {suggestions.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="home-hero-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-neutral-200 sm:text-sm"
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

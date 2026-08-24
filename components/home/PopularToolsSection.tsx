@@ -66,8 +66,9 @@ function CategoryDiscoveryCard({ category }: { category: HomepageToolCategory })
 
   return (
     <Link
+      id={meta.anchor}
       href={cardHref}
-      className="category-discovery-card group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+      className="category-discovery-card group scroll-mt-28 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
     >
       <span className="category-discovery-card__icon">
         <Icon className="h-5 w-5" aria-hidden="true" />
@@ -106,9 +107,9 @@ export function ToolCategoriesSection() {
           </div>
           <Link
             href="/tools"
-            className="btn-primary inline-flex gap-2 px-5 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-scanonix-orange transition-colors hover:text-scanonix-orange-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
           >
-            Browse All Tools
+            View all tools
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>

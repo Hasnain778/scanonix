@@ -1,0 +1,134 @@
+name: Release Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate regression fixtures
+        run: npm run verify:regression:fixtures
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Static verifications (fast)
+        run: |
+          npm run verify:core-processing
+          npm run verify:bg-remover-quota
+          if [ -d ../rembg-worker ]; then
+            npm run verify:background-remover-model-config
+          else
+            echo "skip: verify:background-remover-model-config (../rembg-worker not present on CI runner)"
+          fi
+          npm run verify:analytics-130e-subscription-complete
+          npm run verify:seo-canonical-host
+
+      - name: Production build
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Sharp/libvips Linux NFT validation
+        run: npm run verify:sharp-production
+
+      - name: Start Next.js server
+        run: |
+          npm run start &
+          echo $! > .next-server.pid
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/ > /dev/null; then
+              echo "Server ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Server failed to start"
+          exit 1
+        env:
+          NODE_ENV: production
+
+      - name: Server tool integration (compress + resize)
+        run: npm run verify:regression:server-local
+        env:
+          REGRESSION_BASE_URL: http://localhost:3000
+
+      - name: Client tool browser regression (21 tools)
+        run: npm run verify:regression:client-e2e
+        env:
+          REGRESSION_BASE_URL: http://localhost:3000
+          REGRESSION_SCREENSHOT_DIR: regression-screenshots
+
+      - name: Upload E2E failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-screenshots
+          path: regression-screenshots/
+          if-no-files-found: ignore
+
+      - name: Stop Next.js server
+        if: always()
+        run: |
+          if [ -f .next-server.pid ]; then
+            kill "$(cat .next-server.pid)" || true
+          fi
+
+  # External production smoke — manual dispatch only; never on ordinary PR gate.
+  production-smoke:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify fixtures
+        run: node scripts/regression/generate-fixtures.mjs --verify
+
+      - name: Production HTTP + processing smoke
+        run: npm run smoke:production
+        env:
+          PRODUCTION_BASE_URL: https://www.scanonix.com
+
+      - name: Optional background remover smoke
+        if: env.RUN_EXTERNAL_SMOKE == '1'
+        run: npm run smoke:production
+        env:
+          PRODUCTION_BASE_URL: https://www.scanonix.com
+          RUN_EXTERNAL_SMOKE: "1"

@@ -12,8 +12,7 @@ import {
   NavbarCategoryDropdown,
 } from "@/components/layout/NavbarCategoryDropdown";
 import { UserMenu } from "@/components/layout/UserMenu";
-import { BrandWordmark } from "@/components/ui/BrandWordmark";
-import { ScanonixLogo } from "@/components/ui/ScanonixLogo";
+import { BrandLockup } from "@/components/ui/BrandLockup";
 import { NAV_PRICING_LINK } from "@/lib/constants";
 import { PLAY_STORE_URL } from "@/config/site";
 
@@ -146,9 +145,13 @@ export function Navbar() {
               onClick={(event) => event.stopPropagation()}
             >
               <div className="border-b border-white/10 px-5 py-5">
-                <Link href="/" className="inline-flex items-center gap-2.5" onClick={closeMenu}>
-                  <ScanonixLogo size={36} className="rounded-md" />
-                  <BrandWordmark size="footer" />
+                <Link
+                  href="/"
+                  className="inline-flex min-w-0 items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+                  aria-label="SCANONIX home"
+                  onClick={closeMenu}
+                >
+                  <BrandLockup variant="compact" decorative />
                 </Link>
               </div>
 
@@ -260,17 +263,16 @@ export function Navbar() {
           <div className="flex h-full items-center justify-between gap-2 lg:hidden">
             <Link
               href="/"
-              className="inline-flex min-w-0 items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
-              aria-label="Scanonix home"
+              className="inline-flex min-w-0 flex-1 items-center overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+              aria-label="SCANONIX home"
               onClick={closeMenu}
             >
-              <ScanonixLogo size={36} className="rounded-md" priority />
-              <BrandWordmark size="footer" />
+              <BrandLockup variant="compact" priority decorative />
             </Link>
 
             <button
               type="button"
-              className="nav-menu-trigger flex h-10 w-10 items-center justify-center"
+              className="nav-menu-trigger flex h-10 w-10 shrink-0 items-center justify-center"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation-panel"

@@ -77,7 +77,7 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
   const pathname = usePathname();
 
   const navContent = (
-    <nav aria-label="App navigation" className="flex flex-1 flex-col gap-0.5 p-3">
+    <nav aria-label="App navigation" className="flex flex-col gap-0.5 p-3">
       {APP_NAV_ITEMS.map((item) => {
         const active = isNavActive(pathname, item.href);
         return (
@@ -130,14 +130,16 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
           onClick={onNavigate}
         />
         <aside
-          className={`absolute inset-y-0 left-0 flex w-[min(100%,16rem)] flex-col border-r border-white/8 bg-[#0a0a0a] shadow-premium-lg transition-transform duration-300 ${
+          className={`absolute inset-y-0 left-0 flex h-dvh w-[min(100%,16rem)] flex-col overflow-hidden border-r border-white/8 bg-[#0a0a0a] shadow-premium-lg transition-transform duration-300 ${
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="border-b border-white/6 p-4">
+          <div className="shrink-0 border-b border-white/6 p-4">
             <NavbarBrand onNavigate={onNavigate} />
           </div>
-          {navContent}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+            {navContent}
+          </div>
         </aside>
       </div>
     </>

@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { ConsentPreferencesLink } from "@/components/analytics/ConsentPreferencesLink";
 import { FooterSocialLinks } from "@/components/layout/FooterSocialLinks";
-import { BrandWordmark } from "@/components/ui/BrandWordmark";
-import { ScanonixLogo } from "@/components/ui/ScanonixLogo";
+import { BrandLockup } from "@/components/ui/BrandLockup";
 import { PLAY_STORE_URL } from "@/config/site";
 import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
 
@@ -69,11 +68,12 @@ export function Footer() {
       <div className="page-container py-16 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
-            <Link href="/" className="group inline-flex items-center gap-2.5">
-              <span className="flex items-center justify-center rounded-[10px] border border-scanonix-orange/25 bg-scanonix-orange/[0.06] p-1">
-                <ScanonixLogo size={36} className="rounded-md" />
-              </span>
-              <BrandWordmark size="footer" />
+            <Link
+              href="/"
+              className="group inline-flex min-w-0 items-center"
+              aria-label="SCANONIX home"
+            >
+              <BrandLockup variant="footer" decorative />
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-scanonix-muted">
               Free online tools for PDFs, images, AI documents, and file protection.

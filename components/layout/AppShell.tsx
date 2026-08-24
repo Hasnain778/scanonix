@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AppMobileNav, AppSidebar } from "@/components/layout/AppSidebar";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { BrandLockup } from "@/components/ui/BrandLockup";
 
 interface AppShellProps {
   children: ReactNode;
@@ -19,18 +21,31 @@ export function AppShell({ children }: AppShellProps) {
       <AppSidebar mobileOpen={mobileOpen} onNavigate={() => setMobileOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-white/6 bg-[#0a0a0a]/80 px-4 backdrop-blur-xl lg:hidden">
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white"
-            aria-label="Open menu"
-            onClick={() => setMobileOpen(true)}
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
-          </button>
-          {!isDashboard ? <UserMenu /> : null}
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-white/6 bg-[#0a0a0a]/80 px-4 backdrop-blur-xl lg:hidden">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <button
+              type="button"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 text-white"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen(true)}
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </button>
+            <Link
+              href="/"
+              className="inline-flex min-w-0 flex-1 items-center overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+              aria-label="SCANONIX home"
+            >
+              <BrandLockup variant="compact" decorative />
+            </Link>
+          </div>
+          {!isDashboard ? (
+            <div className="shrink-0">
+              <UserMenu />
+            </div>
+          ) : null}
         </header>
 
         {!isDashboard ? (

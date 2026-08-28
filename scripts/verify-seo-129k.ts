@@ -134,9 +134,12 @@ function run() {
   assert("7 canonical origin is www", CANONICAL_SITE_ORIGIN === "https://www.scanonix.com");
   assert("7 pdf-to-word path unchanged", seo.path === "/tools/pdf-to-word");
 
-  // 8. Preserve 129I OCR markers
+  // 8. OCR 130K-3B title aligned (was 129I "OCR Scan Online")
   const ocr = TOOL_SEO[OCR_ID];
-  assert("8 ocr 129I title preserved", ocr.seoTitle.includes("OCR Scan Online"));
+  assert(
+    "8 ocr 130K-3B title aligned",
+    ocr.seoTitle === "OCR Online — Extract Text from Scanned PDFs & Images | Scanonix",
+  );
   assert("8 ocr faq count >= 8", ocr.faqs.length >= 8);
 
   // 9. Preserve QR 129I clarification

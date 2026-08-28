@@ -1933,9 +1933,9 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
   ocr: {
     id: "ocr",
     path: "/tools/ocr",
-    seoTitle: toolTitle("OCR Scan Online", "Extract Text from Scanned Documents & Images"),
+    seoTitle: "OCR Online — Extract Text from Scanned PDFs & Images | Scanonix",
     metaDescription:
-      "Use Scanonix as an online OCR reader to scan documents and images, extract text from scanned PDF pages and photos, and copy or download editable text from your browser.",
+      "Free OCR online: extract text from scanned PDFs, photos, and images in your browser. Upload a scan, choose the language, and copy or download editable text — processed locally on your device.",
     h1: "Extract Text from Scanned PDFs and Images",
     headerDescription:
       "Run OCR on scanned documents and image files to pull out readable text. Upload a scan or photo, choose the document language, and copy or download the extracted text from your browser.",

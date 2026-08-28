@@ -6,7 +6,8 @@ import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { RotationPanel } from "@/components/tools/rotate-pdf/RotationPanel";
 import { PdfPageGrid } from "@/components/tools/split-pdf/PdfPageGrid";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import {
@@ -94,6 +95,15 @@ export function RotatePdfTool() {
     uploadedPdf !== null &&
     pagesToRotate.length > 0 &&
     !isBusy;
+
+  /** Presentational adapter only — does not replace the ToolStatus state machine. */
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (status === "loading") return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (canRotate) return "ready";
+    return "idle";
+  }, [status, hasResult, canRotate]);
 
   useEffect(() => {
     resultBlobRef.current = resultBlob;
@@ -328,19 +338,32 @@ export function RotatePdfTool() {
           )}
 
           {hasResult && resultBlob && (
-            <ToolResultsPanel
-              primaryLabel="Download rotated PDF"
-              primaryLoading={isDownloading}
-              primaryDisabled={isBusy}
-              onPrimaryClick={handleDownload}
-              onStartOver={resetTool}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {rotatedPageCount} page{rotatedPageCount === 1 ? "" : "s"} rotated
                 by {rotation}° · {formatFileSize(resultBlob.size)} ·{" "}
                 {resultFilename}
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label: "Download rotated PDF",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: resetTool,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
@@ -376,13 +399,16 @@ export function RotatePdfTool() {
 
       <ToolStickyMobileActionBar
         visible={hasResult}
+        phase={resultActionPhase}
         primaryLabel="Download rotated PDF"
         primaryLoading={isDownloading}
         primaryDisabled={isBusy}
-        onPrimaryClick={handleDownload}
-        secondaryLabel="Start over"
-        onSecondaryClick={resetTool}
-        secondaryDisabled={isBusy}
+        onPrimaryClick={() => {
+          void handleDownload();
+        }}
+        onStartOver={resetTool}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

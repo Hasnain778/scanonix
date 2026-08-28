@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
@@ -114,6 +115,18 @@ export function AddPageNumbersTool() {
         selection.pages.length,
       ),
     [uploadedPdf, pageCount, isExporting, selection.error, selection.pages.length],
+  );
+
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (isExporting || isReadingPdf) return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (uploadedPdf !== null && pageCount > 0) return "ready";
+    return "idle";
+  }, [isExporting, isReadingPdf, hasResult, status, uploadedPdf, pageCount]);
+
+  const stickyVisible = Boolean(
+    uploadedPdf && (hasResult || canExport || isExporting),
   );
 
   const numberingOptions: PageNumberOptions = useMemo(
@@ -607,19 +620,32 @@ export function AddPageNumbersTool() {
           </div>
 
           {hasResult && resultBlob && (
-            <ToolResultsPanel
-              primaryLabel="Download numbered PDF"
-              primaryLoading={isDownloading}
-              primaryDisabled={isBusy}
-              onPrimaryClick={handleDownload}
-              onStartOver={resetWorkspace}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {selection.pages.length || pageCount} numbered page
                 {(selection.pages.length || pageCount) === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(resultBlob.size)} · {resultFilename}
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label: "Download numbered PDF",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: resetWorkspace,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
@@ -652,14 +678,32 @@ export function AddPageNumbersTool() {
       )}
 
       <ToolStickyMobileActionBar
-        visible={Boolean(uploadedPdf && (hasResult || canExport))}
+        visible={stickyVisible}
+        phase={resultActionPhase}
         primaryLabel={hasResult ? "Download numbered PDF" : "Export numbered PDF"}
         primaryLoading={hasResult ? isDownloading : isExporting}
         primaryDisabled={hasResult ? isBusy || !resultBlob : !canExport}
-        onPrimaryClick={hasResult ? handleDownload : handleExport}
-        secondaryLabel={uploadedPdf ? "Choose another PDF" : undefined}
-        onSecondaryClick={uploadedPdf ? resetWorkspace : undefined}
+        onPrimaryClick={() => {
+          if (hasResult) {
+            void handleDownload();
+          } else {
+            void handleExport();
+          }
+        }}
+        secondaryLabel={
+          resultActionPhase === "ready" && uploadedPdf
+            ? "Choose another PDF"
+            : undefined
+        }
+        onSecondaryClick={
+          resultActionPhase === "ready" && uploadedPdf
+            ? resetWorkspace
+            : undefined
+        }
         secondaryDisabled={isBusy}
+        onStartOver={hasResult ? resetWorkspace : undefined}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

@@ -6,7 +6,8 @@ import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PdfPreviewGrid } from "@/components/tools/pdf-to-image/PdfPreviewGrid";
 import { PdfToImageOptionsPanel } from "@/components/tools/pdf-to-image/PdfToImageOptionsPanel";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import {
@@ -148,6 +149,15 @@ export function PdfToImageTool() {
     pagesToConvert.pages.length > 0 &&
     !pagesToConvert.error &&
     !isBusy;
+
+  /** Presentational adapter only — does not replace the ToolStatus state machine. */
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (status === "loading") return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (canConvert) return "ready";
+    return "idle";
+  }, [status, hasResult, canConvert]);
 
   const handleUpload = useCallback(async (files: File[]) => {
     const file = files[0];
@@ -363,24 +373,36 @@ export function PdfToImageTool() {
           />
 
           {hasResult && downloadState && (
-            <ToolResultsPanel
-              primaryLabel={
-                downloadState.outputCount === 1
-                  ? "Download image"
-                  : "Download images (ZIP)"
-              }
-              primaryLoading={isDownloading}
-              primaryDisabled={isBusy}
-              onPrimaryClick={handleDownload}
-              onStartOver={clearPdf}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {downloadState.outputCount} image
                 {downloadState.outputCount === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(downloadState.blob.size)} ·{" "}
                 {format.toUpperCase()} · {downloadState.filename}
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label:
+                      downloadState.outputCount === 1
+                        ? "Download image"
+                        : "Download images (ZIP)",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: clearPdf,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
@@ -420,15 +442,18 @@ export function PdfToImageTool() {
 
       <ToolStickyMobileActionBar
         visible={hasResult}
+        phase={resultActionPhase}
         primaryLabel={
           downloadState?.outputCount === 1 ? "Download image" : "Download images"
         }
         primaryLoading={isDownloading}
         primaryDisabled={isBusy}
-        onPrimaryClick={handleDownload}
-        secondaryLabel="Start over"
-        onSecondaryClick={clearPdf}
-        secondaryDisabled={isBusy}
+        onPrimaryClick={() => {
+          void handleDownload();
+        }}
+        onStartOver={clearPdf}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

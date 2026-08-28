@@ -6,7 +6,8 @@ import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { PdfPageGrid } from "@/components/tools/split-pdf/PdfPageGrid";
 import { SplitModePanel } from "@/components/tools/split-pdf/SplitModePanel";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import {
@@ -136,6 +137,15 @@ export function SplitPdfTool() {
     pageGroupsPreview.groups.length > 0 &&
     !pageGroupsPreview.error &&
     !isBusy;
+
+  /** Presentational adapter only — does not replace the ToolStatus state machine. */
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (status === "loading") return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (canSplit) return "ready";
+    return "idle";
+  }, [status, hasResult, canSplit]);
 
   const handleUpload = useCallback(async (files: File[]) => {
     const file = files[0];
@@ -397,24 +407,36 @@ export function SplitPdfTool() {
           )}
 
           {hasResult && downloadState && (
-            <ToolResultsPanel
-              primaryLabel={
-                downloadState.outputCount === 1
-                  ? "Download split PDF"
-                  : "Download split PDFs (ZIP)"
-              }
-              primaryLoading={isDownloading}
-              primaryDisabled={isBusy}
-              onPrimaryClick={handleDownload}
-              onStartOver={clearPdf}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {downloadState.outputCount} file
                 {downloadState.outputCount === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(downloadState.blob.size)} ·{" "}
                 {downloadState.filename}
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label:
+                      downloadState.outputCount === 1
+                        ? "Download split PDF"
+                        : "Download split PDFs (ZIP)",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: clearPdf,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
@@ -452,6 +474,7 @@ export function SplitPdfTool() {
 
       <ToolStickyMobileActionBar
         visible={hasResult}
+        phase={resultActionPhase}
         primaryLabel={
           downloadState?.outputCount === 1
             ? "Download split PDF"
@@ -459,10 +482,12 @@ export function SplitPdfTool() {
         }
         primaryLoading={isDownloading}
         primaryDisabled={isBusy}
-        onPrimaryClick={handleDownload}
-        secondaryLabel="Start over"
-        onSecondaryClick={clearPdf}
-        secondaryDisabled={isBusy}
+        onPrimaryClick={() => {
+          void handleDownload();
+        }}
+        onStartOver={clearPdf}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

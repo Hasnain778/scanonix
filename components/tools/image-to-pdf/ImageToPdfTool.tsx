@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import {
@@ -9,7 +9,8 @@ import {
 } from "@/components/tools/ImagePreviewGrid";
 import { PdfOptionsPanel } from "@/components/tools/PdfOptionsPanel";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import {
@@ -45,6 +46,15 @@ export function ImageToPdfTool() {
 
   const isBusy = status === "loading" || isDownloading;
   const hasResult = pdfBlob !== null && status === "success";
+
+  /** Presentational adapter only — does not replace the ToolStatus state machine. */
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (status === "loading") return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (images.length > 0) return "ready";
+    return "idle";
+  }, [status, hasResult, images.length]);
 
   useEffect(() => {
     imagesRef.current = images;
@@ -210,19 +220,32 @@ export function ImageToPdfTool() {
           />
 
           {hasResult && pdfBlob && (
-            <ToolResultsPanel
-              primaryLabel="Download PDF"
-              primaryLoading={isDownloading}
-              primaryDisabled={isBusy}
-              onPrimaryClick={handleDownload}
-              onStartOver={clearAll}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {images.length} page{images.length === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(pdfBlob.size)} · {pageSize.toUpperCase()}{" "}
                 {orientation}
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label: "Download PDF",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: clearAll,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -262,13 +285,16 @@ export function ImageToPdfTool() {
 
       <ToolStickyMobileActionBar
         visible={hasResult}
+        phase={resultActionPhase}
         primaryLabel="Download PDF"
         primaryLoading={isDownloading}
         primaryDisabled={isBusy}
-        onPrimaryClick={handleDownload}
-        secondaryLabel="Start over"
-        onSecondaryClick={clearAll}
-        secondaryDisabled={isBusy}
+        onPrimaryClick={() => {
+          void handleDownload();
+        }}
+        onStartOver={clearAll}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
@@ -202,6 +203,22 @@ export function FillPdfTool() {
         digitalSignatureAcknowledged: workspace?.digitalSignatureAcknowledged ?? false,
       }),
     [uploadedPdf, workspace, pageCount, fieldCount, isExporting, fieldErrors],
+  );
+
+  /**
+   * Dual-phase adapter (editor Done → processing → download success).
+   * Ready secondary keeps Fields navigator open; Start Over only on success.
+   */
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (isExporting || isReadingPdf) return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (uploadedPdf !== null && workspace !== null && pageCount > 0) return "ready";
+    return "idle";
+  }, [isExporting, isReadingPdf, hasResult, status, uploadedPdf, workspace, pageCount]);
+
+  const stickyVisible = Boolean(
+    uploadedPdf && (hasResult || canExport || isExporting),
   );
 
   useEffect(() => {
@@ -657,18 +674,29 @@ export function FillPdfTool() {
 
           {hasResult && resultBlob && (
             <div className="border-t border-scanonix-border/80 px-4 py-3">
-              <ToolResultsPanel
-                primaryLabel="Download filled PDF"
-                primaryLoading={isDownloading}
-                primaryDisabled={isBusy}
-                onPrimaryClick={handleDownload}
-                onStartOver={resetWorkspace}
-              >
-                <p className="text-sm text-scanonix-muted">
-                  {fieldCount} field{fieldCount === 1 ? "" : "s"} ·{" "}
-                  {formatFileSize(resultBlob.size)} · {resultFilename}
-                </p>
-              </ToolResultsPanel>
+              <h2 className="mb-1 text-base font-semibold text-white">Results</h2>
+              <p className="text-sm text-scanonix-muted">
+                {fieldCount} field{fieldCount === 1 ? "" : "s"} ·{" "}
+                {formatFileSize(resultBlob.size)} · {resultFilename}
+              </p>
+              <div className="mt-4">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label: "Download filled PDF",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: resetWorkspace,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -686,17 +714,37 @@ export function FillPdfTool() {
         </div>
       )}
 
+      {/*
+        Dual-phase sticky (opt-in phase API):
+        ready/processing → Done (+ Fields navigator — not Start Over)
+        success → Download filled PDF + Start over
+        Fields remains available in the editor toolbar after success.
+      */}
       <ToolStickyMobileActionBar
-        visible={Boolean(uploadedPdf && (hasResult || canExport))}
+        visible={stickyVisible}
+        phase={resultActionPhase}
         primaryLabel={hasResult ? "Download filled PDF" : "Done"}
         primaryLoading={hasResult ? isDownloading : isExporting}
         primaryDisabled={hasResult ? isBusy || !resultBlob : !canExport}
-        onPrimaryClick={hasResult ? handleDownload : handleExport}
-        secondaryLabel={uploadedPdf ? "Fields" : undefined}
+        onPrimaryClick={() => {
+          if (hasResult) {
+            void handleDownload();
+          } else {
+            void handleExport();
+          }
+        }}
+        secondaryLabel={
+          resultActionPhase === "ready" && uploadedPdf ? "Fields" : undefined
+        }
         onSecondaryClick={
-          uploadedPdf ? () => setFieldsNavigatorOpen(true) : undefined
+          resultActionPhase === "ready" && uploadedPdf
+            ? () => setFieldsNavigatorOpen(true)
+            : undefined
         }
         secondaryDisabled={isBusy}
+        onStartOver={hasResult ? resetWorkspace : undefined}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

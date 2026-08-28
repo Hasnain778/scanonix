@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PdfFileList } from "@/components/tools/PdfFileList";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import {
@@ -59,6 +60,15 @@ export function MergePdfTool() {
   const canMerge = files.length >= 2 && !files.some((file) => file.pageCount === null);
   const isReadingPages = files.some((file) => file.pageCount === null);
   const hasResult = mergedBlob !== null && status === "success";
+
+  /** Presentational adapter only — does not replace the ToolStatus state machine. */
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (status === "loading") return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (canMerge) return "ready";
+    return "idle";
+  }, [status, hasResult, canMerge]);
 
   useEffect(() => {
     mergedBlobRef.current = mergedBlob;
@@ -232,18 +242,31 @@ export function MergePdfTool() {
           />
 
           {hasResult && mergedBlob && (
-            <ToolResultsPanel
-              primaryLabel="Download merged PDF"
-              primaryLoading={isDownloading}
-              primaryDisabled={isBusy}
-              onPrimaryClick={handleDownload}
-              onStartOver={clearAll}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {files.length} files · {totalPages} pages ·{" "}
                 {formatFileSize(mergedBlob.size)}
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label: "Download merged PDF",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: clearAll,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
@@ -265,7 +288,9 @@ export function MergePdfTool() {
                   className="w-full sm:w-auto"
                   loading={status === "loading"}
                   disabled={!canMerge || isBusy}
-                  onClick={handleMerge}
+                  onClick={() => {
+                    void handleMerge();
+                  }}
                 >
                   {status === "loading" ? "Merging PDFs…" : "Merge PDFs"}
                 </ActionButton>
@@ -291,15 +316,22 @@ export function MergePdfTool() {
 
       {files.length === 0 && <PrivacyNotice />}
 
+      {/*
+        Opt-in result mode (phase prop). Ready-state merge CTA stays inline only —
+        sticky must never show Download before hasResult.
+      */}
       <ToolStickyMobileActionBar
         visible={hasResult}
+        phase={resultActionPhase}
         primaryLabel="Download merged PDF"
         primaryLoading={isDownloading}
         primaryDisabled={isBusy}
-        onPrimaryClick={handleDownload}
-        secondaryLabel="Start over"
-        onSecondaryClick={clearAll}
-        secondaryDisabled={isBusy}
+        onPrimaryClick={() => {
+          void handleDownload();
+        }}
+        onStartOver={clearAll}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

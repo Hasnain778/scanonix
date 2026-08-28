@@ -1,18 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Sparkles, X } from "lucide-react";
 import {
   useClientMounted,
   useConsentDecision,
 } from "@/components/analytics/ConsentContext";
+import { useMobileStickyActionInset } from "@/components/tools/MobileStickyActionSurfaceContext";
 import { ToolVisual } from "@/components/tools/ToolVisual";
 import { HOMEPAGE_CATEGORY_META } from "@/constants/homepage-tools";
 import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { trackEvent } from "@/lib/analytics/ga4";
 import { findTools, type ToolFinderMatch } from "@/lib/tools/tool-finder";
+
+/** Gap between sticky action surface top and FAB bottom edge (mobile). */
+const STICKY_FAB_GAP_PX = 12;
+/** Default mobile FAB offset when no sticky bar (matches previous `bottom-20`). */
+const FAB_MOBILE_BOTTOM_FALLBACK_PX = 80;
 
 const EXAMPLE_PROMPTS = [
   "Convert PDF to Word",
@@ -27,6 +40,7 @@ export function ToolFinderRoot() {
   const consentDecision = useConsentDecision();
   /** Match ConsentBanner: hide FAB while Accept/Reject is still pending. */
   const consentPending = mounted && consentDecision === "undecided";
+  const stickyInsetPx = useMobileStickyActionInset();
   const panelRef = useRef<HTMLDivElement>(null);
   const launcherRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -34,6 +48,15 @@ export function ToolFinderRoot() {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const searchSubmitGuardRef = useRef(false);
+
+  /**
+   * Mobile: lift FAB above sticky action bar when present; otherwise bottom-20.
+   * Desktop (lg+): sticky is md:hidden — keep prior bottom-6.
+   */
+  const mobileBottomPx = Math.max(
+    FAB_MOBILE_BOTTOM_FALLBACK_PX,
+    stickyInsetPx > 0 ? stickyInsetPx + STICKY_FAB_GAP_PX : 0,
+  );
 
   const result = useMemo(
     () => (submittedQuery.trim() ? findTools(submittedQuery) : null),
@@ -132,7 +155,13 @@ export function ToolFinderRoot() {
 
       <div
         ref={launcherRef}
-        className="pointer-events-none fixed bottom-20 right-4 z-[80] flex flex-col items-end gap-3 sm:right-6 lg:bottom-6"
+        className="pointer-events-none fixed right-4 z-[80] flex flex-col items-end gap-3 bottom-[var(--tool-finder-fab-bottom,5rem)] sm:right-6 lg:bottom-6"
+        style={
+          {
+            ["--tool-finder-fab-bottom"]: `${mobileBottomPx}px`,
+          } as CSSProperties
+        }
+        data-tool-finder-sticky-inset={stickyInsetPx}
       >
         <AnimatePresence>
           {open ? (

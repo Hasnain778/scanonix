@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
@@ -85,6 +86,18 @@ export function OrganizePdfTool() {
   const canExport =
     uploadedPdf !== null &&
     canExportOrganizeWorkspace(pages.length, isExporting);
+
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (isExporting || status === "loading") return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (uploadedPdf !== null && pages.length > 0) return "ready";
+    return "idle";
+  }, [isExporting, status, hasResult, uploadedPdf, pages.length]);
+
+  const stickyVisible = Boolean(
+    uploadedPdf && (hasResult || canExport || isExporting),
+  );
 
   const summary = uploadedPdf
     ? getWorkspaceSummary(pages, uploadedPdf.initialPageCount)
@@ -384,17 +397,33 @@ export function OrganizePdfTool() {
           />
 
           {hasResult && resultBlob && (
-            <ToolResultsPanel
-              title="Organized PDF ready"
-              primaryLabel={isDownloading ? "Downloading…" : "Download PDF"}
-              onPrimaryClick={handleDownload}
-              primaryDisabled={isDownloading}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">
+                Organized PDF ready
+              </h2>
               <p className="text-sm text-scanonix-muted">
                 Download your reorganized PDF ({pages.length} page
                 {pages.length === 1 ? "" : "s"}).
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label: isDownloading ? "Downloading…" : "Download PDF",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isDownloading,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: resetWorkspace,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="hidden flex-col gap-4 sm:flex">
@@ -445,12 +474,40 @@ export function OrganizePdfTool() {
       )}
 
       <ToolStickyMobileActionBar
-        visible={Boolean(uploadedPdf && (hasResult || canExport))}
-        primaryLabel={hasResult ? (isDownloading ? "Downloading…" : "Download PDF") : isExporting ? "Organizing…" : "Export PDF"}
-        onPrimaryClick={hasResult ? handleDownload : handleExport}
+        visible={stickyVisible}
+        phase={resultActionPhase}
+        primaryLabel={
+          hasResult
+            ? isDownloading
+              ? "Downloading…"
+              : "Download PDF"
+            : isExporting
+              ? "Organizing…"
+              : "Export PDF"
+        }
+        primaryLoading={hasResult ? isDownloading : isExporting}
         primaryDisabled={hasResult ? isDownloading : !canExport}
-        secondaryLabel={uploadedPdf ? "Choose another PDF" : undefined}
-        onSecondaryClick={uploadedPdf ? resetWorkspace : undefined}
+        onPrimaryClick={() => {
+          if (hasResult) {
+            void handleDownload();
+          } else {
+            void handleExport();
+          }
+        }}
+        secondaryLabel={
+          resultActionPhase === "ready" && uploadedPdf
+            ? "Choose another PDF"
+            : undefined
+        }
+        onSecondaryClick={
+          resultActionPhase === "ready" && uploadedPdf
+            ? resetWorkspace
+            : undefined
+        }
+        secondaryDisabled={isBusy}
+        onStartOver={hasResult ? resetWorkspace : undefined}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
 
       {!uploadedPdf && (

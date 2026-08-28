@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
+import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
@@ -90,6 +91,18 @@ export function CropPdfTool() {
     uploadedPdf !== null &&
     canExportCropPdf(uploadedPdf.document) &&
     canExportCropWorkspace(pageCount, isExporting);
+
+  /**
+   * Dual-phase adapter (editor ready → export processing → download success).
+   * Does not replace crop/export state machines.
+   */
+  const resultActionPhase: ResultActionPhase = useMemo(() => {
+    if (isExporting || status === "loading") return "processing";
+    if (hasResult) return "success";
+    if (status === "error") return "error";
+    if (uploadedPdf !== null && pageCount > 0) return "ready";
+    return "idle";
+  }, [isExporting, status, hasResult, uploadedPdf, pageCount]);
 
   useEffect(() => {
     resultBlobRef.current = resultBlob;
@@ -316,6 +329,10 @@ export function CropPdfTool() {
     ? countCompatiblePages(pages, currentPage.id)
     : 0;
 
+  const stickyVisible = Boolean(
+    uploadedPdf && (hasResult || canExport || isExporting),
+  );
+
   return (
     <div className="space-y-8 overflow-x-hidden">
       <ToolStatusBanner
@@ -502,18 +519,31 @@ export function CropPdfTool() {
           </div>
 
           {hasResult && resultBlob && (
-            <ToolResultsPanel
-              primaryLabel="Download cropped PDF"
-              primaryLoading={isDownloading}
-              primaryDisabled={isBusy}
-              onPrimaryClick={handleDownload}
-              onStartOver={resetWorkspace}
-            >
+            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {customCropCount} cropped page{customCropCount === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(resultBlob.size)} · {resultFilename}
               </p>
-            </ToolResultsPanel>
+              <div className="mt-5">
+                <ResultActionBar
+                  phase={resultActionPhase}
+                  primary={{
+                    label: "Download cropped PDF",
+                    onClick: () => {
+                      void handleDownload();
+                    },
+                    loading: isDownloading,
+                    disabled: isBusy,
+                  }}
+                  startOver={{
+                    label: "Start over",
+                    onClick: resetWorkspace,
+                    disabled: isBusy,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
@@ -532,7 +562,9 @@ export function CropPdfTool() {
                 className="w-full sm:w-auto"
                 loading={isExporting}
                 disabled={!canExport}
-                onClick={handleExport}
+                onClick={() => {
+                  void handleExport();
+                }}
               >
                 {isExporting ? "Exporting…" : "Export cropped PDF"}
               </ActionButton>
@@ -544,15 +576,40 @@ export function CropPdfTool() {
         </>
       )}
 
+      {/*
+        Dual-phase sticky (opt-in phase API):
+        ready/processing → Export cropped PDF (+ Choose another PDF)
+        success → Download cropped PDF + Start over
+      */}
       <ToolStickyMobileActionBar
-        visible={Boolean(uploadedPdf && (hasResult || canExport))}
-        primaryLabel={hasResult ? "Download cropped PDF" : "Export cropped PDF"}
+        visible={stickyVisible}
+        phase={resultActionPhase}
+        primaryLabel={
+          hasResult ? "Download cropped PDF" : "Export cropped PDF"
+        }
         primaryLoading={hasResult ? isDownloading : isExporting}
         primaryDisabled={hasResult ? isBusy || !resultBlob : !canExport}
-        onPrimaryClick={hasResult ? handleDownload : handleExport}
-        secondaryLabel={uploadedPdf ? "Choose another PDF" : undefined}
-        onSecondaryClick={uploadedPdf ? resetWorkspace : undefined}
+        onPrimaryClick={() => {
+          if (hasResult) {
+            void handleDownload();
+          } else {
+            void handleExport();
+          }
+        }}
+        secondaryLabel={
+          resultActionPhase === "ready" && uploadedPdf
+            ? "Choose another PDF"
+            : undefined
+        }
+        onSecondaryClick={
+          resultActionPhase === "ready" && uploadedPdf
+            ? resetWorkspace
+            : undefined
+        }
         secondaryDisabled={isBusy}
+        onStartOver={hasResult ? resetWorkspace : undefined}
+        startOverLabel="Start over"
+        startOverDisabled={isBusy}
       />
     </div>
   );

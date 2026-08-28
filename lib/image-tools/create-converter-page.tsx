@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FileImage } from "lucide-react";
 import type { ImageConverterDefinition } from "@/constants/image-tools";
+import { getToolSeo } from "@/constants/tool-seo";
 import { ConverterToolExtras } from "@/components/image-tools/ConverterToolExtras";
 import { ImageFormatConverterTool } from "@/components/image-tools/ImageFormatConverterTool";
 import { ToolRoute } from "@/components/workspace";
@@ -30,7 +31,7 @@ function ConverterJsonLd({ config }: { config: ImageConverterDefinition }) {
     { name: "Image Tools", url: `${env.siteUrl}${IMAGE_TOOLS_HUB_PATH}` },
     { name: config.title, url: `${env.siteUrl}${path}` },
   ]);
-  const faqJsonLd = createFaqJsonLd(config.faq);
+  const faqJsonLd = createFaqJsonLd(getToolSeo(config.slug).faqs);
 
   return (
     <>

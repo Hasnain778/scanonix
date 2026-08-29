@@ -1,7 +1,7 @@
-import { Suspense } from "react";
+import { ToolsDirectory } from "@/components/tools/directory/ToolsDirectory";
 import { ToolsDirectoryHeroHeader } from "@/components/tools/directory/ToolsDirectoryHeroHeader";
-import { LazyToolsDirectory } from "@/components/tools/lazy";
 import { ToolLayout, ToolShell } from "@/components/workspace";
+import { parseToolsCategoryParam } from "@/lib/navigation/tool-category-urls";
 import { createPageMetadata } from "@/lib/utils/seo";
 
 export const metadata = createPageMetadata({
@@ -23,24 +23,21 @@ export const metadata = createPageMetadata({
   ],
 });
 
-function ToolsDirectoryControlsFallback() {
-  return (
-    <div className="py-8 text-center text-sm text-scanonix-muted">
-      Loading tools directory…
-    </div>
-  );
-}
+export default async function ToolsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const params = await searchParams;
+  const initialCategory = parseToolsCategoryParam(params.category ?? null);
 
-export default function ToolsPage() {
   return (
     <ToolShell>
       <ToolLayout>
         <div className="tools-directory-page space-y-8 sm:space-y-10">
           <div className="tools-directory-hero-zone">
             <ToolsDirectoryHeroHeader />
-            <Suspense fallback={<ToolsDirectoryControlsFallback />}>
-              <LazyToolsDirectory />
-            </Suspense>
+            <ToolsDirectory initialCategory={initialCategory} />
           </div>
         </div>
       </ToolLayout>

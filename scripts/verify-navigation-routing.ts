@@ -239,11 +239,18 @@ function run() {
     ),
   );
 
-  // 18. ToolsDirectory reads URL search params
+  // 18. /tools category query is SSR-resolved into ToolsDirectory (crawlable hub)
+  const toolsPageSourceForCategory = readFileSync(
+    join(root, "app", "tools", "page.tsx"),
+    "utf8",
+  );
   assert(
-    "18 ToolsDirectory reads searchParams category",
-    directorySource.includes("useSearchParams") &&
-      directorySource.includes("parseToolsCategoryParam"),
+    "18 /tools SSR resolves category into ToolsDirectory initialCategory",
+    toolsPageSourceForCategory.includes("searchParams") &&
+      toolsPageSourceForCategory.includes("parseToolsCategoryParam") &&
+      toolsPageSourceForCategory.includes("initialCategory") &&
+      directorySource.includes("initialCategory") &&
+      !directorySource.includes("useSearchParams"),
   );
   assert(
     "18 ToolsDirectory updates URL on category change",
@@ -341,11 +348,14 @@ function run() {
     );
   }
 
-  // 28. /tools page wraps directory in Suspense for searchParams
+  // 28. /tools page SSR-resolves category for crawlable directory HTML
   const toolsPageSource = readFileSync(join(root, "app", "tools", "page.tsx"), "utf8");
   assert(
-    "28 /tools page uses Suspense for directory",
-    toolsPageSource.includes("Suspense") && toolsPageSource.includes("LazyToolsDirectory"),
+    "28 /tools page SSR-passes category into ToolsDirectory",
+    toolsPageSource.includes("initialCategory") &&
+      toolsPageSource.includes("ToolsDirectory") &&
+      !toolsPageSource.includes("LazyToolsDirectory") &&
+      !toolsPageSource.includes("Suspense"),
   );
 
   console.log(`\n${passed} passed, ${failed} failed\n`);

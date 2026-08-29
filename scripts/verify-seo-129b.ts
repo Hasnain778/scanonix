@@ -121,10 +121,11 @@ function run() {
   );
   const toolsPageBody = toolsPageSource.slice(toolsPageSource.indexOf("export default"));
   assert(
-    "8 tools page renders server hero header outside Suspense",
+    "8 tools page renders server hero header with SSR directory",
     toolsPageBody.includes("ToolsDirectoryHeroHeader") &&
-      toolsPageBody.indexOf("ToolsDirectoryHeroHeader") <
-        toolsPageBody.indexOf("<Suspense"),
+      toolsPageBody.includes("ToolsDirectory") &&
+      toolsPageBody.includes("initialCategory") &&
+      !toolsPageBody.includes("<Suspense"),
   );
 
   // 9. Category query routing unchanged (128E architecture)
@@ -147,9 +148,12 @@ function run() {
     );
   }
   assert(
-    "9 ToolsDirectory still reads searchParams category",
-    toolsDirectorySource.includes("useSearchParams") &&
-      toolsDirectorySource.includes('searchParams.get("category")'),
+    "9 /tools SSR resolves category into ToolsDirectory initialCategory",
+    toolsPageSource.includes("searchParams") &&
+      toolsPageSource.includes("parseToolsCategoryParam") &&
+      toolsPageSource.includes("initialCategory") &&
+      toolsDirectorySource.includes("initialCategory") &&
+      !toolsDirectorySource.includes("useSearchParams"),
   );
   assert(
     "9 ToolsDirectory still updates URL on category change",
@@ -170,9 +174,12 @@ function run() {
       toolsDirectorySource.includes("ToolCard"),
   );
   assert(
-    "10 /tools page keeps Suspense + LazyToolsDirectory",
-    toolsPageSource.includes("Suspense") &&
-      toolsPageSource.includes("LazyToolsDirectory"),
+    "10 /tools page SSR-passes category into ToolsDirectory (crawlable hub)",
+    toolsPageSource.includes("ToolsDirectory") &&
+      toolsPageSource.includes("initialCategory") &&
+      toolsPageSource.includes("searchParams") &&
+      !toolsPageSource.includes("LazyToolsDirectory") &&
+      !toolsPageSource.includes("Suspense"),
   );
   assert(
     "10 hero header component exists",

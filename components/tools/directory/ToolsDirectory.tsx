@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useId, useMemo, useState } from "react";
 import { ToolCard } from "@/components/tools/directory/ToolCard";
 import { ToolsEmptyState } from "@/components/tools/directory/ToolsEmptyState";
@@ -19,19 +19,27 @@ import {
   TOOL_CATEGORY_FILTERS,
   type ToolCategoryFilterId,
 } from "@/lib/tools-directory";
-import {
-  getToolsCategoryHref,
-  parseToolsCategoryParam,
-} from "@/lib/navigation/tool-category-urls";
+import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
 import { getImageToolsHubHref } from "@/lib/navigation/category-hub-urls";
 
-export function ToolsDirectory() {
+interface ToolsDirectoryProps {
+  /** Server-resolved category so initial HTML includes crawlable tool links. */
+  initialCategory: ToolCategoryFilterId;
+}
+
+export function ToolsDirectory({ initialCategory }: ToolsDirectoryProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const searchId = useId();
   const [query, setQuery] = useState("");
+  const [category, setCategoryState] = useState(initialCategory);
+  const [prevInitialCategory, setPrevInitialCategory] = useState(initialCategory);
 
-  const category = parseToolsCategoryParam(searchParams.get("category"));
+  // Sync URL-driven category without useEffect (avoids set-state-in-effect lint).
+  if (initialCategory !== prevInitialCategory) {
+    setPrevInitialCategory(initialCategory);
+    setCategoryState(initialCategory);
+  }
+
   const showPdfSubfilters = isPdfCategoryFilter(category);
   const activePdfSubcategory = getActivePdfSubcategoryFilter(category);
 
@@ -51,6 +59,7 @@ export function ToolsDirectory() {
 
   const setCategory = useCallback(
     (next: ToolCategoryFilterId) => {
+      setCategoryState(next);
       router.push(getToolsCategoryHref(next), { scroll: false });
     },
     [router],
@@ -58,6 +67,7 @@ export function ToolsDirectory() {
 
   const handleClearFilters = () => {
     setQuery("");
+    setCategoryState("all");
     router.push(getToolsCategoryHref("all"), { scroll: false });
   };
 
@@ -164,17 +174,18 @@ export function ToolsDirectory() {
           </div>
         ) : null}
 
-        {category === "image" ? (
-          <p className="text-sm text-body-bright">
-            <Link
-              href={getImageToolsHubHref()}
-              className="font-medium text-scanonix-orange transition-colors hover:text-scanonix-orange-light"
-            >
-              Browse Image Tools hub
-            </Link>
-            <span className="text-scanonix-muted"> — converters, editors, and format guides in one place.</span>
-          </p>
-        ) : null}
+        <p className="text-sm text-body-bright">
+          <Link
+            href={getImageToolsHubHref()}
+            className="font-medium text-scanonix-orange transition-colors hover:text-scanonix-orange-light"
+          >
+            Browse Image Tools hub
+          </Link>
+          <span className="text-scanonix-muted">
+            {" "}
+            — converters, editors, and format guides in one place.
+          </span>
+        </p>
         </div>
 
       {showFeatured && (

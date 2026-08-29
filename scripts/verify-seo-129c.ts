@@ -157,10 +157,11 @@ async function run() {
   );
   const toolsPageBody = toolsPageSource.slice(toolsPageSource.indexOf("export default"));
   assert(
-    "2 tools page renders server hero header outside Suspense",
+    "2 tools page renders server hero header with SSR directory",
     toolsPageBody.includes("ToolsDirectoryHeroHeader") &&
-      toolsPageBody.indexOf("ToolsDirectoryHeroHeader") <
-        toolsPageBody.indexOf("<Suspense"),
+      toolsPageBody.includes("ToolsDirectory") &&
+      toolsPageBody.includes("initialCategory") &&
+      !toolsPageBody.includes("<Suspense"),
   );
 
   // 3. Organization JSON-LD

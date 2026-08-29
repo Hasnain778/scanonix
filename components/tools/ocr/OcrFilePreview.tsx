@@ -14,16 +14,16 @@ export function OcrFilePreview({
   pageCount,
 }: OcrFilePreviewProps) {
   return (
-    <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-      <h2 className="text-lg font-semibold text-white">File preview</h2>
-      <p className="mt-1 truncate text-sm text-scanonix-muted">
+    <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+      <h2 className="text-lg font-semibold text-foreground">File preview</h2>
+      <p className="mt-1 truncate text-sm text-foreground-muted">
         {fileName} · {fileSizeLabel}
         {isPdf && pageCount !== undefined
           ? ` · ${pageCount} page${pageCount === 1 ? "" : "s"}`
           : ""}
       </p>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-scanonix-border bg-black/40">
+      <div className="mt-4 overflow-hidden rounded-xl border border-border bg-surface-muted">
         {previewUrl ? (
           <div className="flex max-h-[420px] items-center justify-center p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -34,7 +34,7 @@ export function OcrFilePreview({
             />
           </div>
         ) : (
-          <div className="flex aspect-[4/3] items-center justify-center text-sm text-scanonix-muted">
+          <div className="flex aspect-[4/3] items-center justify-center text-sm text-foreground-muted">
             Preview unavailable
           </div>
         )}

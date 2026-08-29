@@ -33,8 +33,8 @@ export function ToolResultsPanel({
   startOverDisabled = false,
 }: ToolResultsPanelProps) {
   return (
-    <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-      <h2 className="mb-2 text-lg font-semibold text-white">{title}</h2>
+    <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+      <h2 className="mb-2 text-lg font-semibold text-foreground">{title}</h2>
       {children}
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <ActionButton

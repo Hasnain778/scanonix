@@ -243,7 +243,7 @@ export function MergePdfTool() {
 
           {hasResult && mergedBlob && (
             <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
+              <h2 className="mb-2 text-lg font-semibold text-foreground">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {files.length} files · {totalPages} pages ·{" "}
                 {formatFileSize(mergedBlob.size)}
@@ -272,7 +272,7 @@ export function MergePdfTool() {
           <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">Merge PDFs</h2>
+                <h2 className="text-lg font-semibold text-foreground">Merge PDFs</h2>
                 <p className="mt-1 text-sm text-scanonix-muted">
                   {files.length < 2
                     ? "Add at least 2 PDF files to merge."

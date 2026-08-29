@@ -13,14 +13,14 @@ export function OcrLanguageSelect({
   disabled = false,
 }: OcrLanguageSelectProps) {
   return (
-    <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+    <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
       <label
         htmlFor="ocr-language"
-        className="block text-lg font-semibold text-white"
+        className="block text-lg font-semibold text-foreground"
       >
         Language
       </label>
-      <p className="mt-1 text-sm text-scanonix-muted">
+      <p className="mt-1 text-sm text-foreground-muted">
         Choose the language of the text in your document.
       </p>
       <select
@@ -28,7 +28,7 @@ export function OcrLanguageSelect({
         value={value}
         onChange={(event) => onChange(event.target.value as OcrLanguageCode)}
         disabled={disabled}
-        className="mt-4 w-full rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20 disabled:opacity-50"
+        className="select-field mt-4"
       >
         {OCR_LANGUAGES.map((language) => (
           <option key={language.code} value={language.code}>

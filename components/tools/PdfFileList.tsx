@@ -57,10 +57,10 @@ export function PdfFileList({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-foreground">
           PDF files ({files.length})
         </h2>
-        <div className="flex items-center gap-3 text-xs text-scanonix-muted">
+        <div className="flex items-center gap-3 text-xs text-foreground-muted">
           <span>{totalPages} total pages</span>
           <span>·</span>
           <span>Drag to reorder</span>
@@ -76,10 +76,10 @@ export function PdfFileList({
             onDragOver={(event) => handleDragOver(event, index)}
             onDrop={() => handleDrop(index)}
             onDragEnd={handleDragEnd}
-            className={`flex items-center gap-4 rounded-2xl border bg-scanonix-surface p-4 transition-all duration-200 sm:p-5 ${
+            className={`flex items-center gap-4 rounded-2xl border bg-surface p-4 transition-all duration-200 sm:p-5 ${
               dragOverIndex === index
                 ? "border-scanonix-orange ring-2 ring-scanonix-orange/30"
-                : "border-scanonix-border"
+                : "border-border"
             } ${draggedIndex === index ? "opacity-50" : ""} ${
               disabled ? "" : "cursor-grab active:cursor-grabbing"
             }`}
@@ -88,7 +88,7 @@ export function PdfFileList({
               {index + 1}
             </div>
 
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-scanonix-orange">
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -111,10 +111,10 @@ export function PdfFileList({
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white sm:text-base">
+              <p className="truncate text-sm font-semibold text-foreground sm:text-base">
                 {pdfFile.file.name}
               </p>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-scanonix-muted">
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-foreground-muted">
                 <span>{formatFileSize(pdfFile.file.size)}</span>
                 <span>·</span>
                 {pdfFile.pageCountError ? (

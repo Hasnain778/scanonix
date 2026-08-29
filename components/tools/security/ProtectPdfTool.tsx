@@ -36,19 +36,19 @@ function PasswordField({
 }) {
   return (
     <label className="block space-y-2">
-      <span className="text-sm font-medium text-white">{label}</span>
+      <span className="text-sm font-medium text-foreground">{label}</span>
       <div className="relative">
         <input
           type={visible ? "text" : "password"}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-[#121212] px-4 py-2.5 pr-12 text-white"
+          className="input-field pr-12"
           autoComplete="new-password"
         />
         <button
           type="button"
           onClick={onToggleVisible}
-          className="absolute inset-y-0 right-0 flex items-center px-3 text-scanonix-muted transition-colors hover:text-white"
+          className="absolute inset-y-0 right-0 flex items-center px-3 text-foreground-muted transition-colors hover:text-foreground"
           aria-label={visible ? "Hide password" : "Show password"}
         >
           {visible ? "Hide" : "Show"}
@@ -152,8 +152,8 @@ export function ProtectPdfTool() {
           />
 
           {file ? (
-            <p className="text-sm text-scanonix-muted">
-              Selected: <span className="text-white">{file.name}</span>
+            <p className="text-sm text-foreground-muted">
+              Selected: <span className="text-foreground">{file.name}</span>
             </p>
           ) : null}
 

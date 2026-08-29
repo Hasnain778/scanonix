@@ -221,7 +221,7 @@ export function ImageToPdfTool() {
 
           {hasResult && pdfBlob && (
             <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
+              <h2 className="mb-2 text-lg font-semibold text-foreground">Results</h2>
               <p className="text-sm text-scanonix-muted">
                 {images.length} page{images.length === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(pdfBlob.size)} · {pageSize.toUpperCase()}{" "}

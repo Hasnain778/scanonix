@@ -65,10 +65,10 @@ export function ImagePreviewGrid({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-foreground">
           Images ({images.length})
         </h2>
-        <p className="text-xs text-scanonix-muted">Drag to reorder</p>
+        <p className="text-xs text-foreground-muted">Drag to reorder</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -80,19 +80,19 @@ export function ImagePreviewGrid({
             onDragOver={(event) => handleDragOver(event, index)}
             onDrop={() => handleDrop(index)}
             onDragEnd={handleDragEnd}
-            className={`group relative overflow-hidden rounded-2xl border bg-scanonix-surface transition-all duration-200 ${
+            className={`group relative overflow-hidden rounded-2xl border bg-surface transition-all duration-200 ${
               dragOverIndex === index
                 ? "border-scanonix-orange ring-2 ring-scanonix-orange/30"
-                : "border-scanonix-border"
+                : "border-border"
             } ${draggedIndex === index ? "opacity-50" : ""} ${
               disabled ? "" : "cursor-grab active:cursor-grabbing"
             }`}
           >
-            <div className="absolute left-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-xs font-bold text-white">
+            <div className="absolute left-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-foreground/80 text-xs font-bold text-background">
               {index + 1}
             </div>
 
-            <div className="aspect-[4/3] overflow-hidden bg-black/40">
+            <div className="aspect-[4/3] overflow-hidden bg-surface-muted">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.previewUrl}
@@ -107,11 +107,11 @@ export function ImagePreviewGrid({
               />
             </div>
 
-            <div className="border-t border-scanonix-border p-3">
-              <p className="truncate text-sm font-medium text-white">
+            <div className="border-t border-border p-3">
+              <p className="truncate text-sm font-medium text-foreground">
                 {image.file.name}
               </p>
-              <p className="mt-0.5 text-xs text-scanonix-muted">
+              <p className="mt-0.5 text-xs text-foreground-muted">
                 {formatFileSize(image.file.size)}
                 {showDimensions &&
                   image.width &&

@@ -278,8 +278,8 @@ export function OcrTool() {
         <>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-white">Uploaded file</h2>
-              <p className="mt-1 text-sm text-scanonix-muted">
+              <h2 className="text-lg font-semibold text-foreground">Uploaded file</h2>
+              <p className="mt-1 text-sm text-foreground-muted">
                 {uploadedFile.file.name} · {formatFileSize(uploadedFile.file.size)}
               </p>
             </div>
@@ -322,8 +322,8 @@ export function OcrTool() {
 
           {(extractedText || status === "success") && (
             <div className="space-y-6">
-              <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-                <h2 className="mb-4 text-lg font-semibold text-white">
+              <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+                <h2 className="mb-4 text-lg font-semibold text-foreground">
                   Extracted text
                 </h2>
 
@@ -333,7 +333,7 @@ export function OcrTool() {
                   dir="auto"
                   rows={16}
                   placeholder="Extracted text will appear here…"
-                  className="min-h-[320px] w-full resize-y rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm leading-relaxed text-white placeholder:text-scanonix-muted/60 focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                  className="input-field min-h-[320px] resize-y leading-relaxed"
                 />
               </div>
 

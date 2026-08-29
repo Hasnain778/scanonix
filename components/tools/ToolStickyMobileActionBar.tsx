@@ -151,7 +151,7 @@ export function ToolStickyMobileActionBar({
       />
       <div
         ref={barRef}
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#121212]/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-xl md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--shadow-raised)] backdrop-blur-xl md:hidden"
         data-sticky-action-bar=""
         data-sticky-action-mode={resultMode ? "result" : "legacy"}
         data-result-action-phase={phase ?? "legacy"}

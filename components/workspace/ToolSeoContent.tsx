@@ -13,11 +13,11 @@ function SeoSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-white/8 pt-10 first:border-t-0 first:pt-0">
-      <h2 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
+    <section className="border-t border-border pt-10 first:border-t-0 first:pt-0">
+      <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
         {title}
       </h2>
-      <div className="mt-4 text-sm leading-relaxed text-scanonix-muted sm:text-base">
+      <div className="mt-4 text-sm leading-relaxed text-foreground-muted sm:text-base">
         {children}
       </div>
     </section>
@@ -31,13 +31,13 @@ export function ToolSeoContent({ toolId }: ToolSeoContentProps) {
   return (
     <aside
       aria-label={`About ${tool.h1}`}
-      className="mt-14 space-y-10 rounded-2xl border border-white/8 bg-white/[0.02] p-6 sm:mt-16 sm:p-8"
+      className="mt-14 space-y-10 rounded-2xl border border-border bg-surface-raised p-6 sm:mt-16 sm:p-8"
     >
-      <div className="border-b border-white/8 pb-10">
-        <h2 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
+      <div className="border-b border-border pb-10">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           {tool.h1}
         </h2>
-        <p className="mt-4 text-sm leading-relaxed text-scanonix-muted sm:text-base">
+        <p className="mt-4 text-sm leading-relaxed text-foreground-muted sm:text-base">
           {tool.pageDescription}
         </p>
       </div>
@@ -83,7 +83,7 @@ export function ToolSeoContent({ toolId }: ToolSeoContentProps) {
           {tool.keyFeatures.map((feature) => (
             <li
               key={feature}
-              className="flex items-start gap-2 rounded-lg border border-white/6 bg-white/[0.02] px-3 py-2"
+              className="flex items-start gap-2 rounded-lg border border-border bg-surface px-3 py-2"
             >
               <span
                 className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-scanonix-orange"
@@ -100,7 +100,7 @@ export function ToolSeoContent({ toolId }: ToolSeoContentProps) {
           <dl className="space-y-5">
             {tool.faqs.map((faq) => (
               <div key={faq.question}>
-                <dt className="font-medium text-white">{faq.question}</dt>
+                <dt className="font-medium text-foreground">{faq.question}</dt>
                 <dd className="mt-1.5">{faq.answer}</dd>
               </div>
             ))}
@@ -115,10 +115,10 @@ export function ToolSeoContent({ toolId }: ToolSeoContentProps) {
               <li key={related.id}>
                 <Link
                   href={related.path}
-                  className="home-btn-interactive block rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3 transition-colors hover:border-scanonix-orange/30 hover:bg-scanonix-orange/5"
+                  className="home-btn-interactive block rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-scanonix-orange/40 hover:bg-brand-soft"
                 >
-                  <span className="font-medium text-white">{related.h1}</span>
-                  <span className="mt-1 block text-sm text-scanonix-muted">
+                  <span className="font-medium text-foreground">{related.h1}</span>
+                  <span className="mt-1 block text-sm text-foreground-muted">
                     {related.metaDescription.slice(0, 90)}
                     {related.metaDescription.length > 90 ? "…" : ""}
                   </span>

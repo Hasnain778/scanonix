@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SITE } from "@/config/site";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme/theme";
 import { createOrganizationJsonLd, createPageMetadata } from "@/lib/utils/seo";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -56,8 +57,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="dark"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth overflow-x-clip antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }}
+        />
+      </head>
       <body className="relative flex min-h-full flex-col overflow-x-clip bg-background text-foreground">
         <script
           type="application/ld+json"

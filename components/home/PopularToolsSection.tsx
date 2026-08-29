@@ -21,7 +21,7 @@ export function PopularToolsSection() {
   const tools = getPopularTools();
 
   return (
-    <section id="popular-tools" className="border-t border-white/8 py-12 sm:py-14">
+    <section id="popular-tools" className="border-t border-border py-12 sm:py-14">
       <div className="page-container">
         <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -74,7 +74,7 @@ function CategoryDiscoveryCard({ category }: { category: HomepageToolCategory })
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <span>
-        <span className="block text-base font-semibold text-white">{meta.heading}</span>
+        <span className="block text-base font-semibold text-foreground">{meta.heading}</span>
         <span className="mt-1.5 block text-sm leading-relaxed text-body-bright">
           {meta.description}
         </span>
@@ -96,7 +96,7 @@ export function ToolCategoriesSection() {
   const categories: HomepageToolCategory[] = ["pdf", "image", "ai", "security"];
 
   return (
-    <section id="browse-categories" className="border-t border-white/8 py-12 sm:py-14">
+    <section id="browse-categories" className="border-t border-border bg-surface-muted/40 py-12 sm:py-14">
       <div className="page-container">
         <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>

@@ -31,14 +31,14 @@ export default async function PricingPage({
       <main className="relative z-10 min-h-screen pt-28 pb-20 sm:pt-32 sm:pb-24">
         <div className="page-container mx-auto max-w-[1200px]">
           <header className="mb-14 text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">Pricing</h1>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-scanonix-muted sm:text-lg">
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">Pricing</h1>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg">
               Choose the plan that&apos;s right for you.
             </p>
           </header>
 
           {params.checkout === "cancelled" && (
-            <p className="mb-8 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center text-sm text-scanonix-muted">
+            <p className="mb-8 rounded-2xl border border-border bg-surface-muted px-4 py-3 text-center text-sm text-foreground-muted">
               Checkout was cancelled. You can choose a plan whenever you are ready.
             </p>
           )}

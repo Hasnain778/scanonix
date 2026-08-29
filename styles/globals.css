@@ -1,18 +1,114 @@
 @import "tailwindcss";
 @import "./design-system.css";
 
-:root {
+/*
+ * 130L-1B — Semantic theme foundation (dark | bright).
+ * Root mechanism: html[data-theme="…"]
+ * Default: dark. Storage: localStorage "scanonix-theme"
+ */
+
+:root,
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Legacy / product tokens (modest dark hierarchy lift) */
   --background: #0a0908;
   --foreground: #ffffff;
   --scanonix-orange: #ff6a00;
   --scanonix-orange-light: #ff8533;
   --scanonix-orange-dark: #e05e00;
-  --scanonix-surface: #141312;
-  --scanonix-surface-elevated: #1c1a18;
-  --scanonix-border: rgba(255, 255, 255, 0.08);
-  --scanonix-muted: #c4c4cc;
+  --scanonix-surface: #161412;
+  --scanonix-surface-elevated: #1e1b19;
+  --scanonix-border: rgba(255, 255, 255, 0.12);
+  --scanonix-muted: #cbcbd2;
   --scanonix-glass: rgba(27, 27, 27, 0.72);
-  --scanonix-glass-border: rgba(255, 255, 255, 0.1);
+  --scanonix-glass-border: rgba(255, 255, 255, 0.12);
+
+  /* Design-system surfaces (aligned) */
+  --scanonix-bg: #0a0908;
+  --scanonix-bg-elevated: #121110;
+  --scanonix-surface-card: #161412;
+  --scanonix-surface-hover: #1c1917;
+  --scanonix-text-primary: #fafafa;
+  --scanonix-text-secondary: var(--scanonix-muted);
+  --scanonix-text-tertiary: color-mix(in srgb, var(--scanonix-muted) 82%, transparent);
+
+  /* Semantic roles */
+  --surface: var(--scanonix-surface);
+  --surface-raised: var(--scanonix-surface-elevated);
+  --surface-muted: #121110;
+  --surface-strong: #24201d;
+  --foreground-secondary: #e4e4ea;
+  --foreground-muted: var(--scanonix-muted);
+  --foreground-disabled: color-mix(in srgb, var(--scanonix-muted) 55%, transparent);
+  --border: var(--scanonix-border);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --input-background: var(--scanonix-surface-elevated);
+  --input-border: rgba(255, 255, 255, 0.16);
+  --brand: var(--scanonix-orange);
+  --brand-hover: var(--scanonix-orange-light);
+  --brand-soft: color-mix(in srgb, var(--scanonix-orange) 14%, transparent);
+  --brand-glow: color-mix(in srgb, var(--scanonix-orange) 22%, transparent);
+  /* Chrome CTAs: near-black on orange (~high contrast). Full Button system still uses text-white until 130L-3. */
+  --on-brand: #141210;
+  --shadow-soft: 0 1px 2px color-mix(in srgb, black 30%, transparent),
+    0 8px 24px color-mix(in srgb, black 35%, transparent);
+  --shadow-raised: 0 1px 2px color-mix(in srgb, black 25%, transparent),
+    0 12px 32px color-mix(in srgb, black 40%, transparent);
+  --overlay: rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="bright"] {
+  color-scheme: light;
+
+  --background: #f6f3ef;
+  --foreground: #141210;
+  --scanonix-orange: #ff6a00;
+  --scanonix-orange-light: #ff8533;
+  --scanonix-orange-dark: #e05e00;
+  --scanonix-surface: #ffffff;
+  --scanonix-surface-elevated: #fffcfa;
+  --scanonix-border: #e8e2da;
+  --scanonix-muted: #6b6560;
+  --scanonix-glass: rgba(255, 252, 250, 0.88);
+  --scanonix-glass-border: rgba(20, 18, 16, 0.1);
+
+  --scanonix-bg: #f6f3ef;
+  --scanonix-bg-elevated: #fffcfa;
+  --scanonix-surface-card: #ffffff;
+  --scanonix-surface-hover: #f3eee8;
+  --scanonix-text-primary: #141210;
+  --scanonix-text-secondary: #3d3935;
+  --scanonix-text-tertiary: #6b6560;
+
+  --surface: #ffffff;
+  --surface-raised: #fffcfa;
+  --surface-muted: #efeae4;
+  --surface-strong: #e8e2da;
+  --foreground-secondary: #3d3935;
+  --foreground-muted: #6b6560;
+  --foreground-disabled: #a39e98;
+  --border: #e8e2da;
+  --border-strong: #d4ccc2;
+  --border-subtle: #f0ebe5;
+  --input-background: #ffffff;
+  --input-border: #d4ccc2;
+  --brand: var(--scanonix-orange);
+  --brand-hover: var(--scanonix-orange-dark);
+  --brand-soft: color-mix(in srgb, var(--scanonix-orange) 12%, transparent);
+  --brand-glow: color-mix(in srgb, var(--scanonix-orange) 18%, transparent);
+  --on-brand: #141210;
+  --shadow-soft: 0 1px 2px color-mix(in srgb, #141210 6%, transparent),
+    0 8px 24px color-mix(in srgb, #141210 8%, transparent);
+  --shadow-raised: 0 2px 4px color-mix(in srgb, #141210 6%, transparent),
+    0 12px 28px color-mix(in srgb, #141210 10%, transparent);
+  --overlay: rgba(20, 18, 16, 0.4);
+
+  --shadow-xs: 0 1px 2px color-mix(in srgb, #141210 6%, transparent);
+  --shadow-card: var(--shadow-soft);
+  --shadow-card-hover: var(--shadow-raised);
+  --shadow-orange-sm: 0 0 24px color-mix(in srgb, var(--scanonix-orange) 12%, transparent);
 }
 
 @theme inline {
@@ -25,6 +121,23 @@
   --color-scanonix-surface-elevated: var(--scanonix-surface-elevated);
   --color-scanonix-border: var(--scanonix-border);
   --color-scanonix-muted: var(--scanonix-muted);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-strong: var(--surface-strong);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-disabled: var(--foreground-disabled);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
+  --color-input-background: var(--input-background);
+  --color-input-border: var(--input-border);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand: var(--on-brand);
+  --color-overlay: var(--overlay);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -650,13 +763,12 @@ div:focus:not([role]):not([tabindex]) {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-md);
-  border: 1px solid color-mix(in srgb, white 10%, transparent);
-  background: color-mix(in srgb, var(--scanonix-surface) 72%, transparent);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  color: var(--foreground);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow:
-    0 1px 2px color-mix(in srgb, black 35%, transparent),
-    0 8px 24px color-mix(in srgb, black 30%, transparent);
+  box-shadow: var(--shadow-soft);
   transition:
     border-color var(--transition-base),
     box-shadow var(--transition-base),
@@ -687,7 +799,7 @@ div:focus:not([role]):not([tabindex]) {
   height: 2px;
   width: 1.25rem;
   border-radius: 999px;
-  background: color-mix(in srgb, white 92%, transparent);
+  background: var(--foreground);
   transition:
     transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
     opacity 200ms ease;
@@ -825,11 +937,7 @@ body.home-intro-animate .home-hero-logo {
 }
 
 .glass-card {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, white 6%, transparent) 0%,
-    color-mix(in srgb, white 2%, transparent) 100%
-  );
+  background: var(--scanonix-glass);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--scanonix-glass-border);
@@ -844,9 +952,7 @@ body.home-intro-animate .home-hero-logo {
 
 .glass-card-interactive:hover {
   border-color: color-mix(in srgb, var(--scanonix-orange) 28%, transparent);
-  box-shadow:
-    0 1px 2px color-mix(in srgb, black 25%, transparent),
-    0 12px 32px color-mix(in srgb, black 40%, transparent);
+  box-shadow: var(--shadow-raised);
 }
 
 .glow-orange {

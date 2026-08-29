@@ -26,12 +26,12 @@ export function SectionHeading({
       )}
       <h2
         id={id}
-        className="text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]"
+        className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]"
       >
         {title}
       </h2>
       {description && (
-        <p className="mt-4 text-base leading-relaxed text-scanonix-muted sm:text-lg md:mt-5">
+        <p className="mt-4 text-base leading-relaxed text-foreground-muted sm:text-lg md:mt-5">
           {description}
         </p>
       )}

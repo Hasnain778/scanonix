@@ -12,6 +12,10 @@ interface BrandLockupProps {
   className?: string;
 }
 
+/**
+ * Shared brand lockup — standalone transparent S (no black tile) + wordmark.
+ * Desktop shows tagline; compact/footer omit tagline for space.
+ */
 export function BrandLockup({
   variant = "compact",
   priority = false,
@@ -20,13 +24,9 @@ export function BrandLockup({
 }: BrandLockupProps) {
   const isDesktop = variant === "desktop";
   const isFooter = variant === "footer";
-  const isCompact = variant === "compact";
-  const logoSize = isDesktop ? 44 : 36;
+  // Visual targets: desktop ~48–54px, mobile ~38–44px; footer stays compact.
+  const logoSize = isDesktop ? 50 : isFooter ? 32 : 40;
   const wordmarkSize = isDesktop ? "header" : "footer";
-
-  const logo = (
-    <ScanonixLogo size={logoSize} priority={priority} className="shrink-0 rounded-md" />
-  );
 
   return (
     <span
@@ -35,16 +35,13 @@ export function BrandLockup({
       } ${className}`}
       aria-hidden={decorative ? true : undefined}
     >
-      <span
-        className={`flex shrink-0 items-center justify-center rounded-[10px] border border-scanonix-orange/25 bg-scanonix-orange/[0.06] p-1 ${
-          isDesktop
-            ? "shadow-[0_0_16px_rgba(255,106,0,0.1)] transition-all duration-200 ease-out group-hover:border-scanonix-orange/45 group-hover:shadow-[0_0_20px_rgba(255,106,0,0.18)]"
-            : isCompact
-              ? "shadow-[0_0_12px_rgba(255,106,0,0.08)]"
-              : ""
-        }`}
-      >
-        {logo}
+      <span className={`brand-logo-mark shrink-0 ${isDesktop ? "brand-logo-mark--header" : ""}`}>
+        <ScanonixLogo
+          appearance="mark"
+          size={logoSize}
+          priority={priority}
+          className="brand-logo-mark__img"
+        />
       </span>
 
       {isDesktop ? (

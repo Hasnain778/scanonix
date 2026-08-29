@@ -3,6 +3,7 @@
  * Run: npm run verify:favicon
  */
 
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -12,6 +13,14 @@ import {
 import { SOCIAL_LINKS } from "../constants/social-links";
 
 const WWW_ORIGIN = "https://www.scanonix.com";
+
+/**
+ * Frozen favicon.ico SHA-256 (Phase 130L-4R6 / 4R6B / 4F).
+ * Transparent standalone-S ICO — do not weaken occupancy/orange checks when updating.
+ */
+export const FROZEN_FAVICON_SHA256 =
+  "ba054129ed250215f62418b4266e99126e226f031a8e2defbf543757763bb215";
+
 const LINKEDIN_URL = "https://www.linkedin.com/company/scanonix/";
 const GITHUB_URL = "https://github.com/Scanonix";
 const OG_ABSOLUTE_URL = `${WWW_ORIGIN}/og-scanonix.png`;
@@ -160,6 +169,13 @@ async function run() {
       faviconBuffer.readUInt16LE(2) === 1,
   );
 
+  const faviconSha = createHash("sha256").update(faviconBuffer).digest("hex");
+  assert(
+    "1 favicon.ico matches frozen SHA-256",
+    faviconSha === FROZEN_FAVICON_SHA256,
+    `got ${faviconSha}`,
+  );
+
   const icoSizes = readIcoDimensions(faviconBuffer);
   assert("1 favicon.ico contains 16x16", icoSizes.includes(16), icoSizes.join(", "));
   assert("1 favicon.ico contains 32x32", icoSizes.includes(32), icoSizes.join(", "));
@@ -170,6 +186,10 @@ async function run() {
   assert(
     "2 public/scanonix_icon.png exists",
     existsSync(join(root, "public", "scanonix_icon.png")),
+  );
+  assert(
+    "2 public/scanonix_mark.png exists (standalone transparent S)",
+    existsSync(join(root, "public", "scanonix_mark.png")),
   );
 
   // 3. consolidated metadata — filesystem favicon only for Search

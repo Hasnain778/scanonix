@@ -26,17 +26,17 @@ type ActionButtonProps = ActionButtonBaseProps &
 
 const variantStyles: Record<ActionButtonVariant, string> = {
   primary:
-    "bg-scanonix-orange text-white hover:bg-scanonix-orange-light border border-scanonix-orange/25 shadow-md shadow-scanonix-orange/20 hover:shadow-scanonix-orange/30 disabled:opacity-50 disabled:shadow-none",
+    "bg-brand text-on-brand hover:bg-brand-hover border border-scanonix-orange/25 shadow-md shadow-scanonix-orange/20 hover:shadow-scanonix-orange/30 disabled:opacity-50 disabled:shadow-none",
   secondary:
-    "bg-scanonix-surface-elevated text-white border border-white/12 hover:bg-white/10 hover:border-white/20 disabled:opacity-50",
+    "bg-surface-raised text-foreground border border-border hover:bg-surface-muted hover:border-border-strong disabled:opacity-50",
   outline:
-    "border border-white/15 bg-transparent text-white hover:border-scanonix-orange/50 hover:bg-scanonix-orange/5 hover:text-white disabled:opacity-50",
+    "border border-border bg-transparent text-foreground hover:border-scanonix-orange/50 hover:bg-brand-soft disabled:opacity-50",
   ghost:
-    "text-scanonix-muted hover:bg-white/5 hover:text-white disabled:opacity-50",
+    "text-foreground-muted hover:bg-surface-muted hover:text-foreground disabled:opacity-50",
   glass:
-    "glass text-white hover:border-scanonix-orange/35 disabled:opacity-50",
+    "glass text-foreground hover:border-scanonix-orange/35 disabled:opacity-50",
   danger:
-    "border border-red-500/35 bg-red-500/10 text-red-300 hover:bg-red-500/15 hover:border-red-500/50 disabled:opacity-50",
+    "border border-red-500/35 bg-red-500/10 text-red-400 hover:bg-red-500/15 hover:border-red-500/50 disabled:opacity-50",
 };
 
 const sizeStyles: Record<ActionButtonSize, string> = {

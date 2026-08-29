@@ -45,8 +45,8 @@ export function HomeCategoryNav({ activeCategory, onCategoryChange }: HomeCatego
                 onClick={() => handleSelect(item.id)}
                 className={`home-category-nav__pill shrink-0 rounded-full border px-2 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 sm:px-4 sm:py-2.5 sm:text-sm ${
                   isActive
-                    ? "border-scanonix-orange/50 bg-scanonix-orange/15 text-white"
-                    : "border-white/10 bg-white/[0.03] text-neutral-200 hover:border-scanonix-orange/30 hover:bg-scanonix-orange/10 hover:text-white"
+                    ? "border-scanonix-orange/50 bg-scanonix-orange/15 text-foreground"
+                    : "border-border bg-surface-muted text-foreground-secondary hover:border-scanonix-orange/30 hover:bg-brand-soft hover:text-foreground"
                 }`}
               >
                 {item.label}

@@ -6,13 +6,26 @@ import { ArrowRight } from "lucide-react";
 import { HomeCategoryNav, type HomeCategoryFilter } from "@/components/home/HomeCategoryNav";
 import { HomeToolCard } from "@/components/home/HomeToolCard";
 import {
+  getToolById,
   HOMEPAGE_CATEGORY_META,
   POPULAR_TOOL_IDS,
   type HomepageTool,
 } from "@/constants/homepage-tools";
+import { filterTools, SCANONIX_TOOLS } from "@/constants/tools-directory-data";
+import { getToolAccess } from "@/lib/plan/tool-access";
 
 interface HomeToolDiscoveryProps {
+  /** Curated popular tools for the All view only. */
   tools: HomepageTool[];
+}
+
+/** Canonical public tools for a primary category, in SCANONIX_TOOLS display order. */
+function getCanonicalCategoryTools(
+  category: Exclude<HomeCategoryFilter, "all">,
+): HomepageTool[] {
+  return filterTools(SCANONIX_TOOLS, "", category)
+    .map((entry) => getToolById(entry.id))
+    .filter((tool): tool is HomepageTool => Boolean(tool?.available));
 }
 
 export function HomeToolDiscovery({ tools }: HomeToolDiscoveryProps) {
@@ -20,14 +33,17 @@ export function HomeToolDiscovery({ tools }: HomeToolDiscoveryProps) {
 
   const filteredTools = useMemo(() => {
     if (activeCategory === "all") return tools;
-    return tools.filter((tool) => tool.category === activeCategory);
+    return getCanonicalCategoryTools(activeCategory);
   }, [activeCategory, tools]);
 
   const categoryMeta =
     activeCategory === "all" ? null : HOMEPAGE_CATEGORY_META[activeCategory];
 
+  /** All stays curated → keep Browse all. Full category views need no subset escape hatch. */
+  const showBrowseAll = activeCategory === "all";
+
   return (
-    <section id="popular-tools" className="pb-10 pt-3 sm:pb-12 sm:pt-5">
+    <section id="popular-tools" className="border-t border-border/60 pb-10 pt-3 sm:pb-12 sm:pt-5">
       <div className="page-container">
         <HomeCategoryNav
           activeCategory={activeCategory}
@@ -38,13 +54,15 @@ export function HomeToolDiscovery({ tools }: HomeToolDiscoveryProps) {
           <h2 className="text-section-title min-w-0 text-lg sm:text-2xl">
             {activeCategory === "all" ? "Popular tools" : `${categoryMeta?.label} tools`}
           </h2>
-          <Link
-            href={activeCategory === "all" ? "/tools" : categoryMeta?.viewAllHref ?? "/tools"}
-            className="inline-flex shrink-0 items-center gap-1 py-1 text-sm font-semibold text-scanonix-orange transition-colors hover:text-scanonix-orange-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
-          >
-            Browse all
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
+          {showBrowseAll ? (
+            <Link
+              href="/tools"
+              className="inline-flex shrink-0 items-center gap-1 py-1 text-sm font-semibold text-scanonix-orange transition-colors hover:text-scanonix-orange-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+            >
+              Browse all
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          ) : null}
         </div>
 
         <p className="mt-1.5 hidden text-sm text-body-bright sm:block">
@@ -65,14 +83,15 @@ export function HomeToolDiscovery({ tools }: HomeToolDiscoveryProps) {
                 icon={tool.icon}
                 category={tool.category}
                 popular={(POPULAR_TOOL_IDS as readonly string[]).includes(tool.id)}
+                proOnly={getToolAccess(tool.id)?.requiresPro === true}
                 compactMobile
               />
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-2xl border border-white/8 bg-white/[0.02] px-5 py-8 text-center sm:mt-6">
+          <div className="mt-5 rounded-2xl border border-border bg-surface-muted px-5 py-8 text-center sm:mt-6">
             <p className="text-sm text-body-bright">
-              No popular {categoryMeta?.label.toLowerCase()} tools in this row.
+              No {categoryMeta?.label.toLowerCase() ?? ""} tools in this category.
             </p>
             <Link
               href={categoryMeta?.viewAllHref ?? "/tools"}
@@ -83,7 +102,6 @@ export function HomeToolDiscovery({ tools }: HomeToolDiscoveryProps) {
             </Link>
           </div>
         )}
-
       </div>
     </section>
   );

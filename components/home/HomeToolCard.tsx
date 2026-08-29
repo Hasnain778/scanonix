@@ -53,7 +53,7 @@ export function HomeToolCard({
       />
 
       <span
-        className={`text-tool-name block text-sm group-hover:text-white sm:text-[0.9375rem] ${
+        className={`text-tool-name block text-sm group-hover:text-foreground sm:text-[0.9375rem] ${
           compactMobile ? "mt-2 sm:mt-4" : "mt-4"
         }`}
       >

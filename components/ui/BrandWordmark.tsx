@@ -13,7 +13,7 @@ export function BrandWordmark({ className = "", size = "header" }: BrandWordmark
     <span
       className={`inline-block whitespace-nowrap font-extrabold leading-none tracking-[-0.03em] ${SIZE_CLASSES[size]} ${className}`}
     >
-      <span className="text-white">SCAN</span>
+      <span className="text-foreground">SCAN</span>
       <span className="text-scanonix-orange">ONIX</span>
     </span>
   );

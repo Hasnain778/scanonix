@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavbarBrand } from "@/components/layout/NavbarBrand";
+import { ThemeControl } from "@/components/theme/ThemeControl";
 import { APP_NAV_ITEMS } from "@/constants/app-navigation";
 
 function NavIcon({ type }: { type: string }) {
@@ -87,8 +88,8 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
             onClick={onNavigate}
             className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-200 ${
               active
-                ? "bg-white/8 text-white"
-                : "text-scanonix-muted hover:bg-white/4 hover:text-white"
+                ? "bg-surface-muted text-foreground"
+                : "text-foreground-muted hover:bg-surface-muted/70 hover:text-foreground"
             }`}
             aria-current={active ? "page" : undefined}
           >
@@ -96,7 +97,7 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
               className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
                 active
                   ? "bg-scanonix-orange/20 text-scanonix-orange"
-                  : "text-scanonix-muted group-hover:text-scanonix-orange"
+                  : "text-foreground-muted group-hover:text-scanonix-orange"
               }`}
             >
               <NavIcon type={item.icon} />
@@ -110,11 +111,16 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
 
   return (
     <>
-      <aside className="app-sidebar hidden w-56 shrink-0 flex-col border-r border-white/6 bg-[#0a0a0a]/80 backdrop-blur-xl lg:flex">
-        <div className="border-b border-white/6 p-4">
+      <aside className="app-sidebar hidden w-56 shrink-0 flex-col border-r border-border bg-surface/80 backdrop-blur-xl lg:flex">
+        <div className="border-b border-border p-4">
           <NavbarBrand onNavigate={onNavigate} />
         </div>
-        {navContent}
+        <div className="flex min-h-0 flex-1 flex-col">
+          {navContent}
+          <div className="mt-auto border-t border-border p-3">
+            <ThemeControl variant="row" className="min-h-[44px] rounded-lg px-3 text-sm" />
+          </div>
+        </div>
       </aside>
 
       <div
@@ -123,22 +129,25 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
       >
         <button
           type="button"
-          className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
+          className={`absolute inset-0 bg-[var(--overlay)] transition-opacity duration-300 ${
             mobileOpen ? "opacity-100" : "opacity-0"
           }`}
           aria-label="Close menu"
           onClick={onNavigate}
         />
         <aside
-          className={`absolute inset-y-0 left-0 flex h-dvh w-[min(100%,16rem)] flex-col overflow-hidden border-r border-white/8 bg-[#0a0a0a] shadow-premium-lg transition-transform duration-300 ${
+          className={`absolute inset-y-0 left-0 flex h-dvh w-[min(100%,16rem)] flex-col overflow-hidden border-r border-border bg-surface shadow-[var(--shadow-raised)] transition-transform duration-300 ${
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="shrink-0 border-b border-white/6 p-4">
+          <div className="shrink-0 border-b border-border p-4">
             <NavbarBrand onNavigate={onNavigate} />
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
             {navContent}
+          </div>
+          <div className="shrink-0 border-t border-border p-3">
+            <ThemeControl variant="row" className="min-h-[44px] rounded-lg px-3 text-sm" />
           </div>
         </aside>
       </div>
@@ -153,7 +162,7 @@ export function AppMobileNav({ onMoreClick }: { onMoreClick: () => void }) {
   return (
     <nav
       aria-label="Mobile app navigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/8 bg-[#0a0a0a]/95 backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-xl lg:hidden"
     >
       <ul className="grid grid-cols-5">
         {mobileItems.map((item) => {
@@ -163,7 +172,7 @@ export function AppMobileNav({ onMoreClick }: { onMoreClick: () => void }) {
               <Link
                 href={item.href}
                 className={`flex min-h-[3.5rem] flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] font-medium transition-colors ${
-                  active ? "text-scanonix-orange" : "text-scanonix-muted"
+                  active ? "text-scanonix-orange" : "text-foreground-muted"
                 }`}
               >
                 <NavIcon type={item.icon} />
@@ -176,7 +185,7 @@ export function AppMobileNav({ onMoreClick }: { onMoreClick: () => void }) {
           <button
             type="button"
             onClick={onMoreClick}
-            className="flex min-h-[3.5rem] w-full flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] font-medium text-scanonix-muted"
+            className="flex min-h-[3.5rem] w-full flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] font-medium text-foreground-muted"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />

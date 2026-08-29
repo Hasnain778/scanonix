@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AppMobileNav, AppSidebar } from "@/components/layout/AppSidebar";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { ThemeControl } from "@/components/theme/ThemeControl";
 import { BrandLockup } from "@/components/ui/BrandLockup";
 
 interface AppShellProps {
@@ -17,15 +18,15 @@ export function AppShell({ children }: AppShellProps) {
   const isDashboard = pathname === "/dashboard";
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-background">
       <AppSidebar mobileOpen={mobileOpen} onNavigate={() => setMobileOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-white/6 bg-[#0a0a0a]/80 px-4 backdrop-blur-xl lg:hidden">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-border bg-background/80 px-4 backdrop-blur-xl lg:hidden">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <button
               type="button"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 text-white"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-foreground"
               aria-label="Open menu"
               onClick={() => setMobileOpen(true)}
             >
@@ -41,18 +42,22 @@ export function AppShell({ children }: AppShellProps) {
               <BrandLockup variant="compact" decorative />
             </Link>
           </div>
-          {!isDashboard ? (
-            <div className="shrink-0">
-              <UserMenu />
-            </div>
-          ) : null}
+          <div className="flex shrink-0 items-center gap-2">
+            <ThemeControl variant="icon" />
+            {!isDashboard ? <UserMenu /> : null}
+          </div>
         </header>
 
         {!isDashboard ? (
-          <div className="hidden lg:absolute lg:right-6 lg:top-5 lg:z-30 lg:block">
+          <div className="hidden lg:absolute lg:right-6 lg:top-5 lg:z-30 lg:flex lg:items-center lg:gap-2">
+            <ThemeControl variant="icon" />
             <UserMenu />
           </div>
-        ) : null}
+        ) : (
+          <div className="hidden lg:absolute lg:right-6 lg:top-5 lg:z-30 lg:block">
+            <ThemeControl variant="icon" />
+          </div>
+        )}
 
         <main className="flex-1 pb-20 lg:pb-10 lg:pt-8">
           <div className="page-container page-stack">{children}</div>

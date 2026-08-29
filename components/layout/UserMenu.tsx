@@ -37,7 +37,7 @@ export function UserMenu() {
   if (!hydrated || loading) {
     return (
       <div
-        className="h-10 w-10 animate-pulse rounded-xl bg-white/10"
+        className="h-10 w-10 animate-pulse rounded-xl bg-surface-muted"
         aria-hidden="true"
       />
     );
@@ -65,13 +65,13 @@ export function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 transition-colors hover:border-scanonix-orange/40"
+        className="flex items-center gap-2 rounded-xl border border-border bg-surface-muted px-2 py-1.5 transition-colors hover:border-scanonix-orange/40"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Account menu"
       >
         <UserAvatar user={user} profile={profile} size={32} className="rounded-lg" />
-        <span className="hidden max-w-[8rem] truncate text-sm font-medium text-white sm:inline">
+        <span className="hidden max-w-[8rem] truncate text-sm font-medium text-foreground sm:inline">
           {displayName}
         </span>
         <svg
@@ -89,17 +89,17 @@ export function UserMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-scanonix-surface shadow-xl"
+          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-raised)]"
         >
-          <div className="border-b border-white/10 px-4 py-3">
-            <p className="truncate text-sm font-semibold text-white">{displayName}</p>
-            <p className="truncate text-xs text-scanonix-muted">{email}</p>
+          <div className="border-b border-border px-4 py-3">
+            <p className="truncate text-sm font-semibold text-foreground">{displayName}</p>
+            <p className="truncate text-xs text-foreground-muted">{email}</p>
           </div>
           <div className="py-1">
             <Link
               href="/dashboard"
               role="menuitem"
-              className="block px-4 py-2.5 text-sm text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange"
+              className="block px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange"
               onClick={() => setOpen(false)}
             >
               Dashboard
@@ -107,7 +107,7 @@ export function UserMenu() {
             <Link
               href="/monitors"
               role="menuitem"
-              className="block px-4 py-2.5 text-sm text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange"
+              className="block px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange"
               onClick={() => setOpen(false)}
             >
               Monitors
@@ -115,7 +115,7 @@ export function UserMenu() {
             <Link
               href="/scan-history"
               role="menuitem"
-              className="block px-4 py-2.5 text-sm text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange"
+              className="block px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange"
               onClick={() => setOpen(false)}
             >
               Scan History
@@ -123,7 +123,7 @@ export function UserMenu() {
             <Link
               href="/account"
               role="menuitem"
-              className="block px-4 py-2.5 text-sm text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange"
+              className="block px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange"
               onClick={() => setOpen(false)}
             >
               Account
@@ -155,17 +155,17 @@ export function AuthNavLinks({
   const hydrated = useHydrated();
 
   const loginClass = mobile
-    ? "rounded-xl px-4 py-3.5 text-lg font-medium text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange"
-    : "rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-300 transition-colors hover:bg-white/5 hover:text-white";
+    ? "rounded-xl px-4 py-3.5 text-lg font-medium text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange"
+    : "rounded-xl px-4 py-2.5 text-sm font-medium text-foreground-secondary transition-colors hover:bg-surface-muted hover:text-foreground";
 
   const registerClass = mobile
-    ? "mt-2 inline-flex w-full items-center justify-center rounded-xl bg-scanonix-orange px-6 py-3.5 text-base font-semibold text-white"
-    : "inline-flex items-center justify-center rounded-xl bg-scanonix-orange px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-scanonix-orange-light";
+    ? "mt-2 inline-flex w-full items-center justify-center rounded-xl bg-brand px-6 py-3.5 text-base font-semibold text-on-brand"
+    : "inline-flex items-center justify-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover";
 
   if (hydrated && !loading && isAuthenticated) {
     const linkClass = mobile
-      ? "rounded-xl px-4 py-3.5 text-lg font-medium text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange"
-      : "rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-300 transition-colors hover:bg-white/5 hover:text-white";
+      ? "rounded-xl px-4 py-3.5 text-lg font-medium text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange"
+      : "rounded-xl px-4 py-2.5 text-sm font-medium text-foreground-secondary transition-colors hover:bg-surface-muted hover:text-foreground";
 
     return (
       <>

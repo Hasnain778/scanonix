@@ -14,10 +14,10 @@ export function LoadingState({
       aria-live="polite"
     >
       <span
-        className="h-5 w-5 animate-spin rounded-full border-2 border-white/15 border-t-scanonix-orange"
+        className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-scanonix-orange"
         aria-hidden="true"
       />
-      <span className="text-sm text-scanonix-muted">{label}</span>
+      <span className="text-sm text-foreground-muted">{label}</span>
     </div>
   );
 }

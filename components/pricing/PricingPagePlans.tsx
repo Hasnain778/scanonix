@@ -120,12 +120,12 @@ function BillingToggle({
   return (
     <div className="flex flex-col items-center gap-3">
       <div
-        className="relative inline-flex rounded-xl border border-white/10 bg-[#0c0c0c]/80 p-1"
+        className="relative inline-flex rounded-xl border border-border bg-surface-muted p-1 shadow-[var(--shadow-soft)]"
         role="group"
         aria-label="Billing interval"
       >
         <motion.div
-          className="absolute inset-y-1 rounded-lg bg-scanonix-orange shadow-[0_0_20px_rgba(255,106,0,0.35)]"
+          className="absolute inset-y-1 rounded-lg bg-brand shadow-[0_0_20px_rgba(255,106,0,0.35)]"
           layout
           transition={{ type: "spring", stiffness: 400, damping: 32 }}
           style={{
@@ -136,7 +136,9 @@ function BillingToggle({
         <button
           type="button"
           className={`relative z-10 min-w-[108px] rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${
-            interval === "monthly" ? "text-white" : "text-scanonix-muted hover:text-white"
+            interval === "monthly"
+              ? "text-on-brand"
+              : "text-foreground-muted hover:text-foreground"
           }`}
           aria-pressed={interval === "monthly"}
           onClick={() => onChange("monthly")}
@@ -146,7 +148,9 @@ function BillingToggle({
         <button
           type="button"
           className={`relative z-10 min-w-[108px] rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${
-            interval === "yearly" ? "text-white" : "text-scanonix-muted hover:text-white"
+            interval === "yearly"
+              ? "text-on-brand"
+              : "text-foreground-muted hover:text-foreground"
           }`}
           aria-pressed={interval === "yearly"}
           onClick={() => onChange("yearly")}
@@ -202,9 +206,9 @@ function PlanPrice({
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="flex items-end gap-1"
         >
-          <span className="text-4xl font-bold tracking-tight text-white sm:text-5xl">{price}</span>
+          <span className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">{price}</span>
           {suffix ? (
-            <span className="mb-1.5 text-base text-scanonix-muted">{suffix}</span>
+            <span className="mb-1.5 text-base text-foreground-muted">{suffix}</span>
           ) : null}
         </motion.div>
       </AnimatePresence>
@@ -217,8 +221,8 @@ function FeatureList({ features }: { features: string[] }) {
   return (
     <ul className="mt-8 space-y-3.5">
       {features.map((feature) => (
-        <li key={feature} className="flex items-start gap-3 text-sm leading-relaxed text-scanonix-muted">
-          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
+        <li key={feature} className="flex items-start gap-3 text-sm leading-relaxed text-foreground-muted">
+          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500">
             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
@@ -254,12 +258,12 @@ export function PricingPagePlans({ activePlanKey = null }: PricingPagePlansProps
               className={`relative flex flex-col rounded-3xl border p-8 backdrop-blur-xl transition-[border-color,box-shadow,transform] duration-300 ${
                 plan.highlighted
                   ? "glass-card border-scanonix-orange/40 shadow-[0_0_0_1px_rgba(255,106,0,0.15),0_20px_60px_rgba(255,106,0,0.12)] xl:scale-[1.03]"
-                  : "glass-card shadow-lg hover:border-white/15 hover:shadow-xl"
+                  : "glass-card shadow-lg hover:border-border-strong hover:shadow-xl"
               } ${plan.id === "business" ? "md:col-span-2 md:mx-auto md:max-w-md xl:col-span-1 xl:max-w-none" : ""}`}
             >
               {plan.highlighted ? (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-scanonix-orange px-4 py-1 text-[11px] font-bold tracking-wide text-white shadow-[0_4px_20px_rgba(255,106,0,0.4)]">
+                  <span className="rounded-full bg-brand px-4 py-1 text-[11px] font-bold tracking-wide text-on-brand shadow-[0_4px_20px_rgba(255,106,0,0.4)]">
                     MOST POPULAR
                   </span>
                 </div>
@@ -267,7 +271,7 @@ export function PricingPagePlans({ activePlanKey = null }: PricingPagePlansProps
 
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-xl font-semibold text-foreground">
                     {plan.name}
                     {plan.highlighted ? (
                       <span className="ml-1.5" aria-hidden="true">
@@ -275,10 +279,10 @@ export function PricingPagePlans({ activePlanKey = null }: PricingPagePlansProps
                       </span>
                     ) : null}
                   </h3>
-                  <p className="mt-2 text-sm text-scanonix-muted">{plan.subtitle}</p>
+                  <p className="mt-2 text-sm text-foreground-muted">{plan.subtitle}</p>
                 </div>
                 {isCurrent ? (
-                  <span className="shrink-0 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white">
+                  <span className="shrink-0 rounded-full border border-border bg-surface-muted px-3 py-1 text-xs font-medium text-foreground">
                     Current
                   </span>
                 ) : null}

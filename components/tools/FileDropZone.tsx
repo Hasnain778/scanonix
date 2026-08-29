@@ -112,7 +112,7 @@ export function FileDropZone({
           ? "cursor-not-allowed opacity-50"
           : isDragging
             ? "glass-card scale-[1.01] border-scanonix-orange glow-orange-sm"
-            : "glass-card border-white/10 hover:border-scanonix-orange/40 hover:glow-orange-sm"
+            : "glass-card border-border hover:border-scanonix-orange/40 hover:glow-orange-sm"
       }`}
     >
       <input
@@ -134,8 +134,8 @@ export function FileDropZone({
         {icon ?? <DefaultFileIcon />}
       </div>
 
-      <p className="text-base font-semibold text-white">{label}</p>
-      <p className="mt-1 text-sm text-scanonix-muted">{hint}</p>
+      <p className="text-base font-semibold text-foreground">{label}</p>
+      <p className="mt-1 text-sm text-foreground-muted">{hint}</p>
     </div>
   );
 }

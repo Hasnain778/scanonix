@@ -52,13 +52,13 @@ export function NavbarCategoryDropdown({ category, onNavigate }: NavbarCategoryD
       </button>
 
       {open ? (
-        <div className="absolute left-0 top-full z-[var(--z-dropdown)] mt-2 w-60 overflow-hidden rounded-xl border border-white/10 bg-[#111111]/95 py-1.5 shadow-xl shadow-black/40 backdrop-blur-md">
+        <div className="absolute left-0 top-full z-[var(--z-dropdown)] mt-2 w-60 overflow-hidden rounded-xl border border-border bg-surface/95 py-1.5 shadow-[var(--shadow-raised)] backdrop-blur-md">
           <ul>
             {menu.tools.map((tool) => (
               <li key={tool.href}>
                 <Link
                   href={tool.href}
-                  className="block px-3.5 py-2 text-sm text-neutral-200 transition-colors hover:bg-scanonix-orange/10 hover:text-white focus-visible:outline-none focus-visible:bg-scanonix-orange/10"
+                  className="block px-3.5 py-2 text-sm text-foreground-secondary transition-colors hover:bg-brand-soft hover:text-foreground focus-visible:outline-none focus-visible:bg-brand-soft"
                   onClick={() => {
                     close();
                     onNavigate?.();
@@ -69,10 +69,10 @@ export function NavbarCategoryDropdown({ category, onNavigate }: NavbarCategoryD
               </li>
             ))}
           </ul>
-          <div className="mt-1 border-t border-white/8 pt-1">
+          <div className="mt-1 border-t border-border pt-1">
             <Link
               href={menu.viewAllHref}
-              className="block px-3.5 py-2 text-sm font-semibold text-scanonix-orange transition-colors hover:bg-scanonix-orange/5 focus-visible:outline-none focus-visible:bg-scanonix-orange/5"
+              className="block px-3.5 py-2 text-sm font-semibold text-scanonix-orange transition-colors hover:bg-brand-soft focus-visible:outline-none focus-visible:bg-brand-soft"
               onClick={() => {
                 close();
                 onNavigate?.();
@@ -102,7 +102,7 @@ export function MobileNavCategories({ onNavigate }: { onNavigate?: () => void })
                 <li key={tool.href}>
                   <Link
                     href={tool.href}
-                    className="flex min-h-[48px] items-center rounded-xl px-4 text-base font-medium text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange"
+                    className="flex min-h-[48px] items-center rounded-xl px-4 text-base font-medium text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange"
                     onClick={onNavigate}
                   >
                     {tool.name}

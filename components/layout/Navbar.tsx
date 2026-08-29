@@ -12,6 +12,7 @@ import {
   NavbarCategoryDropdown,
 } from "@/components/layout/NavbarCategoryDropdown";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { ThemeControl } from "@/components/theme/ThemeControl";
 import { BrandLockup } from "@/components/ui/BrandLockup";
 import { NAV_PRICING_LINK } from "@/lib/constants";
 import { PLAY_STORE_URL } from "@/config/site";
@@ -38,7 +39,7 @@ function mobileLinkClass(active: boolean) {
   return `flex min-h-[52px] items-center rounded-xl px-4 text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 ${
     active
       ? "bg-scanonix-orange/10 text-scanonix-orange"
-      : "text-white hover:bg-white/5 hover:text-scanonix-orange"
+      : "text-foreground hover:bg-surface-muted hover:text-scanonix-orange"
   }`;
 }
 
@@ -46,17 +47,17 @@ function HamburgerIcon({ open }: { open: boolean }) {
   return (
     <span className="flex h-5 w-5 flex-col items-center justify-center gap-[5px]" aria-hidden="true">
       <span
-        className={`block h-0.5 w-5 rounded-full bg-white transition-transform duration-200 ${
+        className={`block h-0.5 w-5 rounded-full bg-foreground transition-transform duration-200 ${
           open ? "translate-y-[7px] rotate-45" : ""
         }`}
       />
       <span
-        className={`block h-0.5 w-5 rounded-full bg-white transition-opacity duration-200 ${
+        className={`block h-0.5 w-5 rounded-full bg-foreground transition-opacity duration-200 ${
           open ? "opacity-0" : ""
         }`}
       />
       <span
-        className={`block h-0.5 w-5 rounded-full bg-white transition-transform duration-200 ${
+        className={`block h-0.5 w-5 rounded-full bg-foreground transition-transform duration-200 ${
           open ? "-translate-y-[7px] -rotate-45" : ""
         }`}
       />
@@ -132,7 +133,7 @@ export function Navbar() {
       ? createPortal(
           <>
             <div
-              className="fixed inset-0 z-[90] bg-black/70 lg:hidden"
+              className="fixed inset-0 z-[90] bg-[var(--overlay)] lg:hidden"
               aria-hidden="true"
               onClick={closeMenu}
             />
@@ -141,10 +142,10 @@ export function Navbar() {
               role="dialog"
               aria-modal="true"
               aria-label="Mobile navigation"
-              className="fixed right-0 top-0 z-[100] flex h-dvh w-[min(88vw,380px)] flex-col border-l border-scanonix-orange/25 bg-[#0d0d0d] shadow-[-20px_0_60px_rgba(0,0,0,0.45)] lg:hidden"
+              className="fixed right-0 top-0 z-[100] flex h-dvh w-[min(88vw,380px)] flex-col border-l border-border bg-surface shadow-[var(--shadow-raised)] lg:hidden"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="border-b border-white/10 px-5 py-5">
+              <div className="border-b border-border px-5 py-5">
                 <Link
                   href="/"
                   className="inline-flex min-w-0 items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
@@ -155,7 +156,7 @@ export function Navbar() {
                 </Link>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-4">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-4">
                 <nav className="flex flex-col gap-4" aria-label="Mobile primary">
                   {showAuthenticated ? (
                     <Link
@@ -190,7 +191,7 @@ export function Navbar() {
                         type="button"
                         disabled={signingOut}
                         onClick={() => void handleMobileSignOut()}
-                        className="flex min-h-[52px] items-center rounded-xl px-4 text-left text-base font-medium text-red-300 transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                        className="flex min-h-[52px] items-center rounded-xl px-4 text-left text-base font-medium text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                       >
                         {signingOut ? "Signing out…" : "Sign out"}
                       </button>
@@ -206,17 +207,21 @@ export function Navbar() {
                       </Link>
                       <Link
                         href="/register"
-                        className="flex min-h-[52px] items-center justify-center rounded-xl bg-scanonix-orange px-4 text-base font-semibold text-white transition-colors hover:bg-scanonix-orange-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+                        className="flex min-h-[52px] items-center justify-center rounded-xl bg-brand px-4 text-base font-semibold text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
                         onClick={closeMenu}
                       >
                         Create account
                       </Link>
                     </>
                   )}
+
+                  <div className="border-t border-border pt-2">
+                    <ThemeControl variant="row" />
+                  </div>
                 </nav>
               </div>
 
-              <div className="border-t border-white/10 px-4 py-4">
+              <div className="shrink-0 border-t border-border px-4 py-4">
                 <div className="flex flex-col gap-1">
                   {MOBILE_FOOTER_LINKS.map((link) =>
                     link.external ? (
@@ -225,7 +230,7 @@ export function Navbar() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex min-h-[52px] items-center rounded-xl px-4 text-sm font-medium text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+                        className="flex min-h-[52px] items-center rounded-xl px-4 text-sm font-medium text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground"
                         onClick={closeMenu}
                       >
                         {link.label}
@@ -234,7 +239,7 @@ export function Navbar() {
                       <Link
                         key={link.href}
                         href={link.href}
-                        className="flex min-h-[52px] items-center rounded-xl px-4 text-sm font-medium text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+                        className="flex min-h-[52px] items-center rounded-xl px-4 text-sm font-medium text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground"
                         onClick={closeMenu}
                       >
                         {link.label}
@@ -254,12 +259,12 @@ export function Navbar() {
       <header
         className={`fixed inset-x-0 top-0 z-[var(--z-header)] transition-[background-color,border-color,box-shadow] duration-200 ${
           scrolled || menuOpen
-            ? "border-b border-white/6 bg-[#0a0908]/95 shadow-[var(--shadow-xs)] backdrop-blur-md"
+            ? "border-b border-border bg-background/95 shadow-[var(--shadow-xs)] backdrop-blur-md"
             : "border-b border-transparent bg-transparent"
         }`}
       >
         <div className="mx-auto h-16 max-w-[1440px] px-4 sm:px-6 lg:px-8">
-          {/* Mobile + tablet: logo left, hamburger right */}
+          {/* Mobile + tablet: logo left, theme + hamburger right */}
           <div className="flex h-full items-center justify-between gap-2 lg:hidden">
             <Link
               href="/"
@@ -270,16 +275,19 @@ export function Navbar() {
               <BrandLockup variant="compact" priority decorative />
             </Link>
 
-            <button
-              type="button"
-              className="nav-menu-trigger flex h-10 w-10 shrink-0 items-center justify-center"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation-panel"
-              onClick={toggleMenu}
-            >
-              <HamburgerIcon open={menuOpen} />
-            </button>
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              <ThemeControl variant="icon" />
+              <button
+                type="button"
+                className="nav-menu-trigger flex h-10 w-10 shrink-0 items-center justify-center"
+                aria-label={menuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-navigation-panel"
+                onClick={toggleMenu}
+              >
+                <HamburgerIcon open={menuOpen} />
+              </button>
+            </div>
           </div>
 
           {/* Desktop: three-column grid */}
@@ -304,7 +312,8 @@ export function Navbar() {
               </Link>
             </div>
 
-            <div className="flex items-center justify-end gap-3">
+            <div className="flex items-center justify-end gap-2 xl:gap-3">
+              <ThemeControl variant="icon" />
               {showAuthenticated ? (
                 <>
                   <Link
@@ -325,7 +334,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/register"
-                    className="inline-flex items-center justify-center rounded-lg bg-scanonix-orange px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-scanonix-orange-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+                    className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
                   >
                     Create account
                   </Link>

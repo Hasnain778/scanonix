@@ -1,7 +1,7 @@
 export function PageBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-      <div className="absolute inset-0 bg-[#0a0908]" />
+      <div className="absolute inset-0 bg-background" />
       <div className="noise-texture absolute inset-0" />
       <div className="absolute inset-0 grid-pattern opacity-40" />
 
@@ -12,7 +12,7 @@ export function PageBackground() {
         style={{ animationDelay: "-8s" }}
       />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0908]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
     </div>
   );
 }

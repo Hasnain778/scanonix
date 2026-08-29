@@ -21,7 +21,9 @@ function formatResetDate(value: string): string {
 export function UsageBanner({ summary, loading = false, className = "" }: UsageBannerProps) {
   if (loading) {
     return (
-      <div className={`rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-scanonix-muted ${className}`}>
+      <div
+        className={`rounded-xl border border-border bg-surface-raised px-4 py-3 text-sm text-foreground-muted shadow-[var(--shadow-soft)] ${className}`}
+      >
         Loading usage…
       </div>
     );
@@ -35,21 +37,23 @@ export function UsageBanner({ summary, loading = false, className = "" }: UsageB
 
   return (
     <div
-      className={`rounded-xl border px-4 py-3 text-sm ${
+      className={`rounded-xl border px-4 py-3 text-sm shadow-[var(--shadow-soft)] ${
         exhausted
-          ? "border-red-500/30 bg-red-500/10 text-red-200"
-          : "border-white/10 bg-black/20 text-scanonix-muted"
+          ? "border-red-500/35 bg-red-500/10 text-foreground"
+          : "border-border bg-surface-raised text-foreground-muted"
       } ${className}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p>
-          <span className="font-semibold capitalize text-white">{summary.plan}</span>
+          <span className="font-semibold capitalize text-foreground">{summary.plan}</span>
           {" · "}
-          {summary.usageCount} / {summary.limit} operations used
+          <span className={exhausted ? "text-foreground" : "text-foreground-secondary"}>
+            {summary.usageCount} / {summary.limit} operations used
+          </span>
           {" · "}
           {summary.remaining} remaining
         </p>
-        <p className="text-xs">Resets {formatResetDate(summary.resetAt)}</p>
+        <p className="text-xs text-foreground-muted">Resets {formatResetDate(summary.resetAt)}</p>
       </div>
       {exhausted ? (
         <p className="mt-2 text-xs">

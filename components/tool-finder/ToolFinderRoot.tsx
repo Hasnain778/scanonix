@@ -171,7 +171,7 @@ export function ToolFinderRoot() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="tool-finder-title"
-              className="pointer-events-auto w-[min(calc(100vw-2rem),24rem)] overflow-hidden rounded-3xl border border-white/10 bg-[#0c0c0c]/95 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:w-[min(calc(100vw-3rem),26rem)]"
+              className="pointer-events-auto w-[min(calc(100vw-2rem),24rem)] overflow-hidden rounded-3xl border border-border bg-surface-raised/95 shadow-[var(--shadow-raised)] backdrop-blur-xl sm:w-[min(calc(100vw-3rem),26rem)]"
               initial={{ opacity: 0, y: 16, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -180,23 +180,23 @@ export function ToolFinderRoot() {
                 ease: [0.16, 1, 0.3, 1],
               }}
             >
-              <div className="border-b border-white/8 bg-[radial-gradient(circle_at_top,rgba(255,106,0,0.12),transparent_58%)] px-5 py-4">
+              <div className="border-b border-border bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--scanonix-orange)_12%,transparent),transparent_58%)] px-5 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-scanonix-orange" aria-hidden="true" />
-                      <h2 id="tool-finder-title" className="text-base font-semibold text-white">
+                      <h2 id="tool-finder-title" className="text-base font-semibold text-foreground">
                         Tool Finder
                       </h2>
                     </div>
-                    <p className="mt-1 text-sm text-scanonix-muted">
+                    <p className="mt-1 text-sm text-foreground-muted">
                       Describe what you want to do in plain language.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={close}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-scanonix-muted transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-foreground-muted transition-colors hover:border-scanonix-orange/40 hover:bg-brand-soft hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
                     aria-label="Close Tool Finder"
                   >
                     <X className="h-4 w-4" />
@@ -216,7 +216,7 @@ export function ToolFinderRoot() {
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder='e.g. "Convert PDF to Word"'
-                    className="w-full resize-none rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-scanonix-muted focus:border-scanonix-orange/40 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/15"
+                    className="w-full resize-none rounded-2xl border border-border bg-input-background px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted focus:border-scanonix-orange/50 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
                     onKeyDown={(event) => {
                       if (event.key === "Enter" && !event.shiftKey) {
                         event.preventDefault();
@@ -228,7 +228,7 @@ export function ToolFinderRoot() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={!query.trim()}
-                    className="h-11 w-full rounded-2xl bg-scanonix-orange text-sm font-semibold text-white transition-colors hover:bg-scanonix-orange-light disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+                    className="h-11 w-full rounded-2xl bg-brand text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
                   >
                     Find Tool
                   </button>
@@ -236,7 +236,7 @@ export function ToolFinderRoot() {
 
                 {!submittedQuery ? (
                   <div className="space-y-2">
-                    <p className="text-xs font-medium uppercase tracking-wide text-scanonix-muted">
+                    <p className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
                       Try asking
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -248,7 +248,7 @@ export function ToolFinderRoot() {
                             setQuery(prompt);
                             submitSearch(prompt);
                           }}
-                          className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-scanonix-muted transition-colors hover:border-scanonix-orange/30 hover:bg-scanonix-orange/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+                          className="rounded-full border border-border bg-surface-muted px-3 py-1.5 text-xs text-foreground-secondary transition-colors hover:border-scanonix-orange/40 hover:bg-brand-soft hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
                         >
                           {prompt}
                         </button>
@@ -260,14 +260,14 @@ export function ToolFinderRoot() {
                 {result ? (
                   <div className="space-y-3">
                     {result.noMatch && result.matches.length === 0 ? (
-                      <div className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm text-scanonix-muted">
+                      <div className="rounded-2xl border border-border bg-surface-muted px-4 py-3 text-sm text-foreground-muted">
                         I couldn&apos;t find an exact match for that request. Here are similar tools
                         you might need:
                       </div>
                     ) : null}
 
                     {result.noMatch && result.matches.length > 0 ? (
-                      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+                      <div className="rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-sm text-foreground">
                         No exact match found. These are the closest tools:
                       </div>
                     ) : null}
@@ -287,7 +287,7 @@ export function ToolFinderRoot() {
 
                     {result.noMatch && result.suggestions.length > 0 ? (
                       <div className="space-y-2">
-                        <p className="text-xs font-medium uppercase tracking-wide text-scanonix-muted">
+                        <p className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
                           Suggested tools
                         </p>
                         <ul className="space-y-2">
@@ -296,7 +296,7 @@ export function ToolFinderRoot() {
                               <Link
                                 href={tool.href}
                                 onClick={handleOpenTool}
-                                className="flex items-center gap-3 rounded-xl border border-white/8 bg-black/30 px-3 py-2.5 text-sm text-white transition-colors hover:border-scanonix-orange/30 hover:bg-scanonix-orange/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+                                className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-foreground transition-colors hover:border-scanonix-orange/40 hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
                               >
                                 <ToolVisual slug={tool.id} icon={tool.icon} size="sm" />
                                 <span>{tool.name}</span>
@@ -344,7 +344,7 @@ function MatchCard({
   const categoryLabel = HOMEPAGE_CATEGORY_META[match.tool.category].label;
 
   return (
-    <li className="rounded-2xl border border-white/10 bg-black/30 p-4">
+    <li className="rounded-2xl border border-border bg-surface p-4">
       <div className="flex items-start gap-3">
         <div className="shrink-0">
           <ToolVisual slug={match.tool.id} icon={match.tool.icon} size="md" animated />
@@ -358,12 +358,12 @@ function MatchCard({
               </span>
             ) : null}
           </div>
-          <p className="mt-1 text-xs uppercase tracking-wide text-scanonix-muted">{categoryLabel}</p>
-          <p className="mt-2 text-sm leading-relaxed text-scanonix-muted">{match.explanation}</p>
+          <p className="mt-1 text-xs uppercase tracking-wide text-foreground-muted">{categoryLabel}</p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground-muted">{match.explanation}</p>
           <Link
             href={match.tool.href}
             onClick={onNavigate}
-            className="mt-3 inline-flex h-9 items-center justify-center rounded-xl bg-scanonix-orange px-4 text-xs font-semibold text-white transition-colors hover:bg-scanonix-orange-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
+            className="mt-3 inline-flex h-9 items-center justify-center rounded-xl bg-brand px-4 text-xs font-semibold text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50"
           >
             Open Tool
           </Link>

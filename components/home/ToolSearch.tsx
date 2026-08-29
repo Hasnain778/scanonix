@@ -33,7 +33,7 @@ function ResultLabel({ text, query }: { text: string; query: string }) {
   return (
     <>
       {highlighted.before}
-      <mark className="rounded bg-scanonix-orange/25 px-0.5 text-white">{highlighted.match}</mark>
+      <mark className="rounded bg-scanonix-orange/25 px-0.5 text-foreground">{highlighted.match}</mark>
       {highlighted.after}
     </>
   );
@@ -149,13 +149,13 @@ export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSea
         <div className="home-hero-search-pulse-glow pointer-events-none absolute inset-0 rounded-2xl opacity-40" aria-hidden="true" />
 
         <Search
-          className="pointer-events-none absolute left-4 top-1/2 z-[2] h-5 w-5 -translate-y-1/2 text-[#e8e8ec]"
+          className="pointer-events-none absolute left-4 top-1/2 z-[2] h-5 w-5 -translate-y-1/2 text-foreground-muted"
           aria-hidden="true"
         />
 
         {showCustomPlaceholder ? (
           <div
-            className="pointer-events-none absolute left-12 top-1/2 z-[2] flex -translate-y-1/2 items-center gap-0.5 text-base text-scanonix-muted sm:text-lg"
+            className="pointer-events-none absolute left-12 top-1/2 z-[2] flex -translate-y-1/2 items-center gap-0.5 text-base text-foreground-muted sm:text-lg"
             aria-hidden="true"
           >
             <span className="home-hero-search-cursor h-[1.1em] w-px bg-scanonix-orange/80" />
@@ -191,7 +191,7 @@ export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSea
           aria-expanded={open}
           aria-controls="home-tool-search-results"
           aria-autocomplete="list"
-          className="home-hero-search-input relative z-[1] w-full rounded-2xl border border-white/12 bg-[#0a0908]/90 py-2.5 pl-12 pr-4 text-base text-white focus:border-scanonix-orange/60 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/15 sm:py-3.5 sm:text-lg"
+          className="home-hero-search-input relative z-[1] w-full rounded-2xl border border-input-border bg-input-background/90 py-2.5 pl-12 pr-4 text-base text-foreground placeholder:text-foreground-muted focus:border-scanonix-orange/60 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/15 sm:py-3.5 sm:text-lg"
         />
       </div>
 
@@ -199,10 +199,10 @@ export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSea
         <div
           id="home-tool-search-results"
           role="listbox"
-          className="absolute z-40 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#111111] shadow-2xl shadow-black/40"
+          className="absolute z-40 mt-2 w-full overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-raised)]"
         >
           {results.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-scanonix-muted">
+            <p className="px-4 py-6 text-center text-sm text-foreground-muted">
               No tools found. Try &ldquo;compress PDF&rdquo;, &ldquo;translate&rdquo;, or &ldquo;remove background&rdquo;.
             </p>
           ) : (
@@ -216,17 +216,17 @@ export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSea
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => openResult(tool)}
                     className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors ${
-                      index === activeIndex ? "bg-scanonix-orange/10" : "hover:bg-white/[0.04]"
+                      index === activeIndex ? "bg-brand-soft" : "hover:bg-surface-muted"
                     }`}
                   >
                     <span className="mt-0.5 shrink-0">
                       <ToolVisual slug={tool.id} icon={tool.icon} size="sm" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-medium text-white">
+                      <span className="block text-sm font-medium text-foreground">
                         <ResultLabel text={tool.name} query={query} />
                       </span>
-                      <span className="mt-0.5 block text-xs text-scanonix-muted">
+                      <span className="mt-0.5 block text-xs text-foreground-muted">
                         {HOMEPAGE_CATEGORY_META[tool.category].label} · {tool.shortDescription}
                       </span>
                     </span>
@@ -244,7 +244,7 @@ export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSea
             <Link
               key={item.id}
               href={item.href}
-              className="home-hero-chip rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-neutral-200 sm:text-sm"
+              className="home-hero-chip rounded-full border border-border bg-surface-muted px-3 py-1.5 text-xs font-medium text-foreground-secondary sm:text-sm"
             >
               {item.name}
             </Link>

@@ -45,6 +45,7 @@
     "verify:seo-129g": "npx --yes tsx scripts/verify-seo-129g.ts",
     "verify:seo-129i": "npx --yes tsx scripts/verify-seo-129i.ts",
     "verify:seo-129k": "npx --yes tsx scripts/verify-seo-129k.ts",
+    "verify:homepage-category-130l4": "npx --yes tsx scripts/verify-homepage-category-discovery-130l4.ts",
     "verify:analytics-130b": "npx --yes tsx scripts/verify-analytics-130b.ts",
     "verify:analytics-130c-step1": "npx --yes tsx scripts/verify-analytics-130c-step1.ts",
     "verify:analytics-130c-step2": "npx --yes tsx scripts/verify-analytics-130c-step2.ts",

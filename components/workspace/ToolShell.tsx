@@ -47,7 +47,7 @@ export function ToolPageHeader({
       ) : (
         <Link
           href="/tools"
-          className="home-btn-interactive mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-scanonix-muted transition-all hover:bg-white/5 hover:text-scanonix-orange"
+          className="home-btn-interactive mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-muted transition-all hover:bg-surface-muted hover:text-scanonix-orange"
         >
           <svg
             className="h-4 w-4"
@@ -69,15 +69,15 @@ export function ToolPageHeader({
 
       <div className="flex items-start gap-5">
         {icon && (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl glass text-scanonix-orange glow-orange-sm">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-surface text-scanonix-orange shadow-[var(--shadow-soft)] glow-orange-sm">
             {icon}
           </div>
         )}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
             {title}
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-scanonix-muted sm:text-lg">
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground-muted sm:text-lg">
             {description}
           </p>
         </div>

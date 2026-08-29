@@ -38,13 +38,13 @@ const SOCIAL_ICON: Record<(typeof SOCIAL_LINKS)[number]["platform"], typeof Link
 };
 
 const SOCIAL_LINK_BASE =
-  "footer-social-link inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-white/80 transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-none";
+  "footer-social-link inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface text-foreground-muted transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-none";
 
 const SOCIAL_LINK_HOVER: Record<(typeof SOCIAL_LINKS)[number]["platform"], string> = {
   LinkedIn:
-    "hover:border-[#0A66C2]/55 hover:bg-[#0A66C2]/10 hover:text-[#5eb3ff] hover:shadow-[0_0_18px_rgba(10,102,194,0.32)] focus-visible:ring-2 focus-visible:ring-[#0A66C2]/50",
+    "hover:border-[#0A66C2]/55 hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] hover:shadow-[0_0_18px_rgba(10,102,194,0.32)] focus-visible:ring-2 focus-visible:ring-[#0A66C2]/50",
   GitHub:
-    "hover:border-scanonix-orange/55 hover:bg-scanonix-orange/10 hover:text-white hover:shadow-[0_0_18px_rgba(255,106,0,0.32)] focus-visible:ring-2 focus-visible:ring-scanonix-orange/50",
+    "hover:border-scanonix-orange/55 hover:bg-scanonix-orange/10 hover:text-foreground hover:shadow-[0_0_18px_rgba(255,106,0,0.32)] focus-visible:ring-2 focus-visible:ring-scanonix-orange/50",
 };
 
 export function FooterSocialLinks() {

@@ -51,7 +51,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd) }}
       />
       <Navbar />
-      <main className="relative z-10 overflow-x-hidden bg-[#0a0a0a]">
+      <main className="relative z-10 overflow-x-hidden bg-background">
         <HomeHero />
         <HomeToolDiscovery tools={popularTools} />
         <ToolCategoriesSection />

@@ -1,8 +1,9 @@
 /**
- * Generates app/favicon-source.png and app/favicon.ico (Phase 130G-9 / approved O2).
+ * Generates app/favicon-source.png and app/favicon.ico.
  *
- * Pipeline: exact O2 optical crop from app/icon.png → Lanczos3 downsample → RGBA ICO.
- * No posterization, palette reduction, nearest-neighbour final render, or geometry edits.
+ * Phase 130L-4R6: O2 optical crop from app/icon.png → punch near-black to true alpha →
+ * optical fill on transparent canvas → Lanczos3 downsample → RGBA ICO.
+ * Keeps O2_CROP + Lanczos3 + ensureAlpha (no posterization / nearest final).
  *
  * Run: npm run generate:favicon
  */
@@ -49,7 +50,7 @@ export async function extractO2Master(sourceBuf) {
 }
 
 /**
- * Render one favicon frame from app/icon.png via approved O2 crop + Lanczos3.
+ * Legacy fill-frame helper (tiled). Prefer generateFaviconAssets / 130L-4R6 transparent path.
  * ensureAlpha() is required: to-ico reads RGBA; RGB-only PNGs corrupt ICO BMP frames.
  */
 export async function renderO2Frame(sourceBuf, size) {
@@ -82,28 +83,23 @@ export async function buildFaviconSourcePreview(sourceBuf) {
     .toBuffer();
 }
 
+/** 130L-4R6 transparent standalone favicon + mark generation. */
 export async function generateFaviconAssets({ write = true } = {}) {
-  const sourceBuf = await loadBrandSource();
-  const faviconSource = await buildFaviconSourcePreview(sourceBuf);
-
-  const frames = {};
-  for (const size of ICO_SIZES) {
-    frames[size] = await renderO2Frame(sourceBuf, size);
-  }
-
-  const icoBuffer = await toIco(ICO_SIZES.map((s) => frames[s]));
-
+  const { generateStandaloneMarkAndFavicon } = await import(
+    "./generate-standalone-mark-130l4r6.mjs"
+  );
+  const result = await generateStandaloneMarkAndFavicon({ write });
   if (write) {
-    writeFileSync(faviconSourcePath, faviconSource);
-    writeFileSync(outputPath, icoBuffer);
-    console.log(`Generated ${faviconSourcePath} (256×256 O2 optical master preview)`);
-    for (const size of ICO_SIZES) {
-      console.log(`Frame ${size}×${size}: ${frames[size].length} bytes (Lanczos3, RGBA)`);
-    }
-    console.log(`Generated ${outputPath} (${icoBuffer.length} bytes, sizes: ${ICO_SIZES.join(", ")})`);
+    console.log(`Generated ${faviconSourcePath} (transparent O2 mark preview)`);
+    console.log(
+      `Generated ${outputPath} (${result.icoBuffer.length} bytes, sizes: ${ICO_SIZES.join(", ")})`,
+    );
   }
-
-  return { faviconSource, frames, icoBuffer };
+  return {
+    faviconSource: result.faviconSource,
+    frames: result.frames,
+    icoBuffer: result.icoBuffer,
+  };
 }
 
 const isMain =

@@ -15,15 +15,15 @@ interface ButtonProps {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-scanonix-orange text-white hover:bg-scanonix-orange-light border border-scanonix-orange/20 hover:shadow-[var(--shadow-orange-sm)]",
+    "bg-brand text-on-brand hover:bg-brand-hover border border-scanonix-orange/20 hover:shadow-[var(--shadow-orange-sm)]",
   secondary:
-    "bg-[var(--scanonix-bg-elevated)] text-white border border-white/12 hover:border-[var(--scanonix-orange-muted)]",
+    "bg-surface-raised text-foreground border border-border hover:border-scanonix-orange/40 hover:bg-surface-muted",
   ghost:
-    "bg-transparent text-scanonix-muted hover:bg-white/5 hover:text-white border border-transparent",
+    "bg-transparent text-foreground-muted hover:bg-surface-muted hover:text-foreground border border-transparent",
   outline:
-    "bg-transparent text-white border border-white/12 hover:border-scanonix-orange/50 hover:bg-scanonix-orange/5",
+    "bg-transparent text-foreground border border-border hover:border-scanonix-orange/50 hover:bg-brand-soft",
   glass:
-    "glass text-white border-white/10 hover:border-scanonix-orange/35 hover:bg-white/5",
+    "glass text-foreground border-border hover:border-scanonix-orange/35 hover:bg-surface-muted",
   pro:
     "bg-scanonix-orange/10 text-scanonix-orange border border-scanonix-orange/30 hover:bg-scanonix-orange/15 hover:border-scanonix-orange/45",
 };

@@ -144,8 +144,8 @@ export function ImageCompressorTool() {
                   />
                 </div>
               ) : null}
-              <div className="rounded-xl border border-scanonix-border bg-black/30 p-4">
-                <p className="text-sm font-medium text-white">{file.name}</p>
+              <div className="rounded-xl border border-border bg-surface-muted p-4">
+                <p className="text-sm font-medium text-foreground">{file.name}</p>
                 <p className="mt-1 text-sm text-scanonix-muted">{formatFileSize(file.size)}</p>
               </div>
             </div>
@@ -153,7 +153,7 @@ export function ImageCompressorTool() {
 
           <div className="glass-card rounded-2xl p-5 sm:p-6">
             <div className="flex items-center justify-between gap-3">
-              <label htmlFor="compress-quality" className="text-sm font-medium text-white">
+              <label htmlFor="compress-quality" className="text-sm font-medium text-foreground">
                 Quality
               </label>
               <span className="text-sm text-scanonix-orange">{quality}% · {qualityLabel}</span>

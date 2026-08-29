@@ -69,7 +69,7 @@ export function MetadataCleanerTool() {
 
           {file ? (
             <p className="text-sm text-scanonix-muted">
-              Selected: <span className="text-white">{file.name}</span>
+              Selected: <span className="text-foreground">{file.name}</span>
             </p>
           ) : null}
 

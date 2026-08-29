@@ -133,11 +133,11 @@ export function SecurityScanTool() {
     >
       <div className="flex items-center gap-2">
         <Shield className="h-4 w-4 text-scanonix-orange" aria-hidden="true" />
-        <span className="text-sm font-medium text-white">Website Scanner</span>
+        <span className="text-sm font-medium text-foreground">Website Scanner</span>
         <ProBadge />
       </div>
 
-      <section className="scan-tool-card overflow-hidden rounded-3xl border border-white/10 bg-[#0c0c0c]/70 backdrop-blur-sm">
+      <section className="scan-tool-card overflow-hidden rounded-3xl border border-border bg-surface/95 backdrop-blur-sm">
         <AnimatePresence mode="wait">
           {isBusy ? (
             <motion.div
@@ -175,10 +175,10 @@ export function SecurityScanTool() {
               className="p-8 sm:p-10"
             >
               <div className="mb-8 text-center sm:text-left">
-                <h2 className="text-2xl font-semibold text-white sm:text-3xl">
+                <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
                   Start scan
                 </h2>
-                <p className="mt-2 text-base leading-relaxed text-scanonix-muted">
+                <p className="mt-2 text-base leading-relaxed text-foreground-muted">
                   Enter a website URL to check for malware, phishing, and security issues.
                 </p>
               </div>
@@ -187,9 +187,9 @@ export function SecurityScanTool() {
                 <label htmlFor="website-target" className="sr-only">
                   Website URL
                 </label>
-                <div className="scan-url-input flex min-h-[3.75rem] items-center gap-3 rounded-2xl border border-white/10 bg-black/40 px-5 transition-all focus-within:border-scanonix-orange/40 focus-within:ring-2 focus-within:ring-scanonix-orange/15 sm:min-h-[4.25rem] sm:px-6">
+                <div className="scan-url-input flex min-h-[3.75rem] items-center gap-3 rounded-2xl border border-input bg-input px-5 transition-all focus-within:border-scanonix-orange/40 focus-within:ring-2 focus-within:ring-scanonix-orange/15 sm:min-h-[4.25rem] sm:px-6">
                   <svg
-                    className="h-5 w-5 shrink-0 text-scanonix-muted"
+                    className="h-5 w-5 shrink-0 text-foreground-muted"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -205,7 +205,7 @@ export function SecurityScanTool() {
                     placeholder="https://example.com"
                     value={websiteTarget}
                     onChange={(event) => setWebsiteTarget(event.target.value)}
-                    className="w-full bg-transparent text-lg text-white placeholder:text-scanonix-muted focus:outline-none"
+                    className="w-full bg-transparent text-lg text-foreground placeholder:text-foreground-muted focus:outline-none"
                     onKeyDown={(event) => {
                       if (event.key === "Enter" && canSubmit) {
                         void handleRunScan();
@@ -216,14 +216,25 @@ export function SecurityScanTool() {
               </div>
 
               <div className="mt-10">
-                <ActionButton
-                  size="lg"
-                  className="h-14 w-full text-base sm:text-lg"
-                  disabled={!canSubmit}
-                  onClick={() => void handleRunScan()}
-                >
-                  {showProGate ? "Upgrade to Pro to scan" : "Start Scan"}
-                </ActionButton>
+                {showProGate ? (
+                  <button
+                    type="button"
+                    disabled
+                    aria-disabled="true"
+                    className="focus-ring relative inline-flex h-14 w-full cursor-not-allowed items-center justify-center rounded-xl border border-scanonix-orange/30 bg-scanonix-orange/15 px-8 text-base font-semibold text-foreground sm:text-lg"
+                  >
+                    Upgrade to Pro to scan
+                  </button>
+                ) : (
+                  <ActionButton
+                    size="lg"
+                    className="h-14 w-full text-base sm:text-lg"
+                    disabled={!canSubmit}
+                    onClick={() => void handleRunScan()}
+                  >
+                    Start Scan
+                  </ActionButton>
+                )}
               </div>
 
               {showProGate ? (

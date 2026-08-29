@@ -29,14 +29,14 @@ export function ProSecurityGate({
   toolSlug,
 }: ProSecurityGateProps) {
   return (
-    <div className="rounded-2xl border border-scanonix-orange/30 bg-gradient-to-br from-scanonix-orange/10 via-[#141414] to-[#0e0e0e] p-6 sm:p-8">
+    <div className="rounded-2xl border border-scanonix-orange/30 bg-gradient-to-br from-scanonix-orange/10 via-surface-raised to-surface p-6 sm:p-8">
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-orange/30 bg-scanonix-orange/15 text-scanonix-orange">
           <Shield className="h-6 w-6" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-lg font-semibold text-white">{title}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{title}</h3>
             <ProBadge />
           </div>
           <p className="mt-2 text-sm leading-relaxed text-scanonix-muted">{description}</p>

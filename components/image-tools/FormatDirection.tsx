@@ -20,7 +20,7 @@ export function FormatDirection({ from, to, size = "md" }: FormatDirectionProps)
   return (
     <div className="inline-flex items-center gap-2">
       <span
-        className={`inline-flex items-center justify-center rounded-md border border-white/10 bg-white/[0.04] font-mono font-semibold tracking-wide text-white ${styles.box}`}
+        className={`inline-flex items-center justify-center rounded-md border border-border bg-surface-muted font-mono font-semibold tracking-wide text-foreground ${styles.box}`}
       >
         {FORMAT_LABELS[from]}
       </span>

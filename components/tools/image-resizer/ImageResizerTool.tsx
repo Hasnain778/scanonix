@@ -186,8 +186,8 @@ export function ImageResizerTool() {
                   />
                 </div>
               ) : null}
-              <div className="rounded-xl border border-scanonix-border bg-black/30 p-4">
-                <p className="text-sm font-medium text-white">{file.name}</p>
+              <div className="rounded-xl border border-border bg-surface-muted p-4">
+                <p className="text-sm font-medium text-foreground">{file.name}</p>
                 <p className="mt-1 text-sm text-scanonix-muted">{formatFileSize(file.size)}</p>
                 {naturalSize ? (
                   <p className="mt-1 text-sm text-scanonix-muted">
@@ -200,7 +200,7 @@ export function ImageResizerTool() {
 
           <div className="glass-card grid gap-4 rounded-2xl p-5 sm:grid-cols-2 sm:p-6">
             <label className="block space-y-2">
-              <span className="text-sm font-medium text-white">Width (px)</span>
+              <span className="text-sm font-medium text-foreground">Width (px)</span>
               <input
                 type="number"
                 min={1}
@@ -208,11 +208,11 @@ export function ImageResizerTool() {
                 value={width}
                 onChange={(event) => handleWidthChange(event.target.value)}
                 disabled={isBusy}
-                className="w-full rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white"
+                className="input-field"
               />
             </label>
             <label className="block space-y-2">
-              <span className="text-sm font-medium text-white">Height (px)</span>
+              <span className="text-sm font-medium text-foreground">Height (px)</span>
               <input
                 type="number"
                 min={1}
@@ -220,7 +220,7 @@ export function ImageResizerTool() {
                 value={height}
                 onChange={(event) => handleHeightChange(event.target.value)}
                 disabled={isBusy}
-                className="w-full rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white"
+                className="input-field"
               />
             </label>
             <label className="flex items-center gap-2 text-sm text-scanonix-muted sm:col-span-2">

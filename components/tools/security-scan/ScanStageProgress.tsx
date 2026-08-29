@@ -31,12 +31,12 @@ export function ScanStageProgress({
         <p className="text-sm text-scanonix-muted">
           {complete ? "Scan complete" : "Scanning in progress"}
         </p>
-        <p className="scan-progress-percent mt-2 text-5xl font-semibold tracking-tight text-white sm:text-6xl">
+        <p className="scan-progress-percent mt-2 text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
           {percent}%
         </p>
       </div>
 
-      <div className="relative h-3 overflow-hidden rounded-full bg-white/8">
+      <div className="relative h-3 overflow-hidden rounded-full bg-surface-muted">
         <motion.div
           className="scan-progress-bar absolute inset-y-0 left-0 rounded-full bg-linear-to-r from-scanonix-orange to-scanonix-orange-light"
           initial={{ width: 0 }}
@@ -70,16 +70,16 @@ export function ScanStageProgress({
                   ? "border-scanonix-orange/30 bg-scanonix-orange/8 scan-stage-active"
                   : isDone
                     ? "border-emerald-500/20 bg-emerald-500/5"
-                    : "border-white/6 bg-white/[0.02]"
+                    : "border-border bg-surface-muted"
               }`}
             >
               <span
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-all ${
                   isDone
-                    ? "bg-emerald-500/20 text-emerald-300"
+                    ? "bg-emerald-500/20 text-emerald-600"
                     : isActive
                       ? "bg-scanonix-orange/20 text-scanonix-orange"
-                      : "bg-white/6 text-scanonix-muted"
+                      : "bg-foreground/10 text-foreground-muted"
                 }`}
                 aria-hidden="true"
               >
@@ -90,16 +90,16 @@ export function ScanStageProgress({
                 ) : isActive ? (
                   <span className="scan-stage-dot h-2 w-2 rounded-full bg-scanonix-orange" />
                 ) : (
-                  <span className="h-2 w-2 rounded-full bg-white/20" />
+                  <span className="h-2 w-2 rounded-full bg-foreground/25" />
                 )}
               </span>
               <span
                 className={`text-base ${
                   isDone
-                    ? "text-emerald-100"
+                    ? "font-medium text-emerald-600"
                     : isActive
-                      ? "font-medium text-white"
-                      : "text-scanonix-muted"
+                      ? "font-medium text-foreground"
+                      : "text-foreground-muted"
                 }`}
               >
                 {stage}

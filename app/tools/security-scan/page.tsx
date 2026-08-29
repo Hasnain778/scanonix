@@ -49,10 +49,10 @@ export default async function SecurityScanPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ToolBreadcrumbs title={tool.h1} />
         <header className="mb-8 max-w-3xl">
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {tool.h1}
           </h1>
-          <p className="mt-3 text-base leading-relaxed text-scanonix-muted sm:text-lg">
+          <p className="mt-3 text-base leading-relaxed text-foreground-muted sm:text-lg">
             {tool.pageDescription}
           </p>
         </header>

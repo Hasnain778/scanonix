@@ -242,9 +242,9 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
 
   return (
     <div className="space-y-8">
-      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+      <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <FormatDirection from={config.from} to={config.to} size="lg" />
-        <p className="mt-4 text-sm text-scanonix-muted">
+        <p className="mt-4 text-sm text-foreground-muted">
           Supports {config.acceptExtensions.replaceAll(",", ", ")} · Output {config.outputLabel}
         </p>
       </div>
@@ -298,10 +298,10 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
           ) : null}
 
           <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-            <div className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
               {(config.to === "jpg" || config.to === "webp") && (
                 <div>
-                  <label htmlFor="quality" className="text-sm font-medium text-white">
+                  <label htmlFor="quality" className="text-sm font-medium text-foreground">
                     Quality ({quality}%)
                   </label>
                   <input
@@ -321,7 +321,7 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
               )}
               {needsBackground ? (
                 <div>
-                  <label htmlFor="background-color" className="text-sm font-medium text-white">
+                  <label htmlFor="background-color" className="text-sm font-medium text-foreground">
                     Background colour
                   </label>
                   <div className="mt-3 flex items-center gap-3">
@@ -334,9 +334,9 @@ export function ImageFormatConverterTool({ config }: ImageFormatConverterToolPro
                         invalidateResult();
                         setBackgroundColor(event.target.value);
                       }}
-                      className="h-10 w-14 cursor-pointer rounded-lg border border-white/10 bg-transparent"
+                      className="h-10 w-14 cursor-pointer rounded-lg border border-border bg-transparent"
                     />
-                    <span className="font-mono text-sm text-scanonix-muted">{backgroundColor}</span>
+                    <span className="font-mono text-sm text-foreground-muted">{backgroundColor}</span>
                   </div>
                 </div>
               ) : null}

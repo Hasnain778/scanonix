@@ -215,16 +215,16 @@ export function PdfToWordTool() {
 
         {uploadedPdf && (
           <>
-            <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-scanonix-orange">
                   <PdfDropIcon />
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-base font-semibold text-white">
+                  <p className="truncate text-base font-semibold text-foreground">
                     {uploadedPdf.file.name}
                   </p>
-                  <p className="mt-1 text-sm text-scanonix-muted">
+                  <p className="mt-1 text-sm text-foreground-muted">
                     {formatFileSize(uploadedPdf.file.size)} ·{" "}
                     {uploadedPdf.pageCount} page
                     {uploadedPdf.pageCount === 1 ? "" : "s"}
@@ -243,7 +243,7 @@ export function PdfToWordTool() {
               )}
             </div>
 
-            <div className="rounded-xl border border-scanonix-border/80 bg-black/30 px-4 py-3 text-sm text-scanonix-muted">
+            <div className="rounded-xl border border-border bg-surface-muted px-4 py-3 text-sm text-foreground-muted">
               <p>
                 Conversion uses CloudConvert for high-fidelity PDF→Word output.
                 Complex layouts may still need light editing afterward.
@@ -251,9 +251,9 @@ export function PdfToWordTool() {
             </div>
 
             {docxBlob && status === "success" && (
-              <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-                <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
-                <p className="text-sm text-scanonix-muted">
+              <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+                <h2 className="mb-2 text-lg font-semibold text-foreground">Results</h2>
+                <p className="text-sm text-foreground-muted">
                   Output size: {formatFileSize(docxBlob.size)}
                 </p>
 

@@ -21,7 +21,7 @@ export function SecurityToolWorkspace({
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/8 bg-[#0e0e0e] p-8 text-center text-scanonix-muted">
+      <div className="rounded-2xl border border-border bg-surface p-8 text-center text-foreground-muted">
         Loading security workspace…
       </div>
     );
@@ -33,7 +33,7 @@ export function SecurityToolWorkspace({
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Shield className="h-4 w-4 text-scanonix-orange" aria-hidden="true" />
-        <span className="text-sm font-medium text-white">{toolName}</span>
+        <span className="text-sm font-medium text-foreground">{toolName}</span>
         <ProBadge />
       </div>
 

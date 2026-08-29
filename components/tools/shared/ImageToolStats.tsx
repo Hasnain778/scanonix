@@ -30,13 +30,13 @@ export function ImageToolStats({
 
   return (
     <div className="grid gap-4 sm:grid-cols-3">
-      <div className="rounded-xl border border-scanonix-border bg-black/30 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-scanonix-muted">
+      <div className="rounded-xl border border-border bg-surface-muted p-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-foreground-muted">
           Original size
         </p>
-        <p className="mt-2 text-xl font-bold text-white">{formatFileSize(originalSize)}</p>
+        <p className="mt-2 text-xl font-bold text-foreground">{formatFileSize(originalSize)}</p>
         {showDimensions && originalWidth && originalHeight ? (
-          <p className="mt-1 text-xs text-scanonix-muted">
+          <p className="mt-1 text-xs text-foreground-muted">
             {originalWidth} × {originalHeight}px
           </p>
         ) : null}
@@ -45,9 +45,9 @@ export function ImageToolStats({
         <p className="text-xs font-semibold uppercase tracking-wider text-scanonix-orange">
           Output size
         </p>
-        <p className="mt-2 text-xl font-bold text-white">{formatFileSize(outputSize)}</p>
+        <p className="mt-2 text-xl font-bold text-foreground">{formatFileSize(outputSize)}</p>
         {showDimensions && width && height ? (
-          <p className="mt-1 text-xs text-scanonix-muted">
+          <p className="mt-1 text-xs text-foreground-muted">
             {width} × {height}px
           </p>
         ) : null}
@@ -56,17 +56,17 @@ export function ImageToolStats({
         className={`rounded-xl border p-4 ${
           sizeReduced
             ? "border-green-500/30 bg-green-500/10"
-            : "border-scanonix-border bg-black/30"
+            : "border-border bg-surface-muted"
         }`}
       >
         <p
           className={`text-xs font-semibold uppercase tracking-wider ${
-            sizeReduced ? "text-green-400" : "text-scanonix-muted"
+            sizeReduced ? "text-green-600" : "text-foreground-muted"
           }`}
         >
           {sizeReduced ? "Saved" : "Change"}
         </p>
-        <p className="mt-2 text-xl font-bold text-white">
+        <p className="mt-2 text-xl font-bold text-foreground">
           {sizeReduced ? `${savings}%` : formatFileSize(Math.abs(outputSize - originalSize))}
         </p>
       </div>

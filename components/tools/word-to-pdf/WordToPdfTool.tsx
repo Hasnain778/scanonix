@@ -137,9 +137,9 @@ export function WordToPdfTool() {
           />
 
           {file ? (
-            <div className="rounded-xl border border-scanonix-border bg-black/30 px-4 py-3 text-sm text-scanonix-muted">
-              Selected: <span className="font-medium text-white">{file.name}</span>
-              <span className="mx-2 text-scanonix-muted/50">·</span>
+            <div className="rounded-xl border border-border bg-surface-muted px-4 py-3 text-sm text-foreground-muted">
+              Selected: <span className="font-medium text-foreground">{file.name}</span>
+              <span className="mx-2 text-foreground-muted/50">·</span>
               {formatFileSize(file.size)}
             </div>
           ) : null}
@@ -166,8 +166,8 @@ export function WordToPdfTool() {
         >
           {message ? <p className="mb-3 text-sm text-green-400">{message}</p> : null}
           {resultBlob ? (
-            <p className="text-sm text-scanonix-muted">
-              Output size: <span className="text-white">{formatFileSize(resultBlob.size)}</span>
+            <p className="text-sm text-foreground-muted">
+              Output size: <span className="text-foreground">{formatFileSize(resultBlob.size)}</span>
             </p>
           ) : null}
         </ToolResultsPanel>

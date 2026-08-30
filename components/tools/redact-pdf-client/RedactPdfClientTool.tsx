@@ -509,31 +509,31 @@ export function RedactPdfClientTool({
             icon={<PdfDropIcon />}
           />
           <PrivacyNotice message={REDACT_PRIVACY_COPY} />
-          <p className="text-sm text-scanonix-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
-          <p className="text-sm text-scanonix-muted">{REDACT_SANITIZATION_LIMITATION_COPY}</p>
+          <p className="text-sm text-foreground-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
+          <p className="text-sm text-foreground-muted">{REDACT_SANITIZATION_LIMITATION_COPY}</p>
         </>
       )}
 
       {uploadedPdf && currentPage && !hasResult && (
         <div
           data-redact-pdf-workspace
-          className="overflow-hidden rounded-xl border border-scanonix-border/80 bg-[#0a0a0a]"
+          className="overflow-hidden rounded-xl border border-border/80 bg-surface"
         >
           <div
             data-redact-pdf-header
-            className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-scanonix-border/80 px-3 py-2 sm:px-4"
+            className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/80 px-3 py-2 sm:px-4"
           >
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <span className="shrink-0 text-sm font-semibold text-white">
+              <span className="shrink-0 text-sm font-semibold text-foreground">
                 Redact PDF
               </span>
               <span
-                className="truncate text-xs text-scanonix-muted sm:text-sm"
+                className="truncate text-xs text-foreground-muted sm:text-sm"
                 title={uploadedPdf.file.name}
               >
                 {uploadedPdf.file.name}
               </span>
-              <span className="hidden text-xs text-scanonix-muted sm:inline">
+              <span className="hidden text-xs text-foreground-muted sm:inline">
                 · {formatFileSize(uploadedPdf.file.size)}
               </span>
             </div>
@@ -553,7 +553,7 @@ export function RedactPdfClientTool({
               </ActionButton>
               <span
                 data-redact-page-indicator
-                className="min-w-[5rem] text-center text-xs text-scanonix-muted sm:text-sm"
+                className="min-w-[5rem] text-center text-xs text-foreground-muted sm:text-sm"
               >
                 Page {currentPageIndex + 1} / {pageCount}
               </span>
@@ -587,7 +587,7 @@ export function RedactPdfClientTool({
               data-redact-signature-warning
               className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-3"
             >
-              <p className="text-sm text-amber-100/90">
+              <p className="text-sm text-foreground">
                 {DIGITAL_SIGNATURE_REDACT_WARNING}
               </p>
             </div>
@@ -595,11 +595,11 @@ export function RedactPdfClientTool({
 
           <div
             data-redact-toolbar
-            className="flex flex-wrap items-center gap-2 border-b border-scanonix-border/80 px-3 py-2 sm:px-4"
+            className="flex flex-wrap items-center gap-2 border-b border-border/80 px-3 py-2 sm:px-4"
           >
             <span
               data-redact-draw-mode
-              className="rounded-lg border border-scanonix-orange bg-scanonix-orange/10 px-3 py-1.5 text-xs font-medium text-white"
+              className="rounded-lg border border-scanonix-orange bg-scanonix-orange/10 px-3 py-1.5 text-xs font-medium text-foreground"
             >
               Redact area
             </span>
@@ -666,7 +666,7 @@ export function RedactPdfClientTool({
               </ActionButton>
               <span
                 data-redact-zoom-indicator
-                className="min-w-[3.5rem] text-center text-xs text-scanonix-muted"
+                className="min-w-[3.5rem] text-center text-xs text-foreground-muted"
               >
                 {Math.round(zoom * 100)}%
               </span>
@@ -703,15 +703,15 @@ export function RedactPdfClientTool({
           </div>
 
           <div className="space-y-3 px-3 py-3 sm:px-4">
-            <p className="text-xs text-scanonix-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
-            <p className="text-xs text-scanonix-muted">{REDACT_RASTER_QUALITY_COPY}</p>
-            <p className="text-xs text-scanonix-muted">
+            <p className="text-xs text-foreground-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
+            <p className="text-xs text-foreground-muted">{REDACT_RASTER_QUALITY_COPY}</p>
+            <p className="text-xs text-foreground-muted">
               {REDACT_SANITIZATION_LIMITATION_COPY}
             </p>
             {shouldShowFormAnnotationWarning(uploadedPdf.document) && (
               <p
                 data-redact-form-warning
-                className="text-xs text-amber-100/90"
+                className="text-xs text-foreground"
               >
                 {REDACT_FORM_ANNOTATION_WARNING}
               </p>
@@ -721,7 +721,7 @@ export function RedactPdfClientTool({
           <div
             ref={previewContainerRef}
             data-redact-pdf-preview-panel
-            className="bg-[#121212] p-4 sm:p-6"
+            className="bg-surface-muted p-4 sm:p-6"
           >
             <RedactPdfPreview
               pageEntry={currentPage}
@@ -738,7 +738,7 @@ export function RedactPdfClientTool({
             />
           </div>
 
-          <div className="border-t border-scanonix-border/80 p-4 sm:p-5">
+          <div className="border-t border-border/80 p-4 sm:p-5">
             <ActionButton
               size="lg"
               data-redact-export-button
@@ -784,7 +784,7 @@ export function RedactPdfClientTool({
           onStartOver={resetWorkspace}
           startOverLabel="Start over"
         >
-          <p className="text-sm text-scanonix-muted">
+          <p className="text-sm text-foreground-muted">
             {resultFilename} · {formatFileSize(resultSize)}
           </p>
         </ToolResultsPanel>

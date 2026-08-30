@@ -27,24 +27,24 @@ export function RedactionsDrawer({
   return (
     <div
       data-redactions-drawer
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-scanonix-border bg-scanonix-surface p-4 shadow-2xl sm:static sm:rounded-xl sm:border sm:shadow-none"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface p-4 shadow-2xl sm:static sm:rounded-xl sm:border sm:shadow-none"
     >
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-white">
+        <h3 className="text-sm font-semibold text-foreground">
           Redactions ({items.length})
         </h3>
         <button
           type="button"
           data-redactions-drawer-close
           onClick={onClose}
-          className="rounded-lg border border-scanonix-border px-3 py-1.5 text-xs text-scanonix-muted hover:text-white"
+          className="rounded-lg border border-border px-3 py-1.5 text-xs text-foreground-muted hover:text-foreground"
         >
           Close
         </button>
       </div>
 
       {items.length === 0 ? (
-        <p className="text-sm text-scanonix-muted">
+        <p className="text-sm text-foreground-muted">
           Draw rectangles on the PDF to add redactions.
         </p>
       ) : (
@@ -63,8 +63,8 @@ export function RedactionsDrawer({
                   }}
                   className={`w-full rounded-xl border px-3 py-2 text-left text-sm transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 ${
                     selected
-                      ? "border-scanonix-orange bg-scanonix-orange/10 text-white"
-                      : "border-scanonix-border bg-black/30 text-scanonix-muted hover:text-white"
+                      ? "border-scanonix-orange bg-scanonix-orange/10 text-foreground"
+                      : "border-border bg-surface-muted text-foreground-muted hover:text-foreground"
                   }`}
                 >
                   {item.label}

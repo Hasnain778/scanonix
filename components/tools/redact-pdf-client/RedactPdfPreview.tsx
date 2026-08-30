@@ -185,7 +185,7 @@ export function RedactPdfPreview({
         <div
           data-redact-page-overlay-root
           data-redact-draw-mode={drawModeActive ? "true" : "false"}
-          className="relative mx-auto border border-scanonix-border bg-white shadow-lg"
+          className="relative mx-auto border border-border bg-white shadow-lg"
           style={{
             width: displaySize.width,
             height: displaySize.height,
@@ -193,12 +193,12 @@ export function RedactPdfPreview({
           }}
         >
           {isRendering && (
-            <div className="flex min-h-[420px] items-center justify-center bg-scanonix-surface text-sm text-scanonix-muted">
+            <div className="flex min-h-[420px] items-center justify-center bg-surface-muted text-sm text-foreground-muted">
               Rendering page…
             </div>
           )}
           {renderError && (
-            <div className="flex min-h-[420px] items-center justify-center bg-scanonix-surface px-4 text-center text-sm text-red-300">
+            <div className="flex min-h-[420px] items-center justify-center bg-surface-muted px-4 text-center text-sm text-red-600">
               {renderError}
             </div>
           )}

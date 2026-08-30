@@ -348,13 +348,13 @@ export function OrganizePdfTool() {
 
       {uploadedPdf && (
         <>
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-4 sm:p-5">
+          <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white sm:text-base">
+                <p className="truncate text-sm font-semibold text-foreground sm:text-base">
                   {uploadedPdf.file.name}
                 </p>
-                <p className="mt-1 text-xs text-scanonix-muted sm:text-sm">
+                <p className="mt-1 text-xs text-foreground-muted sm:text-sm">
                   {formatFileSize(uploadedPdf.file.size)} · {pages.length} page
                   {pages.length === 1 ? "" : "s"}
                   {summary && summary.deletedCount > 0
@@ -397,11 +397,11 @@ export function OrganizePdfTool() {
           />
 
           {hasResult && resultBlob && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">
+            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-foreground">
                 Organized PDF ready
               </h2>
-              <p className="text-sm text-scanonix-muted">
+              <p className="text-sm text-foreground-muted">
                 Download your reorganized PDF ({pages.length} page
                 {pages.length === 1 ? "" : "s"}).
               </p>
@@ -440,27 +440,27 @@ export function OrganizePdfTool() {
 
               {summary && (
                 <div className="flex min-w-0 flex-1 flex-wrap gap-2">
-                  <div className="rounded-xl border border-scanonix-border bg-scanonix-surface px-4 py-2.5">
-                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-scanonix-muted">
+                  <div className="rounded-xl border border-border bg-surface-muted px-4 py-2.5">
+                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-foreground-muted">
                       Pages
                     </p>
-                    <p className="text-lg font-semibold text-white">
+                    <p className="text-lg font-semibold text-foreground">
                       {summary.currentPages}
                     </p>
                   </div>
-                  <div className="rounded-xl border border-scanonix-border bg-scanonix-surface px-4 py-2.5">
-                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-scanonix-muted">
+                  <div className="rounded-xl border border-border bg-surface-muted px-4 py-2.5">
+                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-foreground-muted">
                       Rotated
                     </p>
-                    <p className="text-lg font-semibold text-white">
+                    <p className="text-lg font-semibold text-foreground">
                       {summary.rotatedCount}
                     </p>
                   </div>
-                  <div className="rounded-xl border border-scanonix-border bg-scanonix-surface px-4 py-2.5">
-                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-scanonix-muted">
+                  <div className="rounded-xl border border-border bg-surface-muted px-4 py-2.5">
+                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-foreground-muted">
                       File size
                     </p>
-                    <p className="text-lg font-semibold text-white">
+                    <p className="text-lg font-semibold text-foreground">
                       {formatFileSize(uploadedPdf.file.size)}
                     </p>
                   </div>

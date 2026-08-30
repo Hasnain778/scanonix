@@ -167,8 +167,8 @@ export function OrganizePageGrid({
   return (
     <div className="space-y-4 overflow-x-hidden">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold text-white">Pages</h2>
-        <p className="text-xs text-scanonix-muted">
+        <h2 className="text-lg font-semibold text-foreground">Pages</h2>
+        <p className="text-xs text-foreground-muted">
           Drag to reorder · or use move buttons on each page
         </p>
       </div>
@@ -197,10 +197,10 @@ export function OrganizePageGrid({
               onDragOver={(event) => handleDragOver(event, index)}
               onDrop={() => handleDrop(index)}
               onDragEnd={handleDragEnd}
-              className={`flex flex-col overflow-hidden rounded-2xl border bg-scanonix-surface transition-all duration-200 ${
+              className={`flex flex-col overflow-hidden rounded-2xl border bg-surface transition-all duration-200 ${
                 dragOverIndex === index
                   ? "border-scanonix-orange ring-2 ring-scanonix-orange/30"
-                  : "border-scanonix-border"
+                  : "border-border"
               } ${draggedIndex === index ? "opacity-50" : ""} ${
                 disabled ? "" : "cursor-grab active:cursor-grabbing"
               }`}
@@ -251,13 +251,13 @@ export function OrganizePageGrid({
                 )}
 
                 {previewError && !isLoading && (
-                  <div className="flex h-full items-center justify-center bg-black/5 px-2 text-center text-sm text-scanonix-muted">
+                  <div className="flex h-full items-center justify-center bg-black/5 px-2 text-center text-sm text-foreground-muted">
                     Preview unavailable
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-col gap-2.5 border-t border-scanonix-border p-3">
+              <div className="flex flex-col gap-2.5 border-t border-border p-3">
                 <div className="grid grid-cols-4 gap-1.5">
                   <ActionButton
                     variant="outline"

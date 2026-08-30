@@ -450,7 +450,7 @@ export function WatermarkPdfClientTool() {
       <div className="flex-1 space-y-5 overflow-y-auto pb-4">
         <div
           data-watermark-mode-selector
-          className="inline-flex w-full rounded-xl border border-scanonix-border bg-black/30 p-1"
+          className="inline-flex w-full rounded-xl border border-border bg-surface-muted p-1"
           role="group"
           aria-label="Watermark type"
         >
@@ -466,8 +466,8 @@ export function WatermarkPdfClientTool() {
                 onClick={() => handleModeChange(mode)}
                 className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
                   selected
-                    ? "bg-scanonix-orange/15 text-white"
-                    : "text-scanonix-muted hover:text-white"
+                    ? "bg-scanonix-orange/15 text-scanonix-orange"
+                    : "text-foreground-muted hover:text-foreground"
                 }`}
               >
                 {mode === "text" ? "TEXT" : "IMAGE"}
@@ -478,27 +478,27 @@ export function WatermarkPdfClientTool() {
 
         {settings.mode === "text" ? (
           <label className="block text-sm">
-            <span className="mb-1 block text-scanonix-muted">Watermark text</span>
+            <span className="mb-1 block text-foreground-muted">Watermark text</span>
             <input
               type="text"
               data-watermark-text-input
               value={settings.text}
               disabled={isBusy}
               onChange={(event) => updateSettings({ text: event.target.value })}
-              className="w-full rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+              className="input-field"
               aria-describedby={
                 unsupportedCharacterError ? "watermark-text-error" : undefined
               }
             />
             {unsupportedCharacterError && (
-              <p id="watermark-text-error" className="mt-2 text-xs text-red-300">
+              <p id="watermark-text-error" className="mt-2 text-xs text-red-600">
                 {unsupportedCharacterError}
               </p>
             )}
           </label>
         ) : (
           <div className="space-y-3" data-watermark-image-upload-section>
-            <span className="block text-sm text-scanonix-muted">Watermark image</span>
+            <span className="block text-sm text-foreground-muted">Watermark image</span>
             <input
               ref={watermarkImageInputRef}
               id="watermark-image-input"
@@ -521,7 +521,7 @@ export function WatermarkPdfClientTool() {
             />
             {imageAsset ? (
               <div
-                className="space-y-3 rounded-xl border border-scanonix-border bg-black/30 p-3"
+                className="space-y-3 rounded-xl border border-border bg-surface-muted p-3"
                 data-watermark-image-selected
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -532,7 +532,7 @@ export function WatermarkPdfClientTool() {
                   className="mx-auto max-h-32 w-auto object-contain"
                 />
                 <p
-                  className="truncate text-center text-xs text-scanonix-muted"
+                  className="truncate text-center text-xs text-foreground-muted"
                   data-watermark-image-filename
                   title={imageAsset.fileName}
                 >
@@ -540,7 +540,7 @@ export function WatermarkPdfClientTool() {
                 </p>
                 {imageAsset.isTransparentPng && (
                   <p
-                    className="text-xs text-scanonix-muted"
+                    className="text-xs text-foreground-muted"
                     data-watermark-transparent-png-notice
                   >
                     Transparent PNG detected — transparency will be preserved.
@@ -568,8 +568,8 @@ export function WatermarkPdfClientTool() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3 rounded-xl border border-dashed border-scanonix-border bg-black/20 px-4 py-6 text-center">
-                <p className="text-sm text-scanonix-muted">
+              <div className="space-y-3 rounded-xl border border-dashed border-border bg-surface-muted px-4 py-6 text-center">
+                <p className="text-sm text-foreground-muted">
                   Upload a PNG or JPEG to use as your watermark image.
                 </p>
                 <ActionButton
@@ -590,7 +590,7 @@ export function WatermarkPdfClientTool() {
         )}
 
         <div className="space-y-3">
-          <p className="text-sm font-medium text-white">Position</p>
+          <p className="text-sm font-medium text-foreground">Position</p>
           <PositionPicker
             value={settings.position}
             disabled={isBusy}
@@ -599,7 +599,7 @@ export function WatermarkPdfClientTool() {
         </div>
 
         <label className="block text-sm" data-watermark-opacity-control>
-          <span className="mb-1 block text-scanonix-muted">
+          <span className="mb-1 block text-foreground-muted">
             Opacity ({MIN_OPACITY_PERCENT}–{MAX_OPACITY_PERCENT}%)
           </span>
           <input
@@ -616,13 +616,13 @@ export function WatermarkPdfClientTool() {
             className="w-full accent-scanonix-orange"
             aria-valuetext={`${settings.opacityPercent} percent`}
           />
-          <span className="mt-1 block text-xs text-scanonix-muted">
+          <span className="mt-1 block text-xs text-foreground-muted">
             {settings.opacityPercent}% ({opacityPercentToEngine(settings.opacityPercent).toFixed(1)})
           </span>
         </label>
 
         <fieldset className="space-y-3" data-watermark-rotation-control>
-          <legend className="text-sm font-medium text-white">Rotation</legend>
+          <legend className="text-sm font-medium text-foreground">Rotation</legend>
           <div className="flex flex-wrap gap-2">
             {ROTATION_PRESET_OPTIONS.map((preset) => {
               const selected = settings.rotationDegrees === preset.value;
@@ -636,8 +636,8 @@ export function WatermarkPdfClientTool() {
                   onClick={() => updateSettings({ rotationDegrees: preset.value })}
                   className={`rounded-xl border px-3 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
                     selected
-                      ? "border-scanonix-orange bg-scanonix-orange/10 text-white"
-                      : "border-scanonix-border bg-black/30 text-scanonix-muted hover:border-scanonix-orange/50"
+                      ? "border-scanonix-orange bg-scanonix-orange/10 text-foreground"
+                      : "border-border bg-surface-muted text-foreground-muted hover:border-scanonix-orange/50"
                   }`}
                 >
                   {preset.label}
@@ -660,7 +660,7 @@ export function WatermarkPdfClientTool() {
               disabled={isBusy}
               placeholder="Custom °"
               onChange={(event) => setCustomRotation(event.target.value)}
-              className="min-w-0 flex-1 rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+              className="input-field min-w-0 flex-1"
             />
             <ActionButton
               variant="outline"
@@ -676,7 +676,7 @@ export function WatermarkPdfClientTool() {
         {settings.mode === "text" && (
           <>
             <label className="block text-sm" data-watermark-font-size-control>
-              <span className="mb-1 block text-scanonix-muted">
+              <span className="mb-1 block text-foreground-muted">
                 Font size ({MIN_WATERMARK_FONT_SIZE}–{MAX_WATERMARK_FONT_SIZE} pt)
               </span>
               <input
@@ -690,12 +690,12 @@ export function WatermarkPdfClientTool() {
                 onChange={(event) =>
                   updateSettings({ fontSize: clampFontSize(Number(event.target.value)) })
                 }
-                className="w-full rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                className="input-field"
               />
             </label>
 
             <div className="space-y-2" data-watermark-color-control>
-              <span className="block text-sm text-scanonix-muted">Color</span>
+              <span className="block text-sm text-foreground-muted">Color</span>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
@@ -707,7 +707,7 @@ export function WatermarkPdfClientTool() {
                   }
                   disabled={isBusy}
                   onChange={(event) => updateSettings({ color: event.target.value })}
-                  className="h-11 w-14 cursor-pointer rounded-lg border border-scanonix-border bg-black/40 p-1"
+                  className="h-11 w-14 cursor-pointer rounded-lg border border-border bg-surface-muted p-1"
                   aria-label="Watermark color"
                 />
                 <input
@@ -718,13 +718,13 @@ export function WatermarkPdfClientTool() {
                   onChange={(event) => updateSettings({ color: event.target.value })}
                   onBlur={handleColorBlur}
                   placeholder="#666666"
-                  className="min-w-0 flex-1 rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 font-mono text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                  className="input-field min-w-0 flex-1 font-mono"
                   aria-label="Watermark hex color"
                 />
               </div>
             </div>
 
-            <label className="flex items-center gap-3 text-sm text-scanonix-muted">
+            <label className="flex items-center gap-3 text-sm text-foreground-muted">
               <input
                 type="checkbox"
                 data-watermark-bold-input
@@ -740,7 +740,7 @@ export function WatermarkPdfClientTool() {
 
         {settings.mode === "image" && (
           <label className="block text-sm">
-            <span className="mb-1 block text-scanonix-muted">
+            <span className="mb-1 block text-foreground-muted">
               Image width ({MIN_RELATIVE_WIDTH_PERCENT}–{MAX_RELATIVE_WIDTH_PERCENT}% of page)
             </span>
             <input
@@ -757,14 +757,14 @@ export function WatermarkPdfClientTool() {
               className="w-full accent-scanonix-orange"
               aria-valuetext={`${settings.relativeWidthPercent} percent of page width`}
             />
-            <span className="mt-1 block text-xs text-scanonix-muted">
+            <span className="mt-1 block text-xs text-foreground-muted">
               {settings.relativeWidthPercent}%
             </span>
           </label>
         )}
 
         <fieldset className="space-y-3">
-          <legend className="text-sm font-medium text-white">Margin</legend>
+          <legend className="text-sm font-medium text-foreground">Margin</legend>
           <div className="flex flex-wrap gap-2">
             {MARGIN_PRESET_OPTIONS.map((preset) => {
               const selected = settings.margin === preset.value;
@@ -777,8 +777,8 @@ export function WatermarkPdfClientTool() {
                   onClick={() => updateSettings({ margin: preset.value })}
                   className={`rounded-xl border px-4 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
                     selected
-                      ? "border-scanonix-orange bg-scanonix-orange/10 text-white"
-                      : "border-scanonix-border bg-black/30 text-scanonix-muted hover:border-scanonix-orange/50"
+                      ? "border-scanonix-orange bg-scanonix-orange/10 text-foreground"
+                      : "border-border bg-surface-muted text-foreground-muted hover:border-scanonix-orange/50"
                   }`}
                 >
                   {preset.label}
@@ -789,8 +789,8 @@ export function WatermarkPdfClientTool() {
         </fieldset>
 
         <fieldset className="space-y-3" data-watermark-page-range>
-          <legend className="text-sm font-medium text-white">Pages to watermark</legend>
-          <label className="flex items-center gap-3 text-sm text-scanonix-muted">
+          <legend className="text-sm font-medium text-foreground">Pages to watermark</legend>
+          <label className="flex items-center gap-3 text-sm text-foreground-muted">
             <input
               type="radio"
               name="watermark-page-selection"
@@ -802,7 +802,7 @@ export function WatermarkPdfClientTool() {
             />
             All pages
           </label>
-          <label className="flex items-center gap-3 text-sm text-scanonix-muted">
+          <label className="flex items-center gap-3 text-sm text-foreground-muted">
             <input
               type="radio"
               name="watermark-page-selection"
@@ -827,13 +827,13 @@ export function WatermarkPdfClientTool() {
                 disabled={isBusy}
                 placeholder="e.g. 1-5, 8, 10-12"
                 onChange={(event) => updateSettings({ pageRangeInput: event.target.value })}
-                className="w-full rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-sm text-white placeholder:text-scanonix-muted/70 focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                className="input-field text-sm"
               />
               {selection.error && (
-                <p className="mt-2 text-xs text-red-300">{selection.error}</p>
+                <p className="mt-2 text-xs text-red-600">{selection.error}</p>
               )}
               {!selection.error && selection.pages.length > 0 && (
-                <p className="mt-2 text-xs text-scanonix-muted">
+                <p className="mt-2 text-xs text-foreground-muted">
                   {selection.pages.length} page
                   {selection.pages.length === 1 ? "" : "s"} selected
                 </p>
@@ -843,7 +843,7 @@ export function WatermarkPdfClientTool() {
         </fieldset>
       </div>
 
-      <div className="sticky bottom-0 border-t border-scanonix-border bg-scanonix-surface pt-4">
+      <div className="sticky bottom-0 border-t border-border bg-surface pt-4">
         <ActionButton
           size="lg"
           data-watermark-download-button
@@ -856,7 +856,7 @@ export function WatermarkPdfClientTool() {
         </ActionButton>
         <div className="mt-3 space-y-2">
           <PrivacyNotice message={WATERMARK_UI_PRIVACY_COPY} />
-          <p className="text-xs text-scanonix-muted">{WATERMARK_SECURITY_COPY}</p>
+          <p className="text-xs text-foreground-muted">{WATERMARK_SECURITY_COPY}</p>
         </div>
       </div>
     </div>
@@ -884,29 +884,29 @@ export function WatermarkPdfClientTool() {
             icon={<PdfDropIcon />}
           />
           <PrivacyNotice message={WATERMARK_UI_PRIVACY_COPY} />
-          <p className="text-sm text-scanonix-muted">{WATERMARK_SECURITY_COPY}</p>
+          <p className="text-sm text-foreground-muted">{WATERMARK_SECURITY_COPY}</p>
         </>
       )}
 
       {uploadedPdf && currentPageEntry && (
         <div
           data-watermark-pdf-workspace
-          className="overflow-hidden rounded-xl border border-scanonix-border/80 bg-[#0a0a0a]"
+          className="overflow-hidden rounded-xl border border-border/80 bg-surface"
         >
           {/* Document-first header: filename, page nav, choose another */}
           <div
             data-watermark-pdf-header
-            className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-scanonix-border/80 px-3 py-2 sm:px-4"
+            className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/80 px-3 py-2 sm:px-4"
           >
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <span className="shrink-0 text-sm font-semibold text-white">Watermark PDF</span>
+              <span className="shrink-0 text-sm font-semibold text-foreground">Watermark PDF</span>
               <span
-                className="truncate text-xs text-scanonix-muted sm:text-sm"
+                className="truncate text-xs text-foreground-muted sm:text-sm"
                 title={uploadedPdf.file.name}
               >
                 {uploadedPdf.file.name}
               </span>
-              <span className="hidden text-xs text-scanonix-muted sm:inline">
+              <span className="hidden text-xs text-foreground-muted sm:inline">
                 · {formatFileSize(uploadedPdf.file.size)}
               </span>
             </div>
@@ -926,7 +926,7 @@ export function WatermarkPdfClientTool() {
               </ActionButton>
               <span
                 data-watermark-page-indicator
-                className="min-w-[5rem] text-center text-xs text-scanonix-muted sm:text-sm"
+                className="min-w-[5rem] text-center text-xs text-foreground-muted sm:text-sm"
               >
                 Page {currentPageIndex + 1} of {pageCount}
               </span>
@@ -957,21 +957,21 @@ export function WatermarkPdfClientTool() {
 
           {uploadedPdf.document.hasExistingDigitalSignatures && (
             <div className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-3">
-              <p className="text-sm text-amber-100/90">
+              <p className="text-sm text-foreground">
                 {DIGITAL_SIGNATURE_WATERMARK_WARNING}
               </p>
             </div>
           )}
 
-          <div className="flex gap-2 border-b border-scanonix-border/80 px-3 py-2 lg:hidden">
+          <div className="flex gap-2 border-b border-border/80 px-3 py-2 lg:hidden">
             <button
               type="button"
               aria-pressed={mobilePanel === "preview"}
               onClick={() => setMobilePanel("preview")}
               className={`flex-1 rounded-xl border px-4 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 ${
                 mobilePanel === "preview"
-                  ? "border-scanonix-orange bg-scanonix-orange/10 text-white"
-                  : "border-scanonix-border bg-black/30 text-scanonix-muted"
+                  ? "border-scanonix-orange bg-scanonix-orange/10 text-foreground"
+                  : "border-border bg-surface-muted text-foreground-muted"
               }`}
             >
               Preview
@@ -982,8 +982,8 @@ export function WatermarkPdfClientTool() {
               onClick={() => setMobilePanel("settings")}
               className={`flex-1 rounded-xl border px-4 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 ${
                 mobilePanel === "settings"
-                  ? "border-scanonix-orange bg-scanonix-orange/10 text-white"
-                  : "border-scanonix-border bg-black/30 text-scanonix-muted"
+                  ? "border-scanonix-orange bg-scanonix-orange/10 text-foreground"
+                  : "border-border bg-surface-muted text-foreground-muted"
               }`}
             >
               Settings
@@ -1022,7 +1022,7 @@ export function WatermarkPdfClientTool() {
 
             <div
               data-watermark-pdf-settings-panel
-              className={`flex min-h-0 flex-col border-scanonix-border/80 p-4 sm:p-5 lg:border-l lg:max-h-[calc(100vh-12rem)] ${
+              className={`flex min-h-0 flex-col border-border/80 p-4 sm:p-5 lg:border-l lg:max-h-[calc(100vh-12rem)] ${
                 mobilePanel === "preview" ? "hidden lg:flex" : ""
               }`}
             >

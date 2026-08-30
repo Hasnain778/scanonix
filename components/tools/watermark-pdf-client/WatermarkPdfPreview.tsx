@@ -300,7 +300,7 @@ export function WatermarkPdfPreview({
         <div
           data-watermark-pdf-preview-canvas
           data-watermark-pdf-preview-root
-          className="relative mx-auto overflow-hidden border border-scanonix-border bg-white shadow-lg"
+          className="relative mx-auto overflow-hidden border border-border bg-white shadow-lg"
           style={
             displaySize
               ? {
@@ -312,12 +312,12 @@ export function WatermarkPdfPreview({
           }
         >
           {!pageImageUrl && isRendering && (
-            <div className="flex h-full min-h-[420px] items-center justify-center bg-scanonix-surface text-sm text-scanonix-muted">
+            <div className="flex h-full min-h-[420px] items-center justify-center bg-surface-muted text-sm text-foreground-muted">
               Rendering page…
             </div>
           )}
           {renderError && (
-            <div className="flex h-full min-h-[420px] items-center justify-center bg-scanonix-surface px-4 text-center text-sm text-red-300">
+            <div className="flex h-full min-h-[420px] items-center justify-center bg-surface-muted px-4 text-center text-sm text-red-600">
               {renderError}
             </div>
           )}
@@ -332,7 +332,7 @@ export function WatermarkPdfPreview({
               />
 
               {isRendering && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-sm text-scanonix-muted">
+                <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-sm text-foreground-muted">
                   Rendering page…
                 </div>
               )}

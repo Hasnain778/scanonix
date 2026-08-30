@@ -13,7 +13,7 @@ function PositionDot({ active }: { active: boolean }) {
   return (
     <span
       className={`block h-2 w-2 rounded-full ${
-        active ? "bg-scanonix-orange" : "bg-scanonix-muted/50"
+        active ? "bg-scanonix-orange" : "bg-foreground-muted/40"
       }`}
       aria-hidden="true"
     />
@@ -67,7 +67,7 @@ export function PositionPicker({
               className={`flex h-16 w-14 flex-col items-center justify-between rounded-xl border px-2 py-2 transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
                 selected
                   ? "border-scanonix-orange bg-scanonix-orange/10"
-                  : "border-scanonix-border bg-black/30 hover:border-scanonix-orange/50"
+                  : "border-border bg-surface-muted hover:border-scanonix-orange/50"
               }`}
             >
               {isCenter ? (
@@ -77,7 +77,7 @@ export function PositionPicker({
                     className={`flex h-8 w-6 items-center justify-center rounded border text-[10px] font-medium ${
                       selected
                         ? "border-scanonix-orange/60 bg-white/90 text-scanonix-orange"
-                        : "border-scanonix-border/80 bg-white/70 text-scanonix-muted"
+                        : "border-border/80 bg-white/70 text-foreground-muted"
                     }`}
                   >
                     C
@@ -91,7 +91,7 @@ export function PositionPicker({
                     className={`h-8 w-6 rounded border ${
                       selected
                         ? "border-scanonix-orange/60 bg-white/90"
-                        : "border-scanonix-border/80 bg-white/70"
+                        : "border-border/80 bg-white/70"
                     }`}
                     aria-hidden="true"
                   />

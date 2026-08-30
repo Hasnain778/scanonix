@@ -33,25 +33,25 @@ function NavigatorRow({
 }) {
   const statusIcon = complete ? "✓" : "○";
   const statusClass = complete
-    ? "text-emerald-400"
+    ? "text-emerald-500"
     : required
       ? "text-scanonix-orange"
-      : "text-scanonix-muted";
+      : "text-foreground-muted";
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-white/5 ${
+      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-surface-muted ${
         selected ? "bg-scanonix-orange/10 ring-1 ring-scanonix-orange/40" : ""
-      } ${hasError ? "text-red-300" : "text-white"}`}
+      } ${hasError ? "text-red-600" : "text-foreground"}`}
     >
       <span className={`w-4 shrink-0 text-center font-medium ${statusClass}`} aria-hidden="true">
         {statusIcon}
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {hasError && (
-        <span className="shrink-0 text-xs text-red-300" aria-label="Has error">
+        <span className="shrink-0 text-xs text-red-600" aria-label="Has error">
           !
         </span>
       )}
@@ -96,10 +96,10 @@ export function FieldsNavigator({
 
   const panelContent = (
     <>
-      <header className="flex items-center justify-between gap-3 border-b border-scanonix-border px-4 py-3">
+      <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div>
-          <h2 className="text-sm font-semibold text-white">Fields</h2>
-          <p className="mt-0.5 text-xs text-scanonix-muted">
+          <h2 className="text-sm font-semibold text-foreground">Fields</h2>
+          <p className="mt-0.5 text-xs text-foreground-muted">
             {summary.completed}/{summary.total} completed
             {summary.requiredRemaining > 0
               ? ` · ${summary.requiredRemaining} required remaining`
@@ -109,7 +109,7 @@ export function FieldsNavigator({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-lg p-2 text-scanonix-muted transition hover:bg-white/5 hover:text-white"
+          className="rounded-lg p-2 text-foreground-muted transition hover:bg-surface-muted hover:text-foreground"
           aria-label="Close fields navigator"
         >
           ✕
@@ -118,7 +118,7 @@ export function FieldsNavigator({
 
       <div ref={listRef} className="flex-1 overflow-y-auto px-2 py-2">
         {entries.length === 0 ? (
-          <p className="px-3 py-4 text-sm text-scanonix-muted">No editable fields.</p>
+          <p className="px-3 py-4 text-sm text-foreground-muted">No editable fields.</p>
         ) : (
           <nav aria-label="Form fields">
             <ul className="space-y-0.5">
@@ -153,7 +153,7 @@ export function FieldsNavigator({
       {/* Desktop: right drawer */}
       <aside
         data-fill-pdf-fields-navigator
-        className="fixed inset-y-0 right-0 z-50 hidden w-full max-w-xs flex-col border-l border-scanonix-border bg-[#0d1117]/98 shadow-2xl backdrop-blur-xl lg:flex"
+        className="fixed inset-y-0 right-0 z-50 hidden w-full max-w-xs flex-col border-l border-border bg-surface/98 shadow-2xl backdrop-blur-xl lg:flex"
         aria-label="Fields navigator"
       >
         {panelContent}
@@ -162,7 +162,7 @@ export function FieldsNavigator({
       {/* Mobile: bottom sheet */}
       <aside
         data-fill-pdf-fields-navigator-mobile
-        className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(70vh,28rem)] flex-col rounded-t-2xl border-t border-scanonix-border bg-[#0d1117]/98 shadow-2xl backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(70vh,28rem)] flex-col rounded-t-2xl border-t border-border bg-surface/98 shadow-2xl backdrop-blur-xl lg:hidden"
         aria-label="Fields navigator"
       >
         {panelContent}

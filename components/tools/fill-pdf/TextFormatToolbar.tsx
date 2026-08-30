@@ -39,8 +39,8 @@ function FormatToggle({
       aria-pressed={active}
       className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md border px-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
         active
-          ? "border-scanonix-orange/60 bg-scanonix-orange/20 text-white"
-          : "border-white/10 text-scanonix-muted hover:border-scanonix-orange/40 hover:bg-white/5 hover:text-white"
+          ? "border-scanonix-orange/60 bg-scanonix-orange/20 text-foreground"
+          : "border-border text-foreground-muted hover:border-scanonix-orange/40 hover:bg-surface-muted hover:text-foreground"
       }`}
     >
       {children}
@@ -94,7 +94,7 @@ function DesktopTextFormatControls({
         </FormatToggle>
       )}
 
-      <span className="mx-1 h-4 w-px bg-white/10" aria-hidden="true" />
+      <span className="mx-1 h-4 w-px bg-border" aria-hidden="true" />
 
       <label className="sr-only" htmlFor="fill-pdf-font-size-mode">
         Font size
@@ -113,7 +113,7 @@ function DesktopTextFormatControls({
             fontSize: manualSize ?? TEXT_FONT_SIZE_MIN + 6,
           });
         }}
-        className="h-7 rounded-md border border-white/10 bg-transparent px-1.5 text-xs text-scanonix-muted hover:border-scanonix-orange/40"
+        className="h-7 rounded-md border border-border bg-transparent px-1.5 text-xs text-foreground-muted hover:border-scanonix-orange/40"
       >
         <option value="auto">Auto</option>
         <option value="manual">Manual</option>
@@ -126,11 +126,11 @@ function DesktopTextFormatControls({
             aria-label="Decrease font size"
             disabled={disabled || (manualSize ?? TEXT_FONT_SIZE_MIN) <= TEXT_FONT_SIZE_MIN}
             onClick={() => setManualSize((manualSize ?? TEXT_FONT_SIZE_MIN) - 1)}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 text-scanonix-muted hover:border-scanonix-orange/40 hover:text-white disabled:opacity-40"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground-muted hover:border-scanonix-orange/40 hover:text-foreground disabled:opacity-40"
           >
             −
           </button>
-          <span className="min-w-[1.75rem] text-center text-xs text-white">
+          <span className="min-w-[1.75rem] text-center text-xs text-foreground">
             {manualSize}
           </span>
           <button
@@ -138,7 +138,7 @@ function DesktopTextFormatControls({
             aria-label="Increase font size"
             disabled={disabled || (manualSize ?? TEXT_FONT_SIZE_MAX) >= TEXT_FONT_SIZE_MAX}
             onClick={() => setManualSize((manualSize ?? TEXT_FONT_SIZE_MIN) + 1)}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 text-scanonix-muted hover:border-scanonix-orange/40 hover:text-white disabled:opacity-40"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground-muted hover:border-scanonix-orange/40 hover:text-foreground disabled:opacity-40"
           >
             +
           </button>
@@ -193,13 +193,13 @@ function MobileTextFormatControls({
         aria-expanded={open}
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
-        className="inline-flex h-8 items-center rounded-lg border border-white/10 px-2 text-xs font-semibold text-scanonix-muted hover:border-scanonix-orange/40 hover:text-white disabled:opacity-40"
+        className="inline-flex h-8 items-center rounded-lg border border-border px-2 text-xs font-semibold text-foreground-muted hover:border-scanonix-orange/40 hover:text-foreground disabled:opacity-40"
       >
         Aa
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-lg border border-scanonix-border/80 bg-[#141414] p-2 shadow-xl">
+        <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-lg border border-border/80 bg-surface-raised p-2 shadow-xl">
           <div className="flex items-center gap-1">
             <FormatToggle
               label="Bold"
@@ -230,7 +230,7 @@ function MobileTextFormatControls({
           </div>
 
           <div className="mt-2 space-y-1">
-            <label className="block text-[10px] uppercase tracking-wide text-scanonix-muted">
+            <label className="block text-[10px] uppercase tracking-wide text-foreground-muted">
               Size
             </label>
             <select
@@ -241,7 +241,7 @@ function MobileTextFormatControls({
                   event.target.value === "auto" ? "auto" : "manual",
                 )
               }
-              className="h-7 w-full rounded-md border border-white/10 bg-transparent px-1.5 text-xs text-white"
+              className="h-7 w-full rounded-md border border-border bg-transparent px-1.5 text-xs text-foreground"
             >
               <option value="auto">Auto</option>
               <option value="manual">Manual</option>
@@ -257,11 +257,11 @@ function MobileTextFormatControls({
                       fontSize: clampManualFontSize((manualSize ?? 12) - 1),
                     })
                   }
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 text-scanonix-muted"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground-muted"
                 >
                   −
                 </button>
-                <span className="text-xs text-white">{manualSize} pt</span>
+                <span className="text-xs text-foreground">{manualSize} pt</span>
                 <button
                   type="button"
                   aria-label="Increase font size"
@@ -271,7 +271,7 @@ function MobileTextFormatControls({
                       fontSize: clampManualFontSize((manualSize ?? 12) + 1),
                     })
                   }
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 text-scanonix-muted"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground-muted"
                 >
                   +
                 </button>

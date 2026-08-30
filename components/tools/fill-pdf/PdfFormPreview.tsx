@@ -204,12 +204,12 @@ export function PdfFormPreview({
         }
       >
         {isRendering && (
-          <div className="flex min-h-[420px] items-center justify-center bg-[#1a1a1a] text-sm text-scanonix-muted">
+          <div className="flex min-h-[420px] items-center justify-center bg-surface-muted text-sm text-foreground-muted">
             Rendering page…
           </div>
         )}
         {renderError && (
-          <div className="flex min-h-[420px] items-center justify-center bg-[#1a1a1a] px-4 text-center text-sm text-red-300">
+          <div className="flex min-h-[420px] items-center justify-center bg-surface-muted px-4 text-center text-sm text-red-600">
             {renderError}
           </div>
         )}

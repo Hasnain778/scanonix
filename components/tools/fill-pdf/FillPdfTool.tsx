@@ -91,7 +91,7 @@ function ToolbarIconButton({
       title={label}
       disabled={disabled}
       onClick={onClick}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-scanonix-muted transition hover:border-scanonix-orange/40 hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-foreground-muted transition hover:border-scanonix-orange/40 hover:bg-surface-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
     >
       {children}
     </button>
@@ -515,17 +515,17 @@ export function FillPdfTool() {
       {uploadedPdf && workspaceWithErrors && (
         <div
           data-fill-pdf-workspace
-          className="overflow-hidden rounded-xl border border-scanonix-border/80 bg-[#0a0a0a]"
+          className="overflow-hidden rounded-xl border border-border/80 bg-surface"
         >
           {/* Compact editor toolbar */}
           <div
             data-fill-pdf-toolbar
-            className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-scanonix-border/80 px-3 py-2 sm:px-4"
+            className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/80 px-3 py-2 sm:px-4"
           >
             <div className="flex min-w-0 flex-1 items-center gap-2 sm:min-w-[8rem] sm:flex-none">
-              <span className="shrink-0 text-sm font-semibold text-white">Fill PDF</span>
+              <span className="shrink-0 text-sm font-semibold text-foreground">Fill PDF</span>
               <span
-                className="hidden truncate text-xs text-scanonix-muted sm:inline"
+                className="hidden truncate text-xs text-foreground-muted sm:inline"
                 title={uploadedPdf.file.name}
               >
                 {uploadedPdf.file.name}
@@ -540,7 +540,7 @@ export function FillPdfTool() {
               >
                 ←
               </ToolbarIconButton>
-              <span className="min-w-[4.5rem] text-center text-xs text-scanonix-muted sm:text-sm">
+              <span className="min-w-[4.5rem] text-center text-xs text-foreground-muted sm:text-sm">
                 Page {currentPageIndex + 1}/{pageCount}
               </span>
               <ToolbarIconButton
@@ -553,7 +553,7 @@ export function FillPdfTool() {
                 →
               </ToolbarIconButton>
 
-              <span className="mx-1 hidden h-4 w-px bg-white/10 sm:inline" aria-hidden="true" />
+              <span className="mx-1 hidden h-4 w-px bg-border sm:inline" aria-hidden="true" />
 
               <ToolbarIconButton
                 label="Zoom out"
@@ -564,7 +564,7 @@ export function FillPdfTool() {
               </ToolbarIconButton>
               <button
                 type="button"
-                className="min-w-[3rem] rounded-lg px-1.5 py-1 text-xs text-scanonix-muted hover:bg-white/5 hover:text-white"
+                className="min-w-[3rem] rounded-lg px-1.5 py-1 text-xs text-foreground-muted hover:bg-surface-muted hover:text-foreground"
                 onClick={handleFitWidth}
                 title="Fit width"
               >
@@ -585,7 +585,7 @@ export function FillPdfTool() {
 
               {showTextFormatToolbar && selectedTextFormat && (
                 <>
-                  <span className="mx-1 hidden h-4 w-px bg-white/10 sm:inline" aria-hidden="true" />
+                  <span className="mx-1 hidden h-4 w-px bg-border sm:inline" aria-hidden="true" />
                   <TextFormatToolbar
                     format={selectedTextFormat}
                     disabled={isBusy}
@@ -637,7 +637,7 @@ export function FillPdfTool() {
           </div>
 
           {/* PDF-first editor canvas */}
-          <div className="bg-[#121212]">
+          <div className="bg-surface-muted">
             <PdfFormPreview
               pdfBytes={uploadedPdf.bytes}
               pageCount={pageCount}
@@ -656,8 +656,8 @@ export function FillPdfTool() {
 
           {needsSignatureAck && (
             <div className="border-t border-amber-500/30 bg-amber-500/10 px-4 py-3">
-              <p className="text-sm text-amber-100/90">{DIGITAL_SIGNATURE_WARNING}</p>
-              <label className="mt-2 flex items-start gap-3 text-sm text-amber-100/90">
+              <p className="text-sm text-foreground">{DIGITAL_SIGNATURE_WARNING}</p>
+              <label className="mt-2 flex items-start gap-3 text-sm text-foreground">
                 <input
                   type="checkbox"
                   checked={workspaceWithErrors.digitalSignatureAcknowledged}
@@ -673,9 +673,9 @@ export function FillPdfTool() {
           )}
 
           {hasResult && resultBlob && (
-            <div className="border-t border-scanonix-border/80 px-4 py-3">
-              <h2 className="mb-1 text-base font-semibold text-white">Results</h2>
-              <p className="text-sm text-scanonix-muted">
+            <div className="border-t border-border/80 px-4 py-3">
+              <h2 className="mb-1 text-base font-semibold text-foreground">Results</h2>
+              <p className="text-sm text-foreground-muted">
                 {fieldCount} field{fieldCount === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(resultBlob.size)} · {resultFilename}
               </p>
@@ -700,7 +700,7 @@ export function FillPdfTool() {
             </div>
           )}
 
-          <div className="border-t border-scanonix-border/80 px-4 py-2">
+          <div className="border-t border-border/80 px-4 py-2">
             <PrivacyNotice message={FILL_PDF_UI_PRIVACY_COPY} />
           </div>
 

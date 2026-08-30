@@ -358,16 +358,16 @@ export function CropPdfTool() {
 
       {uploadedPdf && currentPage && (
         <>
-          <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-scanonix-orange">
                 <PdfDropIcon />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
+                <p className="truncate text-base font-semibold text-foreground">
                   {uploadedPdf.file.name}
                 </p>
-                <p className="mt-1 text-sm text-scanonix-muted">
+                <p className="mt-1 text-sm text-foreground-muted">
                   {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
                   {pageCount === 1 ? "" : "s"}
                   {customCropCount > 0
@@ -386,11 +386,11 @@ export function CropPdfTool() {
             </ActionButton>
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+          <div className="space-y-4 rounded-2xl border border-border bg-surface p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">Page editor</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
+                <h2 className="text-lg font-semibold text-foreground">Page editor</h2>
+                <p className="mt-1 text-sm text-foreground-muted">
                   Page {currentPageIndex + 1} of {pageCount}
                   {hasCustomCrop(currentPage)
                     ? " · custom crop"
@@ -418,7 +418,7 @@ export function CropPdfTool() {
                   onChange={(event) =>
                     setCurrentPageIndex(Number(event.target.value))
                   }
-                  className="rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                  className="select-field w-auto min-w-[8.5rem] px-3 py-2 text-sm"
                 >
                   {pages.map((page, index) => (
                     <option key={page.id} value={index}>
@@ -464,7 +464,7 @@ export function CropPdfTool() {
                 );
                 return (
                   <label key={field} className="block text-sm">
-                    <span className="mb-1 block text-scanonix-muted">{label}</span>
+                    <span className="mb-1 block text-foreground-muted">{label}</span>
                     <input
                       type="number"
                       min={0}
@@ -475,7 +475,7 @@ export function CropPdfTool() {
                       onChange={(event) =>
                         handlePercentInputChange(field, event.target.value)
                       }
-                      className="w-full rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                      className="input-field"
                     />
                   </label>
                 );
@@ -519,9 +519,9 @@ export function CropPdfTool() {
           </div>
 
           {hasResult && resultBlob && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
-              <p className="text-sm text-scanonix-muted">
+            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-foreground">Results</h2>
+              <p className="text-sm text-foreground-muted">
                 {customCropCount} cropped page{customCropCount === 1 ? "" : "s"} ·{" "}
                 {formatFileSize(resultBlob.size)} · {resultFilename}
               </p>
@@ -546,16 +546,18 @@ export function CropPdfTool() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+          <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">Export cropped PDF</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
+                <h2 className="text-lg font-semibold text-foreground">Export cropped PDF</h2>
+                <p className="mt-1 text-sm text-foreground-muted">
                   {canExport
                     ? "Export applies your crop selections to a new PDF for download."
                     : "Add a PDF before exporting."}
                 </p>
-                <p className="mt-2 text-xs text-amber-200/90">{CROP_NOT_REDACTION_WARNING}</p>
+                <p className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-foreground">
+                  {CROP_NOT_REDACTION_WARNING}
+                </p>
               </div>
               <ActionButton
                 size="lg"
@@ -569,7 +571,7 @@ export function CropPdfTool() {
                 {isExporting ? "Exporting…" : "Export cropped PDF"}
               </ActionButton>
             </div>
-            <div className="mt-4 border-t border-scanonix-border pt-4">
+            <div className="mt-4 border-t border-border pt-4">
               <PrivacyNotice message={CROP_PRIVACY_COPY} />
             </div>
           </div>

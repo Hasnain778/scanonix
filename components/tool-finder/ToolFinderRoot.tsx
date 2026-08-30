@@ -319,7 +319,7 @@ export function ToolFinderRoot() {
           aria-controls="tool-finder-panel"
           aria-label={open ? "Close Tool Finder" : "Open Tool Finder"}
           onClick={open ? close : openPanel}
-          className="tool-finder-launcher pointer-events-auto flex h-14 items-center gap-2 rounded-full px-4 text-sm font-semibold text-white backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 sm:px-5"
+          className="tool-finder-launcher pointer-events-auto flex h-14 items-center gap-2 rounded-full px-4 text-sm font-semibold backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 sm:px-5"
           whileHover={reduceMotion ? undefined : { scale: 1.03 }}
           whileTap={reduceMotion ? undefined : { scale: 0.97 }}
         >

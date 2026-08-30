@@ -133,10 +133,11 @@
     color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 62%, transparent);
   background: var(--surface);
   padding: var(--space-card-sm);
+  /* 130L-5E — border-first; outer halo cut ~80% vs prior bloom */
   box-shadow:
     var(--shadow-soft),
-    0 0 10px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 28%, transparent),
-    0 0 26px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 14%, transparent);
+    0 0 3px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 14%, transparent),
+    0 0 8px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 6%, transparent);
   transition:
     border-color var(--transition-base),
     box-shadow var(--transition-base),
@@ -158,11 +159,11 @@
   inset: 0;
   z-index: 0;
   border-radius: inherit;
-  opacity: 0.5;
+  opacity: 0.22;
   background: radial-gradient(
-    ellipse 85% 65% at 12% 8%,
-    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 16%, transparent) 0%,
-    transparent 72%
+    ellipse 70% 55% at 12% 8%,
+    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 10%, transparent) 0%,
+    transparent 68%
   );
   transition: opacity var(--transition-base);
 }
@@ -204,32 +205,32 @@
   background: var(--surface-raised);
   box-shadow:
     var(--shadow-raised),
-    0 0 14px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 36%, transparent),
-    0 0 34px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 18%, transparent);
+    0 0 4px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 18%, transparent),
+    0 0 10px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 8%, transparent);
   transform: translateY(-4px);
 }
 
 .tool-card-neon:hover::before,
 .tool-card-neon:focus-within::before {
-  opacity: 0.85;
+  opacity: 0.38;
 }
 
-/* Bright: stronger accent edge/glow against warm/white surfaces */
+/* Bright: crisp accent edge; glow stays near the card */
 html[data-theme="bright"] .tool-card-neon {
   border-width: 1.5px;
-  border-color: color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 94%, transparent);
+  border-color: color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 88%, transparent);
   box-shadow:
     var(--shadow-soft),
-    0 0 12px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 52%, transparent),
-    0 0 28px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 28%, transparent);
+    0 0 3px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 16%, transparent),
+    0 0 8px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 7%, transparent);
 }
 
 html[data-theme="bright"] .tool-card-neon::before {
-  opacity: 0.72;
+  opacity: 0.28;
   background: radial-gradient(
-    ellipse 85% 65% at 12% 8%,
-    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 22%, transparent) 0%,
-    transparent 72%
+    ellipse 70% 55% at 12% 8%,
+    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 12%, transparent) 0%,
+    transparent 68%
   );
 }
 
@@ -252,17 +253,17 @@ html[data-theme="bright"] .tool-card-neon:focus-within {
   border-color: var(--tool-accent, var(--scanonix-orange));
   box-shadow:
     var(--shadow-raised),
-    0 0 16px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 58%, transparent),
-    0 0 34px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 32%, transparent);
+    0 0 4px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 20%, transparent),
+    0 0 10px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 9%, transparent);
 }
 
-/* Dark: vivid accent, slightly stronger ambient glow than Bright */
+/* Dark: vivid accent edge; restrained ambient glow */
 html[data-theme="dark"] .tool-card-neon {
   border-color: color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 76%, transparent);
   box-shadow:
     var(--shadow-soft),
-    0 0 14px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 36%, transparent),
-    0 0 32px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 18%, transparent);
+    0 0 3px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 16%, transparent),
+    0 0 9px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 7%, transparent);
 }
 
 html[data-theme="dark"] .tool-card-neon:hover,
@@ -270,8 +271,8 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
   border-color: color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 88%, transparent);
   box-shadow:
     var(--shadow-raised),
-    0 0 18px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 44%, transparent),
-    0 0 40px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 22%, transparent);
+    0 0 5px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 22%, transparent),
+    0 0 12px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 10%, transparent);
 }
 
 .tool-card-neon:hover .tool-visual,
@@ -281,14 +282,14 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
 
 .tool-card-neon:hover .tool-visual__glow,
 .tool-card-neon:focus-within .tool-visual__glow {
-  opacity: 1;
-  transform: scale(1.18);
+  opacity: 0.62;
+  transform: scale(1.08);
 }
 
 .tool-card-neon:hover .tool-visual__bloom,
 .tool-card-neon:focus-within .tool-visual__bloom {
-  opacity: 0.82;
-  transform: scale(1.2);
+  opacity: 0.36;
+  transform: scale(1.1);
 }
 
 /* Legacy alias — keep for gradual migration */
@@ -370,16 +371,16 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
 .tool-visual__bloom {
   pointer-events: none;
   position: absolute;
-  inset: -55%;
+  inset: -40%;
   border-radius: 50%;
-  opacity: 0.5;
+  opacity: 0.22;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 32%, transparent) 0%,
-    color-mix(in srgb, var(--tool-glow, rgba(255, 106, 0, 0.35)) 55%, transparent) 38%,
-    transparent 72%
+    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 18%, transparent) 0%,
+    color-mix(in srgb, var(--tool-glow, rgba(255, 106, 0, 0.35)) 28%, transparent) 38%,
+    transparent 68%
   );
-  filter: blur(18px);
+  filter: blur(10px);
   transition:
     opacity var(--transition-base),
     transform var(--transition-base);
@@ -388,16 +389,16 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
 .tool-visual__glow {
   pointer-events: none;
   position: absolute;
-  inset: -36%;
+  inset: -28%;
   border-radius: 50%;
-  opacity: 0.78;
+  opacity: 0.42;
   background: radial-gradient(
     circle,
-    var(--tool-glow, rgba(255, 106, 0, 0.35)) 0%,
-    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 18%, transparent) 42%,
+    color-mix(in srgb, var(--tool-glow, rgba(255, 106, 0, 0.35)) 55%, transparent) 0%,
+    color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 10%, transparent) 42%,
     transparent 68%
   );
-  filter: blur(8px);
+  filter: blur(5px);
   transition:
     opacity var(--transition-base),
     transform var(--transition-base);
@@ -1387,29 +1388,48 @@ html[data-theme="bright"] .nav-link-premium--active {
   text-shadow: none;
 }
 
-/* Tool Finder launcher — dark surface + orange halo */
+/* Tool Finder launcher — theme-aware premium pill */
 .tool-finder-launcher {
   border: 1px solid color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
   background: color-mix(in srgb, #111110 95%, transparent);
+  color: #fff;
   box-shadow:
-    0 12px 40px color-mix(in srgb, var(--scanonix-orange) 22%, transparent),
+    0 8px 24px color-mix(in srgb, var(--scanonix-orange) 12%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--scanonix-orange) 8%, transparent);
   transition:
     border-color var(--transition-base),
     background-color var(--transition-base),
-    box-shadow var(--transition-base);
+    box-shadow var(--transition-base),
+    color var(--transition-base);
 }
 
 .tool-finder-launcher:hover {
   border-color: color-mix(in srgb, var(--scanonix-orange) 55%, transparent);
   background: color-mix(in srgb, #161514 95%, transparent);
   box-shadow:
-    0 16px 48px color-mix(in srgb, var(--scanonix-orange) 30%, transparent),
+    0 10px 28px color-mix(in srgb, var(--scanonix-orange) 16%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--scanonix-orange) 12%, transparent);
 }
 
 .tool-finder-launcher__icon {
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--scanonix-orange) 55%, transparent));
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--scanonix-orange) 35%, transparent));
+}
+
+html[data-theme="bright"] .tool-finder-launcher {
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, transparent);
+  background: color-mix(in srgb, var(--surface-raised) 92%, transparent);
+  color: var(--foreground);
+  box-shadow:
+    0 8px 22px color-mix(in srgb, var(--scanonix-orange) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 55%, transparent);
+}
+
+html[data-theme="bright"] .tool-finder-launcher:hover {
+  border-color: color-mix(in srgb, var(--scanonix-orange) 58%, transparent);
+  background: var(--surface-raised);
+  box-shadow:
+    0 10px 26px color-mix(in srgb, var(--scanonix-orange) 14%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 65%, transparent);
 }
 
 /* Dashboard quick action cards */
@@ -1903,7 +1923,7 @@ html[data-theme="bright"] .nav-link-premium--active {
     transform: none;
   }
 
-  /* Strong static single-accent border/glow — motion off, accent retained */
+  /* Strong static single-accent border — motion off; glow stays restrained */
   .tool-card-neon {
     animation: none !important;
     border-color: color-mix(
@@ -1913,8 +1933,8 @@ html[data-theme="bright"] .nav-link-premium--active {
     );
     box-shadow:
       var(--shadow-soft),
-      0 0 12px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 34%, transparent),
-      0 0 28px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 16%, transparent);
+      0 0 3px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 14%, transparent),
+      0 0 8px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 6%, transparent);
   }
 
   .tool-card-neon::after {
@@ -1929,13 +1949,13 @@ html[data-theme="bright"] .nav-link-premium--active {
     border-width: 1.5px;
     border-color: color-mix(
       in srgb,
-      var(--tool-accent, var(--scanonix-orange)) 94%,
+      var(--tool-accent, var(--scanonix-orange)) 88%,
       transparent
     );
     box-shadow:
       var(--shadow-soft),
-      0 0 12px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 52%, transparent),
-      0 0 28px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 28%, transparent);
+      0 0 3px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 16%, transparent),
+      0 0 8px color-mix(in srgb, var(--tool-accent, var(--scanonix-orange)) 7%, transparent);
   }
 
   html[data-theme="bright"] .tool-card-neon::after {
@@ -2075,7 +2095,7 @@ html[data-theme="bright"] .scanonix-pro-promo__panel::before {
   opacity: 0.35;
 }
 
-/* 130L-4R6 — standalone S mark (no black tile); glow follows alpha silhouette */
+/* 130L-5E — standalone S mark: crisp edges, restrained near-mark glow only */
 .brand-logo-mark {
   display: inline-flex;
   align-items: center;
@@ -2084,27 +2104,20 @@ html[data-theme="bright"] .scanonix-pro-promo__panel::before {
 }
 
 .brand-logo-mark__img {
-  filter:
-    drop-shadow(0 0 5px color-mix(in srgb, var(--scanonix-orange) 42%, transparent))
-    drop-shadow(0 0 12px color-mix(in srgb, var(--scanonix-orange) 18%, transparent));
+  /* Keep browser default resampling — avoid crisp-edges (jagged on soft PNG alpha) */
+  filter: drop-shadow(0 0 1.5px color-mix(in srgb, var(--scanonix-orange) 22%, transparent));
 }
 
 .brand-logo-mark--header .brand-logo-mark__img {
-  filter:
-    drop-shadow(0 0 6px color-mix(in srgb, var(--scanonix-orange) 48%, transparent))
-    drop-shadow(0 0 16px color-mix(in srgb, var(--scanonix-orange) 22%, transparent));
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--scanonix-orange) 26%, transparent));
 }
 
 html[data-theme="bright"] .brand-logo-mark__img {
-  filter:
-    drop-shadow(0 0 4px color-mix(in srgb, var(--scanonix-orange) 38%, transparent))
-    drop-shadow(0 0 10px color-mix(in srgb, var(--scanonix-orange) 16%, transparent));
+  filter: drop-shadow(0 0 1.5px color-mix(in srgb, var(--scanonix-orange) 20%, transparent));
 }
 
 html[data-theme="bright"] .brand-logo-mark--header .brand-logo-mark__img {
-  filter:
-    drop-shadow(0 0 5px color-mix(in srgb, var(--scanonix-orange) 44%, transparent))
-    drop-shadow(0 0 14px color-mix(in srgb, var(--scanonix-orange) 20%, transparent));
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--scanonix-orange) 24%, transparent));
 }
 
 /* Legacy tile styles retained only if referenced elsewhere */

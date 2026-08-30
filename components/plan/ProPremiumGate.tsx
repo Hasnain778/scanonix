@@ -29,19 +29,22 @@ export function ProPremiumGate({
   toolSlug,
 }: ProPremiumGateProps) {
   return (
-    <div className="rounded-2xl border border-scanonix-orange/30 bg-gradient-to-br from-scanonix-orange/10 via-[#141414] to-[#0e0e0e] p-6 sm:p-8">
+    <div
+      data-pro-premium-gate
+      className="pro-security-gate rounded-2xl border border-scanonix-orange/35 bg-gradient-to-br from-scanonix-orange/8 via-surface-raised to-surface p-6 shadow-[0_0_0_1px_color-mix(in_srgb,var(--scanonix-orange)_8%,transparent),0_8px_28px_color-mix(in_srgb,var(--scanonix-orange)_10%,transparent)] sm:p-8"
+    >
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-orange/30 bg-scanonix-orange/15 text-scanonix-orange">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-orange/35 bg-scanonix-orange/12 text-scanonix-orange">
           <Sparkles className="h-6 w-6" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-lg font-semibold text-white">{title}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{title}</h3>
             <ProBadge />
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-scanonix-muted">{description}</p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground-muted">{description}</p>
 
-          <ul className="mt-4 space-y-2 text-sm text-scanonix-muted">
+          <ul className="mt-4 space-y-2 text-sm text-foreground-muted">
             <li className="flex items-center gap-2">
               <Lock className="h-4 w-4 shrink-0 text-scanonix-orange" aria-hidden="true" />
               Cloud AI processing with higher daily limits

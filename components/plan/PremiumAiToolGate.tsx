@@ -21,7 +21,7 @@ export function PremiumAiToolGate({
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/8 bg-[#0e0e0e] p-8 text-center text-scanonix-muted">
+      <div className="rounded-2xl border border-border bg-surface p-8 text-center text-foreground-muted">
         Loading workspace…
       </div>
     );

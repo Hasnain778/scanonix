@@ -345,16 +345,16 @@ export function SignPdfTool() {
 
       {uploadedPdf && (
         <>
-          <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-scanonix-orange">
                 <PdfDropIcon />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
+                <p className="truncate text-base font-semibold text-foreground">
                   {uploadedPdf.file.name}
                 </p>
-                <p className="mt-1 text-sm text-scanonix-muted">
+                <p className="mt-1 text-sm text-foreground-muted">
                   {formatFileSize(uploadedPdf.file.size)} · {uploadedPdf.pageCount}{" "}
                   page{uploadedPdf.pageCount === 1 ? "" : "s"} ·{" "}
                   {placements.length} placement{placements.length === 1 ? "" : "s"}
@@ -380,11 +380,11 @@ export function SignPdfTool() {
             onCreateSignature={() => setIsCreatorOpen(true)}
           />
 
-          <div className="space-y-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+          <div className="space-y-4 rounded-2xl border border-border bg-surface p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">Page editor</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
+                <h2 className="text-lg font-semibold text-foreground">Page editor</h2>
+                <p className="mt-1 text-sm text-foreground-muted">
                   Page {currentPage} of {uploadedPdf.pageCount}
                   {currentPagePlacements.length > 0
                     ? ` · ${currentPagePlacements.length} signature${currentPagePlacements.length === 1 ? "" : "s"} on this page`
@@ -408,7 +408,7 @@ export function SignPdfTool() {
                   value={currentPage}
                   disabled={isBusy}
                   onChange={(event) => setCurrentPage(Number(event.target.value))}
-                  className="rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                  className="select-field w-auto min-w-[8.5rem] px-3 py-2 text-sm"
                 >
                   {Array.from({ length: uploadedPdf.pageCount }, (_, index) => index + 1).map(
                     (page) => (
@@ -462,9 +462,9 @@ export function SignPdfTool() {
           </div>
 
           {hasResult && resultBlob && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
-              <p className="text-sm text-scanonix-muted">
+            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+              <h2 className="mb-2 text-lg font-semibold text-foreground">Results</h2>
+              <p className="text-sm text-foreground-muted">
                 {placements.length} signature{placements.length === 1 ? "" : "s"} embedded ·{" "}
                 {formatFileSize(resultBlob.size)} · {resultFilename}
               </p>
@@ -489,11 +489,11 @@ export function SignPdfTool() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+          <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">Export signed PDF</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
+                <h2 className="text-lg font-semibold text-foreground">Export signed PDF</h2>
+                <p className="mt-1 text-sm text-foreground-muted">
                   {canExport
                     ? "Export embeds your signatures into a new PDF for download."
                     : "Add at least one signature placement before exporting."}
@@ -509,7 +509,7 @@ export function SignPdfTool() {
                 {isExporting ? "Exporting…" : "Export signed PDF"}
               </ActionButton>
             </div>
-            <div className="mt-4 border-t border-scanonix-border pt-4">
+            <div className="mt-4 border-t border-border pt-4">
               <PrivacyNotice message={PRIVACY_MESSAGE} />
             </div>
           </div>

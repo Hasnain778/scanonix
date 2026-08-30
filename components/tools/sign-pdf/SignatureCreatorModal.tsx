@@ -150,17 +150,17 @@ export function SignatureCreatorModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 shadow-xl sm:p-6"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-xl sm:p-6"
       >
-        <h2 id={titleId} className="text-lg font-semibold text-white">
+        <h2 id={titleId} className="text-lg font-semibold text-foreground">
           Create signature
         </h2>
-        <p className="mt-1 text-sm text-scanonix-muted">
+        <p className="mt-1 text-sm text-foreground-muted">
           Draw, type, or upload a signature to place on your PDF.
         </p>
 
         <div
-          className="mt-4 flex gap-2 border-b border-scanonix-border pb-3"
+          className="mt-4 flex gap-2 border-b border-border pb-3"
           role="tablist"
           aria-label="Signature creation method"
         >
@@ -179,7 +179,7 @@ export function SignatureCreatorModal({
               className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                 tab === value
                   ? "bg-scanonix-orange/15 text-scanonix-orange ring-2 ring-scanonix-orange/30"
-                  : "text-scanonix-muted hover:text-white"
+                  : "text-foreground-muted hover:text-foreground"
               }`}
               onClick={() => {
                 setTab(value);
@@ -206,19 +206,19 @@ export function SignatureCreatorModal({
           {tab === "type" && (
             <div className="space-y-4">
               <label className="block space-y-2">
-                <span className="text-sm font-medium text-white">Your name</span>
+                <span className="text-sm font-medium text-foreground">Your name</span>
                 <input
                   type="text"
                   value={typedName}
                   onChange={(event) => setTypedName(event.target.value)}
-                  className="w-full rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+                  className="input-field"
                   placeholder="Jane Doe"
                   autoComplete="name"
                 />
               </label>
 
               <fieldset className="space-y-2">
-                <legend className="text-sm font-medium text-white">Style</legend>
+                <legend className="text-sm font-medium text-foreground">Style</legend>
                 <div className="grid gap-2 sm:grid-cols-3">
                   {SIGNATURE_TYPED_FONT_STYLES.map((style) => (
                     <button
@@ -227,24 +227,27 @@ export function SignatureCreatorModal({
                       aria-pressed={fontStyleId === style.id}
                       className={`rounded-xl border px-3 py-3 text-left text-sm transition-colors ${
                         fontStyleId === style.id
-                          ? "border-scanonix-orange bg-scanonix-orange/10 text-white"
-                          : "border-scanonix-border text-scanonix-muted hover:border-scanonix-orange/40"
+                          ? "border-scanonix-orange bg-scanonix-orange/10"
+                          : "border-border text-foreground-muted hover:border-scanonix-orange/40"
                       }`}
                       onClick={() => setFontStyleId(style.id)}
                     >
-                      <span style={{ fontFamily: style.font }} className="text-base text-white">
+                      <span
+                        style={{ fontFamily: style.font, color: "#111111" }}
+                        className="text-base"
+                      >
                         {typedName.trim() || "Signature"}
                       </span>
-                      <span className="mt-1 block text-xs text-scanonix-muted">{style.label}</span>
+                      <span className="mt-1 block text-xs text-foreground-muted">{style.label}</span>
                     </button>
                   ))}
                 </div>
               </fieldset>
 
-              <div className="rounded-xl border border-scanonix-border bg-black/30 px-4 py-6 text-center">
+              <div className="rounded-xl border border-border bg-surface-muted px-4 py-6 text-center">
                 <span
-                  style={{ fontFamily: selectedFont.font }}
-                  className="text-3xl text-white"
+                  style={{ fontFamily: selectedFont.font, color: "#111111" }}
+                  className="text-3xl"
                 >
                   {typedName.trim() || "Signature preview"}
                 </span>
@@ -285,7 +288,7 @@ export function SignatureCreatorModal({
                 Choose PNG or JPG
               </ActionButton>
               {uploadPreviewUrl && (
-                <div className="flex justify-center rounded-xl border border-scanonix-border bg-[repeating-conic-gradient(#ffffff10_0%_25%,transparent_0%_50%)] bg-[length:16px_16px] p-4">
+                <div className="flex justify-center rounded-xl border border-border bg-[repeating-conic-gradient(#ffffff10_0%_25%,transparent_0%_50%)] bg-[length:16px_16px] p-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={uploadPreviewUrl}
@@ -312,7 +315,7 @@ export function SignatureCreatorModal({
         </div>
 
         {error && (
-          <p className="mt-4 text-sm text-red-300" role="alert">
+          <p className="mt-4 text-sm text-red-600" role="alert">
             {error}
           </p>
         )}

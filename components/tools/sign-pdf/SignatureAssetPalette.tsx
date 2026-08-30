@@ -38,11 +38,11 @@ export function SignatureAssetPalette({
   onCreateSignature,
 }: SignatureAssetPaletteProps) {
   return (
-    <div className="space-y-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+    <div className="space-y-4 rounded-2xl border border-border bg-surface p-5 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-white">Signatures</h2>
-          <p className="mt-1 text-sm text-scanonix-muted">
+          <h2 className="text-lg font-semibold text-foreground">Signatures</h2>
+          <p className="mt-1 text-sm text-foreground-muted">
             Create a signature, select it, then add it to the current page.
           </p>
         </div>
@@ -57,7 +57,7 @@ export function SignatureAssetPalette({
       </div>
 
       {assets.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-scanonix-border px-4 py-6 text-center text-sm text-scanonix-muted">
+        <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-foreground-muted">
           No signatures yet. Create one to begin placing it on the PDF.
         </p>
       ) : (
@@ -70,7 +70,7 @@ export function SignatureAssetPalette({
                 className={`rounded-xl border p-3 transition-colors ${
                   isSelected
                     ? "border-scanonix-orange bg-scanonix-orange/10 ring-2 ring-scanonix-orange/30"
-                    : "border-scanonix-border bg-black/20"
+                    : "border-border bg-surface-muted"
                 }`}
               >
                 <button
@@ -80,7 +80,7 @@ export function SignatureAssetPalette({
                   disabled={disabled}
                   onClick={() => onSelectAsset(entry.asset.id)}
                 >
-                  <div className="flex h-16 w-28 items-center justify-center rounded-lg border border-scanonix-border bg-[repeating-conic-gradient(#ffffff10_0%_25%,transparent_0%_50%)] bg-[length:12px_12px] p-2">
+                  <div className="flex h-16 w-28 items-center justify-center rounded-lg border border-border bg-[repeating-conic-gradient(#ffffff10_0%_25%,transparent_0%_50%)] bg-[length:12px_12px] p-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={entry.previewUrl}
@@ -89,10 +89,10 @@ export function SignatureAssetPalette({
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-foreground">
                       {sourceLabel(entry.asset.sourceType)} signature
                     </p>
-                    <p className="text-xs text-scanonix-muted">
+                    <p className="text-xs text-foreground-muted">
                       Reusable during this session
                     </p>
                   </div>

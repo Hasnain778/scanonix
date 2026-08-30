@@ -161,16 +161,16 @@ export function SignatureDrawPad({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        className={`w-full touch-none rounded-xl border border-scanonix-border bg-transparent ${
+        className={`w-full touch-none rounded-xl border border-border bg-transparent ${
           isDrawing ? "cursor-crosshair" : "cursor-crosshair"
         } ${disabled ? "opacity-50" : ""}`}
         style={{ maxHeight: 180 }}
       />
-      <p className="text-xs text-scanonix-muted">
+      <p className="text-xs text-foreground-muted">
         Draw with mouse or finger. Use a horizontal stroke like signing on paper.
       </p>
       {error && (
-        <p className="text-sm text-red-300" role="alert">
+        <p className="text-sm text-red-600" role="alert">
           {error}
         </p>
       )}

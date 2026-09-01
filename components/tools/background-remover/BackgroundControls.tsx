@@ -35,7 +35,7 @@ export function BackgroundControls({
   return (
     <div className="space-y-5">
       <div>
-        <p className="mb-3 text-sm font-medium text-white">Background</p>
+        <p className="mb-3 text-sm font-medium text-foreground">Background</p>
         <div className="flex flex-wrap gap-2">
           {MODE_OPTIONS.map(({ mode, label }) => (
             <button
@@ -45,8 +45,8 @@ export function BackgroundControls({
               onClick={() => onBackgroundModeChange(mode)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                 backgroundMode === mode
-                  ? "border-scanonix-orange bg-scanonix-orange/15 text-white"
-                  : "border-scanonix-border bg-black/30 text-scanonix-muted hover:border-scanonix-orange/50 hover:text-white"
+                  ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
+                  : "border-scanonix-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/50 hover:text-foreground"
               }`}
             >
               {label}

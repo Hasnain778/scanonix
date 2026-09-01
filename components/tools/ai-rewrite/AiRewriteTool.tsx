@@ -143,7 +143,7 @@ export function AiRewriteTool() {
       ) : null}
 
       <div className="glass-card rounded-2xl p-5 sm:p-6">
-        <label className="mb-2 block text-sm font-medium text-neutral-300" htmlFor="rewrite-input">
+        <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="rewrite-input">
           Text to rewrite
         </label>
         <textarea
@@ -154,7 +154,7 @@ export function AiRewriteTool() {
           placeholder="Paste the text you want to improve or rewrite…"
           disabled={isBusy}
           maxLength={REWRITE_MAX_CHARACTERS}
-          className="w-full resize-y rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white placeholder:text-scanonix-muted focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange"
+          className="input-field w-full resize-y"
         />
         <p className="mt-2 text-xs text-scanonix-muted">
           {inputText.length.toLocaleString()} / {REWRITE_MAX_CHARACTERS.toLocaleString()} characters
@@ -162,7 +162,7 @@ export function AiRewriteTool() {
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-neutral-300" htmlFor="rewrite-tone">
+            <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="rewrite-tone">
               Tone
             </label>
             <select
@@ -170,7 +170,7 @@ export function AiRewriteTool() {
               value={tone}
               onChange={(event) => setTone(event.target.value as RewriteTone)}
               disabled={isBusy}
-              className="w-full rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange"
+              className="select-field"
             >
               {REWRITE_TONES.map((option) => (
                 <option key={option} value={option}>
@@ -181,7 +181,7 @@ export function AiRewriteTool() {
           </div>
           <div>
             <label
-              className="mb-2 block text-sm font-medium text-neutral-300"
+              className="mb-2 block text-sm font-medium text-foreground"
               htmlFor="rewrite-length"
             >
               Length
@@ -191,7 +191,7 @@ export function AiRewriteTool() {
               value={length}
               onChange={(event) => setLength(event.target.value as RewriteLength)}
               disabled={isBusy}
-              className="w-full rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange"
+              className="select-field"
             >
               {REWRITE_LENGTHS.map((option) => (
                 <option key={option} value={option}>
@@ -242,7 +242,7 @@ export function AiRewriteTool() {
             <p className="mb-3 text-sm text-red-400">{errorMessage}</p>
           ) : null}
           {outputText ? (
-            <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded-xl border border-scanonix-border bg-black/30 p-4 text-sm leading-relaxed text-neutral-200">
+            <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted p-4 text-sm leading-relaxed text-foreground">
               {outputText}
             </div>
           ) : (

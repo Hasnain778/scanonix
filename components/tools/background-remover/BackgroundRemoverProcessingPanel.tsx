@@ -15,14 +15,14 @@ export function BackgroundRemoverProcessingPanel({
     <div className="glass-card rounded-2xl p-5 sm:p-6">
       <div className="mb-5 space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-medium text-white">{snapshot.label}</p>
+          <p className="text-sm font-medium text-foreground">{snapshot.label}</p>
           <span className="text-sm font-semibold tabular-nums text-scanonix-orange">
             {snapshot.percent}%
           </span>
         </div>
 
         <div
-          className="h-2 overflow-hidden rounded-full bg-white/10"
+          className="h-2 overflow-hidden rounded-full bg-surface-muted"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
@@ -40,7 +40,7 @@ export function BackgroundRemoverProcessingPanel({
         </p>
       </div>
 
-      <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/40 p-4">
+      <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-border bg-black/40 p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={previewUrl}

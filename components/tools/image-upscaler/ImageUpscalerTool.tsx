@@ -340,15 +340,15 @@ export function ImageUpscalerTool() {
                       />
                     </div>
                   ) : null}
-                  <div className="rounded-xl border border-scanonix-border bg-black/30 p-4">
-                    <p className="text-sm font-medium text-white">{file.name}</p>
+                  <div className="rounded-xl border border-border bg-surface-muted p-4">
+                    <p className="text-sm font-medium text-foreground">{file.name}</p>
                     <p className="mt-1 text-sm text-scanonix-muted">{formatFileSize(file.size)}</p>
                   </div>
                 </div>
               ) : null}
 
               <div className="glass-card rounded-2xl p-5 sm:p-6">
-                <p className="text-sm font-medium text-white">Upscale factor</p>
+                <p className="text-sm font-medium text-foreground">Upscale factor</p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {[2, 4].map((value) => (
                     <button
@@ -358,8 +358,8 @@ export function ImageUpscalerTool() {
                       onClick={() => setFactor(value as 2 | 4)}
                       className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
                         factor === value
-                          ? "border-scanonix-orange bg-scanonix-orange/15 text-white"
-                          : "border-scanonix-border bg-black/30 text-scanonix-muted hover:border-scanonix-orange/40"
+                          ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
+                          : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40"
                       }`}
                     >
                       {value}×

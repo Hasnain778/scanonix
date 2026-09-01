@@ -33,14 +33,16 @@ export default async function ToolsPage({
 
   return (
     <ToolShell>
-      <ToolLayout>
-        <div className="tools-directory-page space-y-8 sm:space-y-10">
-          <div className="tools-directory-hero-zone">
-            <ToolsDirectoryHeroHeader />
-            <ToolsDirectory initialCategory={initialCategory} />
+      <div className="tools-directory-shell">
+        <ToolLayout>
+          <div className="tools-directory-page space-y-8 sm:space-y-10">
+            <div className="tools-directory-hero-zone">
+              <ToolsDirectoryHeroHeader />
+              <ToolsDirectory initialCategory={initialCategory} />
+            </div>
           </div>
-        </div>
-      </ToolLayout>
+        </ToolLayout>
+      </div>
     </ToolShell>
   );
 }

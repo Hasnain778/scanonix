@@ -85,8 +85,8 @@ export function QrScannerTool() {
                 onClick={() => handleModeChange(optionMode)}
                 className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
                   mode === optionMode
-                    ? "border-scanonix-orange bg-scanonix-orange/15 text-white"
-                    : "border-scanonix-border bg-black/30 text-scanonix-muted hover:border-scanonix-orange/50 hover:text-white"
+                    ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
+                    : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/50 hover:text-foreground"
                 }`}
               >
                 {label}

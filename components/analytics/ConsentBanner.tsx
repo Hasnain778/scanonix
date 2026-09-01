@@ -28,12 +28,12 @@ export function ConsentBanner() {
       aria-describedby="consent-banner-description"
       className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center p-3 sm:p-4"
     >
-      <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-white/10 bg-[#0e0e0e]/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-md sm:p-5">
+      <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-border bg-surface-raised/95 p-4 shadow-2xl backdrop-blur-md sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <div className="min-w-0 flex-1">
             <p
               id="consent-banner-title"
-              className="text-sm font-semibold text-white sm:text-base"
+              className="text-sm font-semibold text-foreground sm:text-base"
             >
               Cookie preferences
             </p>
@@ -56,7 +56,7 @@ export function ConsentBanner() {
             <button
               type="button"
               onClick={rejectAnalytics}
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/15 bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition hover:border-white/25 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-transparent px-5 py-2.5 text-sm font-semibold text-foreground transition hover:border-border-strong hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
             >
               Reject analytics
             </button>

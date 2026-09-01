@@ -57,10 +57,10 @@ export function ConsentPreferencesPanel() {
         aria-modal="true"
         className="fixed inset-x-0 bottom-0 z-[86] flex justify-center p-3 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:p-4"
       >
-        <div className="w-full rounded-2xl border border-white/10 bg-[#0e0e0e] p-5 shadow-2xl shadow-black/50 sm:p-6">
+        <div className="w-full rounded-2xl border border-border bg-surface-raised p-5 shadow-2xl sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 id="consent-preferences-title" className="text-base font-semibold text-white">
+              <h2 id="consent-preferences-title" className="text-base font-semibold text-foreground">
                 Cookie preferences
               </h2>
               <p className="mt-1 text-sm text-scanonix-muted">
@@ -71,22 +71,22 @@ export function ConsentPreferencesPanel() {
               ref={closeRef}
               type="button"
               onClick={closePreferences}
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 text-scanonix-muted transition hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border text-scanonix-muted transition hover:border-border-strong hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
               aria-label="Close"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
 
-          <div className="mt-5 rounded-xl border border-white/8 bg-white/[0.03] p-4">
-            <p className="text-sm font-medium text-white">Analytics cookies</p>
+          <div className="mt-5 rounded-xl border border-border bg-surface-muted p-4">
+            <p className="text-sm font-medium text-foreground">Analytics cookies</p>
             <p className="mt-1 text-sm leading-relaxed text-scanonix-muted">
               Help us understand which tools are used so we can improve Scanonix. Document
               contents are never included.
             </p>
             <p className="mt-3 text-xs font-medium uppercase tracking-wide text-scanonix-muted">
               Current choice:{" "}
-              <span className="text-white normal-case">{preferenceLabel(decision)}</span>
+              <span className="text-foreground normal-case">{preferenceLabel(decision)}</span>
             </p>
           </div>
 
@@ -94,7 +94,7 @@ export function ConsentPreferencesPanel() {
             <button
               type="button"
               onClick={rejectAnalytics}
-              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white transition hover:border-white/25 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-border bg-transparent px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-border-strong hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
             >
               Reject analytics
             </button>

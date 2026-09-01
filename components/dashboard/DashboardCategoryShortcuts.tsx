@@ -67,13 +67,13 @@ export function DashboardCategoryShortcuts() {
               <li key={category}>
                 <Link
                   href={meta.viewAllHref}
-                  className="group flex items-center gap-3 rounded-xl border border-white/8 bg-black/15 px-4 py-3 transition-colors hover:border-scanonix-orange/30 hover:bg-scanonix-orange/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+                  className="group flex items-center gap-3 rounded-xl border border-border bg-surface-muted px-4 py-3 transition-colors hover:border-scanonix-orange/30 hover:bg-scanonix-orange/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
                 >
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-scanonix-orange/10 text-scanonix-orange">
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-white">{meta.label} tools</span>
+                    <span className="block text-sm font-medium text-foreground">{meta.label} tools</span>
                     <span className="block text-xs text-scanonix-muted">{meta.description}</span>
                   </span>
                 </Link>

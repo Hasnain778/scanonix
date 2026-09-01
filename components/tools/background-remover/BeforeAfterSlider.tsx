@@ -59,7 +59,7 @@ export function BeforeAfterSlider({
         </span>
       </div>
 
-      <CheckerboardBackground className="overflow-hidden rounded-2xl border border-white/10">
+      <CheckerboardBackground className="overflow-hidden rounded-2xl border border-border">
         <div
           ref={containerRef}
           className="relative aspect-[4/3] w-full touch-none select-none overflow-hidden"
@@ -111,7 +111,7 @@ export function BeforeAfterSlider({
             className="absolute inset-y-0 z-10 w-0.5 bg-scanonix-orange shadow-[0_0_12px_#FF6A00]"
             style={{ left: `${sliderPosition}%` }}
           >
-            <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-scanonix-orange bg-[#121212] shadow-lg">
+            <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-scanonix-orange bg-surface-raised shadow-lg">
               <svg
                 className="h-4 w-4 text-scanonix-orange"
                 fill="none"

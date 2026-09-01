@@ -96,9 +96,9 @@ export function DashboardPlanCard({
         </div>
 
         <div className="w-full shrink-0 lg:max-w-sm">
-          <div className="rounded-xl border border-white/8 bg-black/20 p-5">
+          <div className="rounded-xl border border-border bg-surface-muted p-5">
             <div className="mb-3 flex items-end justify-between gap-3">
-              <p className="text-sm font-medium text-white">Usage</p>
+              <p className="text-sm font-medium text-foreground">Usage</p>
               {usage ? (
                 <p className="text-sm text-scanonix-muted">
                   {usage.usageCount} / {usage.limit}
@@ -108,7 +108,7 @@ export function DashboardPlanCard({
               )}
             </div>
 
-            <div className="relative h-2.5 overflow-hidden rounded-full bg-white/8">
+            <div className="relative h-2.5 overflow-hidden rounded-full bg-surface">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${usedPercent}%` }}

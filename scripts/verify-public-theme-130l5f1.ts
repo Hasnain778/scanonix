@@ -112,11 +112,12 @@ assert(
   authShell.includes("border-border") && !authShell.includes("border-white/10"),
 );
 
-// Consent must remain untouched by this phase
+// Consent theme migrated in 5F-2 — 5F-1 verifier only guards handler wiring
 const consentBanner = read("components/analytics/ConsentBanner.tsx");
 assert(
-  "ConsentBanner still uses prior dark shell (out of 5F-1 scope)",
-  consentBanner.includes("bg-[#0e0e0e]") || consentBanner.includes("text-white"),
+  "ConsentBanner accept/reject handlers preserved",
+  consentBanner.includes("onClick={rejectAnalytics}") &&
+    consentBanner.includes("onClick={acceptAnalytics}"),
 );
 
 console.log(`\nResult: ${passed}/${passed + failed} ${failed === 0 ? "PASS" : "FAIL"}\n`);

@@ -167,7 +167,7 @@ export function CloudAiTextTool({
       ) : null}
 
       <div className="glass-card rounded-2xl p-5 sm:p-6">
-        <label className="mb-2 block text-sm font-medium text-neutral-300" htmlFor="ai-input">
+        <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="ai-input">
           {inputLabel}
         </label>
         <textarea
@@ -177,13 +177,13 @@ export function CloudAiTextTool({
           onChange={(e) => setInputText(e.target.value)}
           placeholder={inputPlaceholder}
           disabled={isBusy}
-          className="w-full resize-y rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white placeholder:text-scanonix-muted focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange"
+          className="input-field w-full resize-y"
         />
 
         {mode === "translate" && (
           <div className="mt-4">
             <label
-              className="mb-2 block text-sm font-medium text-neutral-300"
+              className="mb-2 block text-sm font-medium text-foreground"
               htmlFor="target-language"
             >
               Target language
@@ -193,7 +193,7 @@ export function CloudAiTextTool({
               value={targetLanguage}
               onChange={(e) => setTargetLanguage(e.target.value)}
               disabled={isBusy}
-              className="w-full rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange"
+              className="select-field"
             >
               {LANGUAGES.map((language) => (
                 <option key={language} value={language}>
@@ -230,7 +230,7 @@ export function CloudAiTextTool({
             <p className="mb-3 text-sm text-red-400">{errorMessage}</p>
           )}
           {outputText ? (
-            <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded-xl border border-scanonix-border bg-black/30 p-4 text-sm leading-relaxed text-neutral-200">
+            <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted p-4 text-sm leading-relaxed text-foreground">
               {outputText}
             </div>
           ) : (

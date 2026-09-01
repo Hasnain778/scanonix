@@ -30,7 +30,7 @@ export function DashboardQuickActions() {
           href="/tools"
           className="dashboard-quick-action group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
         >
-          <span className="dashboard-quick-action__icon bg-white/5 text-white">
+          <span className="dashboard-quick-action__icon">
             <ArrowRight className="h-5 w-5" aria-hidden="true" />
           </span>
           <span className="min-w-0 flex-1">

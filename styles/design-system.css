@@ -534,18 +534,21 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
   opacity: 0.4;
 }
 
-/* Tools directory — ambient orange page lighting + hero light trails */
-.tools-directory-page {
+/* Tools directory — full-bleed ambient page lighting (shell owns viewport background) */
+.tools-directory-shell {
   position: relative;
   isolation: isolate;
+  width: 100%;
 }
 
-.tools-directory-page::before {
+.tools-directory-shell::before {
   content: "";
   pointer-events: none;
   position: absolute;
-  inset: -10% -5% auto;
-  z-index: -1;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  top: -10%;
+  z-index: 0;
   height: 480px;
   opacity: 0.58;
   background:
@@ -558,15 +561,22 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
       ellipse 40% 35% at 15% 8%,
       color-mix(in srgb, var(--scanonix-orange) 6%, transparent) 0%,
       transparent 70%
+    ),
+    radial-gradient(
+      ellipse 40% 35% at 85% 8%,
+      color-mix(in srgb, var(--scanonix-orange) 6%, transparent) 0%,
+      transparent 70%
     );
 }
 
-.tools-directory-page::after {
+.tools-directory-shell::after {
   content: "";
   pointer-events: none;
   position: absolute;
-  inset: auto -10% -5%;
-  z-index: -1;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  bottom: -5%;
+  z-index: 0;
   height: 360px;
   opacity: 0.38;
   background: radial-gradient(
@@ -574,6 +584,22 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
     color-mix(in srgb, var(--scanonix-orange) 7%, transparent) 0%,
     transparent 70%
   );
+}
+
+.tools-directory-page {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero decorative layers break out of ToolLayout while content stays constrained */
+.tools-directory-shell .tools-directory-light-trails,
+.tools-directory-shell .tools-directory-ambient-glow {
+  width: auto;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
 }
 
 /* Hero zone — explicit z-index stacking (Phase 128F-FIX3) */
@@ -1982,8 +2008,8 @@ html[data-theme="bright"] .tool-finder-launcher:hover {
     transform: none;
   }
 
-  .tools-directory-page::before,
-  .tools-directory-page::after {
+  .tools-directory-shell::before,
+  .tools-directory-shell::after {
     animation: none !important;
   }
 
@@ -2091,6 +2117,29 @@ html[data-theme="bright"] .home-hero-glow {
   opacity: 0.4;
 }
 
+/* 130L-5F-2-R1 — Bright dashboard quick actions */
+html[data-theme="bright"] .dashboard-quick-action {
+  border-color: var(--border);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-soft);
+}
+
+html[data-theme="bright"] .dashboard-quick-action:hover {
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, var(--border));
+  background: color-mix(in srgb, var(--scanonix-orange) 6%, var(--surface-raised));
+  box-shadow: var(--shadow-card);
+}
+
+/* 130L-5F-2-R1 — Bright /tools hero: remove dark heading backplate bloom */
+html[data-theme="bright"] .tools-hero-content-backplate {
+  background: radial-gradient(
+    ellipse 72% 88% at 50% 42%,
+    color-mix(in srgb, var(--scanonix-orange) 5%, transparent) 0%,
+    transparent 74%
+  );
+  opacity: 0.2;
+}
+
 html[data-theme="bright"] .scanonix-pro-promo__panel::before {
   opacity: 0.35;
 }
@@ -2113,11 +2162,11 @@ html[data-theme="bright"] .scanonix-pro-promo__panel::before {
 }
 
 html[data-theme="bright"] .brand-logo-mark__img {
-  filter: drop-shadow(0 0 1.5px color-mix(in srgb, var(--scanonix-orange) 20%, transparent));
+  filter: contrast(1.1) saturate(1.08) drop-shadow(0 1px 1px rgba(28, 24, 20, 0.22));
 }
 
 html[data-theme="bright"] .brand-logo-mark--header .brand-logo-mark__img {
-  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--scanonix-orange) 24%, transparent));
+  filter: contrast(1.14) saturate(1.1) drop-shadow(0 1px 1.5px rgba(28, 24, 20, 0.24));
 }
 
 /* Legacy tile styles retained only if referenced elsewhere */

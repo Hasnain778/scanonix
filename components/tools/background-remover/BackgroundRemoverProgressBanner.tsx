@@ -14,7 +14,7 @@ export function BackgroundRemoverProgressBanner({
   }
 
   const styles = {
-    loading: "border-scanonix-orange/40 bg-scanonix-orange/10 text-white",
+    loading: "border-scanonix-orange/40 bg-scanonix-orange/10 text-foreground",
     success: "border-green-500/40 bg-green-500/10 text-green-300",
     error: "border-red-500/40 bg-red-500/10 text-red-300",
   };

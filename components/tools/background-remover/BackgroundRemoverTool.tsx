@@ -474,7 +474,7 @@ export function BackgroundRemoverTool() {
                   <ImageDropIcon />
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-base font-semibold text-white">
+                  <p className="truncate text-base font-semibold text-foreground">
                     {uploadedImage.file.name}
                   </p>
                   <p className="mt-1 text-sm text-scanonix-muted">

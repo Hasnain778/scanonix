@@ -87,14 +87,14 @@ export function ImageStudioControls({
                 onClick={() => !isLocked && onResolutionChange(preset.id)}
                 className={`flex flex-col items-start rounded-xl border px-3 py-2.5 text-left transition-all ${
                   isLocked
-                    ? "cursor-not-allowed border-white/6 bg-white/2 opacity-60"
+                    ? "cursor-not-allowed border-border bg-surface-muted opacity-60"
                     : isSelected
                       ? "border-scanonix-orange bg-scanonix-orange/15"
-                      : "border-white/10 bg-black/20 hover:border-scanonix-orange/40"
+                      : "border-border bg-surface-muted hover:border-scanonix-orange/40"
                 }`}
               >
                 <span className="flex w-full items-center justify-between gap-1">
-                  <span className="text-sm font-semibold text-white">
+                  <span className="text-sm font-semibold text-foreground">
                     {preset.label}
                   </span>
                   {preset.premium ? (
@@ -134,8 +134,8 @@ export function ImageStudioControls({
               onClick={() => setBackgroundMode(mode)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
                 background.mode === mode
-                  ? "border-scanonix-orange bg-scanonix-orange/15 text-white"
-                  : "border-white/10 bg-black/20 text-scanonix-muted hover:border-scanonix-orange/40 hover:text-white"
+                  ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
+                  : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
               }`}
             >
               {label}
@@ -155,7 +155,7 @@ export function ImageStudioControls({
                   customColor: event.target.value,
                 })
               }
-              className="h-10 w-14 cursor-pointer rounded-lg border border-white/10 bg-transparent"
+              className="h-10 w-14 cursor-pointer rounded-lg border border-border bg-transparent"
             />
             <span className="font-mono text-sm text-scanonix-muted">
               {background.customColor.toUpperCase()}
@@ -177,7 +177,7 @@ export function ImageStudioControls({
                     gradientStart: event.target.value,
                   })
                 }
-                className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent"
+                className="h-9 w-12 cursor-pointer rounded-lg border border-border bg-transparent"
               />
             </label>
             <label className="flex items-center gap-2 text-sm text-scanonix-muted">
@@ -192,7 +192,7 @@ export function ImageStudioControls({
                     gradientEnd: event.target.value,
                   })
                 }
-                className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent"
+                className="h-9 w-12 cursor-pointer rounded-lg border border-border bg-transparent"
               />
             </label>
           </div>
@@ -243,8 +243,8 @@ export function ImageStudioControls({
               onClick={() => onExportFormatChange(format)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium uppercase transition-colors disabled:opacity-50 ${
                 exportFormat === format
-                  ? "border-scanonix-orange bg-scanonix-orange/15 text-white"
-                  : "border-white/10 bg-black/20 text-scanonix-muted hover:text-white"
+                  ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
+                  : "border-border bg-surface-muted text-scanonix-muted hover:text-foreground"
               }`}
             >
               {format}
@@ -256,7 +256,7 @@ export function ImageStudioControls({
           <div className="mb-4">
             <div className="mb-2 flex items-center justify-between text-sm">
               <span className="text-scanonix-muted">Quality</span>
-              <span className="font-mono text-white">
+              <span className="font-mono text-foreground">
                 {Math.round(exportQuality * 100)}%
               </span>
             </div>
@@ -275,9 +275,9 @@ export function ImageStudioControls({
           </div>
         )}
 
-        <div className="mb-4 rounded-xl border border-white/8 bg-black/30 px-4 py-3">
+        <div className="mb-4 rounded-xl border border-border bg-surface-muted px-4 py-3">
           <p className="text-xs text-scanonix-muted">Output dimensions</p>
-          <p className="mt-1 font-mono text-sm font-semibold text-white">
+          <p className="mt-1 font-mono text-sm font-semibold text-foreground">
             {outputWidth} × {outputHeight}px
           </p>
         </div>
@@ -285,14 +285,14 @@ export function ImageStudioControls({
         <div>
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="text-scanonix-muted">Preview zoom</span>
-            <span className="font-mono text-white">{Math.round(zoom * 100)}%</span>
+            <span className="font-mono text-foreground">{Math.round(zoom * 100)}%</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               disabled={disabled || zoom <= 0.5}
               onClick={() => onZoomChange(Math.max(0.5, zoom - 0.25))}
-              className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white hover:border-scanonix-orange/40 disabled:opacity-40"
+              className="rounded-lg border border-border px-3 py-1.5 text-sm text-foreground hover:border-scanonix-orange/40 disabled:opacity-40"
             >
               −
             </button>
@@ -310,7 +310,7 @@ export function ImageStudioControls({
               type="button"
               disabled={disabled || zoom >= 2}
               onClick={() => onZoomChange(Math.min(2, zoom + 0.25))}
-              className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white hover:border-scanonix-orange/40 disabled:opacity-40"
+              className="rounded-lg border border-border px-3 py-1.5 text-sm text-foreground hover:border-scanonix-orange/40 disabled:opacity-40"
             >
               +
             </button>

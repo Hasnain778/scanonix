@@ -33,7 +33,7 @@ export function QrResultPanel({ result, onScanAnother }: QrResultPanelProps) {
 
   return (
     <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-semibold text-white">Results</h2>
+      <h2 className="mb-4 text-lg font-semibold text-foreground">Results</h2>
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <span className="rounded-full border border-scanonix-orange/40 bg-scanonix-orange/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-scanonix-orange">
@@ -41,28 +41,28 @@ export function QrResultPanel({ result, onScanAnother }: QrResultPanelProps) {
         </span>
       </div>
 
-      <div className="rounded-xl border border-scanonix-border bg-black/40 p-4">
+      <div className="rounded-xl border border-border bg-surface-muted p-4">
         {result.type === "wifi" && result.wifi ? (
           <dl className="space-y-3 text-sm">
             <div>
               <dt className="text-scanonix-muted">Network name</dt>
-              <dd className="mt-1 font-medium text-white">{result.wifi.ssid}</dd>
+              <dd className="mt-1 font-medium text-foreground">{result.wifi.ssid}</dd>
             </div>
             <div>
               <dt className="text-scanonix-muted">Security</dt>
-              <dd className="mt-1 text-white">{result.wifi.security}</dd>
+              <dd className="mt-1 text-foreground">{result.wifi.security}</dd>
             </div>
             {result.wifi.password && (
               <div>
                 <dt className="text-scanonix-muted">Password</dt>
-                <dd className="mt-1 break-all font-mono text-white">
+                <dd className="mt-1 break-all font-mono text-foreground">
                   {result.wifi.password}
                 </dd>
               </div>
             )}
           </dl>
         ) : (
-          <p className="break-all text-sm leading-relaxed text-white">
+          <p className="break-all text-sm leading-relaxed text-foreground">
             {result.displayValue}
           </p>
         )}

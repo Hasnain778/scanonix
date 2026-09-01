@@ -27,7 +27,7 @@ export function AuthShell({
             <p className="text-page-description mt-3">{description}</p>
             <div className="mt-6">{children}</div>
             {footer ? (
-              <div className="mt-6 border-t border-white/10 pt-6 text-center text-sm text-scanonix-muted">
+              <div className="mt-6 border-t border-border pt-6 text-center text-sm text-foreground-muted">
                 {footer}
               </div>
             ) : null}
@@ -47,8 +47,8 @@ interface AuthMessageProps {
 export function AuthMessage({ type, message }: AuthMessageProps) {
   const styles =
     type === "error"
-      ? "border-red-500/30 bg-red-500/10 text-red-200"
-      : "border-green-500/30 bg-green-500/10 text-green-200";
+      ? "border-red-500/30 bg-red-500/10 text-red-600"
+      : "border-green-500/30 bg-green-500/10 text-green-700";
 
   return (
     <div

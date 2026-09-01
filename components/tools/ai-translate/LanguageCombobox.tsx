@@ -41,7 +41,7 @@ export function LanguageCombobox({
 
   return (
     <div ref={rootRef} className="relative">
-      <label htmlFor={listId} className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-scanonix-muted">
+      <label htmlFor={listId} className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-foreground-muted">
         {label}
       </label>
       <button
@@ -49,24 +49,24 @@ export function LanguageCombobox({
         type="button"
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-scanonix-border bg-black/40 px-3 py-2.5 text-left text-sm text-white transition-colors hover:border-scanonix-orange/40 focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange disabled:opacity-50"
+        className="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-surface px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:border-scanonix-orange/40 focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange disabled:opacity-50"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
         <span className="truncate">{value}</span>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-scanonix-muted transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-4 w-4 shrink-0 text-foreground-muted transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open ? (
-        <div className="absolute z-30 mt-2 w-full overflow-hidden rounded-xl border border-scanonix-border bg-[#111111] shadow-2xl shadow-black/50">
-          <div className="flex items-center gap-2 border-b border-white/8 px-3 py-2">
-            <Search className="h-4 w-4 shrink-0 text-scanonix-muted" aria-hidden="true" />
+        <div className="absolute z-30 mt-2 w-full overflow-hidden rounded-xl border border-border bg-surface-raised shadow-2xl shadow-black/20">
+          <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+            <Search className="h-4 w-4 shrink-0 text-foreground-muted" aria-hidden="true" />
             <input
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search languages…"
-              className="w-full bg-transparent text-sm text-white placeholder:text-scanonix-muted focus:outline-none"
+              className="w-full bg-transparent text-sm text-foreground placeholder:text-foreground-muted focus:outline-none"
               autoFocus
             />
           </div>
@@ -76,7 +76,7 @@ export function LanguageCombobox({
             aria-label={label}
           >
             {filtered.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-scanonix-muted">No languages found</li>
+              <li className="px-3 py-2 text-sm text-foreground-muted">No languages found</li>
             ) : (
               filtered.map((option) => (
                 <li key={option}>
@@ -89,8 +89,8 @@ export function LanguageCombobox({
                       setQuery("");
                       setOpen(false);
                     }}
-                    className={`flex w-full px-3 py-2 text-left text-sm transition-colors hover:bg-scanonix-orange/10 hover:text-white ${
-                      option === value ? "bg-scanonix-orange/15 text-scanonix-orange" : "text-neutral-200"
+                    className={`flex w-full px-3 py-2 text-left text-sm transition-colors hover:bg-scanonix-orange/10 hover:text-foreground ${
+                      option === value ? "bg-scanonix-orange/15 text-scanonix-orange" : "text-foreground"
                     }`}
                   >
                     {option}

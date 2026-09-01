@@ -296,7 +296,7 @@ export function AiTranslateTool() {
       {premiumLocked ? <UpgradeRequiredNotice feature="Premium AI" /> : null}
 
       {usageExhausted ? (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600">
           Limit reached.{" "}
           <Link href="/pricing" className="font-semibold text-scanonix-orange hover:underline">
             Upgrade your plan
@@ -306,7 +306,7 @@ export function AiTranslateTool() {
       ) : null}
 
       {errorMessage ? (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600">
           {errorMessage}
         </div>
       ) : null}
@@ -318,7 +318,7 @@ export function AiTranslateTool() {
       ) : null}
 
       <div className="glass-card overflow-hidden rounded-2xl">
-        <div className="flex flex-col gap-3 border-b border-white/8 px-4 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-5">
+        <div className="flex flex-col gap-3 border-b border-border px-4 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-5">
           <div className="grid flex-1 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
             <LanguageCombobox
               label="From"
@@ -332,7 +332,7 @@ export function AiTranslateTool() {
               onClick={handleSwap}
               disabled={!canSwap}
               aria-label="Swap languages"
-              className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-scanonix-muted transition-colors hover:border-scanonix-orange/40 hover:text-scanonix-orange disabled:cursor-not-allowed disabled:opacity-40 sm:mb-0.5"
+              className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface text-foreground-muted transition-colors hover:border-scanonix-orange/40 hover:text-scanonix-orange disabled:cursor-not-allowed disabled:opacity-40 sm:mb-0.5"
             >
               <ArrowLeftRight className="h-4 w-4" />
             </button>
@@ -347,15 +347,15 @@ export function AiTranslateTool() {
         </div>
 
         <div className="grid lg:grid-cols-2">
-          <div className="border-b border-white/8 p-4 sm:p-5 lg:border-b-0 lg:border-r">
+          <div className="border-b border-border p-4 sm:p-5 lg:border-b-0 lg:border-r">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <div>
-                <p className="text-sm font-medium text-white">Source text</p>
+                <p className="text-sm font-medium text-foreground">Source text</p>
                 {isAutoDetect(sourceLanguage) && detectedLanguage ? (
                   <p className="mt-1 text-xs text-scanonix-orange">Detected: {detectedLanguage}</p>
                 ) : null}
               </div>
-              <p className={`text-xs ${overLimit ? "text-red-400" : "text-scanonix-muted"}`}>
+              <p className={`text-xs ${overLimit ? "text-red-500" : "text-foreground-muted"}`}>
                 {charCount.toLocaleString()} / {TRANSLATION_MAX_CHARACTERS.toLocaleString()}
               </p>
             </div>
@@ -366,7 +366,7 @@ export function AiTranslateTool() {
               placeholder="Enter text to translate…"
               disabled={isBusy}
               dir={panelTextDirection(effectiveSourceLanguage)}
-              className="min-h-[220px] w-full resize-y rounded-xl border border-scanonix-border bg-black/40 px-4 py-3 text-sm leading-relaxed text-white placeholder:text-scanonix-muted focus:border-scanonix-orange focus:outline-none focus:ring-1 focus:ring-scanonix-orange"
+              className="input-field min-h-[220px] w-full resize-y px-4 py-3 text-sm leading-relaxed"
             />
 
             <div className="mt-3 flex flex-wrap gap-2">
@@ -374,7 +374,7 @@ export function AiTranslateTool() {
                 type="button"
                 onClick={() => void handlePaste()}
                 disabled={isBusy}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-neutral-200 transition-colors hover:border-scanonix-orange/35 hover:text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground-muted transition-colors hover:border-scanonix-orange/35 hover:text-foreground disabled:opacity-50"
               >
                 <ClipboardPaste className="h-3.5 w-3.5" />
                 Paste
@@ -383,7 +383,7 @@ export function AiTranslateTool() {
                 type="button"
                 onClick={() => void copyText(sourceText, "Source")}
                 disabled={!sourceText || isBusy}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-neutral-200 transition-colors hover:border-scanonix-orange/35 hover:text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground-muted transition-colors hover:border-scanonix-orange/35 hover:text-foreground disabled:opacity-50"
               >
                 <Copy className="h-3.5 w-3.5" />
                 Copy source
@@ -392,7 +392,7 @@ export function AiTranslateTool() {
                 type="button"
                 onClick={handleClearSource}
                 disabled={!sourceText || isBusy}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-neutral-200 transition-colors hover:border-scanonix-orange/35 hover:text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground-muted transition-colors hover:border-scanonix-orange/35 hover:text-foreground disabled:opacity-50"
               >
                 <Eraser className="h-3.5 w-3.5" />
                 Clear
@@ -402,7 +402,7 @@ export function AiTranslateTool() {
 
           <div className="p-4 sm:p-5">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm font-medium text-white">Translation</p>
+              <p className="text-sm font-medium text-foreground">Translation</p>
               {status === "success" && translatedText ? (
                 <span className="text-xs text-scanonix-orange">Complete</span>
               ) : null}
@@ -410,16 +410,16 @@ export function AiTranslateTool() {
 
             <div
               dir={panelTextDirection(targetLanguage)}
-              className="min-h-[220px] w-full rounded-xl border border-scanonix-border bg-black/30 px-4 py-3 text-sm leading-relaxed text-neutral-200"
+              className="min-h-[220px] w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-foreground"
             >
               {isBusy ? (
-                <div className="flex h-full min-h-[188px] items-center justify-center text-scanonix-muted">
+                <div className="flex h-full min-h-[188px] items-center justify-center text-foreground-muted">
                   Translating…
                 </div>
               ) : translatedText ? (
                 <div className="whitespace-pre-wrap">{translatedText}</div>
               ) : (
-                <p className="text-scanonix-muted">Your translation will appear here.</p>
+                <p className="text-foreground-muted">Your translation will appear here.</p>
               )}
             </div>
 
@@ -428,7 +428,7 @@ export function AiTranslateTool() {
                 type="button"
                 onClick={() => void copyText(translatedText, "Translation")}
                 disabled={!translatedText || isBusy}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-neutral-200 transition-colors hover:border-scanonix-orange/35 hover:text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground-muted transition-colors hover:border-scanonix-orange/35 hover:text-foreground disabled:opacity-50"
               >
                 <Clipboard className="h-3.5 w-3.5" />
                 Copy result
@@ -437,7 +437,7 @@ export function AiTranslateTool() {
                 type="button"
                 onClick={handleDownload}
                 disabled={!translatedText || isBusy}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-neutral-200 transition-colors hover:border-scanonix-orange/35 hover:text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground-muted transition-colors hover:border-scanonix-orange/35 hover:text-foreground disabled:opacity-50"
               >
                 <Download className="h-3.5 w-3.5" />
                 Download .txt
@@ -446,7 +446,7 @@ export function AiTranslateTool() {
                 type="button"
                 onClick={() => void handleShare()}
                 disabled={!translatedText || isBusy}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-neutral-200 transition-colors hover:border-scanonix-orange/35 hover:text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground-muted transition-colors hover:border-scanonix-orange/35 hover:text-foreground disabled:opacity-50"
               >
                 <Share2 className="h-3.5 w-3.5" />
                 Share
@@ -455,10 +455,10 @@ export function AiTranslateTool() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-white/8 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <p className="text-xs text-scanonix-muted">
-            Press <kbd className="rounded border border-white/10 px-1.5 py-0.5">Ctrl</kbd>+
-            <kbd className="rounded border border-white/10 px-1.5 py-0.5">Enter</kbd> to translate
+        <div className="flex flex-col gap-3 border-t border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <p className="text-xs text-foreground-muted">
+            Press <kbd className="rounded border border-border px-1.5 py-0.5">Ctrl</kbd>+
+            <kbd className="rounded border border-border px-1.5 py-0.5">Enter</kbd> to translate
           </p>
           <div className="flex flex-wrap gap-2">
             <ActionButton variant="outline" size="md" onClick={handleReset} disabled={isBusy}>

@@ -78,10 +78,10 @@ export function ContactForm() {
   if (submitted) {
     return (
       <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-8 text-center">
-        <h3 className="text-lg font-semibold text-green-300">
+        <h3 className="text-lg font-semibold text-foreground">
           Your email client should open shortly
         </h3>
-        <p className="mt-2 text-sm text-scanonix-muted">
+        <p className="mt-2 text-sm text-foreground-muted">
           If it does not open automatically, email us at{" "}
           <a
             href={`mailto:${SUPPORT_EMAIL}`}
@@ -110,7 +110,7 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <label htmlFor="contact-name" className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="contact-name" className="mb-2 block text-sm font-medium text-foreground">
             Name
           </label>
           <input
@@ -119,19 +119,19 @@ export function ContactForm() {
             autoComplete="name"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-scanonix-orange/50"
+            className="input-field w-full"
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "contact-name-error" : undefined}
           />
           {errors.name && (
-            <p id="contact-name-error" className="mt-1.5 text-xs text-red-400" role="alert">
+            <p id="contact-name-error" className="mt-1.5 text-xs text-red-500" role="alert">
               {errors.name}
             </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="contact-email" className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="contact-email" className="mb-2 block text-sm font-medium text-foreground">
             Email
           </label>
           <input
@@ -140,12 +140,12 @@ export function ContactForm() {
             autoComplete="email"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-            className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-scanonix-orange/50"
+            className="input-field w-full"
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "contact-email-error" : undefined}
           />
           {errors.email && (
-            <p id="contact-email-error" className="mt-1.5 text-xs text-red-400" role="alert">
+            <p id="contact-email-error" className="mt-1.5 text-xs text-red-500" role="alert">
               {errors.email}
             </p>
           )}
@@ -153,7 +153,7 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="contact-category" className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="contact-category" className="mb-2 block text-sm font-medium text-foreground">
           Category
         </label>
         <select
@@ -165,7 +165,7 @@ export function ContactForm() {
               category: e.target.value as ContactCategory | "",
             }))
           }
-          className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-scanonix-orange/50"
+          className="select-field w-full"
           aria-invalid={Boolean(errors.category)}
           aria-describedby={errors.category ? "contact-category-error" : undefined}
         >
@@ -177,14 +177,14 @@ export function ContactForm() {
           ))}
         </select>
         {errors.category && (
-          <p id="contact-category-error" className="mt-1.5 text-xs text-red-400" role="alert">
+          <p id="contact-category-error" className="mt-1.5 text-xs text-red-500" role="alert">
             {errors.category}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="contact-message" className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="contact-message" className="mb-2 block text-sm font-medium text-foreground">
           Message
         </label>
         <textarea
@@ -192,12 +192,12 @@ export function ContactForm() {
           rows={6}
           value={form.message}
           onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-          className="w-full resize-y rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-scanonix-orange/50"
+          className="input-field w-full resize-y"
           aria-invalid={Boolean(errors.message)}
           aria-describedby={errors.message ? "contact-message-error" : undefined}
         />
         {errors.message && (
-          <p id="contact-message-error" className="mt-1.5 text-xs text-red-400" role="alert">
+          <p id="contact-message-error" className="mt-1.5 text-xs text-red-500" role="alert">
             {errors.message}
           </p>
         )}

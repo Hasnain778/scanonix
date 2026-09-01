@@ -34,15 +34,15 @@ export function ImageToolsHub() {
     <div className="space-y-16 sm:space-y-20">
       <header className="max-w-3xl">
         <p className="mb-3 text-xs font-medium tracking-wide text-scanonix-orange">Image workspace</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Image Tools</h1>
-        <p className="mt-4 text-base leading-relaxed text-scanonix-muted sm:text-lg">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Image Tools</h1>
+        <p className="mt-4 text-base leading-relaxed text-foreground-muted sm:text-lg">
           Convert, clean up, and prepare images with professional utilities. Local processing wherever
           possible.
         </p>
       </header>
 
       <section aria-labelledby="featured-tools-heading">
-        <h2 id="featured-tools-heading" className="mb-6 text-lg font-semibold text-white">
+        <h2 id="featured-tools-heading" className="mb-6 text-lg font-semibold text-foreground">
           Featured tools
         </h2>
         <div className="grid gap-4 lg:grid-cols-5 lg:gap-5">
@@ -69,10 +69,10 @@ export function ImageToolsHub() {
         <div className="mb-6 flex items-center gap-3">
           <ImageToolIconBox icon={Layers} />
           <div>
-            <h2 id="convert-images-heading" className="text-lg font-semibold text-white">
+            <h2 id="convert-images-heading" className="text-lg font-semibold text-foreground">
               Convert images
             </h2>
-            <p className="text-sm text-scanonix-muted">All format converters run in your browser</p>
+            <p className="text-sm text-foreground-muted">All format converters run in your browser</p>
           </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -83,7 +83,7 @@ export function ImageToolsHub() {
       </section>
 
       <section aria-labelledby="edit-enhance-heading">
-        <h2 id="edit-enhance-heading" className="mb-6 text-lg font-semibold text-white">
+        <h2 id="edit-enhance-heading" className="mb-6 text-lg font-semibold text-foreground">
           Edit &amp; enhance
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -95,7 +95,7 @@ export function ImageToolsHub() {
       </section>
 
       <section aria-labelledby="related-pdf-heading">
-        <h2 id="related-pdf-heading" className="mb-6 text-lg font-semibold text-white">
+        <h2 id="related-pdf-heading" className="mb-6 text-lg font-semibold text-foreground">
           Related PDF tools
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

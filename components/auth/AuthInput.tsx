@@ -24,7 +24,7 @@ export function AuthInput({
 
   return (
     <div>
-      <label htmlFor={inputId} className="mb-2 block text-sm font-medium text-white">
+      <label htmlFor={inputId} className="mb-2 block text-sm font-medium text-foreground">
         {label}
       </label>
       <div className="relative">
@@ -40,7 +40,7 @@ export function AuthInput({
           <button
             type="button"
             onClick={() => setVisible((v) => !v)}
-            className="absolute inset-y-0 right-0 flex items-center px-3 text-scanonix-muted transition-colors hover:text-white"
+            className="absolute inset-y-0 right-0 flex items-center px-3 text-foreground-muted transition-colors hover:text-foreground"
             aria-label={visible ? "Hide password" : "Show password"}
           >
             {visible ? (
@@ -57,7 +57,7 @@ export function AuthInput({
         )}
       </div>
       {error && (
-        <p id={`${inputId}-error`} className="mt-1.5 text-xs text-red-400" role="alert">
+        <p id={`${inputId}-error`} className="mt-1.5 text-xs text-red-500" role="alert">
           {error}
         </p>
       )}

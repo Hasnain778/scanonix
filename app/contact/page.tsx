@@ -24,10 +24,10 @@ export default function ContactPage() {
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-scanonix-orange">
             Support
           </p>
-          <h1 className="text-balance text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
             Contact Scanonix
           </h1>
-          <p className="mt-4 text-base leading-relaxed text-scanonix-muted sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-foreground-muted sm:text-lg">
             Need help with a tool, billing, a feature idea, or a privacy request?
             Send us a message and we will get back to you as soon as we can.
           </p>
@@ -40,8 +40,8 @@ export default function ContactPage() {
 
           <aside className="space-y-6">
             <div className="glass-card rounded-2xl p-6">
-              <h2 className="text-lg font-semibold text-white">Support email</h2>
-              <p className="mt-3 text-sm leading-relaxed text-scanonix-muted">
+              <h2 className="text-lg font-semibold text-foreground">Support email</h2>
+              <p className="mt-3 text-sm leading-relaxed text-foreground-muted">
                 Prefer email? Reach us directly at:
               </p>
               <a
@@ -53,14 +53,14 @@ export default function ContactPage() {
             </div>
 
             <div className="glass-card rounded-2xl p-6">
-              <h2 className="text-lg font-semibold text-white">
+              <h2 className="text-lg font-semibold text-foreground">
                 Support categories
               </h2>
               <ul className="mt-4 space-y-3">
                 {CONTACT_CATEGORIES.map((category) => (
                   <li
                     key={category.value}
-                    className="flex items-start gap-3 text-sm text-scanonix-muted"
+                    className="flex items-start gap-3 text-sm text-foreground-muted"
                   >
                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-scanonix-orange" />
                     {category.label}
@@ -69,11 +69,11 @@ export default function ContactPage() {
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/25 p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-white">
+            <div className="rounded-2xl border border-border bg-surface-muted p-6">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-foreground">
                 Response times
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-scanonix-muted">
+              <p className="mt-3 text-sm leading-relaxed text-foreground-muted">
                 We aim to respond to most enquiries within two business days.
                 Billing and privacy requests may require additional verification.
               </p>

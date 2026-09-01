@@ -197,7 +197,7 @@ export function LoginForm() {
 
       <div className="relative py-2">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/10" />
+              <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase tracking-wider">
           <span className="bg-scanonix-surface px-3 text-scanonix-muted">or</span>

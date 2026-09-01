@@ -44,11 +44,11 @@ export function MonitorDetailShell({ monitorId }: { monitorId: string }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link href="/monitors" className="text-sm text-scanonix-orange hover:underline">← All monitors</Link>
-          <h1 className="mt-2 text-2xl font-bold text-white">{monitor.label ?? monitor.targetUrl}</h1>
+          <h1 className="mt-2 text-2xl font-bold text-foreground">{monitor.label ?? monitor.targetUrl}</h1>
           <p className="mt-1 text-sm text-scanonix-muted">{monitor.targetUrl}</p>
         </div>
         <div className="flex gap-2 text-sm">
-          <Link href={`/monitors/${monitor.id}/history`} className="rounded-xl border border-white/10 px-3 py-2 text-scanonix-muted hover:text-white">
+          <Link href={`/monitors/${monitor.id}/history`} className="rounded-xl border border-border px-3 py-2 text-scanonix-muted hover:text-foreground">
             Run history
           </Link>
           {monitor.lastScanId ? (
@@ -67,14 +67,14 @@ export function MonitorDetailShell({ monitorId }: { monitorId: string }) {
       </div>
 
       <section className="glass-card rounded-2xl p-5 shadow-premium">
-        <h2 className="text-lg font-semibold text-white">Security timeline</h2>
+        <h2 className="text-lg font-semibold text-foreground">Security timeline</h2>
         <p className="mt-1 text-sm text-scanonix-muted">Changes detected across scheduled scans.</p>
         <ul className="mt-4 space-y-3">
           {events.map((event) => (
-            <li key={event.id} className="rounded-xl border border-white/10 bg-black/20 p-4">
+            <li key={event.id} className="rounded-xl border border-border bg-surface-muted p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-medium text-white">{event.title}</p>
+                  <p className="font-medium text-foreground">{event.title}</p>
                   <p className="mt-1 text-sm text-scanonix-muted">{event.message}</p>
                 </div>
                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs uppercase ${severityClass(event.severity)}`}>
@@ -95,7 +95,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="glass-card rounded-2xl p-4 shadow-premium">
       <p className="text-xs uppercase tracking-wide text-scanonix-muted">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
     </div>
   );
 }

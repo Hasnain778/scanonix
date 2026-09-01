@@ -31,7 +31,7 @@ export function ScanHistoryTable({
     <div className="hidden lg:block">
       <table className="min-w-full text-left text-sm">
         <caption className="sr-only">Scan history results</caption>
-        <thead className="sticky top-0 z-[1] border-b border-white/8 bg-scanonix-surface/95 text-table-header backdrop-blur-sm">
+        <thead className="sticky top-0 z-[1] border-b border-border bg-scanonix-surface/95 text-table-header backdrop-blur-sm">
           <tr>
             <th scope="col" className="px-5 py-3.5 font-semibold">Target / File Name</th>
             <th scope="col" className="px-5 py-3.5 font-semibold">Type</th>
@@ -43,16 +43,16 @@ export function ScanHistoryTable({
             <th scope="col" className="px-5 py-3.5 font-semibold">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/6">
+        <tbody className="divide-y divide-border">
           {items.map((scan) => (
-            <tr key={scan.id} className="transition-colors duration-150 hover:bg-white/[0.03]">
-              <td className="max-w-[14rem] px-5 py-3.5 font-medium text-white xl:max-w-xs">
+            <tr key={scan.id} className="transition-colors duration-150 hover:bg-surface-muted/60">
+              <td className="max-w-[14rem] px-5 py-3.5 font-medium text-foreground xl:max-w-xs">
                 <div className="truncate-url" title={scan.target}>
                   {scan.target}
                 </div>
               </td>
               <td className="px-5 py-3.5 capitalize text-scanonix-muted">{scan.targetType}</td>
-              <td className="px-5 py-3.5 font-semibold tabular-nums text-white">{scan.riskScore}</td>
+              <td className="px-5 py-3.5 font-semibold tabular-nums text-foreground">{scan.riskScore}</td>
               <td className="px-5 py-3.5">
                 <span
                   className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getRiskLevelBadgeClass(scan.riskLevel)}`}

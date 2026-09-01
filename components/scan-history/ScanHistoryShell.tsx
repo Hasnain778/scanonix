@@ -308,7 +308,7 @@ export function ScanHistoryShell() {
           <MotionSection delay={0.1}>
             <section className="surface-card overflow-hidden" aria-busy={listLoading}>
               {listLoading ? (
-                <div className="border-b border-white/8 px-5 py-3 text-sm text-scanonix-muted">
+                <div className="border-b border-border px-5 py-3 text-sm text-scanonix-muted">
                   Updating results…
                 </div>
               ) : null}

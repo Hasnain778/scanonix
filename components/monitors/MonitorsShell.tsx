@@ -101,7 +101,7 @@ export function MonitorsShell() {
 
       <div className="flex items-center gap-2">
         <Shield className="h-4 w-4 text-scanonix-orange" aria-hidden="true" />
-        <span className="text-sm font-medium text-white">Website Monitoring</span>
+        <span className="text-sm font-medium text-foreground">Website Monitoring</span>
         <ProBadge />
       </div>
 
@@ -119,7 +119,7 @@ export function MonitorsShell() {
         className="surface-card flex flex-col gap-3 rounded-2xl p-5 sm:flex-row sm:flex-wrap sm:items-end"
       >
         <div className="min-w-[220px] flex-1">
-          <label htmlFor="monitor-url" className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="monitor-url" className="mb-2 block text-sm font-medium text-foreground">
             Website URL
           </label>
           <input
@@ -132,7 +132,7 @@ export function MonitorsShell() {
           />
         </div>
         <div className="w-full sm:w-auto sm:min-w-[140px]">
-          <label htmlFor="monitor-frequency" className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="monitor-frequency" className="mb-2 block text-sm font-medium text-foreground">
             Frequency
           </label>
           <select
@@ -165,7 +165,7 @@ export function MonitorsShell() {
       <div className="surface-card overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-white/10 bg-black/20 text-xs text-scanonix-muted">
+            <thead className="border-b border-border bg-surface-muted text-xs text-scanonix-muted">
               <tr>
                 <th className="px-5 py-3 font-medium">Website</th>
                 <th className="px-5 py-3 font-medium">Frequency</th>
@@ -177,9 +177,9 @@ export function MonitorsShell() {
             </thead>
             <tbody>
               {monitors.map((monitor) => (
-                <tr key={monitor.id} className="border-b border-white/5 last:border-0">
+                <tr key={monitor.id} className="border-b border-border last:border-0">
                   <td className="px-5 py-4">
-                    <Link href={`/monitors/${monitor.id}`} className="font-medium text-white hover:text-scanonix-orange">
+                    <Link href={`/monitors/${monitor.id}`} className="font-medium text-foreground hover:text-scanonix-orange">
                       {monitor.label ?? monitor.targetUrl}
                     </Link>
                     {monitor.label ? <p className="mt-0.5 text-xs text-scanonix-muted">{monitor.targetUrl}</p> : null}
@@ -198,7 +198,7 @@ export function MonitorsShell() {
                       <button
                         type="button"
                         onClick={() => void updateStatus(monitor.id, monitor.status === "active" ? "paused" : "active")}
-                        className="text-scanonix-muted hover:text-white"
+                        className="text-scanonix-muted hover:text-foreground"
                       >
                         {monitor.status === "active" ? "Pause" : "Resume"}
                       </button>
@@ -230,7 +230,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="surface-card rounded-2xl p-5">
       <p className="text-sm text-scanonix-muted">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-white">{value}</p>
+      <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
     </div>
   );
 }

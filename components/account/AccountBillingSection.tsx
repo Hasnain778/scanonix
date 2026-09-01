@@ -11,12 +11,12 @@ import { getEffectivePlan } from "@/lib/auth/entitlements";
 function UsageSkeleton() {
   return (
     <div className="animate-pulse space-y-4" aria-hidden="true">
-      <div className="h-4 w-32 rounded bg-white/10" />
-      <div className="h-3 w-full rounded bg-white/5" />
+      <div className="h-4 w-32 rounded bg-surface-muted" />
+      <div className="h-3 w-full rounded bg-surface-muted/80" />
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="h-16 rounded-xl bg-white/5" />
-        <div className="h-16 rounded-xl bg-white/5" />
-        <div className="h-16 rounded-xl bg-white/5" />
+        <div className="h-16 rounded-xl bg-surface-muted/80" />
+        <div className="h-16 rounded-xl bg-surface-muted/80" />
+        <div className="h-16 rounded-xl bg-surface-muted/80" />
       </div>
     </div>
   );
@@ -34,13 +34,13 @@ function UsageOverview({ usage }: { usage: UsageSummaryResponse }) {
     <dl className="space-y-4 text-sm">
       <div className="flex items-start justify-between gap-4">
         <dt className="text-scanonix-muted">Usage this period</dt>
-        <dd className="font-semibold text-white">
+        <dd className="font-semibold text-foreground">
           {usage.usageCount} / {usage.limit}
         </dd>
       </div>
       <div>
         <div
-          className="h-2 overflow-hidden rounded-full bg-white/10"
+          className="h-2 overflow-hidden rounded-full bg-surface-muted"
           role="progressbar"
           aria-valuenow={usage.usageCount}
           aria-valuemin={0}
@@ -54,17 +54,17 @@ function UsageOverview({ usage }: { usage: UsageSummaryResponse }) {
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <div className="rounded-xl border border-border bg-surface-muted p-4">
           <dt className="text-xs uppercase tracking-wide text-scanonix-muted">Remaining</dt>
-          <dd className="mt-1 text-2xl font-bold text-white">{usage.remaining}</dd>
+          <dd className="mt-1 text-2xl font-bold text-foreground">{usage.remaining}</dd>
         </div>
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <div className="rounded-xl border border-border bg-surface-muted p-4">
           <dt className="text-xs uppercase tracking-wide text-scanonix-muted">Resets</dt>
-          <dd className="mt-1 text-sm font-semibold text-white">{formatDate(usage.resetAt)}</dd>
+          <dd className="mt-1 text-sm font-semibold text-foreground">{formatDate(usage.resetAt)}</dd>
         </div>
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <div className="rounded-xl border border-border bg-surface-muted p-4">
           <dt className="text-xs uppercase tracking-wide text-scanonix-muted">Plan</dt>
-          <dd className="mt-1 text-sm font-semibold capitalize text-white">{usage.plan}</dd>
+          <dd className="mt-1 text-sm font-semibold capitalize text-foreground">{usage.plan}</dd>
         </div>
       </div>
     </dl>

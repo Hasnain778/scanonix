@@ -185,7 +185,7 @@ export function ScanHistoryActionsMenu({
           }
           setOpen(true);
         }}
-        className="rounded-lg border border-white/10 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:border-scanonix-orange/40 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/50 disabled:opacity-50"
+        className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-scanonix-orange/40 focus:outline-none focus:ring-2 focus:ring-scanonix-orange/50 disabled:opacity-50"
       >
         Actions
       </button>
@@ -197,7 +197,7 @@ export function ScanHistoryActionsMenu({
               id={menuId}
               role="menu"
               style={menuStyle}
-              className={`animate-fade-in fixed z-[90] w-52 overflow-hidden rounded-xl border border-white/10 bg-scanonix-surface shadow-xl ${
+              className={`animate-fade-in fixed z-[90] w-52 overflow-hidden rounded-xl border border-border bg-scanonix-surface shadow-xl ${
                 menuPosition.placement === "above" ? "origin-bottom-right" : "origin-top-right"
               }`}
             >
@@ -256,7 +256,7 @@ function MenuLink({
       role="menuitem"
       tabIndex={-1}
       onClick={onNavigate}
-      className="block w-full px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/5 hover:text-scanonix-orange focus:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-scanonix-orange/60"
+      className="block w-full px-4 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-surface-muted hover:text-scanonix-orange focus:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-scanonix-orange/60"
     >
       {label}
     </Link>
@@ -281,7 +281,7 @@ function MenuButton({
       className={`block w-full px-4 py-2.5 text-left text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-scanonix-orange/60 ${
         destructive
           ? "text-red-300 hover:bg-red-500/10"
-          : "text-white hover:bg-white/5 hover:text-scanonix-orange"
+          : "text-foreground hover:bg-surface-muted hover:text-scanonix-orange"
       }`}
     >
       {label}

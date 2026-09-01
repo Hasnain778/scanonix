@@ -136,17 +136,17 @@ export function AccountNotificationsPanel() {
           {PREFERENCE_ITEMS.map((item) => (
             <li
               key={item.key}
-              className="flex items-start justify-between gap-4 rounded-xl border border-white/10 bg-black/20 px-4 py-4"
+              className="flex items-start justify-between gap-4 rounded-xl border border-border bg-surface-muted px-4 py-4"
             >
               <div>
-                <p className="text-sm font-medium text-white">{item.label}</p>
+                <p className="text-sm font-medium text-foreground">{item.label}</p>
                 <p className="mt-1 text-xs text-scanonix-muted">{item.description}</p>
               </div>
               <label className="inline-flex cursor-pointer items-center gap-2">
                 <span className="sr-only">{item.label}</span>
                 <input
                   type="checkbox"
-                  className="h-5 w-5 rounded border-white/20 bg-black/40 text-scanonix-orange focus:ring-scanonix-orange/40"
+                  className="h-5 w-5 rounded border-border bg-surface-raised text-scanonix-orange focus:ring-scanonix-orange/40"
                   checked={preferences[item.key]}
                   disabled={saving}
                   onChange={(event) => void handleToggle(item.key, event.target.checked)}

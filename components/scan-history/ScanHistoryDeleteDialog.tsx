@@ -60,15 +60,15 @@ export function ScanHistoryDeleteDialog({
         aria-modal="true"
         aria-labelledby="delete-scan-title"
         aria-describedby="delete-scan-description"
-        className="animate-fade-in w-full max-w-md rounded-2xl border border-white/10 bg-scanonix-surface p-6 shadow-premium-lg"
+        className="animate-fade-in w-full max-w-md rounded-2xl border border-border bg-scanonix-surface p-6 shadow-premium-lg"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 id="delete-scan-title" className="text-xl font-semibold text-white">
+        <h2 id="delete-scan-title" className="text-xl font-semibold text-foreground">
           Delete scan?
         </h2>
         <p id="delete-scan-description" className="mt-3 text-sm leading-relaxed text-scanonix-muted">
           This will permanently remove the scan for{" "}
-          <span className="font-medium text-white">{scan.target}</span>. This action cannot be
+          <span className="font-medium text-foreground">{scan.target}</span>. This action cannot be
           undone.
         </p>
         <div className="mt-6 flex flex-wrap justify-end gap-3">

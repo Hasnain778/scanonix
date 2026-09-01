@@ -31,7 +31,7 @@ export function ScanReportEmptySuccess() {
         </svg>
       </motion.div>
 
-      <h2 id="clean-scan-heading" className="text-2xl font-bold text-white">
+      <h2 id="clean-scan-heading" className="text-2xl font-bold text-foreground">
         No security issues were detected.
       </h2>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-scanonix-muted">

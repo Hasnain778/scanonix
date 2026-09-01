@@ -2,7 +2,7 @@ import { BrandTagline } from "@/components/ui/BrandTagline";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 import { ScanonixLogo } from "@/components/ui/ScanonixLogo";
 
-export type BrandLockupVariant = "desktop" | "compact" | "footer";
+export type BrandLockupVariant = "desktop" | "compact" | "footer" | "sidebar";
 
 interface BrandLockupProps {
   variant?: BrandLockupVariant;
@@ -24,9 +24,32 @@ export function BrandLockup({
 }: BrandLockupProps) {
   const isDesktop = variant === "desktop";
   const isFooter = variant === "footer";
-  // Visual targets: desktop ~48–54px, mobile ~38–44px; footer stays compact.
-  const logoSize = isDesktop ? 50 : isFooter ? 32 : 40;
-  const wordmarkSize = isDesktop ? "header" : "footer";
+  const isSidebar = variant === "sidebar";
+  // Visual targets: desktop ~48–54px, mobile ~38–44px; footer stays compact; sidebar fits w-56.
+  const logoSize = isDesktop ? 50 : isFooter ? 32 : isSidebar ? 44 : 40;
+  const wordmarkSize = isDesktop ? "header" : isSidebar ? "sidebar" : "footer";
+
+  if (isSidebar) {
+    return (
+      <span
+        className={`flex min-w-0 max-w-full items-center gap-2.5 ${className}`}
+        aria-hidden={decorative ? true : undefined}
+      >
+        <span className="brand-logo-mark shrink-0 self-center">
+          <ScanonixLogo
+            appearance="mark"
+            size={logoSize}
+            priority={priority}
+            className="brand-logo-mark__img"
+          />
+        </span>
+        <span className="flex w-[7.875rem] min-w-0 shrink flex-col justify-center gap-0.5">
+          <BrandWordmark size={wordmarkSize} className="min-w-0" />
+          <BrandTagline variant="sidebar" />
+        </span>
+      </span>
+    );
+  }
 
   return (
     <span

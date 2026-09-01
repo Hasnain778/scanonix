@@ -308,23 +308,23 @@ export function AccountProfilePanel({ user, authDetails }: AccountProfilePanelPr
         <dl className="space-y-4 text-sm">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <dt className="text-scanonix-muted">Email address</dt>
-            <dd className="font-medium text-white">{authDetails.email}</dd>
+            <dd className="font-medium text-foreground">{authDetails.email}</dd>
           </div>
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <dt className="text-scanonix-muted">User ID</dt>
-            <dd className="break-all font-mono text-xs text-white/90">{authDetails.id}</dd>
+            <dd className="break-all font-mono text-xs text-foreground-secondary">{authDetails.id}</dd>
           </div>
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <dt className="text-scanonix-muted">Account created</dt>
-            <dd className="font-medium text-white">{formatDate(authDetails.createdAt)}</dd>
+            <dd className="font-medium text-foreground">{formatDate(authDetails.createdAt)}</dd>
           </div>
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <dt className="text-scanonix-muted">Authentication provider</dt>
-            <dd className="font-medium text-white">{authDetails.providers.join(", ")}</dd>
+            <dd className="font-medium text-foreground">{authDetails.providers.join(", ")}</dd>
           </div>
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <dt className="text-scanonix-muted">Email verification</dt>
-            <dd className="font-medium text-white">
+            <dd className="font-medium text-foreground">
               {authDetails.emailVerified ? "Verified" : "Not verified"}
             </dd>
           </div>

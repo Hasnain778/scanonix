@@ -32,7 +32,7 @@ export function ScanReportPerformancePanel({
 
   return (
     <section aria-labelledby="performance-heading">
-      <h3 id="performance-heading" className="mb-5 text-lg font-semibold text-white">
+      <h3 id="performance-heading" className="mb-5 text-lg font-semibold text-foreground">
         Performance
       </h3>
 
@@ -40,14 +40,14 @@ export function ScanReportPerformancePanel({
         {metrics.map((metric) => (
           <div
             key={metric.label}
-            className="flex items-center gap-4 rounded-xl border border-white/8 bg-black/20 px-4 py-4"
+            className="flex items-center gap-4 rounded-xl border border-border bg-surface-muted px-4 py-4"
           >
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-scanonix-orange/10 text-lg" aria-hidden="true">
               {metric.icon}
             </span>
             <div>
               <p className="text-sm text-scanonix-muted">{metric.label}</p>
-              <p className="text-base font-semibold text-white">{metric.value}</p>
+              <p className="text-base font-semibold text-foreground">{metric.value}</p>
             </div>
           </div>
         ))}

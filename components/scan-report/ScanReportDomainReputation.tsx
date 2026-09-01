@@ -50,7 +50,7 @@ export function ScanReportDomainReputation({ reputation }: ScanReportDomainReput
     <section aria-labelledby="domain-reputation-heading">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 id="domain-reputation-heading" className="text-lg font-semibold text-white">
+          <h3 id="domain-reputation-heading" className="text-lg font-semibold text-foreground">
             Domain reputation
           </h3>
           <p className="mt-1 text-base text-scanonix-muted">{reputation.domain}</p>
@@ -89,7 +89,7 @@ export function ScanReportDomainReputation({ reputation }: ScanReportDomainReput
           <p className="text-sm font-medium text-scanonix-orange">Risk reasons</p>
           <ul className="mt-2 space-y-1.5">
             {reputation.riskReasons.map((reason) => (
-              <li key={reason} className="text-sm text-white">
+              <li key={reason} className="text-sm text-foreground">
                 {reason}
               </li>
             ))}
@@ -102,9 +102,9 @@ export function ScanReportDomainReputation({ reputation }: ScanReportDomainReput
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-white/8 bg-black/25 px-4 py-3">
+    <div className="rounded-xl border border-border bg-surface-muted px-4 py-3">
       <p className="text-sm text-scanonix-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold capitalize text-white">{value}</p>
+      <p className="mt-1 text-lg font-semibold capitalize text-foreground">{value}</p>
     </div>
   );
 }
@@ -119,12 +119,12 @@ function DetailCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/6 bg-black/20 p-4">
+    <div className="rounded-xl border border-border bg-surface-muted p-4">
       <div className="flex items-center gap-2">
         <span aria-hidden="true">{icon}</span>
         <p className="text-sm font-medium text-scanonix-muted">{title}</p>
       </div>
-      <p className="mt-2 text-sm text-white break-all">{value}</p>
+      <p className="mt-2 text-sm text-foreground break-all">{value}</p>
     </div>
   );
 }

@@ -27,8 +27,8 @@ export function AccountNav() {
                 href={item.href}
                 className={`block whitespace-nowrap rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40 ${
                   isActive
-                    ? "bg-scanonix-orange/10 text-white"
-                    : "text-scanonix-muted hover:bg-white/4 hover:text-white"
+                    ? "bg-scanonix-orange/10 text-foreground"
+                    : "text-foreground-muted hover:bg-surface-muted hover:text-foreground"
                 }`}
                 aria-current={isActive ? "page" : undefined}
               >

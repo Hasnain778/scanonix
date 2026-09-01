@@ -22,7 +22,7 @@ export function ScanReportThreats({ findings }: ScanReportThreatsProps) {
   if (findings.length === 0) {
     return (
       <section aria-labelledby="threat-summary-heading">
-        <h2 id="threat-summary-heading" className="mb-6 text-xl font-semibold text-white">
+        <h2 id="threat-summary-heading" className="mb-6 text-xl font-semibold text-foreground">
           Threat summary
         </h2>
         <ScanReportEmptySuccess />
@@ -32,7 +32,7 @@ export function ScanReportThreats({ findings }: ScanReportThreatsProps) {
 
   return (
     <section aria-labelledby="threat-summary-heading">
-      <h2 id="threat-summary-heading" className="mb-2 text-xl font-semibold text-white">
+      <h2 id="threat-summary-heading" className="mb-2 text-xl font-semibold text-foreground">
         Threat summary
       </h2>
       <p className="mb-6 text-base text-scanonix-muted">
@@ -64,21 +64,21 @@ function ThreatCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.35 }}
-      className="report-card overflow-hidden rounded-2xl border border-white/8 bg-[#0c0c0c]/50"
+      className="report-card overflow-hidden rounded-2xl border border-border bg-surface-muted"
     >
       <button
         type="button"
-        className="flex w-full items-start gap-4 p-5 text-left transition-colors hover:bg-white/[0.02] sm:p-6"
+        className="flex w-full items-start gap-4 p-5 text-left transition-colors hover:bg-surface-muted/60 sm:p-6"
         aria-expanded={expanded}
         aria-controls={panelId}
         onClick={() => setExpanded((current) => !current)}
       >
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 text-xl" aria-hidden="true">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-muted/80 text-xl" aria-hidden="true">
           {icon}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-2">
-            <span className="text-base font-semibold text-white">{finding.title}</span>
+            <span className="text-base font-semibold text-foreground">{finding.title}</span>
             <span
               className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${getSeverityStyles(finding.severity)}`}
             >
@@ -109,7 +109,7 @@ function ThreatCard({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden border-t border-white/6"
+            className="overflow-hidden border-t border-border"
           >
             <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
               <DetailCard label="Why it matters" value={finding.whyItMatters} />
@@ -130,7 +130,7 @@ function ThreatCard({
             </div>
 
             {finding.references && finding.references.length > 0 ? (
-              <div className="border-t border-white/6 px-5 py-4 sm:px-6">
+              <div className="border-t border-border px-5 py-4 sm:px-6">
                 <p className="mb-2 text-sm font-medium text-scanonix-muted">References</p>
                 <ul className="space-y-2">
                   {finding.references.map((reference) => (
@@ -171,11 +171,11 @@ function DetailCard({
       className={`rounded-xl border p-4 ${
         highlight
           ? "border-scanonix-orange/20 bg-scanonix-orange/5"
-          : "border-white/6 bg-black/20"
+          : "border-border bg-surface-muted"
       }`}
     >
       <p className="text-sm font-medium text-scanonix-muted">{label}</p>
-      <p className={`mt-2 text-sm leading-relaxed text-white ${mono ? "font-mono text-xs break-all" : ""}`}>
+      <p className={`mt-2 text-sm leading-relaxed text-foreground ${mono ? "font-mono text-xs break-all" : ""}`}>
         {value}
       </p>
     </div>

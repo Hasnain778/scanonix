@@ -12,14 +12,14 @@ export function ScanReportAiSummary({ analysis }: ScanReportAiSummaryProps) {
     <section aria-labelledby="ai-summary-heading">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 id="ai-summary-heading" className="text-lg font-semibold text-white">
+          <h3 id="ai-summary-heading" className="text-lg font-semibold text-foreground">
             AI analysis summary
           </h3>
           <p className="mt-1 text-base text-scanonix-muted">
             Executive overview from verified findings
           </p>
         </div>
-        <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs font-medium text-scanonix-muted">
+        <span className="rounded-full border border-border bg-surface-muted px-3 py-1 text-xs font-medium text-scanonix-muted">
           {analysis.source === "ai" ? "Cloud AI" : "Deterministic"}
         </span>
       </div>
@@ -53,10 +53,10 @@ function SummaryCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-xl border border-white/6 bg-black/20 p-4 ${fullWidth ? "sm:col-span-2" : ""}`}
+      className={`rounded-xl border border-border bg-surface-muted p-4 ${fullWidth ? "sm:col-span-2" : ""}`}
     >
       <h4 className="text-sm font-medium text-scanonix-muted">{title}</h4>
-      <p className="mt-2 text-sm leading-relaxed text-white">{value}</p>
+      <p className="mt-2 text-sm leading-relaxed text-foreground">{value}</p>
     </motion.div>
   );
 }
@@ -77,12 +77,12 @@ function ListCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-xl border border-white/6 bg-black/20 p-4 ${fullWidth ? "sm:col-span-2" : ""}`}
+      className={`rounded-xl border border-border bg-surface-muted p-4 ${fullWidth ? "sm:col-span-2" : ""}`}
     >
       <h4 className="text-sm font-medium text-scanonix-muted">{title}</h4>
       <ul className="mt-2 space-y-2">
         {items.map((item) => (
-          <li key={item} className="flex gap-2 text-sm leading-relaxed text-white">
+          <li key={item} className="flex gap-2 text-sm leading-relaxed text-foreground">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-scanonix-orange" aria-hidden="true" />
             <span>{item}</span>
           </li>

@@ -111,7 +111,7 @@ export function AccountSecurityPanel({ authDetails }: AccountSecurityPanelProps)
         }
       >
         {isGoogleOnly ? (
-          <p className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-scanonix-muted">
+          <p className="rounded-xl border border-border bg-surface-muted px-4 py-3 text-sm text-scanonix-muted">
             To use a Scanonix password, add an email login from your Google account settings
             or contact support for help linking credentials.
           </p>
@@ -186,11 +186,11 @@ export function AccountSecurityPanel({ authDetails }: AccountSecurityPanelProps)
         <dl className="space-y-4 text-sm">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <dt className="text-scanonix-muted">Last sign-in</dt>
-            <dd className="font-medium text-white">{formatDate(authDetails.lastSignInAt)}</dd>
+            <dd className="font-medium text-foreground">{formatDate(authDetails.lastSignInAt)}</dd>
           </div>
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <dt className="text-scanonix-muted">Providers</dt>
-            <dd className="font-medium text-white">{authDetails.providers.join(", ")}</dd>
+            <dd className="font-medium text-foreground">{authDetails.providers.join(", ")}</dd>
           </div>
         </dl>
       </AccountCard>

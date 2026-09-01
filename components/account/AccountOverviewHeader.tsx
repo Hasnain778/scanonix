@@ -27,7 +27,7 @@ function AccountAvatar({ user }: { user: AuthUser }) {
   const avatarUrl = user.profile?.avatar_url;
 
   return (
-    <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-scanonix-orange/15 ring-2 ring-white/8">
+    <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-scanonix-orange/15 ring-2 ring-border">
       {avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
@@ -49,7 +49,7 @@ export function AccountOverviewHeader({ user }: AccountOverviewHeaderProps) {
           <AccountAvatar user={user} />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="truncate text-lg font-bold text-white sm:text-xl">{displayName}</h1>
+              <h1 className="truncate text-lg font-bold text-foreground sm:text-xl">{displayName}</h1>
               <span
                 className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${getPlanBadgeClass(plan)}`}
               >
@@ -63,7 +63,7 @@ export function AccountOverviewHeader({ user }: AccountOverviewHeaderProps) {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/account/billing"
-            className="btn-secondary inline-flex px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+            className="inline-flex rounded-xl border border-border bg-surface-muted px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-scanonix-orange/40 hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
           >
             Billing
           </Link>

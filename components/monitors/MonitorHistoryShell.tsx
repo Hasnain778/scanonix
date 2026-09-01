@@ -35,13 +35,13 @@ export function MonitorHistoryShell({ monitorId }: { monitorId: string }) {
     <div className="space-y-6">
       <div>
         <Link href={`/monitors/${monitorId}`} className="text-sm text-scanonix-orange hover:underline">← Monitor timeline</Link>
-        <h1 className="mt-2 text-2xl font-bold text-white">Scan history</h1>
+        <h1 className="mt-2 text-2xl font-bold text-foreground">Scan history</h1>
         <p className="mt-1 text-sm text-scanonix-muted">All scheduled scan runs for this monitor.</p>
       </div>
 
       <div className="glass-card overflow-hidden rounded-2xl shadow-premium">
         <table className="min-w-full text-left text-sm">
-          <thead className="border-b border-white/10 bg-black/20 text-xs uppercase tracking-wide text-scanonix-muted">
+          <thead className="border-b border-border bg-surface-muted text-xs uppercase tracking-wide text-scanonix-muted">
             <tr>
               <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Status</th>
@@ -52,7 +52,7 @@ export function MonitorHistoryShell({ monitorId }: { monitorId: string }) {
           </thead>
           <tbody>
             {runs.map((run) => (
-              <tr key={run.id} className="border-b border-white/5">
+              <tr key={run.id} className="border-b border-border">
                 <td className="px-4 py-3 text-xs text-scanonix-muted">{new Date(run.createdAt).toLocaleString("en-GB")}</td>
                 <td className="px-4 py-3 capitalize">{run.status}</td>
                 <td className="px-4 py-3">{run.riskScore ?? "—"}</td>

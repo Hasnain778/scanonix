@@ -10,7 +10,7 @@ export function ScanHistoryEmptyState() {
       aria-labelledby="scan-history-empty-heading"
     >
       <div
-        className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-black/20 text-scanonix-orange"
+        className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-surface-muted text-scanonix-orange"
         aria-hidden="true"
       >
         <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

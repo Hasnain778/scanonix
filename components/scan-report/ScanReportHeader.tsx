@@ -24,7 +24,7 @@ export function ScanReportHeader({ report, isDemo = false }: ScanReportHeaderPro
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-scanonix-muted">
             Security scan report
           </p>
-          <h1 className="mt-3 break-all text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+          <h1 className="mt-3 break-all text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
             {report.target}
           </h1>
           <p className="mt-2 text-sm text-scanonix-muted">{targetLabel}</p>
@@ -58,14 +58,14 @@ export function ScanReportHeader({ report, isDemo = false }: ScanReportHeaderPro
 function Metric({
   label,
   value,
-  valueClass = "text-white",
+  valueClass = "text-foreground",
 }: {
   label: string;
   value: string;
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+    <div className="rounded-xl border border-border bg-surface-muted px-4 py-3">
       <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-scanonix-muted">
         {label}
       </dt>

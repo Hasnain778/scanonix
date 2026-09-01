@@ -17,7 +17,7 @@ export function ScanReportAiRecommendations({ findings }: ScanReportAiRecommenda
   if (recommendations.length === 0) {
     return (
       <section aria-labelledby="recommendations-heading">
-        <h2 id="recommendations-heading" className="mb-6 text-xl font-semibold text-white">
+        <h2 id="recommendations-heading" className="mb-6 text-xl font-semibold text-foreground">
           Recommendations
         </h2>
         <ScanReportEmptySuccess />
@@ -29,7 +29,7 @@ export function ScanReportAiRecommendations({ findings }: ScanReportAiRecommenda
 
   return (
     <section aria-labelledby="recommendations-heading">
-      <h2 id="recommendations-heading" className="mb-2 text-xl font-semibold text-white">
+      <h2 id="recommendations-heading" className="mb-2 text-xl font-semibold text-foreground">
         Recommendations
       </h2>
       <p className="mb-6 text-base text-scanonix-muted">
@@ -43,7 +43,7 @@ export function ScanReportAiRecommendations({ findings }: ScanReportAiRecommenda
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.06, duration: 0.35 }}
-            className="report-card rounded-2xl border border-white/8 bg-[#0c0c0c]/50 p-5 sm:p-6"
+            className="report-card rounded-2xl border border-border bg-surface-muted p-5 sm:p-6"
           >
             <div className="mb-3 flex items-start gap-3">
               <span
@@ -58,7 +58,7 @@ export function ScanReportAiRecommendations({ findings }: ScanReportAiRecommenda
                 >
                   {finding.severity}
                 </span>
-                <h3 className="mt-2 text-base font-semibold text-white">{finding.title}</h3>
+                <h3 className="mt-2 text-base font-semibold text-foreground">{finding.title}</h3>
               </div>
             </div>
 
@@ -68,7 +68,7 @@ export function ScanReportAiRecommendations({ findings }: ScanReportAiRecommenda
 
             <div className="mt-4 rounded-xl border border-scanonix-orange/20 bg-scanonix-orange/5 px-4 py-3">
               <p className="text-sm font-medium text-scanonix-orange">Suggested action</p>
-              <p className="mt-1 text-sm leading-relaxed text-white">
+              <p className="mt-1 text-sm leading-relaxed text-foreground">
                 {finding.ai?.remediationSteps?.[0] ?? finding.recommendation}
               </p>
             </div>

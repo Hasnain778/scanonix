@@ -36,11 +36,11 @@ export function ScanHistoryMobileCards({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.04, duration: 0.3 }}
-          className="rounded-2xl border border-white/10 bg-black/25 p-4 shadow-premium"
+          className="rounded-2xl border border-border bg-surface-muted p-4 shadow-premium"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="truncate font-semibold text-white">{scan.target}</h3>
+              <h3 className="truncate font-semibold text-foreground">{scan.target}</h3>
               <p className="mt-1 text-xs capitalize text-scanonix-muted">{scan.targetType} scan</p>
             </div>
             <ScanHistoryActionsMenu
@@ -56,11 +56,11 @@ export function ScanHistoryMobileCards({
           <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div>
               <dt className="text-xs text-scanonix-muted">Risk score</dt>
-              <dd className="font-semibold text-white">{scan.riskScore}</dd>
+              <dd className="font-semibold text-foreground">{scan.riskScore}</dd>
             </div>
             <div>
               <dt className="text-xs text-scanonix-muted">Duration</dt>
-              <dd className="text-white">{formatScanDuration(scan.durationMs)}</dd>
+              <dd className="text-foreground">{formatScanDuration(scan.durationMs)}</dd>
             </div>
             <div>
               <dt className="text-xs text-scanonix-muted">Risk level</dt>

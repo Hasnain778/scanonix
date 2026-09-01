@@ -29,7 +29,7 @@ export function ScanReportFileIntelligencePanel({
     <section aria-labelledby="file-intelligence-heading" className="glass-card rounded-2xl p-6 shadow-premium">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 id="file-intelligence-heading" className="text-lg font-semibold text-white">
+          <h2 id="file-intelligence-heading" className="text-lg font-semibold text-foreground">
             File Intelligence
           </h2>
           <p className="mt-1 text-sm text-scanonix-muted">
@@ -50,7 +50,7 @@ export function ScanReportFileIntelligencePanel({
         <Metric label="Confidence" value={`${intelligence.confidence}%`} />
       </div>
 
-      <p className="mb-6 text-sm leading-relaxed text-neutral-200">{intelligence.summary}</p>
+      <p className="mb-6 text-sm leading-relaxed text-foreground-secondary">{intelligence.summary}</p>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <InfoBlock title="File metadata">
@@ -100,7 +100,7 @@ export function ScanReportFileIntelligencePanel({
           </p>
           <ul className="mt-2 space-y-1.5">
             {intelligence.recommendations.map((item) => (
-              <li key={item} className="text-sm text-neutral-200">
+              <li key={item} className="text-sm text-foreground-secondary">
                 • {item}
               </li>
             ))}
@@ -113,17 +113,17 @@ export function ScanReportFileIntelligencePanel({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+    <div className="rounded-xl border border-border bg-surface-muted px-4 py-3">
       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-scanonix-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-white">{value}</p>
+      <p className="mt-1 text-lg font-semibold text-foreground">{value}</p>
     </div>
   );
 }
 
 function InfoBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/25 p-4">
-      <h3 className="mb-3 text-sm font-semibold text-white">{title}</h3>
+    <div className="rounded-xl border border-border bg-surface-muted p-4">
+      <h3 className="mb-3 text-sm font-semibold text-foreground">{title}</h3>
       <dl className="space-y-2">{children}</dl>
     </div>
   );
@@ -133,7 +133,7 @@ function Row({ label, value, mono = false }: { label: string; value: string; mon
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
       <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-scanonix-muted">{label}</dt>
-      <dd className={`text-sm text-neutral-200 sm:text-right break-all ${mono ? "font-mono text-xs" : ""}`}>
+      <dd className={`text-sm text-foreground-secondary sm:text-right break-all ${mono ? "font-mono text-xs" : ""}`}>
         {value}
       </dd>
     </div>

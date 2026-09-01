@@ -1,11 +1,12 @@
 interface BrandWordmarkProps {
   className?: string;
-  size?: "header" | "footer";
+  size?: "header" | "footer" | "sidebar";
 }
 
 const SIZE_CLASSES = {
   header: "text-[21px] sm:text-[24px] md:text-[27px] lg:text-[30px]",
   footer: "text-xl",
+  sidebar: "text-[21px]",
 } as const;
 
 export function BrandWordmark({ className = "", size = "header" }: BrandWordmarkProps) {

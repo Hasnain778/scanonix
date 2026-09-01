@@ -51,11 +51,11 @@ export function ScanReportStatusHero({ report }: ScanReportStatusHeroProps) {
 
   return (
     <section
-      className={`report-hero overflow-hidden rounded-3xl border bg-[#0c0c0c]/70 backdrop-blur-sm ${config.accent}`}
+      className={`report-hero overflow-hidden rounded-3xl border bg-surface-muted backdrop-blur-sm ${config.accent}`}
     >
       <div className="p-8 sm:p-10 lg:p-12">
         <p className="text-sm text-scanonix-muted">
-          {targetLabel} scan · <span className="text-white">{report.target}</span>
+          {targetLabel} scan · <span className="text-foreground">{report.target}</span>
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
@@ -112,7 +112,7 @@ function SummaryPill({
   tone: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/8 bg-black/25 px-3 py-3 text-center sm:px-4">
+    <div className="rounded-xl border border-border bg-surface-muted px-3 py-3 text-center sm:px-4">
       <p className={`text-xl font-semibold sm:text-2xl ${tone}`}>{value}</p>
       <p className="mt-1 text-xs text-scanonix-muted">{label}</p>
     </div>

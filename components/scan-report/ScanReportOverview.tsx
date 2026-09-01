@@ -59,7 +59,7 @@ interface ScanReportOverviewProps {
 export function ScanReportOverview({ summary }: ScanReportOverviewProps) {
   return (
     <section aria-labelledby="security-overview-heading">
-      <h2 id="security-overview-heading" className="mb-4 text-lg font-semibold text-white">
+      <h2 id="security-overview-heading" className="mb-4 text-lg font-semibold text-foreground">
         Security overview
       </h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -77,7 +77,7 @@ export function ScanReportOverview({ summary }: ScanReportOverviewProps) {
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-scanonix-muted">
                   {card.label}
                 </p>
-                <p className="mt-3 text-3xl font-bold text-white">
+                <p className="mt-3 text-3xl font-bold text-foreground">
                   <AnimatedNumber value={summary[card.key]} />
                   {card.suffix ?? ""}
                 </p>

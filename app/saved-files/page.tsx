@@ -31,7 +31,7 @@ export default async function SavedFilesPage() {
             >
               ← Back to dashboard
             </Link>
-            <h1 className="text-3xl font-bold tracking-tight text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Saved files
             </h1>
             <p className="mt-3 text-sm text-scanonix-muted">

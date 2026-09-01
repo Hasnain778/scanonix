@@ -10,7 +10,7 @@ interface ScanReportTimelineProps {
 export function ScanReportTimeline({ stages }: ScanReportTimelineProps) {
   return (
     <section aria-labelledby="timeline-heading">
-      <h3 id="timeline-heading" className="mb-5 text-lg font-semibold text-white">
+      <h3 id="timeline-heading" className="mb-5 text-lg font-semibold text-foreground">
         Scan timeline
       </h3>
 
@@ -19,7 +19,7 @@ export function ScanReportTimeline({ stages }: ScanReportTimelineProps) {
           <li key={stage.id} className="relative flex gap-4 pb-6 last:pb-0">
             {index < stages.length - 1 ? (
               <span
-                className="absolute left-[15px] top-8 h-[calc(100%-12px)] w-px bg-white/10"
+                className="absolute left-[15px] top-8 h-[calc(100%-12px)] w-px bg-surface-muted"
                 aria-hidden="true"
               />
             ) : null}
@@ -31,15 +31,15 @@ export function ScanReportTimeline({ stages }: ScanReportTimelineProps) {
               className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm ${
                 stage.completed
                   ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-                  : "border-white/15 bg-black/30 text-scanonix-muted"
+                  : "border-border bg-surface-muted text-scanonix-muted"
               }`}
               aria-hidden="true"
             >
               {stage.completed ? "✓" : "·"}
             </motion.span>
 
-            <div className="min-w-0 flex-1 rounded-xl border border-white/6 bg-black/20 px-4 py-3">
-              <p className="font-medium text-white">{stage.label}</p>
+            <div className="min-w-0 flex-1 rounded-xl border border-border bg-surface-muted px-4 py-3">
+              <p className="font-medium text-foreground">{stage.label}</p>
               <p className="text-sm text-scanonix-muted">
                 {stage.completed ? "Completed" : "Pending"}
               </p>

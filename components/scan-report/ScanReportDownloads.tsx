@@ -118,7 +118,7 @@ export function ScanReportDownloads({
 
   return (
     <section aria-labelledby="downloads-heading" className="glass-card rounded-2xl p-6 shadow-premium print:hidden">
-      <h2 id="downloads-heading" className="mb-2 text-lg font-semibold text-white">
+      <h2 id="downloads-heading" className="mb-2 text-lg font-semibold text-foreground">
         Downloads
       </h2>
       <p className="mb-5 text-sm text-scanonix-muted">

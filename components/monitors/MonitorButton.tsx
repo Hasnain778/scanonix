@@ -54,8 +54,8 @@ export function MonitorButton({ targetUrl, isDemo = false }: MonitorButtonProps)
       {open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <button type="button" className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} aria-label="Close" />
-          <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0d1117] p-6 shadow-2xl">
-            <h3 className="text-lg font-semibold text-white">Monitor this website</h3>
+          <div className="relative w-full max-w-md rounded-2xl border border-border bg-surface-raised p-6 shadow-2xl">
+            <h3 className="text-lg font-semibold text-foreground">Monitor this website</h3>
             <p className="mt-2 break-all text-sm text-scanonix-muted">{targetUrl}</p>
 
             <div className="mt-4 space-y-3">
@@ -64,7 +64,7 @@ export function MonitorButton({ targetUrl, isDemo = false }: MonitorButtonProps)
                 <input
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white"
+                  className="input-field mt-1"
                 />
               </label>
               <label className="block text-sm text-scanonix-muted">
@@ -72,7 +72,7 @@ export function MonitorButton({ targetUrl, isDemo = false }: MonitorButtonProps)
                 <select
                   value={frequency}
                   onChange={(e) => setFrequency(e.target.value as typeof frequency)}
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white"
+                  className="select-field mt-1"
                 >
                   <option value="daily">{frequencyLabel("daily")}</option>
                   <option value="weekly">{frequencyLabel("weekly")}</option>
@@ -84,7 +84,7 @@ export function MonitorButton({ targetUrl, isDemo = false }: MonitorButtonProps)
             {error ? <p className="mt-3 text-sm text-red-300">{error}</p> : null}
 
             <div className="mt-5 flex justify-end gap-2">
-              <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2 text-sm text-scanonix-muted hover:text-white">
+              <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2 text-sm text-scanonix-muted hover:text-foreground">
                 Cancel
               </button>
               <button

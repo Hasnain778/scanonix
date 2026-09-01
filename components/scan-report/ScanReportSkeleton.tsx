@@ -1,7 +1,7 @@
 export function SkeletonLine({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded-lg bg-white/8 ${className}`}
+      className={`animate-pulse rounded-lg bg-surface-muted ${className}`}
       aria-hidden="true"
     />
   );

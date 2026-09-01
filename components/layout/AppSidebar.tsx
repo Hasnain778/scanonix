@@ -112,8 +112,8 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
   return (
     <>
       <aside className="app-sidebar hidden w-56 shrink-0 flex-col border-r border-border bg-surface/80 backdrop-blur-xl lg:flex">
-        <div className="border-b border-border p-4">
-          <NavbarBrand onNavigate={onNavigate} />
+        <div className="min-w-0 border-b border-border p-4">
+          <NavbarBrand layout="sidebar" onNavigate={onNavigate} />
         </div>
         <div className="flex min-h-0 flex-1 flex-col">
           {navContent}
@@ -140,8 +140,8 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="shrink-0 border-b border-border p-4">
-            <NavbarBrand onNavigate={onNavigate} />
+          <div className="min-w-0 shrink-0 border-b border-border p-4">
+            <NavbarBrand layout="sidebar" onNavigate={onNavigate} />
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
             {navContent}

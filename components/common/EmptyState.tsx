@@ -25,7 +25,7 @@ export function EmptyState({
     >
       {icon ? (
         <div
-          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-black/20 text-scanonix-orange"
+          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-surface-muted text-scanonix-orange"
           aria-hidden="true"
         >
           {icon}

@@ -50,7 +50,7 @@ export function ScanHistorySummaryCards({ summary }: { summary: ScanHistorySumma
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-scanonix-muted">
               {card.label}
             </p>
-            <p className="mt-3 text-3xl font-bold text-white">
+            <p className="mt-3 text-3xl font-bold text-foreground">
               <AnimatedNumber value={summary[card.key]} />
             </p>
             <p className="mt-2 text-sm text-scanonix-muted">{card.description}</p>

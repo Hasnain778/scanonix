@@ -75,6 +75,31 @@ export function mapPriceIdToPlan(priceId: string | null | undefined): UserPlan {
   return "free";
 }
 
+/** Trusted interval from configured Stripe price IDs — null when unknown. */
+export function mapPriceIdToBillingInterval(
+  priceId: string | null | undefined,
+): BillingInterval | null {
+  if (!priceId) {
+    return null;
+  }
+
+  if (
+    priceId === env.stripeProMonthlyPriceId ||
+    priceId === env.stripeBusinessMonthlyPriceId
+  ) {
+    return "monthly";
+  }
+
+  if (
+    priceId === env.stripeProYearlyPriceId ||
+    priceId === env.stripeBusinessYearlyPriceId
+  ) {
+    return "yearly";
+  }
+
+  return null;
+}
+
 export function getPlanOptionLabel(plan: BillingPlan, interval: BillingInterval): string {
   return `${PLAN_LABELS[plan]} ${INTERVAL_LABELS[interval]}`;
 }

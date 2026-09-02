@@ -5,15 +5,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { AuthMessage } from "@/components/auth/AuthShell";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ANALYTICS_SOURCE_SURFACE_UNKNOWN } from "@/lib/analytics/surfaces";
 import type { BillingIntervalValue } from "@/lib/analytics/events";
 import { tryTrackSubscriptionComplete } from "@/lib/analytics/subscription-complete";
 import { getEffectivePlan, hasActiveSubscription } from "@/lib/auth/entitlements";
+import type { BillingPlan } from "@/types/auth";
 
 interface BillingStatusResponse {
   plan: string;
   storedPlan: string;
   subscriptionStatus: string | null;
   hasActiveSubscription: boolean;
+  subscriptionCurrentPeriodEnd?: string | null;
+  billing_interval?: BillingIntervalValue | null;
 }
 
 interface SyncSessionSuccessResponse extends BillingStatusResponse {
@@ -23,7 +27,7 @@ interface SyncSessionSuccessResponse extends BillingStatusResponse {
   subscriptionPeriodEnd?: string | null;
 }
 
-function isPaidPlan(plan: string): plan is "pro" | "business" {
+function isPaidPlan(plan: string): plan is BillingPlan {
   return plan === "pro" || plan === "business";
 }
 
@@ -54,6 +58,28 @@ export function BillingSuccessClient() {
     let attempts = 0;
     const maxAttempts = 20;
 
+    function attemptSubscriptionComplete(input: {
+      tier: BillingPlan;
+      billing_interval: BillingIntervalValue | null | undefined;
+      source_surface: string;
+      subscriptionPeriodEnd: string | null;
+    }): void {
+      if (subscriptionCompleteTrackedRef.current) {
+        return;
+      }
+      // Claim once per mount so sync + poll / repeated polls cannot double-attempt.
+      subscriptionCompleteTrackedRef.current = true;
+      if (!input.billing_interval) {
+        return;
+      }
+      tryTrackSubscriptionComplete({
+        tier: input.tier,
+        billing_interval: input.billing_interval,
+        source_surface: input.source_surface,
+        subscriptionPeriodEnd: input.subscriptionPeriodEnd,
+      });
+    }
+
     async function pollBillingStatus() {
       // Attempt immediate sync from the completed Checkout Session (no new charge).
       try {
@@ -66,17 +92,12 @@ export function BillingSuccessClient() {
         if (syncResponse.ok) {
           const syncData = (await syncResponse.json()) as SyncSessionSuccessResponse;
           if (syncData.hasActiveSubscription && isPaidPlan(syncData.plan)) {
-            if (!subscriptionCompleteTrackedRef.current) {
-              subscriptionCompleteTrackedRef.current = true;
-              if (syncData.billing_interval) {
-                tryTrackSubscriptionComplete({
-                  tier: syncData.plan,
-                  billing_interval: syncData.billing_interval,
-                  source_surface: syncData.source_surface ?? "unknown",
-                  subscriptionPeriodEnd: syncData.subscriptionPeriodEnd ?? null,
-                });
-              }
-            }
+            attemptSubscriptionComplete({
+              tier: syncData.plan,
+              billing_interval: syncData.billing_interval,
+              source_surface: syncData.source_surface ?? ANALYTICS_SOURCE_SURFACE_UNKNOWN,
+              subscriptionPeriodEnd: syncData.subscriptionPeriodEnd ?? null,
+            });
             setConfirmedPlan(syncData.plan);
             setPolling(false);
             await refresh();
@@ -96,7 +117,14 @@ export function BillingSuccessClient() {
           const response = await fetch("/api/billing/status");
           if (response.ok) {
             const data = (await response.json()) as BillingStatusResponse;
-            if (data.hasActiveSubscription && data.plan !== "free") {
+            if (data.hasActiveSubscription && isPaidPlan(data.plan)) {
+              // Poll fallback: same helper/dedupe/consent path as sync-session.
+              attemptSubscriptionComplete({
+                tier: data.plan,
+                billing_interval: data.billing_interval,
+                source_surface: ANALYTICS_SOURCE_SURFACE_UNKNOWN,
+                subscriptionPeriodEnd: data.subscriptionCurrentPeriodEnd ?? null,
+              });
               setConfirmedPlan(data.plan);
               setPolling(false);
               router.refresh();

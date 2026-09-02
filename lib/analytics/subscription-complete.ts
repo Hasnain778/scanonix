@@ -1,5 +1,6 @@
 /**
- * Phase 130E — subscription_complete client analytics (sync-session confirmed only).
+ * Phase 130E / 130D-2B — subscription_complete client analytics.
+ * Fired after sync-session OR poll-confirmed paid status via the same helper.
  * Fire-and-forget; never affects billing. Dedupe persisted only after consent + sent.
  */
 
@@ -65,8 +66,9 @@ function matchesPersistedDedupe(input: SubscriptionCompleteTrackInput): boolean 
 }
 
 /**
- * Attempts one subscription_complete event after server-confirmed checkout sync.
- * Drops without persisting dedupe state when consent/GA is unavailable.
+ * Attempts one subscription_complete event after server-confirmed paid status
+ * (sync-session or billing-status poll). Drops without persisting dedupe state
+ * when consent/GA is unavailable.
  */
 export function tryTrackSubscriptionComplete(
   input: SubscriptionCompleteTrackInput,

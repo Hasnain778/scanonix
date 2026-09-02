@@ -213,14 +213,21 @@ assert(
   billingSuccessSource.includes("tryTrackSubscriptionComplete"),
 );
 assert(
-  "12 fires only after sync-session HTTP success",
-  /if\s*\(\s*syncResponse\.ok\s*\)[\s\S]*tryTrackSubscriptionComplete/.test(
+  "12 fires after sync-session HTTP success",
+  /if\s*\(\s*syncResponse\.ok\s*\)[\s\S]*attemptSubscriptionComplete|if\s*\(\s*syncResponse\.ok\s*\)[\s\S]*tryTrackSubscriptionComplete/.test(
     billingSuccessSource,
   ),
 );
 assert(
-  "13 poll-only branch has no subscription analytics",
-  !billingSuccessSource.match(/api\/billing\/status[\s\S]*tryTrackSubscriptionComplete/),
+  "13 poll-confirmed paid path also uses subscription completion helper",
+  /api\/billing\/status[\s\S]*attemptSubscriptionComplete|api\/billing\/status[\s\S]*tryTrackSubscriptionComplete/.test(
+    billingSuccessSource,
+  ),
+);
+assert(
+  "13 poll path uses shared attemptSubscriptionComplete helper",
+  billingSuccessSource.includes("attemptSubscriptionComplete") &&
+    billingSuccessSource.includes("subscriptionCompleteTrackedRef.current = true"),
 );
 assert(
   "14 render path has no trackEvent subscription_complete",
@@ -228,7 +235,7 @@ assert(
 );
 assert(
   "15 analytics only inside sessionId-guarded effect",
-  /if\s*\(\s*!sessionId\s*\)\s*\{\s*return;\s*\}[\s\S]*tryTrackSubscriptionComplete/.test(
+  /if\s*\(\s*!sessionId\s*\)\s*\{\s*return;\s*\}[\s\S]*(attemptSubscriptionComplete|tryTrackSubscriptionComplete)/.test(
     billingSuccessSource,
   ),
 );

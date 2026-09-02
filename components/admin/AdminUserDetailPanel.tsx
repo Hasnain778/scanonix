@@ -58,7 +58,7 @@ export function AdminUserDetailPanel() {
     <div className="glass-card space-y-4 rounded-2xl p-5 shadow-premium">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-white">{profile.full_name ?? "Unnamed user"}</h3>
+          <h3 className="text-lg font-semibold text-foreground">{profile.full_name ?? "Unnamed user"}</h3>
           <p className="text-sm text-scanonix-muted">{detail.email}</p>
         </div>
         <Link href="/admin/users" className="text-xs font-medium text-scanonix-orange hover:underline">
@@ -80,11 +80,11 @@ export function AdminUserDetailPanel() {
 
       {detail.recentScans.length > 0 ? (
         <div>
-          <h4 className="mb-2 text-sm font-semibold text-white">Recent scans</h4>
+          <h4 className="mb-2 text-sm font-semibold text-foreground">Recent scans</h4>
           <ul className="space-y-2 text-sm">
             {detail.recentScans.map((scan) => (
-              <li key={scan.id} className="flex justify-between gap-2 border-b border-white/5 py-2">
-                <span className="truncate text-neutral-200">{scan.target}</span>
+              <li key={scan.id} className="flex justify-between gap-2 border-b border-border py-2">
+                <span className="truncate text-foreground-secondary">{scan.target}</span>
                 <Link href={`/scan-results/${scan.id}`} className="shrink-0 text-xs text-scanonix-orange hover:underline">
                   View
                 </Link>
@@ -101,7 +101,7 @@ function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <dt className="text-xs uppercase tracking-wide text-scanonix-muted">{label}</dt>
-      <dd className="mt-0.5 capitalize text-white">{value}</dd>
+      <dd className="mt-0.5 capitalize text-foreground">{value}</dd>
     </div>
   );
 }

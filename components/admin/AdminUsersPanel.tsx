@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { AdminUserRow } from "@/lib/admin/types";
 
+const adminControlClass =
+  "rounded-xl border border-border bg-surface-muted px-3 py-2 text-sm text-foreground outline-none focus:border-scanonix-orange/50";
+
 export function AdminUsersPanel() {
   const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [search, setSearch] = useState("");
@@ -63,23 +66,15 @@ export function AdminUsersPanel() {
           placeholder="Search name, email, ID…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="min-w-[200px] flex-1 rounded-xl border border-white/10 bg-black/30 px-4 py-2 text-sm text-white outline-none focus:border-scanonix-orange/50"
+          className={`min-w-[200px] flex-1 px-4 ${adminControlClass}`}
         />
-        <select
-          value={plan}
-          onChange={(e) => setPlan(e.target.value)}
-          className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white"
-        >
+        <select value={plan} onChange={(e) => setPlan(e.target.value)} className={adminControlClass}>
           <option value="all">All plans</option>
           <option value="free">Free</option>
           <option value="pro">Pro</option>
           <option value="business">Business</option>
         </select>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white"
-        >
+        <select value={status} onChange={(e) => setStatus(e.target.value)} className={adminControlClass}>
           <option value="all">All statuses</option>
           <option value="active">Active</option>
           <option value="suspended">Suspended</option>
@@ -92,7 +87,7 @@ export function AdminUsersPanel() {
       <div className="glass-card overflow-hidden rounded-2xl shadow-premium">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-white/10 bg-black/20 text-xs uppercase tracking-wide text-scanonix-muted">
+            <thead className="border-b border-border bg-surface-muted text-xs uppercase tracking-wide text-scanonix-muted">
               <tr>
                 <th className="px-4 py-3">User</th>
                 <th className="px-4 py-3">Plan</th>
@@ -104,12 +99,12 @@ export function AdminUsersPanel() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className="border-b border-white/5 hover:bg-white/3">
+                <tr key={user.id} className="border-b border-border transition-colors hover:bg-surface-muted/60">
                   <td className="px-4 py-3">
-                    <p className="font-medium text-white">{user.fullName ?? "—"}</p>
+                    <p className="font-medium text-foreground">{user.fullName ?? "—"}</p>
                     <p className="text-xs text-scanonix-muted">{user.email}</p>
                   </td>
-                  <td className="px-4 py-3 capitalize text-neutral-200">{user.plan}</td>
+                  <td className="px-4 py-3 capitalize text-foreground-secondary">{user.plan}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
@@ -121,7 +116,7 @@ export function AdminUsersPanel() {
                       {user.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-neutral-200">{user.totalScans}</td>
+                  <td className="px-4 py-3 text-foreground-secondary">{user.totalScans}</td>
                   <td className="px-4 py-3 text-xs text-scanonix-muted">
                     {user.lastActive ? new Date(user.lastActive).toLocaleDateString("en-GB") : "—"}
                   </td>
@@ -136,7 +131,7 @@ export function AdminUsersPanel() {
                       <button
                         type="button"
                         onClick={() => void toggleStatus(user)}
-                        className="text-xs font-medium text-scanonix-muted hover:text-white"
+                        className="text-xs font-medium text-scanonix-muted hover:text-foreground"
                       >
                         {user.status === "active" ? "Suspend" : "Reactivate"}
                       </button>

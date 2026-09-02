@@ -59,7 +59,7 @@ export function AdminSystemPanel() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="glass-card rounded-2xl p-5 shadow-premium">
-      <h3 className="mb-4 text-sm font-semibold text-white">{title}</h3>
+      <h3 className="mb-4 text-sm font-semibold text-foreground">{title}</h3>
       {children}
     </div>
   );
@@ -67,9 +67,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function StatusRow({ label, ok, detail }: { label: string; ok: boolean; detail: string }) {
   return (
-    <li className="flex items-start justify-between gap-4 border-b border-white/5 py-2 last:border-0">
+    <li className="flex items-start justify-between gap-4 border-b border-border py-2 last:border-0">
       <div>
-        <p className="text-sm font-medium text-white">{label}</p>
+        <p className="text-sm font-medium text-foreground">{label}</p>
         <p className="text-xs text-scanonix-muted">{detail}</p>
       </div>
       <span

@@ -35,7 +35,7 @@ export function AdminSubscriptionsPanel() {
       <div className="glass-card overflow-hidden rounded-2xl shadow-premium">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-white/10 bg-black/20 text-xs uppercase tracking-wide text-scanonix-muted">
+            <thead className="border-b border-border bg-surface-muted text-xs uppercase tracking-wide text-scanonix-muted">
               <tr>
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Plan</th>
@@ -46,12 +46,12 @@ export function AdminSubscriptionsPanel() {
             </thead>
             <tbody>
               {stats.subscribers.map((sub) => (
-                <tr key={sub.id} className="border-b border-white/5">
-                  <td className="px-4 py-3 text-white">{sub.email}</td>
-                  <td className="px-4 py-3 capitalize">{sub.plan}</td>
-                  <td className="px-4 py-3">{sub.status ?? "—"}</td>
-                  <td className="px-4 py-3">£{sub.mrrGbp.toFixed(2)}</td>
-                  <td className="px-4 py-3">{sub.cancelAtPeriodEnd ? "Yes" : "No"}</td>
+                <tr key={sub.id} className="border-b border-border transition-colors hover:bg-surface-muted/60">
+                  <td className="px-4 py-3 font-medium text-foreground">{sub.email}</td>
+                  <td className="px-4 py-3 capitalize text-foreground-secondary">{sub.plan}</td>
+                  <td className="px-4 py-3 text-foreground-secondary">{sub.status ?? "—"}</td>
+                  <td className="px-4 py-3 text-foreground-secondary">£{sub.mrrGbp.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-foreground-secondary">{sub.cancelAtPeriodEnd ? "Yes" : "No"}</td>
                 </tr>
               ))}
             </tbody>

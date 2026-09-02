@@ -33,11 +33,11 @@ export function AdminMonitoringPanel() {
       </div>
 
       <div className="glass-card overflow-hidden rounded-2xl shadow-premium">
-        <div className="border-b border-white/10 px-4 py-3">
-          <h3 className="text-sm font-semibold text-white">Recent monitoring failures</h3>
+        <div className="border-b border-border px-4 py-3">
+          <h3 className="text-sm font-semibold text-foreground">Recent monitoring failures</h3>
         </div>
         <table className="min-w-full text-left text-sm">
-          <thead className="border-b border-white/10 bg-black/20 text-xs uppercase tracking-wide text-scanonix-muted">
+          <thead className="border-b border-border bg-surface-muted text-xs uppercase tracking-wide text-scanonix-muted">
             <tr>
               <th className="px-4 py-3">Target</th>
               <th className="px-4 py-3">Error</th>
@@ -46,8 +46,8 @@ export function AdminMonitoringPanel() {
           </thead>
           <tbody>
             {stats.recentFailures.map((failure) => (
-              <tr key={failure.id} className="border-b border-white/5">
-                <td className="px-4 py-3 text-white">{failure.targetUrl}</td>
+              <tr key={failure.id} className="border-b border-border transition-colors hover:bg-surface-muted/60">
+                <td className="px-4 py-3 font-medium text-foreground">{failure.targetUrl}</td>
                 <td className="px-4 py-3 text-scanonix-muted">{failure.errorMessage ?? "Unknown"}</td>
                 <td className="px-4 py-3 text-xs text-scanonix-muted">{new Date(failure.createdAt).toLocaleString("en-GB")}</td>
               </tr>
@@ -66,7 +66,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="glass-card rounded-2xl p-5 shadow-premium">
       <p className="text-xs uppercase tracking-wide text-scanonix-muted">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
+      <p className="mt-2 text-2xl font-semibold text-foreground">{value}</p>
     </div>
   );
 }

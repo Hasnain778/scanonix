@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  createMonitorCreateAttempt,
+  mapMonitorCreateHttpError,
+} from "@/lib/analytics/monitor-create";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { frequencyLabel } from "@/lib/monitors/scheduler";
 
 interface MonitorButtonProps {
@@ -20,6 +25,12 @@ export function MonitorButton({ targetUrl, isDemo = false }: MonitorButtonProps)
   if (isDemo) return null;
 
   async function createMonitor() {
+    const attempt = createMonitorCreateAttempt({
+      frequency,
+      source_surface: ANALYTICS_SURFACES.MONITOR_SCAN_REPORT,
+    });
+    attempt?.markStarted();
+
     setLoading(true);
     setError(null);
 
@@ -29,12 +40,29 @@ export function MonitorButton({ targetUrl, isDemo = false }: MonitorButtonProps)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ targetUrl, frequency, label: label.trim() || undefined }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Failed to create monitor");
+      const data = (await res.json()) as {
+        error?: string;
+        code?: string;
+        monitor?: { id?: string };
+      };
+      if (!res.ok) {
+        attempt?.error(
+          mapMonitorCreateHttpError(
+            res.status,
+            typeof data.code === "string" ? data.code : undefined,
+          ),
+        );
+        throw new Error(data.error ?? "Failed to create monitor");
+      }
 
+      attempt?.success();
       setOpen(false);
-      router.push(`/monitors/${data.monitor.id}`);
+      const monitorId = data.monitor?.id;
+      if (typeof monitorId === "string" && monitorId) {
+        router.push(`/monitors/${monitorId}`);
+      }
     } catch (err) {
+      attempt?.error("network");
       setError(err instanceof Error ? err.message : "Failed to create monitor");
     } finally {
       setLoading(false);

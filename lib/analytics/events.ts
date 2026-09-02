@@ -5,10 +5,17 @@
 
 import { FROZEN_130D_CUSTOM_EVENT_NAMES } from "@/lib/analytics/surfaces";
 
-/** Approved custom event names (8). */
+/** Monitor create frequency (low-cardinality; never includes target URL). */
+export const MONITOR_FREQUENCIES = ["daily", "weekly", "monthly"] as const;
+export type MonitorFrequencyAnalytics = (typeof MONITOR_FREQUENCIES)[number];
+
+/** Approved custom event names (11): 130D frozen (7) + 130E + 130D-2C monitor create. */
 export const CUSTOM_EVENT_NAMES = [
   ...FROZEN_130D_CUSTOM_EVENT_NAMES,
   "subscription_complete",
+  "monitor_create_start",
+  "monitor_create_success",
+  "monitor_create_error",
 ] as const;
 
 export type CustomEventName = (typeof CUSTOM_EVENT_NAMES)[number];
@@ -55,6 +62,9 @@ export const EVENT_REQUIRED_PARAMETERS: Record<CustomEventName, readonly string[
   checkout_start: ["tier", "billing_interval", "source_surface"],
   find_tool_search: ["query_length", "result_count", "source_surface"],
   subscription_complete: ["tier", "billing_interval", "source_surface"],
+  monitor_create_start: ["frequency", "source_surface", "plan_gate"],
+  monitor_create_success: ["frequency", "source_surface", "plan_gate"],
+  monitor_create_error: ["frequency", "source_surface", "plan_gate", "error_code"],
 };
 
 /** Optional parameter keys per event. */
@@ -67,6 +77,9 @@ export const EVENT_OPTIONAL_PARAMETERS: Record<CustomEventName, readonly string[
   checkout_start: [],
   find_tool_search: [],
   subscription_complete: [],
+  monitor_create_start: [],
+  monitor_create_success: [],
+  monitor_create_error: [],
 };
 
 /** Full parameter allowlist per event (required + optional). */
@@ -79,6 +92,9 @@ export const EVENT_PARAMETER_ALLOWLIST: Record<CustomEventName, readonly string[
   checkout_start: EVENT_REQUIRED_PARAMETERS.checkout_start,
   find_tool_search: EVENT_REQUIRED_PARAMETERS.find_tool_search,
   subscription_complete: EVENT_REQUIRED_PARAMETERS.subscription_complete,
+  monitor_create_start: EVENT_REQUIRED_PARAMETERS.monitor_create_start,
+  monitor_create_success: EVENT_REQUIRED_PARAMETERS.monitor_create_success,
+  monitor_create_error: EVENT_REQUIRED_PARAMETERS.monitor_create_error,
 };
 
 /** Keys that must never reach GA4 (global blocklist). */
@@ -132,6 +148,12 @@ export const FORBIDDEN_PARAMETER_NAMES = [
   "href",
   "user_properties",
   "user_id",
+  "monitor_id",
+  "job_id",
+  "hostname",
+  "domain",
+  "target_url",
+  "label",
 ] as const;
 
 export interface ToolProcessStartParams {
@@ -186,6 +208,25 @@ export interface SubscriptionCompleteParams {
   source_surface: string;
 }
 
+export interface MonitorCreateStartParams {
+  frequency: MonitorFrequencyAnalytics;
+  source_surface: string;
+  plan_gate: PlanGate;
+}
+
+export interface MonitorCreateSuccessParams {
+  frequency: MonitorFrequencyAnalytics;
+  source_surface: string;
+  plan_gate: PlanGate;
+}
+
+export interface MonitorCreateErrorParams {
+  frequency: MonitorFrequencyAnalytics;
+  source_surface: string;
+  plan_gate: PlanGate;
+  error_code: ToolErrorCode;
+}
+
 export interface CustomEventParamsMap {
   tool_process_start: ToolProcessStartParams;
   tool_process_success: ToolProcessSuccessParams;
@@ -195,6 +236,9 @@ export interface CustomEventParamsMap {
   checkout_start: CheckoutStartParams;
   find_tool_search: FindToolSearchParams;
   subscription_complete: SubscriptionCompleteParams;
+  monitor_create_start: MonitorCreateStartParams;
+  monitor_create_success: MonitorCreateSuccessParams;
+  monitor_create_error: MonitorCreateErrorParams;
 }
 
 import {
@@ -409,6 +453,49 @@ export function sanitizeCustomEvent<E extends CustomEventName>(
         ok: true,
         eventName,
         params: { tier, billing_interval, source_surface },
+      };
+    }
+    case "monitor_create_start": {
+      const p = rawParameters as MonitorCreateStartParams;
+      const frequency = assertEnum(p.frequency, MONITOR_FREQUENCIES);
+      const source_surface = assertApprovedSourceSurface(p.source_surface);
+      const plan_gate = assertEnum(p.plan_gate, PLAN_GATES);
+      if (!frequency || !source_surface || !plan_gate) {
+        return { ok: false, reason: "invalid_monitor_create_start" };
+      }
+      return {
+        ok: true,
+        eventName,
+        params: { frequency, source_surface, plan_gate },
+      };
+    }
+    case "monitor_create_success": {
+      const p = rawParameters as MonitorCreateSuccessParams;
+      const frequency = assertEnum(p.frequency, MONITOR_FREQUENCIES);
+      const source_surface = assertApprovedSourceSurface(p.source_surface);
+      const plan_gate = assertEnum(p.plan_gate, PLAN_GATES);
+      if (!frequency || !source_surface || !plan_gate) {
+        return { ok: false, reason: "invalid_monitor_create_success" };
+      }
+      return {
+        ok: true,
+        eventName,
+        params: { frequency, source_surface, plan_gate },
+      };
+    }
+    case "monitor_create_error": {
+      const p = rawParameters as MonitorCreateErrorParams;
+      const frequency = assertEnum(p.frequency, MONITOR_FREQUENCIES);
+      const source_surface = assertApprovedSourceSurface(p.source_surface);
+      const plan_gate = assertEnum(p.plan_gate, PLAN_GATES);
+      const error_code = assertEnum(p.error_code, ERROR_CODES);
+      if (!frequency || !source_surface || !plan_gate || !error_code) {
+        return { ok: false, reason: "invalid_monitor_create_error" };
+      }
+      return {
+        ok: true,
+        eventName,
+        params: { frequency, source_surface, plan_gate, error_code },
       };
     }
     default:

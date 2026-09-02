@@ -77,12 +77,15 @@ const layoutSource = readSource("app/layout.tsx");
 const productRuntime = productRuntimeSource();
 
 // 1. Event allowlist
-assert("1 exactly 8 approved events", CUSTOM_EVENT_NAMES.length === 8);
+assert("1 exactly 11 approved events", CUSTOM_EVENT_NAMES.length === 11);
 assert(
   "1 130D frozen names preserved in order",
   FROZEN_130D_CUSTOM_EVENT_NAMES.every((name, index) => CUSTOM_EVENT_NAMES[index] === name),
 );
 assert("1 subscription_complete is event 8", CUSTOM_EVENT_NAMES[7] === "subscription_complete");
+assert("1 monitor_create_start is event 9", CUSTOM_EVENT_NAMES[8] === "monitor_create_start");
+assert("1 monitor_create_success is event 10", CUSTOM_EVENT_NAMES[9] === "monitor_create_success");
+assert("1 monitor_create_error is event 11", CUSTOM_EVENT_NAMES[10] === "monitor_create_error");
 
 // 2. Schema
 assert(

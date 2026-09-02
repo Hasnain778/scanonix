@@ -11,6 +11,10 @@ export const ANALYTICS_SURFACES = {
   ACCOUNT_BILLING: "account_billing",
   TOOL_FINDER: "tool_finder",
   FEATURE_LOCK: "feature_lock",
+  /** /monitors create form */
+  MONITOR_LIST: "monitors_list",
+  /** Scan report "Monitor website" CTA */
+  MONITOR_SCAN_REPORT: "monitor_scan_report",
 } as const;
 
 export type AnalyticsSurface = (typeof ANALYTICS_SURFACES)[keyof typeof ANALYTICS_SURFACES];

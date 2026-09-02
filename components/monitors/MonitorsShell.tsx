@@ -8,6 +8,11 @@ import { ProBadge } from "@/components/tools/background-remover/ProBadge";
 import { ProSecurityGate } from "@/components/tools/security/ProSecurityGate";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useProAccess } from "@/hooks/useProAccess";
+import {
+  createMonitorCreateAttempt,
+  mapMonitorCreateHttpError,
+} from "@/lib/analytics/monitor-create";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { frequencyLabel } from "@/lib/monitors/scheduler";
 import type { MonitorSummary, SecurityMonitorRecord } from "@/lib/monitors/types";
 
@@ -57,6 +62,13 @@ export function MonitorsShell() {
   async function createMonitor(event: React.FormEvent) {
     event.preventDefault();
     if (!targetUrl.trim()) return;
+
+    const attempt = createMonitorCreateAttempt({
+      frequency,
+      source_surface: ANALYTICS_SURFACES.MONITOR_LIST,
+    });
+    attempt?.markStarted();
+
     setCreating(true);
     setError(null);
     try {
@@ -65,11 +77,21 @@ export function MonitorsShell() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ targetUrl: targetUrl.trim(), frequency }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Failed to create monitor");
+      const data = (await res.json()) as { error?: string; code?: string };
+      if (!res.ok) {
+        attempt?.error(
+          mapMonitorCreateHttpError(
+            res.status,
+            typeof data.code === "string" ? data.code : undefined,
+          ),
+        );
+        throw new Error(data.error ?? "Failed to create monitor");
+      }
+      attempt?.success();
       setTargetUrl("");
       await load();
     } catch (err) {
+      attempt?.error("network");
       setError(err instanceof Error ? err.message : "Failed to create monitor");
     } finally {
       setCreating(false);

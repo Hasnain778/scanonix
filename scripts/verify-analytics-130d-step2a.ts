@@ -67,7 +67,7 @@ const productRuntime = productRuntimeSource();
 
 // 1. Event allowlist
 assert("1 events.ts exists", eventsSource.length > 0);
-assert("1 exactly 8 approved events", CUSTOM_EVENT_NAMES.length === 8);
+assert("1 exactly 11 approved events", CUSTOM_EVENT_NAMES.length === 11);
 assert(
   "1 130D frozen event names preserved",
   FROZEN_130D_CUSTOM_EVENT_NAMES.every((name) => CUSTOM_EVENT_NAMES.includes(name)),
@@ -78,6 +78,9 @@ assert(
     [
       ...FROZEN_130D_CUSTOM_EVENT_NAMES,
       "subscription_complete",
+      "monitor_create_start",
+      "monitor_create_success",
+      "monitor_create_error",
     ].join(","),
 );
 assert("1 no find_tool_open yet", !eventsSource.includes("find_tool_open"));

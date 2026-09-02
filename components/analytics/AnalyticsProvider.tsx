@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { useClientMounted, useConsentDecision } from "@/components/analytics/ConsentContext";
 import {
   isGaConfigured,
@@ -10,25 +10,18 @@ import {
   trackPageView,
 } from "@/lib/analytics/ga4";
 
-function buildRouteKey(pathname: string, searchParams: URLSearchParams | null): string {
-  const search = searchParams?.toString();
-  return search ? `${pathname}?${search}` : pathname;
-}
-
-function AnalyticsPageViewsInner() {
+function AnalyticsPageViews() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const decision = useConsentDecision();
   const mounted = useClientMounted();
-  const search = searchParams?.toString() ?? "";
 
   useEffect(() => {
     if (!mounted || decision !== "accepted" || !isGaConfigured()) return;
-
-    const routeKey = buildRouteKey(pathname, searchParams);
+    if (!pathname) return;
 
     function attemptTrack(): void {
-      trackPageView(routeKey);
+      // Pathname only — query/hash never enter GA4 page_view (sanitized again in ga4).
+      trackPageView(pathname);
     }
 
     if (isGaReady()) {
@@ -37,15 +30,11 @@ function AnalyticsPageViewsInner() {
     }
 
     return subscribeToGaReady(attemptTrack);
-  }, [mounted, decision, pathname, search, searchParams]);
+  }, [mounted, decision, pathname]);
 
   return null;
 }
 
 export function AnalyticsProvider() {
-  return (
-    <Suspense fallback={null}>
-      <AnalyticsPageViewsInner />
-    </Suspense>
-  );
+  return <AnalyticsPageViews />;
 }

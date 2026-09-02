@@ -104,12 +104,20 @@ assert("2 no duplicate bootstrap in useEffect", !googleAnalytics.includes("initG
 
 const analyticsProvider = readSource("components/analytics/AnalyticsProvider.tsx");
 assert("2 AnalyticsProvider exists", analyticsProvider.includes("usePathname"));
-assert("2 AnalyticsProvider uses useSearchParams", analyticsProvider.includes("useSearchParams"));
+assert(
+  "2 AnalyticsProvider pathname-only page_view (no searchParams)",
+  analyticsProvider.includes("trackPageView(pathname)") &&
+    !analyticsProvider.includes("useSearchParams"),
+);
 assert("2 dedupe last sent path", !analyticsProvider.includes("lastSentPath"));
 assert("2 canonical trackPageView sender", analyticsProvider.includes("trackPageView"));
 assert("2 mutually exclusive ready dispatch", analyticsProvider.includes("if (isGaReady())") && analyticsProvider.includes("return subscribeToGaReady"));
 assert("2 checks isGaReady on mount", analyticsProvider.includes("isGaReady"));
 assert("2 subscribeToGaReady for late listeners", analyticsProvider.includes("subscribeToGaReady"));
+assert(
+  "2 page_view query privacy sanitizers exist",
+  ga4Source.includes("sanitizeGaPagePath") && ga4Source.includes("sanitizeGaPageLocation"),
+);
 
 const consentRoot = readSource("components/analytics/ConsentRoot.tsx");
 assert("2 ConsentRoot mounts GoogleAnalytics", consentRoot.includes("GoogleAnalytics"));

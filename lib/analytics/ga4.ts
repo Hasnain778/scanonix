@@ -395,6 +395,88 @@ export function trackEvent<E extends CustomEventName>(
   return "sent";
 }
 
+/**
+ * Pathname-only GA4 page_path (Phase 130D-2A).
+ * Drops query strings and hash fragments. Never throws on malformed input.
+ */
+export function sanitizeGaPagePath(input: string): string {
+  if (typeof input !== "string") return "/";
+  const trimmed = input.trim();
+  if (!trimmed) return "/";
+
+  try {
+    const absolute = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed);
+    const url = absolute
+      ? new URL(trimmed)
+      : new URL(trimmed, "https://scanonix.invalid");
+    return url.pathname || "/";
+  } catch {
+    const withoutHash = trimmed.split("#")[0] ?? trimmed;
+    const withoutQuery = withoutHash.split("?")[0] ?? withoutHash;
+    if (!withoutQuery) return "/";
+    return withoutQuery.startsWith("/") ? withoutQuery : `/${withoutQuery}`;
+  }
+}
+
+/**
+ * Origin + pathname GA4 page_location (Phase 130D-2A).
+ * Drops query strings and hash fragments. Never throws on malformed input.
+ */
+export function sanitizeGaPageLocation(hrefOrPath: string, origin?: string): string {
+  if (typeof hrefOrPath !== "string") {
+    return origin ? `${origin.replace(/\/$/, "")}/` : "/";
+  }
+
+  const trimmed = hrefOrPath.trim();
+  if (!trimmed) {
+    return origin ? `${origin.replace(/\/$/, "")}/` : "/";
+  }
+
+  try {
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed)) {
+      const url = new URL(trimmed);
+      return `${url.origin}${url.pathname || "/"}`;
+    }
+  } catch {
+    // Fall through to path + origin composition.
+  }
+
+  const path = sanitizeGaPagePath(trimmed);
+  const base =
+    (typeof origin === "string" && origin.trim()) ||
+    (isBrowser() ? window.location?.origin : "") ||
+    "";
+
+  if (!base) return path;
+
+  try {
+    return `${new URL(base).origin}${path}`;
+  } catch {
+    return path;
+  }
+}
+
+function buildPageViewPayload(
+  routeKey: string,
+  href: string,
+  title: string,
+  measurementId: string,
+): {
+  page_path: string;
+  page_location: string;
+  page_title: string;
+  send_to: string;
+} {
+  const page_path = sanitizeGaPagePath(routeKey);
+  const page_location = sanitizeGaPageLocation(href);
+  return {
+    page_path,
+    page_location,
+    page_title: title,
+    send_to: measurementId,
+  };
+}
+
 function dispatchPageViewEvent(pagePath: string, measurementId: string): void {
   if (!isGaReady() || !isGtagAvailable()) return;
   if (gaDisableWindow()[`ga-disable-${measurementId}`]) {
@@ -402,35 +484,44 @@ function dispatchPageViewEvent(pagePath: string, measurementId: string): void {
     return;
   }
 
-  gtag("event", "page_view", {
-    page_path: pagePath,
-    page_location: window.location.href,
-    page_title: document.title,
-    send_to: measurementId,
-  });
+  const payload = buildPageViewPayload(
+    pagePath,
+    window.location.href,
+    document.title,
+    measurementId,
+  );
+
+  gtag("event", "page_view", payload);
 
   debugLogDataLayer("after-page-view-event");
 }
 
-/** Canonical deduped page_view sender — one gtag event per route key per analytics session. */
+/** Canonical deduped page_view sender — one gtag event per sanitized pathname per analytics session. */
 export function trackPageView(routeKey: string): "sent" | "skipped" {
   if (!routeKey || !isGaReady() || !isGaConfigured()) {
     debugLog("page_view skipped", `routeKey=${routeKey} reason=not-ready`);
     return "skipped";
   }
 
+  const sanitizedKey = sanitizeGaPagePath(routeKey);
   const rt = gaRuntime();
   const previous = rt.lastSentRouteKey;
-  if (previous === routeKey) {
-    debugLog("page_view skipped", `routeKey=${routeKey} reason=dedupe previous=${previous}`);
+  if (previous === sanitizedKey) {
+    debugLog(
+      "page_view skipped",
+      `routeKey=${sanitizedKey} reason=dedupe previous=${previous}`,
+    );
     return "skipped";
   }
 
   const measurementId = getMeasurementId();
-  debugLog("page_view requested", `routeKey=${routeKey} previous=${previous ?? "none"} configs=${Object.keys(rt.configuredMeasurementIds).length}`);
-  rt.lastSentRouteKey = routeKey;
-  dispatchPageViewEvent(routeKey, measurementId);
-  debugLog("page_view sent", `routeKey=${routeKey}`);
+  debugLog(
+    "page_view requested",
+    `routeKey=${sanitizedKey} previous=${previous ?? "none"} configs=${Object.keys(rt.configuredMeasurementIds).length}`,
+  );
+  rt.lastSentRouteKey = sanitizedKey;
+  dispatchPageViewEvent(sanitizedKey, measurementId);
+  debugLog("page_view sent", `routeKey=${sanitizedKey}`);
   return "sent";
 }
 

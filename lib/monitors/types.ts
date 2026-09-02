@@ -3,7 +3,7 @@ export type MonitorStatus = "active" | "paused";
 export type MonitorRunStatus = "completed" | "failed" | "skipped";
 export type MonitorEventSeverity = "info" | "warning" | "critical";
 export type NotificationChannel = "email" | "in_app" | "webhook";
-export type NotificationQueueStatus = "pending" | "sent" | "failed";
+export type NotificationQueueStatus = "pending" | "processing" | "sent" | "failed";
 export type MonitorJobStatus = "pending" | "processing" | "completed" | "failed";
 
 export type MonitorEventType =

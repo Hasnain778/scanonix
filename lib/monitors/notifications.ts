@@ -1,5 +1,13 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { env } from "@/config/env";
 import type { MonitorChangeSet, MonitorEventType, NotificationChannel } from "@/lib/monitors/types";
+import {
+  buildMonitorAlertText,
+  isMonitorEmailConfigured,
+  isPlausibleEmailAddress,
+  sendMonitorAlertEmail,
+  type EmailFailureCode,
+} from "@/lib/notifications/email";
 
 interface QueueNotificationInput {
   userId: string;
@@ -122,29 +130,210 @@ export async function dispatchMonitorNotifications(input: {
   });
 }
 
-export async function processPendingEmailNotifications(limit = 20) {
-  const admin = createAdminClient();
+export interface PendingEmailQueueRow {
+  id: string;
+  user_id: string;
+  monitor_id: string | null;
+  payload: Record<string, unknown>;
+  status: string;
+}
+
+/** Payload keys that must never be used as the recipient. */
+export const FORBIDDEN_RECIPIENT_PAYLOAD_KEYS = [
+  "email",
+  "to",
+  "recipient",
+  "recipient_email",
+  "user_email",
+] as const;
+
+/**
+ * Atomic claim: UPDATE ... WHERE id AND status='pending' RETURNING.
+ * Only one concurrent worker can win for a given row.
+ */
+export interface ProcessEmailNotificationsDeps {
+  admin?: EmailDispatchAdmin;
+  send?: typeof sendMonitorAlertEmail;
+  lookupEmail?: (userId: string) => Promise<string | null>;
+  isConfigured?: () => boolean;
+}
+
+export type EmailDispatchAdmin = {
+  from: (relation: string) => EmailDispatchQuery;
+  auth: {
+    admin: {
+      getUserById: (id: string) => Promise<{
+        data: { user: { email?: string | null } | null };
+        error: unknown;
+      }>;
+    };
+  };
+};
+
+export type EmailDispatchQuery = {
+  select: (columns: string) => EmailDispatchQuery;
+  update: (values: Record<string, unknown>) => EmailDispatchQuery;
+  eq: (column: string, value: unknown) => EmailDispatchQuery;
+  order: (column: string, options: { ascending: boolean }) => EmailDispatchQuery;
+  limit: (count: number) => EmailDispatchQuery;
+  maybeSingle: () => Promise<{ data: unknown; error: unknown }>;
+  then: (
+    resolve: (value: { data: unknown; error: unknown }) => unknown,
+    reject?: (reason: unknown) => unknown,
+  ) => Promise<unknown>;
+};
+
+export async function claimPendingEmailNotification(
+  admin: EmailDispatchAdmin,
+  id: string,
+): Promise<PendingEmailQueueRow | null> {
   const { data, error } = await admin
     .from("notification_queue")
-    .select("id, payload, event_type")
+    .update({ status: "processing" })
+    .eq("id", id)
     .eq("channel", "email")
     .eq("status", "pending")
-    .order("created_at", { ascending: true })
-    .limit(limit);
+    .select("id, user_id, monitor_id, payload, status")
+    .maybeSingle();
 
-  if (error || !data?.length) return { processed: 0 };
-
-  for (const row of data) {
-    // Email provider not configured — mark as sent with note for future Resend/SendGrid integration
-    await admin
-      .from("notification_queue")
-      .update({
-        status: "sent",
-        processed_at: new Date().toISOString(),
-        error_message: "Email dispatch stub — configure provider in lib/notifications/email.ts",
-      })
-      .eq("id", row.id);
+  if (error || !data) {
+    return null;
   }
 
-  return { processed: data.length };
+  return data as PendingEmailQueueRow;
 }
+
+export async function lookupAuthUserEmail(
+  admin: EmailDispatchAdmin,
+  userId: string,
+): Promise<string | null> {
+  const { data, error } = await admin.auth.admin.getUserById(userId);
+  if (error || !data.user?.email) {
+    return null;
+  }
+  return data.user.email;
+}
+
+export interface ProcessEmailNotificationsResult {
+  processed: number;
+  sent: number;
+  failed: number;
+  skippedUnconfigured: number;
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+async function markEmailTerminal(
+  admin: EmailDispatchAdmin,
+  id: string,
+  status: "sent" | "failed",
+  errorCode?: EmailFailureCode | "missing_recipient",
+) {
+  await admin
+    .from("notification_queue")
+    .update({
+      status,
+      processed_at: nowIso(),
+      error_message: status === "sent" ? null : (errorCode ?? "failed"),
+    })
+    .eq("id", id)
+    .eq("status", "processing");
+}
+
+/**
+ * Deliver pending monitor alert emails.
+ * Failed rows are terminal in 132B-2 (no automatic retry scheduler).
+ * Missing provider config leaves rows pending (not sent).
+ */
+export async function processPendingEmailNotifications(
+  limit = 20,
+  deps: ProcessEmailNotificationsDeps = {},
+): Promise<ProcessEmailNotificationsResult> {
+  const result: ProcessEmailNotificationsResult = {
+    processed: 0,
+    sent: 0,
+    failed: 0,
+    skippedUnconfigured: 0,
+  };
+
+  try {
+    const configured = deps.isConfigured ?? isMonitorEmailConfigured;
+    if (!configured()) {
+      return result;
+    }
+
+    const admin = (deps.admin ?? createAdminClient()) as EmailDispatchAdmin;
+    const send = deps.send ?? sendMonitorAlertEmail;
+    const lookupEmail =
+      deps.lookupEmail ?? ((userId: string) => lookupAuthUserEmail(admin, userId));
+
+    const { data, error } = (await admin
+      .from("notification_queue")
+      .select("id")
+      .eq("channel", "email")
+      .eq("status", "pending")
+      .order("created_at", { ascending: true })
+      .limit(limit)) as { data: Array<{ id: string }> | null; error: unknown };
+
+    if (error || !data?.length) {
+      return result;
+    }
+
+    for (const row of data) {
+      const claimed = await claimPendingEmailNotification(admin, row.id);
+      if (!claimed) {
+        continue;
+      }
+      result.processed += 1;
+
+      const recipient = await lookupEmail(claimed.user_id);
+      if (!isPlausibleEmailAddress(recipient)) {
+        await markEmailTerminal(admin, claimed.id, "failed", "missing_recipient");
+        result.failed += 1;
+        continue;
+      }
+
+      const summary =
+        typeof claimed.payload?.body === "string"
+          ? claimed.payload.body
+          : typeof claimed.payload?.subject === "string"
+            ? claimed.payload.subject
+            : undefined;
+
+      const content = buildMonitorAlertText(
+        {
+          targetUrl: claimed.payload?.targetUrl,
+          riskScore: claimed.payload?.riskScore,
+          summary,
+          monitorId: claimed.monitor_id ?? claimed.payload?.monitorId,
+        },
+        env.siteUrl,
+      );
+
+      const sendResult = await send({
+        to: recipient,
+        subject: content.subject,
+        text: content.text,
+      });
+
+      if (sendResult.ok) {
+        await markEmailTerminal(admin, claimed.id, "sent");
+        result.sent += 1;
+      } else {
+        await markEmailTerminal(admin, claimed.id, "failed", sendResult.code);
+        result.failed += 1;
+      }
+    }
+
+    return result;
+  } catch (error) {
+    console.error(
+      "Monitor email dispatch failed:",
+      error instanceof Error ? error.message : "unknown",
+    );
+    return result;
+  }
+}
+

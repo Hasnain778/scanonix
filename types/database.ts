@@ -419,7 +419,7 @@ export interface Database {
           channel: "email" | "in_app" | "webhook";
           event_type: string;
           payload: Record<string, unknown>;
-          status: "pending" | "sent" | "failed";
+          status: "pending" | "processing" | "sent" | "failed";
           error_message: string | null;
           created_at: string;
           processed_at: string | null;
@@ -431,7 +431,7 @@ export interface Database {
           channel: "email" | "in_app" | "webhook";
           event_type: string;
           payload?: Record<string, unknown>;
-          status?: "pending" | "sent" | "failed";
+          status?: "pending" | "processing" | "sent" | "failed";
           error_message?: string | null;
           created_at?: string;
           processed_at?: string | null;
@@ -443,7 +443,7 @@ export interface Database {
           channel?: "email" | "in_app" | "webhook";
           event_type?: string;
           payload?: Record<string, unknown>;
-          status?: "pending" | "sent" | "failed";
+          status?: "pending" | "processing" | "sent" | "failed";
           error_message?: string | null;
           created_at?: string;
           processed_at?: string | null;

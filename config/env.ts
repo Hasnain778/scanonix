@@ -52,6 +52,10 @@ export const env = {
   urlHausApiKey: readEnv("URLHAUS_API_KEY"),
   phishTankApiKey: readEnv("PHISHTANK_API_KEY"),
   cronSecret: readEnv("CRON_SECRET"),
+  /** Server-only Resend API key — never NEXT_PUBLIC_ */
+  resendApiKey: readEnv("RESEND_API_KEY"),
+  /** Server-only From address for transactional monitor alerts */
+  emailFromAddress: readEnv("EMAIL_FROM_ADDRESS"),
   cloudConvertApiKey: readEnv("CLOUDCONVERT_API_KEY"),
   realesrganPython: readEnv("REALESRGAN_PYTHON"),
   realesrganOnnxPath: readEnv("REALESRGAN_ONNX_PATH"),
@@ -110,6 +114,10 @@ export function isOpenAiConfigured(): boolean {
 
 export function isCronSecretConfigured(): boolean {
   return Boolean(env.cronSecret);
+}
+
+export function isMonitorEmailConfigured(): boolean {
+  return Boolean(env.resendApiKey && env.emailFromAddress);
 }
 
 export function isDomainReputationProviderConfigured(): boolean {

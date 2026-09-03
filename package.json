@@ -55,6 +55,7 @@
     "verify:analytics-130e-subscription-complete": "npx --yes tsx scripts/verify-analytics-130e-subscription-complete.ts",
     "verify:analytics-130d-2c": "npx --yes tsx scripts/verify-analytics-130d-2c-website-monitoring.ts",
     "verify:monitor-email-132b": "npx --yes tsx scripts/verify-monitor-email-132b.ts",
+    "verify:stripe-customer-132c": "npx --yes tsx scripts/verify-stripe-customer-132c.ts",
     "verify:seo-canonical-host": "npx --yes tsx scripts/verify-seo-canonical-host.ts",
     "verify:favicon": "npx --yes tsx scripts/verify-favicon.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"

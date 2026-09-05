@@ -71,9 +71,9 @@ export function PdfPreviewGrid({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-white">Page previews</h2>
+        <h2 className="text-lg font-semibold text-foreground">Page previews</h2>
         {selectable && (
           <div className="flex gap-2">
             <ActionButton
@@ -155,10 +155,10 @@ export function PdfPreviewGrid({
             </>
           );
 
-          const cardClasses = `relative aspect-[3/4] overflow-hidden rounded-xl border bg-black/40 transition-all duration-200 ${
+          const cardClasses = `relative aspect-[3/4] overflow-hidden rounded-xl border bg-surface-muted transition-all duration-200 ${
             highlighted
               ? "border-scanonix-orange ring-2 ring-scanonix-orange/30"
-              : "border-scanonix-border"
+              : "border-border"
           }`;
 
           if (selectable) {
@@ -179,7 +179,7 @@ export function PdfPreviewGrid({
                   className={`absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold ${
                     highlighted
                       ? "bg-scanonix-orange text-white"
-                      : "bg-black/70 text-white"
+                      : "border border-border bg-surface text-foreground"
                   }`}
                 >
                   {page}
@@ -191,7 +191,13 @@ export function PdfPreviewGrid({
           return (
             <div key={page} className={cardClasses}>
               {content}
-              <div className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-black/70 text-xs font-bold text-white">
+              <div
+                className={`absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold ${
+                  highlighted
+                    ? "bg-scanonix-orange text-white"
+                    : "border border-border bg-surface text-foreground"
+                }`}
+              >
                 {page}
               </div>
             </div>

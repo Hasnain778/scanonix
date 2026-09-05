@@ -278,7 +278,7 @@ export function PdfToImageTool() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -303,9 +303,9 @@ export function PdfToImageTool() {
 
       {uploadedPdf && (
         <>
-          <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-scanonix-orange">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -322,7 +322,7 @@ export function PdfToImageTool() {
                 </svg>
               </div>
               <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
+                <p className="truncate text-base font-semibold text-foreground">
                   {uploadedPdf.file.name}
                 </p>
                 <p className="mt-1 text-sm text-scanonix-muted">
@@ -373,15 +373,48 @@ export function PdfToImageTool() {
           />
 
           {hasResult && downloadState && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
-              <p className="text-sm text-scanonix-muted">
-                {downloadState.outputCount} image
-                {downloadState.outputCount === 1 ? "" : "s"} ·{" "}
-                {formatFileSize(downloadState.blob.size)} ·{" "}
-                {format.toUpperCase()} · {downloadState.filename}
+            <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+              <h2 className="text-lg font-semibold text-foreground">
+                Conversion complete
+              </h2>
+              <p className="mt-1 text-sm text-scanonix-muted">
+                Your images are ready to download.
               </p>
-              <div className="mt-5">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-xl border border-border bg-surface-muted p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-scanonix-muted">
+                    Images
+                  </p>
+                  <p className="mt-1 text-base font-semibold text-foreground">
+                    {downloadState.outputCount}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border bg-surface-muted p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-scanonix-muted">
+                    Format
+                  </p>
+                  <p className="mt-1 text-base font-semibold text-foreground">
+                    {format.toUpperCase()}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border bg-surface-muted p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-scanonix-muted">
+                    Package size
+                  </p>
+                  <p className="mt-1 text-base font-semibold text-foreground">
+                    {formatFileSize(downloadState.blob.size)}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border bg-surface-muted p-3 sm:col-span-2 lg:col-span-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-scanonix-muted">
+                    Filename
+                  </p>
+                  <p className="mt-1 truncate text-base font-semibold text-foreground">
+                    {downloadState.filename}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4">
                 <ResultActionBar
                   phase={resultActionPhase}
                   primary={{
@@ -405,38 +438,40 @@ export function PdfToImageTool() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-white">
-                  Convert to images
-                </h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {pagesToConvert.error
-                    ? pagesToConvert.error
-                    : mode === "individual" && selectedPages.length === 0
-                      ? "Select at least one page to continue."
-                      : canConvert
-                        ? `Ready to convert ${pagesToConvert.pages.length} page${pagesToConvert.pages.length === 1 ? "" : "s"} to ${format.toUpperCase()}.`
-                        : "Configure your export options above."}
-                </p>
+          {!hasResult && (
+            <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">
+                    Convert to images
+                  </h2>
+                  <p className="mt-1 text-sm text-scanonix-muted">
+                    {pagesToConvert.error
+                      ? pagesToConvert.error
+                      : mode === "individual" && selectedPages.length === 0
+                        ? "Select at least one page to continue."
+                        : canConvert
+                          ? `Ready to convert ${pagesToConvert.pages.length} page${pagesToConvert.pages.length === 1 ? "" : "s"} to ${format.toUpperCase()}.`
+                          : "Configure your export options above."}
+                  </p>
+                </div>
+
+                <ActionButton
+                  size="lg"
+                  className="w-full sm:w-auto"
+                  loading={status === "loading"}
+                  disabled={!canConvert}
+                  onClick={handleConvert}
+                >
+                  {status === "loading" ? "Converting…" : "Convert to images"}
+                </ActionButton>
               </div>
 
-              <ActionButton
-                size="lg"
-                className="w-full sm:w-auto"
-                loading={status === "loading"}
-                disabled={!canConvert}
-                onClick={handleConvert}
-              >
-                {status === "loading" ? "Converting…" : "Convert to images"}
-              </ActionButton>
+              <div className="mt-4 border-t border-border pt-4">
+                <PrivacyNotice />
+              </div>
             </div>
-
-            <div className="mt-4 border-t border-scanonix-border pt-4">
-              <PrivacyNotice />
-            </div>
-          </div>
+          )}
         </>
       )}
 

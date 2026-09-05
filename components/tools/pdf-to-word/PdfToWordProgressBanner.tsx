@@ -21,7 +21,7 @@ export function PdfToWordProgressBanner({
 
   const styles = {
     loading: "border-scanonix-orange/40 bg-scanonix-orange/10 text-foreground",
-    success: "border-green-500/40 bg-green-500/10 text-green-300",
+    success: "border-green-600/35 bg-green-500/10 text-green-700",
     error: "border-red-500/40 bg-red-500/10 text-red-300",
   };
 
@@ -69,7 +69,7 @@ export function PdfToWordProgressBanner({
       )}
       {status === "success" && (
         <svg
-          className="h-5 w-5 text-green-400"
+          className="h-5 w-5 text-green-600"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

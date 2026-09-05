@@ -23,7 +23,7 @@ export default function GlobalError({
       <Navbar />
       <main className="relative flex min-h-screen items-center justify-center px-4 pt-24 pb-20">
         <div className="max-w-lg rounded-2xl border border-red-500/30 bg-scanonix-surface/90 p-8 text-center">
-          <h1 className="text-2xl font-bold text-white">Something went wrong</h1>
+          <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
           <p className="mt-3 text-sm leading-relaxed text-scanonix-muted">
             An unexpected error occurred. Your files were not uploaded — please try
             again or return to the tools directory.

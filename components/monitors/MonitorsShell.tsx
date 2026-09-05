@@ -114,7 +114,8 @@ export function MonitorsShell() {
   }
 
   return (
-    <div className="page-stack">
+    // Extra bottom clearance keeps the last table rows above the global Find a Tool FAB.
+    <div className="page-stack pb-24 lg:pb-28">
       <PageHeader
         eyebrow="Monitoring"
         title="Security monitors"
@@ -212,7 +213,8 @@ export function MonitorsShell() {
                   <td className="px-5 py-4 text-xs text-scanonix-muted">
                     {monitor.nextScanAt ? new Date(monitor.nextScanAt).toLocaleString("en-GB") : "—"}
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="px-5 py-4 pr-24 sm:pr-28 lg:pr-40">
+                    {/* Right padding reserves viewport space for the fixed Find a Tool FAB. */}
                     <div className="flex flex-wrap gap-3 text-xs">
                       <Link href={`/monitors/${monitor.id}/history`} className="text-scanonix-orange hover:underline">
                         History

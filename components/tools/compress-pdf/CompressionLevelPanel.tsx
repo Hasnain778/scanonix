@@ -35,8 +35,9 @@ export function CompressionLevelPanel({
     <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
       <h2 className="text-lg font-semibold text-white">Compression level</h2>
       <p className="mt-1 text-sm text-scanonix-muted">
-        Choose how aggressively to reduce file size. Compression runs securely on
-        the server with Ghostscript.
+        Choose how aggressively to optimize your PDF. Compression runs securely on
+        the server. Results vary by document structure — image-heavy or scanned
+        PDFs may see limited size reduction.
       </p>
 
       <div className="mt-6 grid gap-2 sm:grid-cols-3">

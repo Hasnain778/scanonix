@@ -176,44 +176,44 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "Review the size reduction, then download the compressed PDF.",
     ],
     whyUse: [
-      "Light compression keeps text sharp while trimming image-heavy pages.",
-      "Pick the level that fits your file — reports, scans, or photo PDFs.",
+      "Light compression gently optimizes PDFs while preserving document quality.",
+      "Choose Recommended or Strong for more structural optimization when file size matters.",
       "Compression is performed on Scanonix servers.",
-      "Download a smaller PDF ready for email, uploads, or storage.",
+      "Download a smaller PDF ready for email, uploads, or storage when savings are available.",
     ],
     useCases: [
       "Email a report that exceeds your provider’s attachment limit.",
-      "Upload a scanned document to a portal with a strict file-size cap.",
+      "Shrink exported reports and presentations before uploading to a portal.",
       "Share a presentation PDF without sending the original large export.",
       "Reduce storage size before archiving older document folders.",
     ],
     limitations: [
-      "Text-only PDFs may not shrink much because there is little image data to optimise.",
-      "Strong compression re-encodes page images and reduces photo detail more noticeably.",
+      "Already-optimized or simple text PDFs may not shrink much.",
+      "Image-heavy or scanned PDFs may see limited reduction because this tool does not recompress embedded images.",
       "Password-protected PDFs must be unlocked before compression.",
-      "Very large files may take longer depending on page count and your device.",
+      "Very large files may take longer depending on page count and your connection.",
     ],
     keyFeatures: [
       "Light, Recommended, and Strong compression levels",
       "Size preview before download",
-      "Secure server-side PDF compression",
-      "Readable text at lighter settings",
+      "Secure server-side PDF optimization",
+      "Document structure and text preserved",
     ],
     faqs: [
       {
         question: "Can I compress a PDF without losing quality?",
         answer:
-          "Use Light compression for the smallest visible change. Scanonix re-encodes embedded images at higher JPEG quality so text stays readable, but some image detail may still change.",
+          "Yes. Scanonix optimizes PDF structure on the server without recompressing embedded images, so visual quality stays intact. Size savings vary by how the PDF was built.",
       },
       {
         question: "Which compression level should I choose?",
         answer:
-          "Light suits documents you still need to read closely. Recommended balances size and clarity. Strong is best when you mainly need a smaller attachment.",
+          "Light is the gentlest option. Recommended applies stronger structural optimization for most files. Strong adds metadata removal when you need the maximum available reduction.",
       },
       {
         question: "Will my text become blurry?",
         answer:
-          "Body text usually stays readable, especially on Light and Recommended. Strong compression affects photos and screenshots more than plain text pages.",
+          "No. This tool does not downsample or re-encode page images, so body text and layout stay as in the original PDF.",
       },
       {
         question: "Are my files uploaded to Scanonix servers?",

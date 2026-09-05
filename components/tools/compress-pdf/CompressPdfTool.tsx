@@ -57,7 +57,7 @@ function PdfDropIcon() {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M8 3H3v5M16 3h5v5M16 21h5v-5M8 21H3v-5"
+        d="M14 3v4a2 2 0 002 2h4M9 13h6M9 17h4"
       />
     </svg>
   );
@@ -184,7 +184,7 @@ export function CompressPdfTool() {
         setStatusMessage("Complete — file size reduced slightly. Download to compare.");
       } else {
         setStatusMessage(
-          "Complete — this PDF is already well optimized. Ghostscript could not reduce size further without quality loss.",
+          "Complete — this PDF is already well optimized, so its size could not be reduced further.",
         );
       }
       setProgress(undefined);

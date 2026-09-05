@@ -39,21 +39,21 @@ export const COMPRESSION_LEVELS: Record<
 > = {
   light: {
     label: "Light compression",
-    description: "Maximum visual quality — light image downsampling (free)",
+    description: "Gentle optimization that preserves document structure and quality (free)",
     useObjectStreams: false,
     stripMetadata: false,
     estimateRatio: 0.9,
   },
   recommended: {
     label: "Recommended compression",
-    description: "Balanced size reduction — preserves text and vectors (Pro)",
+    description: "Stronger structural optimization for most PDFs (Pro)",
     useObjectStreams: true,
     stripMetadata: false,
     estimateRatio: 0.75,
   },
   strong: {
     label: "Strong compression",
-    description: "Stronger image downsampling for scan-heavy PDFs (Pro)",
+    description: "Maximum available optimization, including metadata removal where applicable (Pro)",
     useObjectStreams: true,
     stripMetadata: true,
     estimateRatio: 0.6,

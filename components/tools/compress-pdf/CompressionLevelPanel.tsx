@@ -32,8 +32,8 @@ export function CompressionLevelPanel({
   const estimatedSize = estimateCompressedSize(originalSize, level);
 
   return (
-    <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-      <h2 className="text-lg font-semibold text-white">Compression level</h2>
+    <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+      <h2 className="text-lg font-semibold text-foreground">Compression level</h2>
       <p className="mt-1 text-sm text-scanonix-muted">
         Choose how aggressively to optimize your PDF. Compression runs securely on
         the server. Results vary by document structure — image-heavy or scanned
@@ -46,30 +46,35 @@ export function CompressionLevelPanel({
           const estimate = estimateCompressedSize(originalSize, option);
           const requiresPro = PRO_LEVELS.has(option);
           const locked = requiresPro && !isPro;
+          const selected = level === option;
 
           return (
             <label
               key={option}
               className={`rounded-xl border p-4 transition-all duration-200 ${
                 locked
-                  ? "cursor-not-allowed border-scanonix-border/60 opacity-60"
-                  : level === option
-                    ? "cursor-pointer border-scanonix-orange bg-scanonix-orange/10"
-                    : "cursor-pointer border-scanonix-border hover:border-scanonix-orange/40"
+                  ? "cursor-not-allowed border-border/60 bg-surface-muted opacity-60"
+                  : selected
+                    ? "cursor-pointer border-scanonix-orange bg-scanonix-orange/15 text-foreground"
+                    : "cursor-pointer border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
               } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
             >
               <input
                 type="radio"
                 name="compressionLevel"
                 value={option}
-                checked={level === option}
+                checked={selected}
                 onChange={() => {
                   if (!locked) onLevelChange(option);
                 }}
                 disabled={disabled || locked}
                 className="sr-only"
               />
-              <span className="block text-sm font-semibold text-white">
+              <span
+                className={`block text-sm font-semibold ${
+                  selected && !locked ? "text-foreground" : "text-scanonix-muted"
+                }`}
+              >
                 {settings.label}
                 {requiresPro && (
                   <span className="ml-2 rounded-full bg-scanonix-orange/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-scanonix-orange">

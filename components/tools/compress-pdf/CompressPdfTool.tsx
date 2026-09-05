@@ -244,9 +244,9 @@ export function CompressPdfTool() {
 
       {uploadedPdf && (
         <>
-          <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-scanonix-orange">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -263,7 +263,7 @@ export function CompressPdfTool() {
                 </svg>
               </div>
               <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
+                <p className="truncate text-base font-semibold text-foreground">
                   {uploadedPdf.file.name}
                 </p>
                 <p className="mt-1 text-sm text-scanonix-muted">
@@ -312,23 +312,25 @@ export function CompressPdfTool() {
             </ToolResultsPanel>
           )}
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <ActionButton
-                size="lg"
-                className="w-full sm:w-auto"
-                loading={status === "loading"}
-                disabled={isBusy}
-                onClick={handleCompress}
-              >
-                {status === "loading" ? "Compressing…" : "Compress PDF"}
-              </ActionButton>
-            </div>
+          {!hasResult && (
+            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <ActionButton
+                  size="lg"
+                  className="w-full sm:w-auto"
+                  loading={status === "loading"}
+                  disabled={isBusy}
+                  onClick={handleCompress}
+                >
+                  {status === "loading" ? "Compressing…" : "Compress PDF"}
+                </ActionButton>
+              </div>
 
-            <div className="mt-4 border-t border-scanonix-border pt-4">
-              <PrivacyNotice message="Your file is securely processed on Scanonix servers to compress the PDF." />
+              <div className="mt-4 border-t border-border pt-4">
+                <PrivacyNotice message="Your file is securely processed on Scanonix servers to compress the PDF." />
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
 

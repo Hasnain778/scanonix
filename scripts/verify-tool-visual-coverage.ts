@@ -77,13 +77,13 @@ function run() {
   const duplicates = getDuplicateVisualSlugs();
 
   assert(
-    "Canonical tool count is 36",
-    CANONICAL_TOOL_IDS.length === 36,
+    "Canonical tool count is 35",
+    CANONICAL_TOOL_IDS.length === 35,
     `got ${CANONICAL_TOOL_IDS.length}`,
   );
 
   assert(
-    "TOOL_VISUALS covers all 36 canonical tools",
+    "TOOL_VISUALS covers all 35 canonical tools",
     missing.length === 0,
     missing.length ? `missing: ${missing.join(", ")}` : "",
   );
@@ -95,8 +95,8 @@ function run() {
   );
 
   assert(
-    "TOOL_VISUALS has exactly 36 entries",
-    TOOL_VISUAL_SLUGS.length === 36,
+    "TOOL_VISUALS has exactly 35 entries",
+    TOOL_VISUAL_SLUGS.length === 35,
     `got ${TOOL_VISUAL_SLUGS.length}`,
   );
 

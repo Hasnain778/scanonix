@@ -28,9 +28,6 @@ START_LOCAL_SERVER=1 npm run verify:release
 # Production smoke (network; safe read-only + compress/resize)
 npm run smoke:production
 
-# Optional BG remover on production (single call)
-RUN_EXTERNAL_SMOKE=1 npm run smoke:production
-
 # Regenerate fixtures
 npm run verify:regression:fixtures
 ```
@@ -44,8 +41,7 @@ Permanent synthetic files under `tests/fixtures/regression/`. See `tests/fixture
 - `npm run build` fails
 - `npm run lint` or `npm run typecheck` fails
 - `verify:core-processing` fails
-- `verify:sharp-production` fails (missing `@img/sharp-linux-x64`, `@img/sharp-libvips-linux-x64`, or `libvips-cpp.so.8.18.3` in compress/resize/bg-remover NFT traces)
-- `verify:bg-remover-quota` fails (client + server double consumption)
+- `verify:sharp-production` fails (missing `@img/sharp-linux-x64`, `@img/sharp-libvips-linux-x64`, or `libvips-cpp.so.8.18.3` in compress/resize NFT traces)
 - `verify:analytics-130e-subscription-complete` fails
 - Any client E2E critical test fails (21 tools)
 - Server compress/resize integration fails on CI
@@ -55,13 +51,11 @@ Permanent synthetic files under `tests/fixtures/regression/`. See `tests/fixture
 
 - Image Compressor returns non-200 for valid fixture POST
 - Image Resizer returns non-200 for valid fixture POST
-- Background Remover critical smoke fails due to **infrastructure** (503, 500, timeout)
 - Critical PDF/client operation broken in production smoke
 - Widespread HTTP 500 on `/`, `/tools`, `/pricing`
 
 **Not** rollback triggers:
 
-- Background Remover `422` / `no_subject` on unsuitable fixture (user-input rejection)
 - Anonymous 401 console noise on client tools
 - Pro-gated tools (redact-pdf) for anonymous users
 
@@ -72,8 +66,7 @@ Vercel Preview URLs are per-PR and require explicit URL discovery:
 1. **GitHub Actions `deployment_status` event** — on Vercel preview `success`, run workflow with `PREVIEW_URL` from deployment payload.
 2. **Safe checks:** `GET /`, `/tools`, `/pricing`, `/tools/image-compressor`, `/tools/image-resizer`, `/tools/merge-pdf`.
 3. **Processing:** POST compress/resize against preview origin (no secrets).
-4. **Background Remover:** only when `RUN_EXTERNAL_SMOKE=1` **and** preview env has `REMBG_SERVICE_URL` configured in Vercel preview env group.
-5. **Do not** invent credentials or auto-merge preview env secrets into CI.
+4. **Do not** invent credentials or auto-merge preview env secrets into CI.
 
 Until `deployment_status` wiring exists, preview smoke is **documented only** — run manually:
 
@@ -88,7 +81,6 @@ REGRESSION_BASE_URL=https://<preview>.vercel.app npm run verify:regression:clien
 
 - **Always:** HTTP GET `/`, `/tools`, `/pricing`, `/account`, `/robots.txt`, `/sitemap.xml`, `/favicon.ico`
 - **Always:** one compress + one resize with `tests/fixtures/regression/sample.jpg`
-- **Optional (`RUN_EXTERNAL_SMOKE=1`):** one background remover call with `bg-remover-subject.jpg`
 
 Triggered manually via workflow_dispatch or post-deploy job — **not** on every PR.
 
@@ -96,9 +88,7 @@ Triggered manually via workflow_dispatch or post-deploy job — **not** on every
 
 | Service | CI default | Notes |
 |---------|------------|-------|
-| Background Remover worker | Skipped | `RUN_EXTERNAL_SMOKE=1` + secrets |
 | Stripe | Never in CI | Existing verify scripts are static |
-| Supabase auth quota delta live | Not in CI | `verify:bg-remover-quota` is static source check |
 | HEIC encode | Linux CI | Windows may lack libheif; fixture committed from Linux |
 | OCR (Tesseract.wasm) | Local E2E | Slow (~30–120s) but no external API |
 
@@ -120,8 +110,6 @@ Integrated into `verify:release:fast` / CI — not replaced:
 
 - `verify:core-processing`
 - `verify:sharp-production`
-- `verify:background-remover-model-config`
-- `verify:bg-remover-quota`
 - `verify:analytics-130e-subscription-complete`
 - `verify:seo-canonical-host`
 - `verify:favicon` (optional — not in default gate to avoid Phase 130G coupling)

@@ -12,7 +12,7 @@ import { trackEvent } from "@/lib/analytics/ga4";
 /** Verified Pro benefits — sourced from TOOL_ACCESS, PLAN_LIMITS, and pricing copy. */
 const PRO_BENEFITS = [
   "Advanced PDF security — Protect, Unlock, and Redact PDF",
-  "4K background removal export",
+  "4K image upscaling",
   "Premium AI tools — rewrite, translate, summary, and upscaling",
   "Expanded usage — 500 ops/month and 50MB uploads",
 ] as const;
@@ -21,7 +21,7 @@ const PRO_VISUAL_TOOLS = [
   { slug: "protect-pdf", label: "Protect PDF" },
   { slug: "redact-pdf", label: "Redact PDF" },
   { slug: "unlock-pdf", label: "Unlock PDF" },
-  { slug: "background-remover", label: "Background Remover" },
+  { slug: "image-upscaler", label: "Image Upscaler" },
 ] as const;
 
 function ProBenefitCheck({ children }: { children: ReactNode }) {
@@ -106,7 +106,7 @@ export function ScanonixProPromo() {
                     Unlock more with Scanonix Pro
                   </h2>
                   <p className="scanonix-pro-promo__support">
-                    Go beyond free tools with advanced PDF security, 4K exports, and premium AI
+                    Go beyond free tools with advanced PDF security, 4K upscaling, and premium AI
                     processing.
                   </p>
                 </>

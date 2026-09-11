@@ -11,7 +11,6 @@ Scanonix includes tools for:
 - PDF conversion and document utilities
 - OCR and text extraction
 - Image conversion and optimization
-- Background removal
 - QR scanning
 - File metadata cleaning
 - Security scanning
@@ -22,7 +21,7 @@ Scanonix includes tools for:
 - [Online OCR](https://www.scanonix.com/tools/ocr)
 - [PDF to Word](https://www.scanonix.com/tools/pdf-to-word)
 - [Image to PDF](https://www.scanonix.com/tools/image-to-pdf)
-- [Background Remover](https://www.scanonix.com/tools/background-remover)
+- [Image Upscaler](https://www.scanonix.com/tools/image-upscaler)
 - [Security Scan](https://www.scanonix.com/tools/security-scan)
 
 ## About

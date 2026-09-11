@@ -38,7 +38,7 @@ export const FEATURED_TOOL_IDS = [
   "image-to-pdf",
   "compress-pdf",
   "ocr",
-  "background-remover",
+  "image-compressor",
 ] as const;
 
 const CATEGORY_LABELS: Record<PrimaryToolCategory, string> = {

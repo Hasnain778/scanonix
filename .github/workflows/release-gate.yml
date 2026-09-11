@@ -40,12 +40,6 @@ jobs:
       - name: Static verifications (fast)
         run: |
           npm run verify:core-processing
-          npm run verify:bg-remover-quota
-          if [ -d ../rembg-worker ]; then
-            npm run verify:background-remover-model-config
-          else
-            echo "skip: verify:background-remover-model-config (../rembg-worker not present on CI runner)"
-          fi
           npm run verify:analytics-130e-subscription-complete
           npm run verify:seo-canonical-host
 
@@ -125,10 +119,3 @@ jobs:
         run: npm run smoke:production
         env:
           PRODUCTION_BASE_URL: https://www.scanonix.com
-
-      - name: Optional background remover smoke
-        if: env.RUN_EXTERNAL_SMOKE == '1'
-        run: npm run smoke:production
-        env:
-          PRODUCTION_BASE_URL: https://www.scanonix.com
-          RUN_EXTERNAL_SMOKE: "1"

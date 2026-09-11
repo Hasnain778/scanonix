@@ -1226,80 +1226,6 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     relatedToolIds: ["redact-pdf", "protect-pdf", "image-compressor", "compress-pdf"],
     keywords: ["remove metadata", "exif remover", "pdf metadata cleaner"],
   },
-  "background-remover": {
-    id: "background-remover",
-    path: "/tools/background-remover",
-    seoTitle: toolTitle("Remove Background from Image Online"),
-    metaDescription:
-      "Remove image backgrounds online and download a transparent PNG. Upload JPG, PNG, or WEBP — secure server-side cutout with before/after preview. HD free, 4K on Pro.",
-    h1: "Remove Image Background Online",
-    headerDescription:
-      "Upload a JPG, PNG, or WEBP image and download a transparent-background PNG. Secure server-side processing with side-by-side preview.",
-    pageDescription:
-      "Remove the background from product photos, portraits, and graphics, then export a cutout with a transparent background. Scanonix processes your image on secure servers to generate the cutout.",
-    howToSteps: [
-      "Upload a JPG, PNG, or WEBP image.",
-      "Wait for Scanonix to detect the subject and remove the background.",
-      "Preview the cutout, then download a transparent PNG.",
-    ],
-    whyUse: [
-      "Create product listings and profile photos with clean edges.",
-      "Export a transparent PNG for slides, stores, and design tools.",
-      "Preview the result before download with a before/after slider.",
-      "Resize or compress the cutout afterward for web uploads.",
-    ],
-    useCases: [
-      "Remove the background from a product photo for an online store.",
-      "Cut out a portrait for a presentation or social profile image.",
-      "Prepare a logo or graphic with a transparent background for slides.",
-      "Clean up a photo before converting it to PDF or another format.",
-    ],
-    limitations: [
-      "Supported uploads: JPG, JPEG, PNG, and WEBP up to 25 MB.",
-      "Fine details such as hair, fur, or glass can be harder to cut cleanly.",
-      "Busy backgrounds and low-contrast subjects may need a second attempt or manual touch-up elsewhere.",
-      "4K export requires a Pro plan; HD export is available on Free.",
-    ],
-    keyFeatures: [
-      "Secure server-side AI processing",
-      "Before/after preview slider",
-      "Transparent PNG download",
-      "HD export on Free; 4K on Pro",
-    ],
-    faqs: [
-      {
-        question: "How do I remove the background from an image?",
-        answer:
-          "Upload your image, let Scanonix generate the cutout, preview the result, and download a PNG with a transparent background.",
-      },
-      {
-        question: "Will I get a transparent background?",
-        answer:
-          "Yes. The standard download is a PNG with transparency around the subject.",
-      },
-      {
-        question: "Which image formats can I upload?",
-        answer: "JPG, JPEG, PNG, and WEBP files are supported.",
-      },
-      {
-        question: "Is background removal done on my device?",
-        answer:
-          "No. Your image is uploaded and processed on Scanonix servers to generate the cutout. The result is returned for preview and download in your browser.",
-      },
-      {
-        question: "What should I use after removing the background?",
-        answer:
-          "Try Image Resizer to fit platform dimensions or Image Compressor to reduce file size before uploading.",
-      },
-    ],
-    relatedToolIds: ["image-resizer", "image-compressor", "png-to-jpg", "jpg-to-png"],
-    keywords: [
-      "remove background from image",
-      "transparent background",
-      "background remover online",
-      "remove bg free",
-    ],
-  },
   "image-compressor": {
     id: "image-compressor",
     path: "/tools/image-compressor",
@@ -1335,7 +1261,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "You control quality level to balance size and visual fidelity.",
       },
     ],
-    relatedToolIds: ["image-resizer", "background-remover", "png-to-jpg", "jpg-to-webp"],
+    relatedToolIds: ["image-resizer", "image-upscaler", "png-to-jpg", "jpg-to-webp"],
     keywords: ["compress image", "reduce image size", "optimize image online"],
   },
   "image-resizer": {
@@ -1373,7 +1299,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Downscaling usually looks sharp; upscaling may soften details unless you use Image Upscaler.",
       },
     ],
-    relatedToolIds: ["image-compressor", "image-upscaler", "png-to-jpg", "background-remover"],
+    relatedToolIds: ["image-compressor", "image-upscaler", "png-to-jpg", "heic-to-jpg"],
     keywords: ["resize image", "scale image online", "change image dimensions"],
   },
   "image-upscaler": {
@@ -1411,7 +1337,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Simple graphics and moderately sized photos upscale more cleanly than tiny low-quality JPEGs.",
       },
     ],
-    relatedToolIds: ["image-resizer", "image-compressor", "background-remover", "png-to-jpg"],
+    relatedToolIds: ["image-resizer", "image-compressor", "heic-to-jpg", "png-to-jpg"],
     keywords: ["image upscaler", "enlarge image", "increase image resolution"],
   },
   "png-to-jpg": {
@@ -1457,7 +1383,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. Pick a background colour before converting when your PNG has transparency.",
       },
     ],
-    relatedToolIds: ["jpg-to-png", "png-to-webp", "image-compressor", "background-remover"],
+    relatedToolIds: ["jpg-to-png", "png-to-webp", "image-compressor", "image-resizer"],
     keywords: ["png to jpg", "png to jpeg", "convert png online", "png to jpg free"],
   },
   "jpg-to-png": {
@@ -2252,10 +2178,10 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/image",
     seoTitle: toolTitle("Image Tools Online", "Convert, Compress & Edit Images"),
     metaDescription:
-      "Browse Scanonix image tools online — convert PNG, JPG, WEBP, and HEIC, remove backgrounds, compress, resize, and upscale images.",
+      "Browse Scanonix image tools online — convert PNG, JPG, WEBP, and HEIC, compress, resize, and upscale images.",
     h1: "Image Tools",
     pageDescription:
-      "Convert PNG, JPG, WEBP, and HEIC images, remove backgrounds, and prepare files for the web in one place.",
+      "Convert PNG, JPG, WEBP, and HEIC images, compress and resize files, and prepare images for the web in one place.",
     howToSteps: [
       "Browse the image tool you need.",
       "Open the tool and upload your file.",
@@ -2264,26 +2190,26 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     whyUse: [
       "Find every image converter and editor without searching multiple sites.",
       "Use consistent privacy-first workflows across tools.",
-      "Jump between compression, conversion, and background removal quickly.",
+      "Jump between compression, conversion, and upscaling quickly.",
     ],
     keyFeatures: [
       "Format converters for PNG, JPG, WEBP, and HEIC",
-      "Background remover and compressor",
-      "Resize and upscale utilities",
+      "Compress, resize, and upscale utilities",
+      "HEIC conversion for iPhone photos",
       "All tools linked from one hub",
     ],
     faqs: [
       {
         question: "Which image tool should I use first?",
-        answer: "Use HEIC to JPG for iPhone photos, Background Remover for cutouts, and Image Compressor to reduce size.",
+        answer: "Use HEIC to JPG for iPhone photos, Image Compressor to reduce size, and Image Upscaler to enlarge images.",
       },
       {
         question: "Are image tools free?",
         answer: "Many tools are free with daily limits; Pro unlocks higher limits and advanced features.",
       },
     ],
-    relatedToolIds: ["background-remover", "png-to-jpg", "heic-to-jpg", "image-compressor"],
-    keywords: ["image tools online", "image converter", "background remover"],
+    relatedToolIds: ["image-compressor", "png-to-jpg", "heic-to-jpg", "image-upscaler"],
+    keywords: ["image tools online", "image converter", "image compressor"],
   },
 };
 

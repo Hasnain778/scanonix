@@ -27,7 +27,6 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/tools/image/compress": [...sharpLinuxNativeTraceIncludes],
     "/api/tools/image/resize": [...sharpLinuxNativeTraceIncludes],
-    "/api/tools/background-remover/remove": [...sharpLinuxNativeTraceIncludes],
   },
   images: {
     formats: ["image/avif", "image/webp"],
@@ -46,7 +45,6 @@ const nextConfig: NextConfig = {
       "pdf-lib",
       "pdfjs-dist",
       "tesseract.js",
-      "@imgly/background-removal",
     ],
   },
   async headers() {

@@ -54,29 +54,6 @@ assert(
     consentPanel.includes("closePreferences"),
 );
 
-const bgTool = read("components/tools/background-remover/BackgroundRemoverTool.tsx");
-const studioControls = read("components/tools/background-remover/ImageStudioControls.tsx");
-assert(
-  "BG studio controls use semantic chrome",
-  studioControls.includes("text-foreground") &&
-    studioControls.includes("border-border") &&
-    studioControls.includes("bg-surface-muted") &&
-    !studioControls.includes("bg-[#0e0e0e]") &&
-    !studioControls.includes("border-white/10"),
-);
-assert(
-  "BG uploaded file label is semantic",
-  bgTool.includes("text-foreground") && !bgTool.includes("text-white"),
-);
-
-const beforeAfter = read("components/tools/background-remover/BeforeAfterSlider.tsx");
-assert(
-  "BG comparison retains intentional media blacks",
-  beforeAfter.includes("bg-black/40") &&
-    beforeAfter.includes("bg-black/60") &&
-    beforeAfter.includes("CheckerboardBackground"),
-);
-
 const aiRewrite = read("components/tools/ai-rewrite/AiRewriteTool.tsx");
 assert(
   "AiRewriteTool inputs/labels are semantic",

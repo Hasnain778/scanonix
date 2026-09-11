@@ -85,8 +85,8 @@ function hasContentDepth(toolId: string): boolean {
 function run() {
   console.log("\nThin tool content depth verification (Phase 129F)\n");
 
-  // 1. Registry unchanged — 36 tools, exactly 4 WEBP converters
-  assert("1 tools directory count is 36", SCANONIX_TOOLS.length === 36);
+  // 1. Registry unchanged — 35 tools, exactly 4 WEBP converters
+  assert("1 tools directory count is 35", SCANONIX_TOOLS.length === 35);
 
   const directoryWebpIds = SCANONIX_TOOLS.map((tool) => tool.id).filter((id) =>
     /webp/i.test(id),

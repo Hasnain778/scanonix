@@ -70,11 +70,6 @@ export const env = {
     "RUNPOD_UPSCALE_ENDPOINT_ID",
     "RUNPOD_ENDPOINT_ID",
   ]),
-  rembgPython: readEnv("REMBG_PYTHON"),
-  rembgServiceUrl: readEnv("REMBG_SERVICE_URL"),
-  rembgServiceSecret: readFirstEnv(["REMBG_SERVICE_SECRET", "REMBG_WORKER_SECRET"]),
-  rembgModel: readFirstEnv(["REMBG_MODEL"], "birefnet-general"),
-  rembgModelDir: readEnv("REMBG_MODEL_DIR"),
   realesrganBin: readEnv("REALESRGAN_BIN"),
   realesrganModelDir: readEnv("REALESRGAN_MODEL_DIR"),
   realesrganModel: readFirstEnv(["REALESRGAN_MODEL"], "realesrgan-x4plus"),
@@ -141,12 +136,6 @@ export function isRealEsrganConfigured(): boolean {
 
 export function isRunPodUpscaleWorkerConfigured(): boolean {
   return Boolean(env.runpodApiKey && env.runpodUpscaleEndpointId);
-}
-
-export function isRembgConfigured(): boolean {
-  return (
-    resolveNativeProviderMode(env.rembgServiceUrl, env.rembgPython) !== "unconfigured"
-  );
 }
 
 export function isGhostscriptConfigured(): boolean {

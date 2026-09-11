@@ -55,7 +55,6 @@ export const TOOL_CATEGORY_MATRIX: ToolCategoryMeta[] = [
   { toolId: "redact-pdf", primaryCategory: "pdf", pdfSubcategory: "security", displayOrder: 170 },
   { toolId: "metadata-cleaner", primaryCategory: "pdf", pdfSubcategory: "security", displayOrder: 180 },
   // Image
-  { toolId: "background-remover", primaryCategory: "image", displayOrder: 200 },
   { toolId: "image-compressor", primaryCategory: "image", displayOrder: 210 },
   { toolId: "image-resizer", primaryCategory: "image", displayOrder: 220 },
   { toolId: "image-upscaler", primaryCategory: "image", displayOrder: 230 },

@@ -7,15 +7,11 @@ import {
   IMAGE_HUB_PDF_RELATED,
 } from "@/constants/image-tools";
 import { ConverterGridCard } from "@/components/image-tools/ConverterGridCard";
-import {
-  FeaturedBackgroundRemoverCard,
-  MediumConverterCard,
-} from "@/components/image-tools/FeaturedBackgroundRemoverCard";
+import { MediumConverterCard } from "@/components/image-tools/MediumConverterCard";
 import { HubToolLink } from "@/components/image-tools/HubToolLink";
 import { ImageToolIconBox } from "@/components/image-tools/ImageToolIconBox";
 
 const EDIT_ICONS = {
-  "background-remover": WandSparkles,
   "qr-scanner": ScanLine,
 } as const;
 
@@ -45,23 +41,18 @@ export function ImageToolsHub() {
         <h2 id="featured-tools-heading" className="mb-6 text-lg font-semibold text-foreground">
           Featured tools
         </h2>
-        <div className="grid gap-4 lg:grid-cols-5 lg:gap-5">
-          <div className="lg:col-span-3">
-            <FeaturedBackgroundRemoverCard />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3 lg:col-span-2 lg:grid-cols-1">
-            {featuredMedium.map((converter) => (
-              <MediumConverterCard
-                key={converter.slug}
-                slug={converter.slug}
-                title={converter.title}
-                description={converter.shortDescription}
-                fromLabel={converter.from.toUpperCase()}
-                toLabel={converter.to === "jpg" ? "JPG" : converter.to.toUpperCase()}
-                badge={converter.badge}
-              />
-            ))}
-          </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {featuredMedium.map((converter) => (
+            <MediumConverterCard
+              key={converter.slug}
+              slug={converter.slug}
+              title={converter.title}
+              description={converter.shortDescription}
+              fromLabel={converter.from.toUpperCase()}
+              toLabel={converter.to === "jpg" ? "JPG" : converter.to.toUpperCase()}
+              badge={converter.badge}
+            />
+          ))}
         </div>
       </section>
 

@@ -23,7 +23,7 @@ const ROTATING_PLACEHOLDERS = [
   "What do you want to do?",
   `Search ${TOOL_SEARCH_COUNT} tools…`,
   "compress PDF",
-  "remove background",
+  "compress image",
   "translate document",
 ] as const;
 
@@ -203,7 +203,7 @@ export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSea
         >
           {results.length === 0 ? (
             <p className="px-4 py-6 text-center text-sm text-foreground-muted">
-              No tools found. Try &ldquo;compress PDF&rdquo;, &ldquo;translate&rdquo;, or &ldquo;remove background&rdquo;.
+              No tools found. Try &ldquo;compress PDF&rdquo;, &ldquo;translate&rdquo;, or &ldquo;compress image&rdquo;.
             </p>
           ) : (
             <ul>

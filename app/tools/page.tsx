@@ -18,7 +18,7 @@ export const metadata = createPageMetadata({
     "PDF merge",
     "PDF split",
     "PDF to Word",
-    "background remover",
+    "image compressor",
     "QR scanner",
   ],
 });

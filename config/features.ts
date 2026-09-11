@@ -17,7 +17,6 @@ export const FEATURES_REGISTRY: FeatureDefinition[] = [
   { id: "document-tools", name: "Document tools", tier: "free", enabled: true },
   { id: "image-tools", name: "Image tools", tier: "free", enabled: true },
   { id: "ocr-basic", name: "OCR", tier: "free", enabled: true },
-  { id: "background-remover", name: "Background remover", tier: "free", enabled: true },
   { id: "ai-chat", name: "AI Document Chat", tier: "pro", enabled: false },
   { id: "ai-summary", name: "AI PDF Summary", tier: "pro", enabled: true },
   { id: "ai-translate", name: "Translate Document", tier: "pro", enabled: true },

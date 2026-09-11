@@ -30,7 +30,7 @@ const STEPS = [
 ] as const;
 
 function ToolPickerMock() {
-  const items = ["Merge PDF", "AI Summary", "Background Remover", "Website Scanner"];
+  const items = ["Merge PDF", "AI Summary", "Image Compressor", "Website Scanner"];
 
   return (
     <div className="rounded-2xl border border-white/8 bg-[#0a0a0a]/95 p-4 shadow-premium">

@@ -39,12 +39,4 @@ npm run verify:regression:server-local
 npm run verify:regression:client-e2e
 ```
 
-## Background Remover on preview
-
-Only when Vercel Preview environment includes `REMBG_SERVICE_URL` (and related secrets):
-
-```bash
-RUN_EXTERNAL_SMOKE=1 REGRESSION_BASE_URL="https://..." npm run verify:regression:server-local
-```
-
-Distinguish `422 no_subject` (fixture) from `503 NOT_CONFIGURED` (infra).
+Background Remover has been removed from the product and is no longer part of preview smoke.

@@ -5,7 +5,6 @@
 
 export type LocalAiCapability =
   | "ocr"
-  | "background-removal"
   | "qr-decode";
 
 export const LOCAL_AI_CAPABILITIES: Record<
@@ -13,10 +12,6 @@ export const LOCAL_AI_CAPABILITIES: Record<
   { label: string; library: string }
 > = {
   ocr: { label: "OCR Text Extraction", library: "tesseract.js" },
-  "background-removal": {
-    label: "Background Removal",
-    library: "@imgly/background-removal",
-  },
   "qr-decode": { label: "QR Scanner", library: "jsqr" },
 };
 

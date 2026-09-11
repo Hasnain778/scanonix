@@ -158,13 +158,6 @@ const TOOL_INTENT_PHRASES: Record<string, string[]> = {
     "draw signature",
     "electronic signature",
   ],
-  "background-remover": [
-    "remove background",
-    "remove image background",
-    "background remover",
-    "transparent background",
-    "cut out background",
-  ],
   "image-compressor": [
     "compress image",
     "reduce image size",

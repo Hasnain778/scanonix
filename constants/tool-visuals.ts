@@ -200,14 +200,6 @@ export const TOOL_VISUALS: Record<string, ToolVisualMeta> = {
     motion: "none",
   },
   // Image
-  "background-remover": {
-    slug: "background-remover",
-    icon: "bg-remove",
-    iconFamily: "image-edit",
-    accentColor: "#22d3ee",
-    glowColor: "rgba(34, 211, 238, 0.22)",
-    motion: "remove-bg",
-  },
   "image-compressor": {
     slug: "image-compressor",
     icon: "image-compress",

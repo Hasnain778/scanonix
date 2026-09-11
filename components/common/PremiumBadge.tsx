@@ -1,1 +1,1 @@
-export { ProBadge as PremiumBadge } from "@/components/tools/background-remover/ProBadge";
+export { ProBadge as PremiumBadge } from "@/components/ui/ProBadge";

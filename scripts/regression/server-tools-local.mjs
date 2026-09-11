@@ -1,23 +1,20 @@
 #!/usr/bin/env node
 /**
  * Server tool integration tests against a running Next.js instance.
- * Safe local checks for Image Compressor + Image Resizer always.
- * Background Remover runs only when RUN_EXTERNAL_SMOKE=1 (avoids hammering production worker).
+ * Safe local checks for Image Compressor + Image Resizer.
  *
  * Run: npm run verify:regression:server-local
  * Env: REGRESSION_BASE_URL (default http://localhost:3000)
- *      RUN_EXTERNAL_SMOKE=1 — include background remover POST
  */
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
-import { hasAlphaChannel, isJpeg, isPng, magicHex, safeBodySnippet } from "./lib/binary.mjs";
+import { isJpeg, magicHex } from "./lib/binary.mjs";
 import { exitWithSummary, fail, pass, printHeader, summarizeResults } from "./lib/report.mjs";
 
 const BASE = process.env.REGRESSION_BASE_URL || "http://localhost:3000";
 const FIX = join(process.cwd(), "tests", "fixtures", "regression");
-const EXTERNAL = process.env.RUN_EXTERNAL_SMOKE === "1";
 
 function fixture(name) {
   return readFileSync(join(FIX, name));
@@ -117,53 +114,6 @@ async function testResize(results) {
   });
 }
 
-async function testBackgroundRemover(results) {
-  const slug = "background-remover";
-  if (!EXTERNAL) {
-    results[slug] = { ok: true, detail: "skipped (set RUN_EXTERNAL_SMOKE=1 to run)", skipped: true };
-    pass(slug, "skipped — external worker not invoked in default CI");
-    return;
-  }
-
-  const input = fixture("bg-remover-subject.jpg");
-  const { res, body } = await postMultipart(
-    "/api/tools/background-remover/remove",
-    {},
-    "file",
-    "bg-remover-subject.jpg",
-    input,
-    "image/jpeg",
-  );
-
-  if (res.status === 422) {
-    const json = JSON.parse(body.replace(/^\[binary.*\]$/, "{}")).code || body;
-    record(
-      results,
-      slug,
-      false,
-      `422 user/fixture rejection (not infra): ${safeBodySnippet(body)}`,
-      { route: "/api/tools/background-remover/remove", status: 422 },
-    );
-    return;
-  }
-
-  if (!res.ok) {
-    recordFail(results, slug, `HTTP ${res.status}`, {
-      route: "/api/tools/background-remover/remove",
-      body: safeBodySnippet(body),
-    });
-    return;
-  }
-
-  const out = await readBinaryResponse(res);
-  const ok = isPng(out) && out.length > 500;
-  record(results, slug, ok, ok ? `PNG ${out.length} bytes` : "invalid PNG output", {
-    route: "/api/tools/background-remover/remove",
-    magic: magicHex(out),
-    hasAlpha: hasAlphaChannel(out),
-  });
-}
-
 function record(results, slug, ok, detail, meta = {}) {
   results[slug] = { ok, detail, ...meta };
   if (ok) pass(slug, detail);
@@ -191,7 +141,6 @@ async function main() {
   const results = {};
   await testCompress(results);
   await testResize(results);
-  await testBackgroundRemover(results);
 
   const active = Object.entries(results).filter(([, r]) => !r.skipped);
   const summary = summarizeResults(Object.fromEntries(active));

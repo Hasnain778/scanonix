@@ -171,28 +171,7 @@ On Vercel, native subprocess providers (Python, Ghostscript, NCNN binaries) **ca
 
 Until these URLs are set, the corresponding API routes return **503** (`NOT_CONFIGURED`). This is intentional — there is no silent fallback to CloudConvert or other paid APIs.
 
-### `REMBG_SERVICE_URL`
-
-| | |
-|---|---|
-| **Used by** | Server background removal (`/api/tools/background-remover/remove`) |
-| **Exposure** | **Server-only** — treat URL (and any embedded token) as a secret |
-| **Vercel Production** | **Yes** — when enabling server-side background removal |
-| **Vercel Preview** | **Optional** — if testing the worker from preview |
-| **Vercel Development** | **Not needed** — use `REMBG_PYTHON` locally instead |
-| **Worker contract** | POST multipart: `file`, `model` → PNG response |
-
-### `REMBG_SERVICE_SECRET` (optional companion)
-
-| | |
-|---|---|
-| **Used by** | Bearer token sent from Vercel to rembg worker (`Authorization: Bearer …`) |
-| **Exposure** | **Server-only** — must match worker `REMBG_WORKER_SECRET` |
-| **Vercel Production** | **Recommended** when worker auth is enabled |
-| **Vercel Preview** | Optional |
-| **Vercel Development** | Optional — pair with local worker |
-
-Worker implementation: `rembg-worker/` (see `rembg-worker/docs/DEPLOYMENT.md`).
+> **Note:** Background Remover was removed from the Scanonix website product. Legacy `REMBG_*` Vercel/Hetzner settings may still exist until the rembg worker is decommissioned separately — they are no longer used by the website app.
 
 ### `REALESRGAN_SERVICE_URL`
 
@@ -226,16 +205,6 @@ Worker implementation: `rembg-worker/` (see `rembg-worker/docs/DEPLOYMENT.md`).
 | **Vercel Preview** | **Optional** |
 | **Vercel Development** | **Not needed** — use `PDF_REDACTION_PYTHON` locally instead |
 | **Worker contract** | POST multipart: `file`, `areas` (JSON) → PDF response |
-
-### `REMBG_MODEL` (optional companion)
-
-| | |
-|---|---|
-| **Used by** | Default rembg model name passed to worker or local Python |
-| **Exposure** | **Server-only** (not sensitive; no `NEXT_PUBLIC_*`) |
-| **Vercel Production** | **Optional** — defaults to `isnet-general-use` if unset |
-| **Vercel Preview** | **Optional** |
-| **Vercel Development** | Optional — local `.env.local` |
 
 ---
 
@@ -333,8 +302,6 @@ These configure local subprocesses or Windows/Linux filesystem paths. They **wil
 
 | Variable | Used by (local) | Why not on Vercel |
 |----------|-----------------|-------------------|
-| `REMBG_PYTHON` | Local rembg Python subprocess | Requires local Python + onnxruntime |
-| `REMBG_MODEL_DIR` | Local rembg model cache (`U2NET_HOME`) | Filesystem path on your machine |
 | `GHOSTSCRIPT_BIN` | Local Ghostscript PDF compression | Binary path (e.g. `gswin64c.exe` on Windows) |
 | `GS_BIN` | Alias for Ghostscript binary | Same as above |
 | `PDF_REDACTION_PYTHON` | Local PyMuPDF redaction subprocess | Requires local Python + pymupdf |
@@ -355,7 +322,6 @@ These run in pure Node.js/JavaScript on Vercel with no additional configuration:
 
 - Image compress / resize (sharp)
 - PDF protect, unlock, watermark, metadata cleaner (pdf-lib)
-- Browser background removal preview (@imgly — client-side)
 - Core scan engine (no native binaries)
 
 ---
@@ -364,7 +330,7 @@ These run in pure Node.js/JavaScript on Vercel with no additional configuration:
 
 1. **Vercel project env not yet configured** — Section 1 variables must be set in Vercel Production before first deploy.
 2. **Supabase production setup** — migrations (`001`–`011`), auth redirect URLs, Google OAuth, storage buckets, and first admin user must be completed outside Vercel.
-3. **External ML/PDF workers not deployed** — `REMBG_SERVICE_URL`, `REALESRGAN_SERVICE_URL`, `PDF_COMPRESSION_SERVICE_URL`, and `PDF_REDACTION_SERVICE_URL` are unset; native tools return **503** on Vercel until workers exist.
+3. **External ML/PDF workers not deployed** — `REALESRGAN_SERVICE_URL`, `PDF_COMPRESSION_SERVICE_URL`, and `PDF_REDACTION_SERVICE_URL` are unset; native tools return **503** on Vercel until workers exist.
 4. **Stripe live billing** — Section 2 variables required before enabling paid checkout in production.
 5. **CloudConvert** — PDF↔Word requires `CLOUDCONVERT_API_KEY`; returns **503** without it (by design).
 6. **Domain reputation providers** — optional; scans run with reduced third-party coverage if unset.
@@ -395,10 +361,10 @@ Phase 6A verification: production build and type check **PASS**. Application cod
 
 | Vercel-safe (no worker) | External worker required on Vercel |
 |-------------------------|----------------------------------|
-| Supabase, Stripe, Cron | rembg → `REMBG_SERVICE_URL` |
-| CloudConvert (API key) | Real-ESRGAN → `REALESRGAN_SERVICE_URL` |
-| OpenAI (API key) | Ghostscript compression → `PDF_COMPRESSION_SERVICE_URL` |
-| sharp, pdf-lib | PyMuPDF redaction → `PDF_REDACTION_SERVICE_URL` |
+| Supabase, Stripe, Cron | Real-ESRGAN → `REALESRGAN_SERVICE_URL` |
+| CloudConvert (API key) | Ghostscript compression → `PDF_COMPRESSION_SERVICE_URL` |
+| OpenAI (API key) | PyMuPDF redaction → `PDF_REDACTION_SERVICE_URL` |
+| sharp, pdf-lib | |
 | Domain reputation APIs | |
 
 ---

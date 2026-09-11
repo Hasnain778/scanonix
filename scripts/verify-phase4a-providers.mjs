@@ -31,10 +31,6 @@ function isRealEsrganConfigured() {
   return Boolean(readEnv("REALESRGAN_SERVICE_URL") || readEnv("REALESRGAN_BIN"));
 }
 
-function isRembgConfigured() {
-  return Boolean(readEnv("REMBG_PYTHON"));
-}
-
 function assertPdfHeader(bytes) {
   const header = Buffer.from(bytes.slice(0, 5)).toString("ascii");
   assert.equal(header.startsWith("%PDF-"), true, "invalid PDF header");
@@ -71,24 +67,20 @@ async function testMagicByteHelpers() {
 function testScriptPresence() {
   const root = process.cwd();
   const realesrganScript = join(root, "scripts", "realesrgan_infer.py");
-  const rembgScript = join(root, "scripts", "rembg_infer.py");
 
   assert.ok(existsSync(realesrganScript), "scripts/realesrgan_infer.py missing");
-  assert.ok(existsSync(rembgScript), "scripts/rembg_infer.py missing");
   ok("Python inference scripts are present");
 }
 
 function testProviderConfigStatus() {
   const cloudConvert = isCloudConvertConfigured();
   const realesrgan = isRealEsrganConfigured();
-  const rembg = isRembgConfigured();
 
   console.log("\nProvider configuration status:");
   console.log(`  CloudConvert:  ${cloudConvert ? "configured" : "NOT configured (503 on conversion routes)"}`);
   console.log(`  Real-ESRGAN:   ${realesrgan ? "configured" : "NOT configured (503 on upscale route)"}`);
-  console.log(`  rembg:         ${rembg ? "configured" : "NOT configured (503 on background remover route)"}`);
 
-  if (!cloudConvert && !realesrgan && !rembg) {
+  if (!cloudConvert && !realesrgan) {
     console.log(
       "\nNote: No Phase 4A providers are configured in this environment. " +
         "Routes will return 503 until env vars and Python runtimes are set up.",
@@ -103,10 +95,8 @@ function testProviderModulesExist() {
   const modules = [
     "lib/providers/upscale/realesrgan-provider.ts",
     "lib/providers/conversion/cloudconvert-provider.ts",
-    "lib/providers/background-removal/rembg-server-provider.ts",
     "lib/tools/document-conversion/client.ts",
     "app/api/tools/pdf-to-word/route.ts",
-    "app/api/tools/background-remover/remove/route.ts",
   ];
 
   for (const relative of modules) {

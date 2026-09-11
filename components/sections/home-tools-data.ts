@@ -10,7 +10,6 @@ import {
   MonitorDot,
   ScanLine,
   Sparkles,
-  WandSparkles,
 } from "lucide-react";
 import { SCANONIX_TOOLS } from "@/constants/tools-directory-data";
 
@@ -35,7 +34,7 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "image-to-pdf": FileImage,
   "ai-summary": Sparkles,
   "ai-translate": Languages,
-  "background-remover": WandSparkles,
+  "image-compressor": Minimize2,
   "png-to-jpg": FileImage,
   "jpg-to-webp": FileImage,
   "heic-to-jpg": FileImage,
@@ -113,7 +112,7 @@ export const HOME_TOOL_FILTERS = [
 const FEATURED_IDS: Record<Exclude<HomeToolFilter, "all">, string[]> = {
   pdf: ["merge-pdf", "compress-pdf", "pdf-to-word", "image-to-pdf"],
   ai: ["ai-summary", "ai-translate", "ai-assistant"],
-  image: ["background-remover", "png-to-jpg", "jpg-to-webp", "heic-to-jpg"],
+  image: ["image-compressor", "png-to-jpg", "jpg-to-webp", "heic-to-jpg"],
   security: [
     "website-scanner",
     "ai-threat-analysis",

@@ -69,7 +69,7 @@ assert(
 );
 assert(
   "E normal pathname unchanged",
-  sanitizeGaPagePath("/tools/background-remover") === "/tools/background-remover" &&
+  sanitizeGaPagePath("/tools/image-compressor") === "/tools/image-compressor" &&
     sanitizeGaPagePath("/account") === "/account" &&
     sanitizeGaPagePath("/billing/success") === "/billing/success",
 );

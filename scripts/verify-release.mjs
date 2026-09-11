@@ -133,8 +133,6 @@ async function runFast() {
     "--verify",
   ]);
   npmRun("verify:core-processing");
-  npmRun("verify:bg-remover-quota");
-  npmRun("verify:background-remover-model-config");
   npmRun("verify:analytics-130e-subscription-complete");
   npmRun("verify:seo-canonical-host");
 }

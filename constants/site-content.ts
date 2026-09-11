@@ -67,11 +67,11 @@ export const TOOLS = [
     available: true,
   },
   {
-    name: "Background Remover",
-    description: "Clean up scans and isolate document content.",
-    icon: "bg-remove",
-    slug: "background-remover",
-    href: "/tools/background-remover",
+    name: "Image Compressor",
+    description: "Reduce image file size with adjustable quality.",
+    icon: "compress",
+    slug: "image-compressor",
+    href: "/tools/image-compressor",
     available: true,
   },
   {
@@ -123,12 +123,12 @@ export const WORKSPACES: Workspace[] = [
     emoji: "🖼",
     name: "Image Workspace",
     description:
-      "Transform visuals — remove backgrounds, convert formats, and enhance quality.",
+      "Transform visuals — convert formats, compress images, and enhance quality.",
     accent: "from-violet-500/20 via-purple-500/10 to-transparent",
     items: [
       {
-        name: "Background Remover",
-        href: "/tools/background-remover",
+        name: "Image Compressor",
+        href: "/tools/image-compressor",
         available: true,
       },
       { name: "JPG to PNG", href: "/tools/jpg-to-png", available: true },
@@ -285,10 +285,10 @@ export const PRICING_COMPARISON: PricingComparisonRow[] = [
     business: true,
   },
   {
-    feature: "Background removal",
-    free: "HD export",
-    pro: "4K export + expanded limits",
-    business: "4K export + expanded limits",
+    feature: "Image upscaling",
+    free: false,
+    pro: "2× and 4×",
+    business: "2× and 4×",
   },
   {
     feature: "Cloud sync",
@@ -384,7 +384,7 @@ export const FAQ_ITEMS = [
   {
     question: "What workspaces are available today?",
     answer:
-      "Document, Image, and Mobile workspaces include live tools you can use right now — PDF tools, OCR, background removal, QR scanning, and more. AI workspace features are rolling out progressively.",
+      "Document, Image, and Mobile workspaces include live tools you can use right now — PDF tools, OCR, image compression, QR scanning, and more. AI workspace features are rolling out progressively.",
   },
   {
     question: "How does pricing work?",
@@ -399,7 +399,7 @@ export const FAQ_ITEMS = [
   {
     question: "Do existing tools still work?",
     answer:
-      "Absolutely. Every tool — merge, split, compress, OCR, PDF to Word, background remover, QR scanner, and more — remains fully functional. The redesign is visual and structural; your workflows are unchanged.",
+      "Absolutely. Every tool — merge, split, compress, OCR, PDF to Word, image compressor, QR scanner, and more — remains fully functional. The redesign is visual and structural; your workflows are unchanged.",
   },
 ] as const;
 

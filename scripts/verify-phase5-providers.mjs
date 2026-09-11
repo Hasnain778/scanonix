@@ -1,5 +1,5 @@
 /**
- * Phase 5 ML provider verification — rembg background removal + Real-ESRGAN NCNN Vulkan.
+ * Phase 5 ML provider verification — Real-ESRGAN NCNN Vulkan.
  * Run: npm run verify:phase5-providers
  */
 
@@ -44,31 +44,21 @@ function readEnv(key) {
   return process.env[key]?.trim() ?? "";
 }
 
-function isRembgConfigured() {
-  return Boolean(readEnv("REMBG_PYTHON"));
-}
-
 function isRealEsrganConfigured() {
   return Boolean(readEnv("REALESRGAN_SERVICE_URL") || readEnv("REALESRGAN_BIN"));
 }
 
 async function loadPhase5Modules() {
-  const { removeBackgroundWithRembg } = await import(
-    "../lib/providers/background-removal/rembg-server-provider.ts"
-  );
   const { upscaleWithRealEsrgan } = await import(
     "../lib/providers/upscale/realesrgan-provider.ts"
   );
-  return { removeBackgroundWithRembg, upscaleWithRealEsrgan };
+  return { upscaleWithRealEsrgan };
 }
 
 function testConfigStatus() {
-  const rembg = isRembgConfigured();
   const realesrgan = isRealEsrganConfigured();
 
   console.log("\nPhase 5 provider configuration status:");
-  console.log(`  rembg:         ${rembg ? readEnv("REMBG_PYTHON") : "NOT configured"}`);
-  console.log(`  rembg model:   ${readEnv("REMBG_MODEL") || "birefnet-general (default)"}`);
   console.log(
     `  Real-ESRGAN:   ${realesrgan ? readEnv("REALESRGAN_BIN") || readEnv("REALESRGAN_SERVICE_URL") : "NOT configured"}`,
   );
@@ -76,86 +66,6 @@ function testConfigStatus() {
     `  ESRGAN model:  ${readEnv("REALESRGAN_MODEL") || "realesrgan-x4plus (default)"}`,
   );
   ok("Phase 5 config checks completed");
-}
-
-async function createPortraitLikeImage() {
-  const width = 320;
-  const height = 400;
-
-  const background = await sharp({
-    create: {
-      width,
-      height,
-      channels: 3,
-      background: { r: 120, g: 170, b: 220 },
-    },
-  })
-    .jpeg({ quality: 92 })
-    .toBuffer();
-
-  const subject = await sharp({
-    create: {
-      width: 140,
-      height: 220,
-      channels: 4,
-      background: { r: 210, g: 150, b: 120, alpha: 1 },
-    },
-  })
-    .png()
-    .toBuffer();
-
-  return sharp(background)
-    .composite([{ input: subject, left: 90, top: 90 }])
-    .jpeg({ quality: 92 })
-    .toBuffer();
-}
-
-async function hasTransparency(pngBuffer) {
-  const { data, info } = await sharp(pngBuffer)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-
-  let transparent = 0;
-  for (let index = 3; index < data.length; index += 4) {
-    if (data[index] < 240) transparent += 1;
-  }
-
-  return transparent > info.width * info.height * 0.05;
-}
-
-async function testBackgroundRemoval() {
-  if (!isRembgConfigured()) {
-    skip("Background removal integration test skipped — REMBG_PYTHON not set");
-    return null;
-  }
-
-  const { removeBackgroundWithRembg } = await loadPhase5Modules();
-  const input = await createPortraitLikeImage();
-  const inputMeta = await sharp(input).metadata();
-  const inputWidth = inputMeta.width ?? 0;
-  const inputHeight = inputMeta.height ?? 0;
-
-  const result = await removeBackgroundWithRembg(input, "image/jpeg");
-  assert.equal(result.provider, "rembg");
-  assert.equal(result.model, readEnv("REMBG_MODEL") || "birefnet-general");
-  assert.equal(result.width, inputWidth, "width not preserved");
-  assert.equal(result.height, inputHeight, "height not preserved");
-  assert.equal(result.buffer.slice(0, 4).toString("hex"), "89504e47", "output is not PNG");
-  assert.equal(await hasTransparency(result.buffer), true, "output lacks transparency");
-  assert.equal(result.likelyNoSubject, false, "subject not detected");
-
-  ok(
-    `Background removal E2E passed (${inputWidth}×${inputHeight} → ${result.width}×${result.height}, model=${result.model})`,
-  );
-
-  return {
-    inputWidth,
-    inputHeight,
-    outputWidth: result.width,
-    outputHeight: result.height,
-    model: result.model,
-  };
 }
 
 async function testUpscaler() {
@@ -210,13 +120,8 @@ async function testUpscaler() {
 async function main() {
   try {
     testConfigStatus();
-    const rembgStats = await testBackgroundRemoval();
     const upscaleStats = await testUpscaler();
 
-    if (rembgStats) {
-      console.log("\nBackground removal stats:");
-      console.log(JSON.stringify(rembgStats, null, 2));
-    }
     if (upscaleStats) {
       console.log("\nUpscaler stats:");
       console.log(JSON.stringify(upscaleStats, null, 2));

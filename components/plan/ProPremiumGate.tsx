@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Sparkles, Lock } from "lucide-react";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
-import { ProBadge } from "@/components/tools/background-remover/ProBadge";
+import { ProBadge } from "@/components/ui/ProBadge";
 import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { trackEvent } from "@/lib/analytics/ga4";
 

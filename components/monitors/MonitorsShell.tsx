@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Shield } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { ProBadge } from "@/components/tools/background-remover/ProBadge";
+import { ProBadge } from "@/components/ui/ProBadge";
 import { ProSecurityGate } from "@/components/tools/security/ProSecurityGate";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useProAccess } from "@/hooks/useProAccess";

@@ -39,7 +39,7 @@ const PLANS: PlanTier[] = [
     features: [
       "Basic website scanning",
       "Basic file scanning",
-      "Standard quality background removal",
+      "Core image tools (compress, resize, convert)",
       "Limited AI analysis",
       "Limited scan history",
       "Community support",
@@ -59,7 +59,7 @@ const PLANS: PlanTier[] = [
     highlighted: true,
     features: [
       "Everything in Free",
-      "4K Background Removal",
+      "4K image upscaling",
       "Higher AI usage (500 ops/month)",
       "Expanded security scans (500 ops/month)",
       "Expanded tool usage limits",

@@ -19,7 +19,7 @@ export const PRICING_CARDS: PricingCardConfig[] = [
     name: "Free",
     price: "£0",
     period: "forever",
-    description: "HD background removal and core tools in your browser.",
+    description: "Core PDF, image, and AI tools in your browser.",
   },
   {
     key: "pro-monthly",
@@ -28,7 +28,7 @@ export const PRICING_CARDS: PricingCardConfig[] = [
     name: "Pro Monthly",
     price: "£9.99",
     period: "per month",
-    description: "4K exports, premium AI tools, and cloud storage.",
+    description: "4K upscaling, premium AI tools, and higher limits.",
     highlighted: true,
   },
   {

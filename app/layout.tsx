@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       "merge PDF",
       "compress PDF",
       "image tools",
-      "background remover",
+      "image compressor",
       "OCR",
       "PDF to Word",
       "Word to PDF",

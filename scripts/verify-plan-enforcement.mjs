@@ -218,11 +218,6 @@ async function verifyUnauthenticated() {
     { path: "/api/usage/consume", method: "POST", body: { tool: "test" } },
     { path: "/api/usage/summary", method: "GET" },
     { path: "/api/ai/summary", method: "POST", body: { text: "hello" } },
-    {
-      path: "/api/tools/background-remover/authorize-export",
-      method: "POST",
-      body: { resolution: "4k" },
-    },
   ];
 
   for (const endpoint of endpoints) {
@@ -250,41 +245,6 @@ async function verifyFreeRestrictions(freeSession) {
     fail(`Free user AI summary returned ${ai.response.status}, expected 403`);
   }
   ok("Free user cannot access premium AI routes");
-
-  const export4k = await apiFetch("/api/tools/background-remover/authorize-export", {
-    session: freeSession,
-    method: "POST",
-    body: { resolution: "4k" },
-  });
-
-  if (export4k.response.status !== 403) {
-    fail(`Free user 4K export returned ${export4k.response.status}, expected 403`);
-  }
-  ok("Free user cannot authorize 4K export");
-
-  const exportHd = await apiFetch("/api/tools/background-remover/authorize-export", {
-    session: freeSession,
-    method: "POST",
-    body: { resolution: "hd" },
-  });
-
-  if (exportHd.response.status !== 200 || exportHd.json?.allowedResolution !== "hd") {
-    fail("Free user HD export authorization failed");
-  }
-  ok("Free user can authorize HD export");
-}
-
-async function verifyPro4K(proSession) {
-  const export4k = await apiFetch("/api/tools/background-remover/authorize-export", {
-    session: proSession,
-    method: "POST",
-    body: { resolution: "4k" },
-  });
-
-  if (export4k.response.status !== 200 || export4k.json?.allowedResolution !== "4k") {
-    fail(`Pro user 4K export returned ${export4k.response.status}, expected 200 with 4k`);
-  }
-  ok("Pro user can authorize 4K export");
 }
 
 async function verifyFakePlanIgnored(freeSession, admin, freeUserId) {
@@ -383,25 +343,20 @@ async function main() {
   await verifyUnauthenticated();
 
   const freeUser = await createVerifiedUser(admin, "free");
-  const proUser = await createVerifiedUser(admin, "pro");
   const businessUser = await createVerifiedUser(admin, "business");
 
   await setPlan(admin, freeUser.userId, "free");
-  await setPlan(admin, proUser.userId, "pro");
   await setPlan(admin, businessUser.userId, "business");
 
   const freeSession = await signIn(freeUser.email, freeUser.password);
-  const proSession = await signIn(proUser.email, proUser.password);
   const businessSession = await signIn(businessUser.email, businessUser.password);
 
   await verifyFreeRestrictions(freeSession);
-  await verifyPro4K(proSession);
   await verifyFakePlanIgnored(freeSession, admin, freeUser.userId);
   await verifyParallelLimit(admin, freeUser.userId, freeSession);
   await verifyBusinessLimit(admin, businessUser.userId, businessSession);
 
   await admin.auth.admin.deleteUser(freeUser.userId);
-  await admin.auth.admin.deleteUser(proUser.userId);
   await admin.auth.admin.deleteUser(businessUser.userId);
   ok("Temporary test users cleaned up");
 

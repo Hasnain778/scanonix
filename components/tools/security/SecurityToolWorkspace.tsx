@@ -2,7 +2,7 @@
 
 import { type ReactNode } from "react";
 import { Shield } from "lucide-react";
-import { ProBadge } from "@/components/tools/background-remover/ProBadge";
+import { ProBadge } from "@/components/ui/ProBadge";
 import { ProSecurityGate } from "@/components/tools/security/ProSecurityGate";
 import { useProAccess } from "@/hooks/useProAccess";
 

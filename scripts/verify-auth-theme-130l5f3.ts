@@ -245,12 +245,7 @@ assert(
     dashboardPlan.includes("UsageCardSkeleton"),
 );
 
-const public5f2Bg = read("components/tools/background-remover/BackgroundRemoverTool.tsx");
 const public5f2Qr = read("components/tools/qr-scanner/QrResultPanel.tsx");
-assert(
-  "Frozen public 5F-2 BG Remover still semantic from 5F-2",
-  public5f2Bg.includes("text-foreground") && !public5f2Bg.includes("text-white"),
-);
 assert(
   "Frozen public 5F-2 QR result panel still semantic from 5F-2",
   public5f2Qr.includes("bg-surface-muted") && !public5f2Qr.includes("bg-black/40"),

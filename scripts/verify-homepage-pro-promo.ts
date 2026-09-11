@@ -88,9 +88,8 @@ function run() {
   );
 
   assert(
-    "8 verified Pro benefits only (security, 4K, AI, limits)",
+    "8 verified Pro benefits only (security, AI, limits)",
     promoSource.includes("Protect, Unlock, and Redact PDF") &&
-      promoSource.includes("4K background removal") &&
       promoSource.includes("Premium AI tools") &&
       promoSource.includes("500 ops/month"),
   );

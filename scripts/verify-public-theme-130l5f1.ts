@@ -61,9 +61,9 @@ assert(
   hub.includes("text-foreground") && !hub.includes("text-white"),
 );
 
-const featured = read("components/image-tools/FeaturedBackgroundRemoverCard.tsx");
+const featured = read("components/image-tools/MediumConverterCard.tsx");
 assert(
-  "FeaturedBackgroundRemoverCard has no #0a0a0a / text-white shell",
+  "MediumConverterCard has no #0a0a0a / text-white shell",
   featured.includes("bg-surface") &&
     !featured.includes("bg-[#0a0a0a]") &&
     !featured.includes("text-white"),

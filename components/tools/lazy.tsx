@@ -109,14 +109,6 @@ export const LazyOcrTool = dynamic(
   { loading: toolLoading },
 );
 
-export const LazyBackgroundRemoverTool = dynamic(
-  () =>
-    import("@/components/tools/background-remover/BackgroundRemoverTool").then(
-      (m) => ({ default: m.BackgroundRemoverTool }),
-    ),
-  { loading: toolLoading },
-);
-
 export const LazyQrScannerTool = dynamic(
   () =>
     import("@/components/tools/qr-scanner/QrScannerTool").then((m) => ({

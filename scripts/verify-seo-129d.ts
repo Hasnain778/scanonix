@@ -165,8 +165,8 @@ async function run() {
     resolveAbsoluteOgUrl(getTwitterImageFromMetadata(toolMetadata)) === OG_ABSOLUTE_URL,
   );
 
-  // 5. All 36 tools inherit central OG (no per-tool overrides)
-  assert("5 tools directory count is 36", SCANONIX_TOOLS.length === 36);
+  // 5. All 35 tools inherit central OG (no per-tool overrides)
+  assert("5 tools directory count is 35", SCANONIX_TOOLS.length === 35);
   for (const tool of SCANONIX_TOOLS) {
     const metadata = createToolPageMetadata(tool.id);
     const og = getOgImageFromMetadata(metadata);

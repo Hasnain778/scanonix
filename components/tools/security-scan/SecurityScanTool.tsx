@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Shield } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { ProBadge } from "@/components/tools/background-remover/ProBadge";
+import { ProBadge } from "@/components/ui/ProBadge";
 import { ProSecurityGate } from "@/components/tools/security/ProSecurityGate";
 import {
   SCAN_STAGES,

@@ -17,7 +17,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = createPageMetadata({
   title: "Free Online PDF, Image & AI Document Tools | Scanonix",
   description:
-    "Free online PDF, image, and AI document tools. Merge, split, compress, convert, OCR, remove backgrounds, and edit files in your browser with Scanonix.",
+    "Free online PDF, image, and AI document tools. Merge, split, compress, convert, OCR, and edit files in your browser with Scanonix.",
   path: "/",
   keywords: [
     "PDF tools",
@@ -26,7 +26,7 @@ export const metadata: Metadata = createPageMetadata({
     "PDF to Word",
     "Word to PDF",
     "image tools",
-    "background remover",
+    "image compressor",
     "OCR",
     "AI document tools",
     "online tools",

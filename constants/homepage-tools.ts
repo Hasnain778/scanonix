@@ -292,17 +292,6 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
-    id: "background-remover",
-    name: "Background Remover",
-    shortDescription: "Remove image backgrounds instantly.",
-    description: "Remove backgrounds with AI. HD free, 4K for Pro.",
-    href: "/tools/background-remover",
-    category: "image",
-    icon: "bg-remove",
-    aliases: ["remove background", "transparent background", "cut out background", "bg remover"],
-    available: true,
-  },
-  {
     id: "png-to-jpg",
     name: "PNG to JPG",
     shortDescription: "Convert PNG images to JPG format.",
@@ -554,7 +543,6 @@ const HOMEPAGE_GRID_TOOL_IDS: Record<HomepageToolCategory, string[]> = {
     "sign-pdf",
   ],
   image: [
-    "background-remover",
     "image-compressor",
     "image-resizer",
     "jpg-to-png",
@@ -607,7 +595,7 @@ export const POPULAR_TOOL_IDS = [
   "image-to-pdf",
   "ocr",
   "ai-translate",
-  "background-remover",
+  "image-compressor",
   "split-pdf",
 ] as const;
 
@@ -617,7 +605,7 @@ export const HERO_QUICK_SUGGESTIONS = [
   "pdf-to-word",
   "image-to-pdf",
   "ai-translate",
-  "background-remover",
+  "image-upscaler",
 ] as const;
 
 export function getPopularTools(): HomepageTool[] {
@@ -653,8 +641,8 @@ export const NAV_DROPDOWN_TOOLS: Record<
     href: "/#image-tools",
     viewAllHref: getToolsCategoryHref("image"),
     tools: [
-      { name: "Background Remover", href: "/tools/background-remover" },
       { name: "Image Compressor", href: "/tools/image-compressor" },
+      { name: "Image Upscaler", href: "/tools/image-upscaler" },
       { name: "PNG to JPG", href: "/tools/png-to-jpg" },
       { name: "HEIC to JPG", href: "/tools/heic-to-jpg" },
       { name: "JPG to WEBP", href: "/tools/jpg-to-webp" },

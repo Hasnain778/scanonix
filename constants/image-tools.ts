@@ -230,15 +230,6 @@ export const IMAGE_HUB_FEATURED_MEDIUM = ["heic-to-jpg", "png-to-jpg", "jpg-to-w
 
 export const IMAGE_HUB_EDIT_TOOLS: ImageHubTool[] = [
   {
-    id: "background-remover",
-    title: "Background Remover",
-    description: "Remove backgrounds with AI. HD free, 4K on Pro.",
-    href: "/tools/background-remover",
-    fileSupport: "PNG, JPG, WEBP",
-    badge: "Premium",
-    kind: "edit",
-  },
-  {
     id: "image-compressor",
     title: "Image Compressor",
     description: "Reduce image file size with adjustable quality.",
@@ -311,7 +302,7 @@ export function getRelatedConverters(slug: string): ImageConverterDefinition[] {
 }
 
 export const IMAGE_TOOLS_HOMEPAGE_CHIPS = [
-  "Background Remover",
+  "Image Compressor",
   "PNG to JPG",
   "JPG to WEBP",
   "HEIC to JPG",

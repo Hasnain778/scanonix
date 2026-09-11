@@ -53,7 +53,6 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "word-to-pdf": { ...FREE_SERVER, route: "word-to-pdf" },
   ocr: { ...FREE_CLIENT, route: "ocr" },
   "qr-scanner": { ...FREE_CLIENT, route: "qr-scanner" },
-  "background-remover": { ...FREE_SERVER, route: "background-remover" },
   "image-compressor": { ...FREE_SERVER, route: "image-compressor" },
   "image-resizer": { ...FREE_SERVER, route: "image-resizer" },
   "jpg-to-png": { ...FREE_CLIENT, route: "jpg-to-png" },

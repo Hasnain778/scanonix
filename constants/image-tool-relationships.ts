@@ -20,7 +20,6 @@ export const IMAGE_FORMAT_CLUSTERS = {
   heic: ["heic-to-jpg", "heic-to-png"] as const,
   raster: ["png-to-jpg", "jpg-to-png"] as const,
   edit: [
-    "background-remover",
     "image-compressor",
     "image-resizer",
     "image-upscaler",

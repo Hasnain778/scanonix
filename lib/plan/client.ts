@@ -59,24 +59,6 @@ export async function consumeToolUsage(
   return data as ConsumeUsageResponse;
 }
 
-export async function authorizeBackgroundRemoverExport(
-  resolution: "hd" | "4k",
-  fileSizeBytes?: number,
-): Promise<{ ok: true; allowedResolution: "hd" | "4k"; remaining: number } | PlanErrorResponse> {
-  const response = await fetch("/api/tools/background-remover/authorize-export", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ resolution, fileSizeBytes }),
-  });
-
-  const data = await response.json();
-  if (!response.ok) {
-    return data as PlanErrorResponse;
-  }
-
-  return data as { ok: true; allowedResolution: "hd" | "4k"; remaining: number };
-}
-
 export function isPlanError(
   result: unknown,
 ): result is PlanErrorResponse {

@@ -5,7 +5,7 @@ export const SITE = {
   name: "Scanonix",
   tagline: "Free Online PDF, Image & AI Document Tools",
   description:
-    "Free online PDF, image, and AI document tools. Merge, split, compress, convert, OCR, remove backgrounds, and edit files in your browser.",
+    "Free online PDF, image, and AI document tools. Merge, split, compress, convert, OCR, and edit files in your browser.",
   url: resolveCanonicalSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   locale: "en_GB",
   twitterHandle: "@scanonix",

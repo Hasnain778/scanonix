@@ -7,7 +7,7 @@ const DASHBOARD_SHORTCUT_TOOL_IDS = [
   "merge-pdf",
   "compress-pdf",
   "fill-pdf",
-  "background-remover",
+  "image-compressor",
   "protect-pdf",
   "ai-translate",
 ] as const;

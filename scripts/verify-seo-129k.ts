@@ -12,7 +12,6 @@ import { TOOL_ACCESS } from "../lib/plan/tool-access";
 const PDF_TO_WORD_ID = "pdf-to-word";
 const OCR_ID = "ocr";
 const QR_ID = "qr-scanner";
-const BG_ID = "background-remover";
 const FILL_ID = "fill-pdf";
 
 const PRESERVED_TITLE = "PDF to Word Converter Online";
@@ -163,29 +162,17 @@ function run() {
     readSource("components/workspace/ToolRoute.tsx").includes("getCategoryBreadcrumbHref"),
   );
 
-  // 12. Background remover untouched
-  const bgBefore = TOOL_SEO[BG_ID];
-  assert(
-    "12 background-remover title unchanged",
-    bgBefore.seoTitle.includes("Remove Background from Image Online"),
-  );
-  assert(
-    "12 background-remover h1 unchanged",
-    bgBefore.h1 === "Remove Image Background Online",
-  );
-  assert("12 background-remover faq count unchanged", bgBefore.faqs.length === 5);
-
-  // 13. Fill PDF untouched
+  // 12. Fill PDF untouched
   const fill = TOOL_SEO[FILL_ID];
-  assert("13 fill-pdf h1 unchanged", fill.h1 === "Fill PDF Form");
-  assert("13 fill-pdf faq count unchanged", fill.faqs.length === 7);
+  assert("12 fill-pdf h1 unchanged", fill.h1 === "Fill PDF Form");
+  assert("12 fill-pdf faq count unchanged", fill.faqs.length === 7);
   assert(
-    "13 fill-pdf has no useCases section yet",
+    "12 fill-pdf has no useCases section yet",
     (fill.useCases?.length ?? 0) === 0,
   );
 
   assert(
-    "13 verify script exists",
+    "12 verify script exists",
     existsSync(join(root, "scripts", "verify-seo-129k.ts")),
   );
 

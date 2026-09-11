@@ -1,22 +1,19 @@
 #!/usr/bin/env node
 /**
  * Safe production post-deploy smoke — read-only HTTP + compress/resize processing.
- * Background Remover optional via RUN_EXTERNAL_SMOKE=1 (single tiny fixture, no hammering).
  *
  * Run: npm run smoke:production
  * Env: PRODUCTION_BASE_URL (default https://www.scanonix.com)
- *      RUN_EXTERNAL_SMOKE=1 — include one background remover call
  */
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
-import { isJpeg, isPng, magicHex, safeBodySnippet } from "../regression/lib/binary.mjs";
+import { isJpeg, magicHex, safeBodySnippet } from "../regression/lib/binary.mjs";
 import { exitWithSummary, fail, pass, printHeader, summarizeResults } from "../regression/lib/report.mjs";
 
 const BASE = process.env.PRODUCTION_BASE_URL || "https://www.scanonix.com";
 const FIX = join(process.cwd(), "tests", "fixtures", "regression");
-const EXTERNAL = process.env.RUN_EXTERNAL_SMOKE === "1";
 
 const HTTP_ROUTES = [
   { slug: "home", path: "/", expectStatus: 200 },
@@ -103,45 +100,12 @@ async function checkProcessing(results) {
       });
 }
 
-async function checkBackgroundRemover(results) {
-  const slug = "proc:bg-remover";
-  if (!EXTERNAL) {
-    results[slug] = { ok: true, detail: "skipped (RUN_EXTERNAL_SMOKE not set)", skipped: true };
-    pass(slug, "skipped — optional external smoke");
-    return;
-  }
-
-  const subject = readFileSync(join(FIX, "bg-remover-subject.jpg"));
-  const { res, bodySnippet, binary } = await postImage(
-    "/api/tools/background-remover/remove",
-    "bg-remover-subject.jpg",
-    subject,
-  );
-
-  if (res.status === 422) {
-    // User-input / fixture rejection — not infrastructure failure
-    results[slug] = {
-      ok: false,
-      detail: `422 no_subject or fixture rejection — ${bodySnippet}`,
-      status: 422,
-      infraFailure: false,
-    };
-    fail(slug, "422 — distinguish from infra; check fixture/subject", { status: 422, body: bodySnippet });
-    return;
-  }
-
-  const ok = res.status === 200 && binary && isPng(binary);
-  results[slug] = { ok, detail: ok ? "200 PNG" : `HTTP ${res.status}`, status: res.status };
-  ok ? pass(slug, "200 PNG") : fail(slug, bodySnippet || `HTTP ${res.status}`, { status: res.status });
-}
-
 async function main() {
   printHeader(`Production smoke (${BASE})`);
 
   const results = {};
   await checkHttp(results);
   await checkProcessing(results);
-  await checkBackgroundRemover(results);
 
   const active = Object.entries(results).filter(([, r]) => !r.skipped);
   exitWithSummary(summarizeResults(Object.fromEntries(active)), "Production smoke");

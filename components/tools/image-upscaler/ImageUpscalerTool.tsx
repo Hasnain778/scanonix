@@ -10,7 +10,7 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { PremiumAiToolGate } from "@/components/plan/PremiumAiToolGate";
 import { UpgradeRequiredNotice } from "@/components/plan/UsageBanner";
 import { FileDropZone } from "@/components/tools/FileDropZone";
-import { ProBadge } from "@/components/tools/background-remover/ProBadge";
+import { ProBadge } from "@/components/ui/ProBadge";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ImageToolStats } from "@/components/tools/shared/ImageToolStats";
 import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";

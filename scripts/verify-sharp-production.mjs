@@ -19,10 +19,6 @@ const SHARP_IMAGE_ROUTES = [
     route: "/api/tools/image/resize",
     nftPath: ".next/server/app/api/tools/image/resize/route.js.nft.json",
   },
-  {
-    route: "/api/tools/background-remover/remove",
-    nftPath: ".next/server/app/api/tools/background-remover/remove/route.js.nft.json",
-  },
 ];
 
 const REQUIRED_NFT_MARKERS = [
@@ -109,11 +105,10 @@ function testNextConfigTracingIncludes() {
   assert.match(configSource, /outputFileTracingIncludes:/);
   assert.match(configSource, /\/api\/tools\/image\/compress/);
   assert.match(configSource, /\/api\/tools\/image\/resize/);
-  assert.match(configSource, /\/api\/tools\/background-remover\/remove/);
   assert.match(configSource, /node_modules\/@img\/sharp-linux-x64\/\*\*\/\*/);
   assert.match(configSource, /node_modules\/@img\/sharp-libvips-linux-x64\/\*\*\/\*/);
 
-  ok("next.config.ts defines targeted outputFileTracingIncludes for all three image routes");
+  ok("next.config.ts defines targeted outputFileTracingIncludes for compress and resize routes");
 }
 
 function testPackageJsonPin() {

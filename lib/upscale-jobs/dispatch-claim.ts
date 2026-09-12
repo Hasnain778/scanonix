@@ -1,20 +1,17 @@
 import type { UpscaleJobRecord } from "./types";
 
-/** Maximum RunPod poll_once dispatch attempts per job create. */
+/**
+ * Maximum RunPod HTTP trigger attempts when the trigger itself fails.
+ * A successful trigger ends dispatch immediately — claim is not verified here.
+ */
 export const MAX_DISPATCH_ATTEMPTS = 3;
 
-/** Interval between Supabase claim checks after a dispatch. */
-export const CLAIM_POLL_INTERVAL_MS = 1500;
-
-/** Claim polls per dispatch attempt before issuing another poll_once. */
-export const CLAIM_VERIFY_POLLS_PER_ATTEMPT = 4;
-
-/** Backoff before dispatch attempts 2 and 3 (attempt 1 has no backoff). */
+/** Backoff before RunPod trigger retry attempts 2 and 3 (trigger HTTP failures only). */
 export const DISPATCH_RETRY_BACKOFF_MS = [0, 1000, 2000] as const;
 
 export type DispatchOutcome =
   | { ok: true; dispatchAttempts: number; runpodRequestIds: string[] }
-  | { ok: false; reason: "worker_claim_timeout" | "worker_trigger_failed"; dispatchAttempts: number };
+  | { ok: false; reason: "worker_trigger_failed"; dispatchAttempts: number };
 
 export interface DispatchLogEvent {
   jobId: string;
@@ -26,12 +23,12 @@ export interface DispatchLogEvent {
   supabaseStatus?: string;
   workerId?: string | null;
   startedAt?: string | null;
-  outcome: "claimed" | "retry" | "failed" | "trigger_http_failed";
+  outcome: "triggered" | "already_dispatched" | "retry" | "failed" | "trigger_http_failed";
   message?: string;
 }
 
 /**
- * True when the worker has claimed or finished this job — dispatch can stop.
+ * True when the worker has claimed or finished this job — skip further triggers.
  */
 export function isUpscaleJobDispatched(job: UpscaleJobRecord | null): boolean {
   if (!job) {
@@ -58,9 +55,5 @@ export function shouldSkipDispatchRetry(job: UpscaleJobRecord | null): boolean {
     return false;
   }
 
-  if (isUpscaleJobDispatched(job)) {
-    return true;
-  }
-
-  return false;
+  return isUpscaleJobDispatched(job);
 }

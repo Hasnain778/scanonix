@@ -139,7 +139,7 @@ async function main(): Promise<void> {
 
     assert.match(routeSource, /WORKER_TRIGGER_FAILED/);
     assert.match(triggerWorkerSource, /worker_trigger_failed/);
-    assert.match(triggerWorkerSource, /worker_claim_timeout/);
+    assert.doesNotMatch(triggerWorkerSource, /worker_claim_timeout/);
     assert.match(triggerWorkerSource, /dispatchUpscaleWorkerWithClaimVerification/);
     assert.match(triggerWorkerSource, /getJobById/);
   });

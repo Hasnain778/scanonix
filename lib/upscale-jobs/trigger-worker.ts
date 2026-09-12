@@ -1,6 +1,4 @@
 import {
-  CLAIM_POLL_INTERVAL_MS,
-  CLAIM_VERIFY_POLLS_PER_ATTEMPT,
   DISPATCH_RETRY_BACKOFF_MS,
   MAX_DISPATCH_ATTEMPTS,
   isUpscaleJobDispatched,
@@ -14,9 +12,6 @@ import type { UpscaleJobRecord } from "./types";
 
 const WORKER_TRIGGER_ERROR_MESSAGE =
   "Could not start upscaling worker. Please try again.";
-
-const WORKER_CLAIM_TIMEOUT_MESSAGE =
-  "Upscaling worker did not start in time. Please try again.";
 
 export interface DispatchDependencies {
   triggerRunPod: typeof triggerRunPodPollOnce;
@@ -76,56 +71,24 @@ function logTriggerResult(
   });
 }
 
-async function waitForJobDispatch(
-  deps: DispatchDependencies,
-  jobId: string,
-  dispatchAttempt: number,
-): Promise<UpscaleJobRecord | null> {
-  let latest: UpscaleJobRecord | null = await deps.getJob(jobId);
-
-  for (let poll = 0; poll < CLAIM_VERIFY_POLLS_PER_ATTEMPT; poll += 1) {
-    if (isUpscaleJobDispatched(latest)) {
-      deps.logEvent({
-        jobId,
-        dispatchAttempt,
-        supabaseStatus: latest?.status,
-        workerId: latest?.worker_id ?? null,
-        startedAt: latest?.started_at ?? null,
-        outcome: "claimed",
-        message: "Job claimed during verification window.",
-      });
-      return latest;
-    }
-
-    if (poll < CLAIM_VERIFY_POLLS_PER_ATTEMPT - 1) {
-      await deps.sleep(CLAIM_POLL_INTERVAL_MS);
-      latest = await deps.getJob(jobId);
-    }
-  }
-
-  return latest;
-}
-
 async function markDispatchFailure(
   deps: DispatchDependencies,
   jobId: string,
   dispatchAttempts: number,
-  errorCode: "worker_claim_timeout" | "worker_trigger_failed",
   errorMessage: string,
 ): Promise<void> {
   try {
     await deps.updateJob(jobId, {
       status: "failed",
       stage: "queued",
-      errorCode,
+      errorCode: "worker_trigger_failed",
       errorMessage,
       completedAt: new Date().toISOString(),
     });
   } catch (updateError) {
     console.error(
-      "[upscale-jobs] Failed to mark job %s failed after dispatch error %s: %s",
+      "[upscale-jobs] Failed to mark job %s failed after dispatch error worker_trigger_failed: %s",
       jobId,
-      errorCode,
       updateError instanceof Error ? updateError.message : String(updateError),
     );
   }
@@ -139,7 +102,8 @@ async function markDispatchFailure(
 }
 
 /**
- * Dispatch RunPod poll_once with bounded claim verification for one Supabase job.
+ * Dispatch RunPod poll_once. Success = accepted HTTP trigger (job may still be queued).
+ * Retries only when the RunPod trigger itself fails. Does not wait for worker claim.
  * Exported for deterministic tests — production callers should use
  * triggerUpscaleWorkerAfterJobCreated().
  */
@@ -158,8 +122,8 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
       supabaseStatus: lastJob?.status,
       workerId: lastJob?.worker_id ?? null,
       startedAt: lastJob?.started_at ?? null,
-      outcome: "claimed",
-      message: "Job already dispatched before first trigger.",
+      outcome: "already_dispatched",
+      message: "Job already claimed or finished before first trigger.",
     });
     return { ok: true, dispatchAttempts: 0, runpodRequestIds };
   }
@@ -178,54 +142,48 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
         supabaseStatus: lastJob?.status,
         workerId: lastJob?.worker_id ?? null,
         startedAt: lastJob?.started_at ?? null,
-        outcome: "claimed",
+        outcome: "already_dispatched",
         message: "Job claimed before retry trigger.",
       });
-      return { ok: true, dispatchAttempts: attempt - 1, runpodRequestIds };
+      return { ok: true, dispatchAttempts: Math.max(0, attempt - 1), runpodRequestIds };
     }
 
     const triggered = await deps.triggerRunPod();
+
     if (triggered.ok) {
       runpodRequestIds.push(triggered.runpodJobId);
-    }
-
-    lastJob = await deps.getJob(jobId);
-    if (triggered.ok && isUpscaleJobDispatched(lastJob)) {
-      logTriggerResult(deps, jobId, attempt, triggered, lastJob, "claimed");
-      return { ok: true, dispatchAttempts: attempt, runpodRequestIds };
-    }
-
-    if (!triggered.ok) {
+      lastJob = await deps.getJob(jobId);
       logTriggerResult(
         deps,
         jobId,
         attempt,
         triggered,
         lastJob,
-        "trigger_http_failed",
-        triggered.message,
+        "triggered",
+        "RunPod trigger accepted; job may remain queued until worker claims.",
       );
-    } else {
-      logTriggerResult(deps, jobId, attempt, triggered, lastJob, "retry");
+      return { ok: true, dispatchAttempts: attempt, runpodRequestIds };
     }
 
-    if (triggered.ok) {
-      lastJob = await waitForJobDispatch(deps, jobId, attempt);
-      if (isUpscaleJobDispatched(lastJob)) {
-        return { ok: true, dispatchAttempts: attempt, runpodRequestIds };
-      }
-    }
+    logTriggerResult(
+      deps,
+      jobId,
+      attempt,
+      triggered,
+      lastJob,
+      "trigger_http_failed",
+      triggered.message,
+    );
 
     if (attempt < MAX_DISPATCH_ATTEMPTS) {
       deps.logEvent({
         jobId,
         dispatchAttempt: attempt,
-        runpodRequestId: triggered.ok ? triggered.runpodJobId : undefined,
         supabaseStatus: lastJob?.status,
         workerId: lastJob?.worker_id ?? null,
         startedAt: lastJob?.started_at ?? null,
         outcome: "retry",
-        message: "Job still unclaimed; scheduling another dispatch attempt.",
+        message: "RunPod trigger failed; scheduling another trigger attempt.",
       });
     }
   }
@@ -238,38 +196,17 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
       supabaseStatus: lastJob?.status,
       workerId: lastJob?.worker_id ?? null,
       startedAt: lastJob?.started_at ?? null,
-      outcome: "claimed",
-      message: "Job claimed after final verification.",
+      outcome: "already_dispatched",
+      message: "Job claimed after trigger attempts.",
     });
     return { ok: true, dispatchAttempts: MAX_DISPATCH_ATTEMPTS, runpodRequestIds };
   }
 
-  if (runpodRequestIds.length === 0) {
-    await markDispatchFailure(
-      deps,
-      jobId,
-      MAX_DISPATCH_ATTEMPTS,
-      "worker_trigger_failed",
-      WORKER_TRIGGER_ERROR_MESSAGE,
-    );
-    return {
-      ok: false,
-      reason: "worker_trigger_failed",
-      dispatchAttempts: MAX_DISPATCH_ATTEMPTS,
-    };
-  }
-
-  await markDispatchFailure(
-    deps,
-    jobId,
-    MAX_DISPATCH_ATTEMPTS,
-    "worker_claim_timeout",
-    WORKER_CLAIM_TIMEOUT_MESSAGE,
-  );
+  await markDispatchFailure(deps, jobId, MAX_DISPATCH_ATTEMPTS, WORKER_TRIGGER_ERROR_MESSAGE);
 
   return {
     ok: false,
-    reason: "worker_claim_timeout",
+    reason: "worker_trigger_failed",
     dispatchAttempts: MAX_DISPATCH_ATTEMPTS,
   };
 }
@@ -281,9 +218,5 @@ export async function triggerUpscaleWorkerAfterJobCreated(jobId: string): Promis
     return;
   }
 
-  if (outcome.reason === "worker_trigger_failed") {
-    throw new Error(WORKER_TRIGGER_ERROR_MESSAGE);
-  }
-
-  throw new Error(WORKER_CLAIM_TIMEOUT_MESSAGE);
+  throw new Error(WORKER_TRIGGER_ERROR_MESSAGE);
 }

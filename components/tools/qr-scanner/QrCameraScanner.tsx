@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { Camera } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { decodeQrFromVideoFrame } from "@/lib/tools/qr-scanner/decode-qr";
 import type { ParsedQrResult, QrScannerState } from "@/lib/tools/qr-scanner/types";
@@ -14,14 +15,16 @@ interface QrCameraScannerProps {
 
 function ScanningFrame() {
   return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8">
-      <div className="relative aspect-square w-full max-w-xs sm:max-w-sm">
-        <span className="absolute left-0 top-0 h-8 w-8 border-l-2 border-t-2 border-scanonix-orange" />
-        <span className="absolute right-0 top-0 h-8 w-8 border-r-2 border-t-2 border-scanonix-orange" />
-        <span className="absolute bottom-0 left-0 h-8 w-8 border-b-2 border-l-2 border-scanonix-orange" />
-        <span className="absolute bottom-0 right-0 h-8 w-8 border-b-2 border-r-2 border-scanonix-orange" />
-        <div className="absolute inset-x-0 top-1/2 h-0.5 animate-pulse bg-scanonix-orange/70" />
+    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 sm:p-8">
+      <div className="relative aspect-square w-full max-w-[14rem] sm:max-w-xs">
+        <span className="absolute left-0 top-0 h-9 w-9 rounded-tl-sm border-l-[3px] border-t-[3px] border-scanonix-orange" />
+        <span className="absolute right-0 top-0 h-9 w-9 rounded-tr-sm border-r-[3px] border-t-[3px] border-scanonix-orange" />
+        <span className="absolute bottom-0 left-0 h-9 w-9 rounded-bl-sm border-b-[3px] border-l-[3px] border-scanonix-orange" />
+        <span className="absolute bottom-0 right-0 h-9 w-9 rounded-br-sm border-b-[3px] border-r-[3px] border-scanonix-orange" />
       </div>
+      <p className="rounded-full bg-black/55 px-3 py-1.5 text-center text-xs font-medium text-white sm:text-sm">
+        Align QR code inside the frame
+      </p>
     </div>
   );
 }
@@ -164,28 +167,10 @@ export function QrCameraScanner({
           />
           {!isCameraRunning && (
             <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-scanonix-border bg-scanonix-surface text-scanonix-orange">
-                <svg
-                  className="h-7 w-7"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.75}
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-white/10 text-scanonix-orange">
+                <Camera className="h-7 w-7" aria-hidden="true" strokeWidth={1.75} />
               </div>
-              <p className="max-w-sm text-sm text-scanonix-muted">
+              <p className="max-w-sm text-sm text-white/80">
                 Allow camera access to scan QR codes live. Your camera feed stays
                 on this device.
               </p>

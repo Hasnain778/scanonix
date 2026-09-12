@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ImageIcon } from "lucide-react";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { decodeQrFromFile } from "@/lib/tools/qr-scanner/decode-qr";
 import {
@@ -17,22 +18,7 @@ interface QrUploadScannerProps {
 }
 
 function ImageDropIcon() {
-  return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-      />
-    </svg>
-  );
+  return <ImageIcon className="h-7 w-7" aria-hidden="true" strokeWidth={1.75} />;
 }
 
 export function QrUploadScanner({
@@ -94,6 +80,13 @@ export function QrUploadScanner({
 
   return (
     <div className="space-y-4">
+      <div className="space-y-1">
+        <h3 className="text-base font-semibold text-foreground">Upload QR image</h3>
+        <p className="text-sm text-scanonix-muted">
+          JPG, JPEG, PNG, or WEBP · single image · max 25 MB
+        </p>
+      </div>
+
       {!previewUrl ? (
         <FileDropZone
           onFilesSelected={handleUpload}
@@ -102,7 +95,7 @@ export function QrUploadScanner({
           multiple={false}
           disabled={disabled}
           label="Drop an image containing a QR code"
-          hint="JPG, JPEG, PNG, or WEBP"
+          hint="JPG, JPEG, PNG, or WEBP · under 25 MB"
           icon={<ImageDropIcon />}
         />
       ) : (

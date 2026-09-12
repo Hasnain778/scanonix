@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { Camera, ImageIcon } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { QrCameraScanner } from "@/components/tools/qr-scanner/QrCameraScanner";
 import { QrResultPanel } from "@/components/tools/qr-scanner/QrResultPanel";
@@ -16,9 +17,13 @@ import type {
   QrScannerState,
 } from "@/lib/tools/qr-scanner/types";
 
-const MODE_OPTIONS: { mode: QrScannerMode; label: string }[] = [
-  { mode: "camera", label: "Camera" },
-  { mode: "upload", label: "Upload image" },
+const MODE_OPTIONS: {
+  mode: QrScannerMode;
+  label: string;
+  icon: typeof Camera;
+}[] = [
+  { mode: "camera", label: "Camera", icon: Camera },
+  { mode: "upload", label: "Upload image", icon: ImageIcon },
 ];
 
 export function QrScannerTool() {
@@ -68,8 +73,25 @@ export function QrScannerTool() {
     [],
   );
 
+  const hasResult = Boolean(result);
+
   return (
-    <div className="space-y-8">
+    <div
+      className={`mx-auto w-full max-w-2xl space-y-6 overflow-x-hidden sm:space-y-8 md:pb-0 ${
+        hasResult ? "pb-40" : "pb-8"
+      }`}
+    >
+      {!result && (
+        <header className="space-y-2 text-center sm:text-left">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            QR Scanner
+          </h2>
+          <p className="text-sm leading-relaxed text-foreground-muted sm:text-base">
+            Scan a QR code with your camera or upload an image.
+          </p>
+        </header>
+      )}
+
       <QrScannerStatusBanner
         scannerState={scannerState}
         message={statusMessage}
@@ -77,24 +99,34 @@ export function QrScannerTool() {
 
       {!result && (
         <>
-          <div className="flex flex-wrap gap-2">
-            {MODE_OPTIONS.map(({ mode: optionMode, label }) => (
-              <button
-                key={optionMode}
-                type="button"
-                onClick={() => handleModeChange(optionMode)}
-                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
-                  mode === optionMode
-                    ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
-                    : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/50 hover:text-foreground"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div
+            className="grid grid-cols-2 gap-2 rounded-xl border border-border bg-surface-muted p-1.5"
+            role="tablist"
+            aria-label="QR scan mode"
+          >
+            {MODE_OPTIONS.map(({ mode: optionMode, label, icon: Icon }) => {
+              const selected = mode === optionMode;
+              return (
+                <button
+                  key={optionMode}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => handleModeChange(optionMode)}
+                  className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    selected
+                      ? "border border-scanonix-orange bg-scanonix-orange/15 text-foreground shadow-[var(--shadow-soft)]"
+                      : "border border-transparent text-foreground-muted hover:bg-surface hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" aria-hidden="true" strokeWidth={1.75} />
+                  <span>{label}</span>
+                </button>
+              );
+            })}
           </div>
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
+          <div className="rounded-2xl border border-border bg-surface p-4 shadow-[var(--shadow-soft)] sm:p-6">
             {mode === "camera" ? (
               <QrCameraScanner
                 scannerState={scannerState}
@@ -111,7 +143,7 @@ export function QrScannerTool() {
               />
             )}
 
-            <div className="mt-4 border-t border-scanonix-border pt-4">
+            <div className="mt-5 border-t border-border pt-4 pr-24 sm:pr-36 lg:pr-0">
               <QrScannerPrivacyNotice />
             </div>
           </div>
@@ -119,10 +151,18 @@ export function QrScannerTool() {
           {(scannerState === "no-qr-found" ||
             scannerState === "permission-denied" ||
             scannerState === "camera-unavailable") && (
-            <div className="flex justify-center">
+            <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               <ActionButton variant="outline" onClick={handleScanAnother}>
                 Try again
               </ActionButton>
+              {scannerState === "camera-unavailable" && mode === "camera" && (
+                <ActionButton
+                  variant="outline"
+                  onClick={() => handleModeChange("upload")}
+                >
+                  Upload image
+                </ActionButton>
+              )}
             </div>
           )}
         </>
@@ -131,12 +171,15 @@ export function QrScannerTool() {
       {result && (
         <>
           <QrResultPanel result={result} onScanAnother={handleScanAnother} />
-          <QrScannerPrivacyNotice />
+          {/* ToolFinder FAB shares this band with sticky CTA — right pad keeps privacy readable */}
+          <div className="max-md:mb-8 max-md:pb-2 pr-24 sm:pr-36 lg:pr-0">
+            <QrScannerPrivacyNotice />
+          </div>
         </>
       )}
 
       <ToolStickyMobileActionBar
-        visible={Boolean(result)}
+        visible={hasResult}
         primaryLabel="Copy result"
         onPrimaryClick={async () => {
           if (!result) return;

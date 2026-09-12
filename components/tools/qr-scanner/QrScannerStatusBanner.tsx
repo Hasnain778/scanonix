@@ -1,3 +1,9 @@
+import {
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  ScanLine,
+} from "lucide-react";
 import type { QrScannerState } from "@/lib/tools/qr-scanner/types";
 import { getQrScannerStateMessage } from "@/lib/tools/qr-scanner/types";
 import type { ToolStatus } from "@/lib/tools/types";
@@ -29,10 +35,11 @@ export function QrScannerStatusBanner({
     return null;
   }
 
+  // Message uses text-foreground so Bright/Dark both stay readable on tinted shells.
   const styles = {
     loading: "border-scanonix-orange/40 bg-scanonix-orange/10 text-foreground",
-    success: "border-green-600/35 bg-green-500/10 text-green-700",
-    error: "border-red-500/40 bg-red-500/10 text-red-300",
+    success: "border-green-500/35 bg-green-500/10 text-foreground",
+    error: "border-red-500/40 bg-red-500/10 text-foreground",
     idle: "",
   };
 
@@ -40,65 +47,42 @@ export function QrScannerStatusBanner({
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${styles[resolvedVariant]}`}
+      className={`flex items-start gap-3 rounded-xl border px-4 py-3 ${styles[resolvedVariant]}`}
       role="status"
       aria-live="polite"
     >
       {resolvedVariant === "loading" && (
-        <svg
-          className="h-5 w-5 animate-spin text-scanonix-orange"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
+        scannerState === "scanning" ? (
+          <ScanLine
+            className="mt-0.5 h-5 w-5 shrink-0 text-scanonix-orange"
+            aria-hidden="true"
+            strokeWidth={2}
           />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        ) : (
+          <Loader2
+            className="mt-0.5 h-5 w-5 shrink-0 animate-spin text-scanonix-orange"
+            aria-hidden="true"
+            strokeWidth={2}
           />
-        </svg>
+        )
       )}
       {resolvedVariant === "success" && (
-        <svg
-          className="h-5 w-5 text-green-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
+        <CheckCircle2
+          className="mt-0.5 h-5 w-5 shrink-0 text-green-600"
           aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
+          strokeWidth={2}
+        />
       )}
       {resolvedVariant === "error" && (
-        <svg
-          className="h-5 w-5 text-red-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
+        <AlertCircle
+          className="mt-0.5 h-5 w-5 shrink-0 text-red-600"
           aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+          strokeWidth={2}
+        />
       )}
-      <p className="text-sm font-medium">{defaultMessage}</p>
+      <p className="text-sm font-medium leading-relaxed text-foreground">
+        {defaultMessage}
+      </p>
     </div>
   );
 }

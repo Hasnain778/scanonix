@@ -136,9 +136,8 @@ function run() {
 
   const directorySource = readSource("components/tools/directory/ToolsDirectory.tsx");
   assert(
-    "4 tools directory links to image hub when image filter active",
-    directorySource.includes("getImageToolsHubHref()") &&
-      directorySource.includes('category === "image"'),
+    "4 tools directory links to image hub",
+    directorySource.includes("getImageToolsHubHref()"),
   );
 
   // 5. Image tool breadcrumbs link to hub

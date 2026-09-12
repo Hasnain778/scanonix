@@ -1,0 +1,73 @@
+# TEMPORARY — Phase 130H-6 real Linux validation only. Delete after approval.
+name: 130H-6 Sharp Linux Validation
+
+on:
+  push:
+    branches:
+      - temp/130h-6-linux-sharp-validation
+  workflow_dispatch:
+
+jobs:
+  sharp-linux-nft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout temp validation branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Print runner environment
+        run: |
+          echo "RUNNER_OS=$RUNNER_OS"
+          uname -a
+          node --version
+          npm --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Print Sharp and libvips package versions
+        run: |
+          node -e "const s=require('./node_modules/sharp/package.json'); console.log('sharp', s.version);"
+          node -e "const p=require('./node_modules/@img/sharp-linux-x64/package.json'); console.log('@img/sharp-linux-x64', p.version);"
+          node -e "const p=require('./node_modules/@img/sharp-libvips-linux-x64/package.json'); console.log('@img/sharp-libvips-linux-x64', p.version);"
+          ls -la node_modules/@img/sharp-libvips-linux-x64/lib/libvips-cpp.so.8.18.3
+
+      - name: Production build
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Inspect NFT traces for compress and resize routes
+        run: |
+          set -euo pipefail
+          ROUTES=(
+            ".next/server/app/api/tools/image/compress/route.js.nft.json"
+            ".next/server/app/api/tools/image/resize/route.js.nft.json"
+          )
+          MARKERS=(
+            "@img/sharp-linux-x64"
+            "@img/sharp-libvips-linux-x64"
+            "libvips-cpp.so.8.18.3"
+          )
+          for nft in "${ROUTES[@]}"; do
+            echo "=== NFT: $nft ==="
+            test -f "$nft" || { echo "MISSING NFT file: $nft"; exit 1; }
+            for marker in "${MARKERS[@]}"; do
+              if ! grep -q "$marker" "$nft"; then
+                echo "FAIL: $nft missing marker: $marker"
+                exit 1
+              fi
+              echo "OK: found $marker"
+            done
+            grep 'libvips-cpp.so.8.18.3' "$nft" || true
+          done
+
+      - name: Verify Sharp production readiness
+        run: npm run verify:sharp-production

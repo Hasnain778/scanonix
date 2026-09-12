@@ -57,15 +57,46 @@ export function formatReportDate(value: string): string {
 export function getSeverityStyles(severity: FindingSeverity): string {
   switch (severity) {
     case "critical":
-      return "border-red-950/60 bg-red-950/40 text-red-200";
+      return "border-red-800 bg-red-700 text-red-50 dark:border-red-500/45 dark:bg-red-500/15 dark:text-red-200";
     case "high":
-      return "border-red-500/35 bg-red-500/12 text-red-300";
+      return "border-red-700 bg-red-100 text-red-900 dark:border-red-500/35 dark:bg-red-500/12 dark:text-red-300";
     case "medium":
-      return "border-orange-500/35 bg-orange-500/12 text-orange-200";
+      return "border-amber-700 bg-amber-100 text-amber-950 dark:border-orange-500/35 dark:bg-orange-500/12 dark:text-orange-200";
     case "low":
-      return "border-yellow-500/35 bg-yellow-500/12 text-yellow-200";
+      return "border-yellow-700 bg-yellow-100 text-yellow-950 dark:border-yellow-500/35 dark:bg-yellow-500/12 dark:text-yellow-200";
     default:
-      return "border-emerald-500/35 bg-emerald-500/12 text-emerald-200";
+      return "border-emerald-700 bg-emerald-100 text-emerald-950 dark:border-emerald-500/35 dark:bg-emerald-500/12 dark:text-emerald-200";
+  }
+}
+
+export function getSeverityAccent(severity: FindingSeverity): string {
+  switch (severity) {
+    case "critical":
+      return "bg-red-700 dark:bg-red-600";
+    case "high":
+      return "bg-red-600 dark:bg-rose-500";
+    case "medium":
+      return "bg-amber-600 dark:bg-amber-500";
+    case "low":
+      return "bg-yellow-600 dark:bg-yellow-500";
+    default:
+      return "bg-emerald-600 dark:bg-emerald-500";
+  }
+}
+
+/** Display-order helper only — does not mutate report data. */
+export function severityRank(severity: FindingSeverity): number {
+  switch (severity) {
+    case "critical":
+      return 5;
+    case "high":
+      return 4;
+    case "medium":
+      return 3;
+    case "low":
+      return 2;
+    default:
+      return 1;
   }
 }
 

@@ -18,6 +18,86 @@ interface ScanReportDownloadsProps {
   premiumUnlocked: boolean;
 }
 
+/** Shared PDF export control — always calls downloadReportPdf. */
+export function ScanReportPdfDownloadButton({
+  reportId,
+  variant = "outline",
+  size = "md",
+  className,
+  label = "Download report",
+  busyLabel = "Generating PDF…",
+  disabled = false,
+  showError = true,
+  onError,
+}: {
+  reportId: string;
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "glass";
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  label?: string;
+  busyLabel?: string;
+  disabled?: boolean;
+  showError?: boolean;
+  onError?: (message: string | null) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handlePdfDownload() {
+    setLoading(true);
+    setError(null);
+    onError?.(null);
+
+    try {
+      const result = await downloadReportPdf(reportId);
+
+      if ("error" in result) {
+        const message = result.upgrade
+          ? "Upgrade to Pro or Business to unlock premium report exports."
+          : result.error;
+        setError(message);
+        onError?.(message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="inline-flex max-w-full flex-col gap-1">
+      <ActionButton
+        variant={variant}
+        size={size}
+        className={className}
+        loading={loading}
+        disabled={disabled || loading}
+        onClick={() => void handlePdfDownload()}
+      >
+        <span className="inline-flex items-center gap-2">
+          <svg
+            className="h-4 w-4 shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12l4.5 4.5L16.5 12M12 3v13.5"
+            />
+          </svg>
+          {loading ? busyLabel : label}
+        </span>
+      </ActionButton>
+      {showError && error ? (
+        <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+      ) : null}
+    </div>
+  );
+}
+
 export function ScanReportDownloads({
   report,
   premiumUnlocked,
@@ -117,7 +197,10 @@ export function ScanReportDownloads({
   }
 
   return (
-    <section aria-labelledby="downloads-heading" className="glass-card rounded-2xl p-6 shadow-premium print:hidden">
+    <section
+      aria-labelledby="downloads-heading"
+      className="glass-card rounded-2xl p-6 shadow-premium print:hidden"
+    >
       <h2 id="downloads-heading" className="mb-2 text-lg font-semibold text-foreground">
         Downloads
       </h2>
@@ -165,8 +248,10 @@ export function ScanReportDownloads({
         </motion.div>
       </div>
 
-      {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
-      {shareMessage ? <p className="mt-4 text-sm text-emerald-300">{shareMessage}</p> : null}
+      {error ? <p className="mt-4 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {shareMessage ? (
+        <p className="mt-4 text-sm text-emerald-700 dark:text-emerald-300">{shareMessage}</p>
+      ) : null}
 
       {!premiumUnlocked ? (
         <p className="mt-4 text-sm text-scanonix-muted">

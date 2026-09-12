@@ -4,6 +4,10 @@ import type { PdfBox } from "@/lib/tools/crop-pdf/types";
 
 export type WatermarkType = "text" | "image";
 
+export type WatermarkPlacementMode = "single" | "repeat";
+
+export type WatermarkRepeatPattern = "2x2" | "3x3" | "4x4";
+
 export type WatermarkPosition =
   | "top-left"
   | "top-center"
@@ -30,6 +34,10 @@ export interface TextWatermarkOptions {
   rotationDegrees: number;
   allPages: boolean;
   pageRangeInput: string;
+  /** Defaults to single when omitted (backward compatible). */
+  placementMode?: WatermarkPlacementMode;
+  /** Used when placementMode is repeat. Defaults to 3x3. */
+  repeatPattern?: WatermarkRepeatPattern;
 }
 
 /** User-facing image watermark options before validation. */
@@ -44,6 +52,8 @@ export interface ImageWatermarkOptions {
   rotationDegrees: number;
   allPages: boolean;
   pageRangeInput: string;
+  placementMode?: WatermarkPlacementMode;
+  repeatPattern?: WatermarkRepeatPattern;
 }
 
 export type WatermarkPdfOptions = TextWatermarkOptions | ImageWatermarkOptions;
@@ -59,6 +69,8 @@ export interface ValidatedTextWatermarkOptions {
   margin: number;
   rotationDegrees: number;
   selectedPageIndices: number[];
+  placementMode: WatermarkPlacementMode;
+  repeatPattern: WatermarkRepeatPattern;
 }
 
 export interface ValidatedImageWatermarkOptions {
@@ -70,6 +82,8 @@ export interface ValidatedImageWatermarkOptions {
   margin: number;
   rotationDegrees: number;
   selectedPageIndices: number[];
+  placementMode: WatermarkPlacementMode;
+  repeatPattern: WatermarkRepeatPattern;
 }
 
 export type ValidatedWatermarkPdfOptions =

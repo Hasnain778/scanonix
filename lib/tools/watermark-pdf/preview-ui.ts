@@ -8,13 +8,22 @@ import {
 } from "@/lib/tools/crop-pdf/preview-render";
 import {
   computeImageDrawSize,
-  computeImageWatermarkAnchor,
   computeTextWatermarkAnchor,
   createWatermarkPageGeometry,
   localAnchorToNormalized,
   type CropPageGeometry,
+  type WatermarkLocalAnchor,
 } from "./geometry";
-import type { WatermarkPageEntry, WatermarkPosition } from "./types";
+import {
+  enumerateImageWatermarkAnchors,
+  enumerateTextWatermarkAnchors,
+} from "./tile-geometry";
+import type {
+  WatermarkPageEntry,
+  WatermarkPlacementMode,
+  WatermarkPosition,
+  WatermarkRepeatPattern,
+} from "./types";
 
 export {
   CROP_PREVIEW_JPEG_QUALITY,
@@ -91,14 +100,52 @@ export interface ComputeTextPreviewOverlayStyleArgs {
   rotationDegrees: number;
   bold: boolean;
   cssHeight: number;
+  placementMode?: WatermarkPlacementMode;
+  repeatPattern?: WatermarkRepeatPattern;
+}
+
+function textStyleFromAnchor(
+  anchor: WatermarkLocalAnchor,
+  geometry: CropPageGeometry,
+  args: {
+    fontSize: number;
+    color: string;
+    opacity: number;
+    rotationDegrees: number;
+    bold: boolean;
+    cssHeight: number;
+  },
+): TextPreviewOverlayStyle {
+  const scale = args.cssHeight / geometry.visualHeight;
+  const scaledFontSize = args.fontSize * scale;
+
+  return {
+    left: `${(anchor.localX / geometry.visualWidth) * 100}%`,
+    top: `${(anchor.localY / geometry.visualHeight) * 100}%`,
+    fontSize: scaledFontSize,
+    color: args.color,
+    opacity: args.opacity,
+    transform:
+      args.rotationDegrees === 0 ? "none" : `rotate(${args.rotationDegrees}deg)`,
+    transformOrigin: "0% 100%",
+    fontWeight: args.bold ? 700 : 400,
+  };
 }
 
 /**
  * Map 124B text watermark geometry to CSS overlay coordinates for PDF.js preview.
+ * Returns the first overlay (single mode, or first tile) for backward-compatible callers.
  */
 export function computeTextPreviewOverlayStyle(
   args: ComputeTextPreviewOverlayStyleArgs,
 ): TextPreviewOverlayStyle {
+  return computeTextPreviewOverlayStyles(args)[0];
+}
+
+/** All text overlays for single or repeat placement. */
+export function computeTextPreviewOverlayStyles(
+  args: ComputeTextPreviewOverlayStyleArgs,
+): TextPreviewOverlayStyle[] {
   const {
     pageEntry,
     position,
@@ -110,29 +157,30 @@ export function computeTextPreviewOverlayStyle(
     rotationDegrees,
     bold,
     cssHeight,
+    placementMode,
+    repeatPattern,
   } = args;
 
   const geometry = createPreviewGeometry(pageEntry);
-  const anchor = computeTextWatermarkAnchor(
-    geometry,
+  const anchors = enumerateTextWatermarkAnchors(geometry, {
+    placementMode,
+    repeatPattern,
     position,
     margin,
     textWidth,
     fontSize,
-  );
-  const scale = cssHeight / geometry.visualHeight;
-  const scaledFontSize = fontSize * scale;
+  });
 
-  return {
-    left: `${(anchor.localX / geometry.visualWidth) * 100}%`,
-    top: `${(anchor.localY / geometry.visualHeight) * 100}%`,
-    fontSize: scaledFontSize,
-    color,
-    opacity,
-    transform: rotationDegrees === 0 ? "none" : `rotate(${rotationDegrees}deg)`,
-    transformOrigin: "0% 100%",
-    fontWeight: bold ? 700 : 400,
-  };
+  return anchors.map((anchor) =>
+    textStyleFromAnchor(anchor, geometry, {
+      fontSize,
+      color,
+      opacity,
+      rotationDegrees,
+      bold,
+      cssHeight,
+    }),
+  );
 }
 
 export interface ComputeImagePreviewOverlayStyleArgs {
@@ -144,6 +192,44 @@ export interface ComputeImagePreviewOverlayStyleArgs {
   relativeWidthRatio: number;
   opacity: number;
   rotationDegrees: number;
+  placementMode?: WatermarkPlacementMode;
+  repeatPattern?: WatermarkRepeatPattern;
+}
+
+function imageStyleFromAnchor(
+  anchor: WatermarkLocalAnchor,
+  geometry: CropPageGeometry,
+  args: {
+    position: WatermarkPosition;
+    imageWidth: number;
+    imageHeight: number;
+    opacity: number;
+    rotationDegrees: number;
+    useTopAnchor: boolean;
+  },
+): ImagePreviewOverlayStyle {
+  const cssTopPercent =
+    ((anchor.localY - args.imageHeight) / geometry.visualHeight) * 100;
+  const cssBottomPercent =
+    ((geometry.visualHeight - anchor.localY) / geometry.visualHeight) * 100;
+
+  const style: ImagePreviewOverlayStyle = {
+    left: `${(anchor.localX / geometry.visualWidth) * 100}%`,
+    width: `${(args.imageWidth / geometry.visualWidth) * 100}%`,
+    height: `${(args.imageHeight / geometry.visualHeight) * 100}%`,
+    opacity: args.opacity,
+    transform:
+      args.rotationDegrees === 0 ? "none" : `rotate(${args.rotationDegrees}deg)`,
+    transformOrigin: "0% 100%",
+  };
+
+  if (!args.useTopAnchor && isBottomPosition(args.position)) {
+    style.bottom = `${cssBottomPercent}%`;
+  } else {
+    style.top = `${cssTopPercent}%`;
+  }
+
+  return style;
 }
 
 /**
@@ -152,6 +238,13 @@ export interface ComputeImagePreviewOverlayStyleArgs {
 export function computeImagePreviewOverlayStyle(
   args: ComputeImagePreviewOverlayStyleArgs,
 ): ImagePreviewOverlayStyle {
+  return computeImagePreviewOverlayStyles(args)[0];
+}
+
+/** All image overlays for single or repeat placement. */
+export function computeImagePreviewOverlayStyles(
+  args: ComputeImagePreviewOverlayStyleArgs,
+): ImagePreviewOverlayStyle[] {
   const {
     pageEntry,
     position,
@@ -161,6 +254,8 @@ export function computeImagePreviewOverlayStyle(
     relativeWidthRatio,
     opacity,
     rotationDegrees,
+    placementMode,
+    repeatPattern,
   } = args;
 
   const geometry = createPreviewGeometry(pageEntry);
@@ -170,36 +265,28 @@ export function computeImagePreviewOverlayStyle(
     intrinsicHeight,
     relativeWidthRatio,
   );
-  const anchor = computeImageWatermarkAnchor(
-    geometry,
+  const anchors = enumerateImageWatermarkAnchors(geometry, {
+    placementMode,
+    repeatPattern,
     position,
     margin,
     imageWidth,
     imageHeight,
     rotationDegrees,
+  });
+
+  const useTopAnchor = (placementMode ?? "single") === "repeat";
+
+  return anchors.map((anchor) =>
+    imageStyleFromAnchor(anchor, geometry, {
+      position,
+      imageWidth,
+      imageHeight,
+      opacity,
+      rotationDegrees,
+      useTopAnchor,
+    }),
   );
-
-  const cssTopPercent =
-    ((anchor.localY - imageHeight) / geometry.visualHeight) * 100;
-  const cssBottomPercent =
-    ((geometry.visualHeight - anchor.localY) / geometry.visualHeight) * 100;
-
-  const style: ImagePreviewOverlayStyle = {
-    left: `${(anchor.localX / geometry.visualWidth) * 100}%`,
-    width: `${(imageWidth / geometry.visualWidth) * 100}%`,
-    height: `${(imageHeight / geometry.visualHeight) * 100}%`,
-    opacity,
-    transform: rotationDegrees === 0 ? "none" : `rotate(${rotationDegrees}deg)`,
-    transformOrigin: "0% 100%",
-  };
-
-  if (isBottomPosition(position)) {
-    style.bottom = `${cssBottomPercent}%`;
-  } else {
-    style.top = `${cssTopPercent}%`;
-  }
-
-  return style;
 }
 
 export interface PreviewOverlayNormalizedResult {

@@ -75,12 +75,12 @@ async function run() {
   );
   sourceIncludes(
     previewSource,
-    "computeTextPreviewOverlayStyle",
+    "computeTextPreviewOverlayStyles",
     "2 overlay uses 124B geometry adapter",
   );
   sourceIncludes(
     previewSource,
-    "computeImagePreviewOverlayStyle",
+    "computeImagePreviewOverlayStyles",
     "2 image overlay uses 124B geometry adapter",
   );
 
@@ -151,13 +151,10 @@ async function run() {
     "15 download button label",
   );
 
-  // Document-first workspace layout
+  // Document-first workspace layout (approved ToolWorkspaceShell family)
   sourceIncludes(toolSource, "data-watermark-pdf-workspace", "workspace container");
-  sourceIncludes(
-    toolSource,
-    "lg:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)]",
-    "desktop ~70/30 preview/settings split",
-  );
+  sourceIncludes(toolSource, "ToolWorkspaceShell", "uses approved ToolWorkspaceShell");
+  sourceIncludes(toolSource, "ToolControlPanel", "uses approved ToolControlPanel");
   sourceIncludes(toolSource, "data-watermark-pdf-preview-panel", "left preview panel");
   sourceIncludes(toolSource, "data-watermark-pdf-settings-panel", "right settings panel");
   sourceIncludes(toolSource, "Choose another PDF", "header choose another PDF");

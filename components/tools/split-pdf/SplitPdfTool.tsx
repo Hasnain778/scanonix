@@ -1,19 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Split } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { PdfPageGrid } from "@/components/tools/split-pdf/PdfPageGrid";
 import { SplitModePanel } from "@/components/tools/split-pdf/SplitModePanel";
-import { ResultActionBar } from "@/components/tools/ResultActionBar";
+import { SplitPageGrid } from "@/components/tools/split-pdf/SplitPageGrid";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import {
-  createProcessAttempt,
-  planErrorMessageToCode,
-} from "@/lib/analytics/process-lifecycle";
+import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
+import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob, packageOutputsForDownload } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -27,12 +26,13 @@ import {
   buildIndividualSelectionGroup,
   parsePageRangeInput,
 } from "@/lib/tools/split-pdf/page-ranges";
-import {
-  extractPdfGroups,
-} from "@/lib/tools/split-pdf/split-pdf";
+import { extractPdfGroups } from "@/lib/tools/split-pdf/split-pdf";
 import type { SplitMode, SplitOutput, ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
+
+const PRIVACY_MESSAGE =
+  "Your files are processed locally in your browser and never uploaded to any server. Scanonix does not store or access your documents.";
 
 interface UploadedPdfState {
   file: File;
@@ -40,34 +40,15 @@ interface UploadedPdfState {
   pdfBytes: ArrayBuffer;
 }
 
-function PdfDropIcon() {
-  return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9 12h6m-3-3v6"
-      />
-    </svg>
-  );
+function SplitDropIcon({ className = "h-7 w-7" }: { className?: string }) {
+  return <Split className={className} aria-hidden="true" strokeWidth={1.75} />;
 }
 
 interface SplitDownloadState {
   blob: Blob;
   filename: string;
   outputCount: number;
+  groups: number[][];
 }
 
 export function SplitPdfTool() {
@@ -117,6 +98,11 @@ export function SplitPdfTool() {
       ? pageGroupsPreview.error
       : undefined;
 
+  const selectedPageCount = useMemo(() => {
+    if (pageGroupsPreview.error) return 0;
+    return new Set(pageGroupsPreview.groups.flat()).size;
+  }, [pageGroupsPreview]);
+
   useEffect(() => {
     splitOutputsRef.current = splitOutputs;
   }, [splitOutputs]);
@@ -163,6 +149,9 @@ export function SplitPdfTool() {
       setSelectedPages([]);
       setRangeInput("");
       setMode("individual");
+      setSplitOutputs(null);
+      setDownloadState(null);
+      setProgress(undefined);
     } catch {
       setStatus("error");
       setStatusMessage("Could not read PDF. Please try a different file.");
@@ -228,6 +217,7 @@ export function SplitPdfTool() {
         blob: downloadBlob_,
         filename: downloadFilename,
         outputCount: outputs.length,
+        groups,
       });
 
       attempt.success(outputs.length);
@@ -252,7 +242,11 @@ export function SplitPdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(state.blob, state.filename, buildToolDownloadMeta("split-pdf", state.outputCount));
+      downloadBlob(
+        state.blob,
+        state.filename,
+        buildToolDownloadMeta("split-pdf", state.outputCount),
+      );
     } finally {
       setIsDownloading(false);
     }
@@ -269,6 +263,35 @@ export function SplitPdfTool() {
     }
   }, [status]);
 
+  /** Return to configuration with the same PDF — does not reprocess or clear the file. */
+  const handleChangeSettings = useCallback(() => {
+    invalidateResult();
+  }, [invalidateResult]);
+
+  const handleModeChange = useCallback(
+    (nextMode: SplitMode) => {
+      invalidateResult();
+      setMode(nextMode);
+    },
+    [invalidateResult],
+  );
+
+  const handleRangeInputChange = useCallback(
+    (value: string) => {
+      invalidateResult();
+      setRangeInput(value);
+    },
+    [invalidateResult],
+  );
+
+  const handleIntervalChange = useCallback(
+    (value: number) => {
+      invalidateResult();
+      setInterval(value);
+    },
+    [invalidateResult],
+  );
+
   const togglePage = useCallback(
     (page: number) => {
       invalidateResult();
@@ -281,196 +304,348 @@ export function SplitPdfTool() {
     [invalidateResult],
   );
 
+  const splitHint =
+    mode === "individual" && selectedPages.length === 0
+      ? "Select at least one page to continue."
+      : pageGroupsPreview.error
+        ? "Fix the errors above before splitting."
+        : canSplit
+          ? `Ready to create ${pageGroupsPreview.groups.length} file${pageGroupsPreview.groups.length === 1 ? "" : "s"}.`
+          : "Configure your split options.";
+
+  const modeSummaryLabel = (() => {
+    switch (mode) {
+      case "individual":
+        return "Select pages";
+      case "ranges":
+        return "Page ranges";
+      case "every-page":
+        return "Every page";
+      case "fixed-interval":
+        return `Every ${interval} page${interval === 1 ? "" : "s"}`;
+      default:
+        return mode;
+    }
+  })();
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
-        message={
-          isReadingPdf ? "Reading PDF…" : statusMessage
-        }
+        message={isReadingPdf ? "Reading PDF…" : statusMessage}
         progress={progress}
       />
 
-      {!uploadedPdf && (
-        <>
-          <FileDropZone
-            onFilesSelected={handleUpload}
-            accept={ACCEPTED_PDF_EXTENSIONS}
-            validateFile={isAcceptedPdfFile}
-            multiple={false}
-            disabled={isBusy}
-            label="Drop a PDF file here to split"
-            hint="or click to browse — one PDF at a time"
-            icon={<PdfDropIcon />}
-          />
-          <PrivacyNotice />
-        </>
-      )}
-
-      {uploadedPdf && (
-        <>
-          <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.75}
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
-                  {uploadedPdf.file.name}
-                </p>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {formatFileSize(uploadedPdf.file.size)} ·{" "}
-                  {uploadedPdf.pageCount} page
-                  {uploadedPdf.pageCount === 1 ? "" : "s"}
-                </p>
-              </div>
-            </div>
-            <ActionButton
-              variant="outline"
-              className="w-full sm:w-auto"
+      <ToolWorkspaceShell
+        isEmpty={!uploadedPdf}
+        empty={
+          <>
+            <FileDropZone
+              onFilesSelected={handleUpload}
+              accept={ACCEPTED_PDF_EXTENSIONS}
+              validateFile={isAcceptedPdfFile}
+              multiple={false}
               disabled={isBusy}
-              onClick={clearPdf}
-            >
-              {hasResult ? "Start over" : "Remove PDF"}
-            </ActionButton>
-          </div>
-
-          <SplitModePanel
-            mode={mode}
-            onModeChange={setMode}
-            rangeInput={rangeInput}
-            onRangeInputChange={setRangeInput}
-            interval={interval}
-            onIntervalChange={setInterval}
-            rangeError={rangeError}
-            disabled={isBusy}
-          />
-
-          {mode === "individual" && (
-            <PdfPageGrid
-              totalPages={uploadedPdf.pageCount}
-              selectedPages={selectedPages}
-              onTogglePage={togglePage}
-              onSelectAll={() =>
-                setSelectedPages(
-                  Array.from(
-                    { length: uploadedPdf.pageCount },
-                    (_, index) => index + 1,
-                  ),
-                )
-              }
-              onClearSelection={() => setSelectedPages([])}
-              disabled={isBusy}
+              label="Drop a PDF file here to split"
+              hint="or click to browse — one PDF at a time"
+              icon={<SplitDropIcon />}
             />
-          )}
+            <PrivacyNotice message={PRIVACY_MESSAGE} />
+          </>
+        }
+        workArea={
+          uploadedPdf ? (
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                    <SplitDropIcon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {uploadedPdf.file.name}
+                    </p>
+                    <p className="truncate text-[11px] text-scanonix-muted">
+                      {formatFileSize(uploadedPdf.file.size)} ·{" "}
+                      {uploadedPdf.pageCount} page
+                      {uploadedPdf.pageCount === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={
+                    hasResult
+                      ? "hidden w-full sm:w-auto md:block"
+                      : "w-full sm:w-auto"
+                  }
+                >
+                  <ActionButton
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-lg sm:w-auto"
+                    disabled={isBusy}
+                    onClick={clearPdf}
+                  >
+                    {hasResult ? "Start over" : "Choose another PDF"}
+                  </ActionButton>
+                </div>
+              </div>
 
-          {mode !== "individual" && uploadedPdf.pageCount > 0 && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="text-lg font-semibold text-white">Preview</h2>
-              <p className="mt-1 text-sm text-scanonix-muted">
-                {pageGroupsPreview.error
-                  ? pageGroupsPreview.error
-                  : `${pageGroupsPreview.groups.length} output file${pageGroupsPreview.groups.length === 1 ? "" : "s"} will be created.`}
-              </p>
-              {!pageGroupsPreview.error &&
-                pageGroupsPreview.groups.length > 0 && (
-                  <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    {pageGroupsPreview.groups.map((group, index) => (
-                      <li
-                        key={`${group.join("-")}-${index}`}
-                        className="rounded-xl border border-scanonix-border bg-black/30 px-4 py-3 text-sm text-neutral-300"
-                      >
-                        <span className="font-semibold text-scanonix-orange">
-                          File {index + 1}
-                        </span>
-                        <span className="mt-1 block text-scanonix-muted">
-                          Pages {group.join(", ")}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-            </div>
-          )}
-
-          {hasResult && downloadState && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
-              <p className="text-sm text-scanonix-muted">
-                {downloadState.outputCount} file
-                {downloadState.outputCount === 1 ? "" : "s"} ·{" "}
-                {formatFileSize(downloadState.blob.size)} ·{" "}
-                {downloadState.filename}
-              </p>
-              <div className="mt-5">
-                <ResultActionBar
-                  phase={resultActionPhase}
-                  primary={{
-                    label:
-                      downloadState.outputCount === 1
-                        ? "Download split PDF"
-                        : "Download split PDFs (ZIP)",
-                    onClick: () => {
-                      void handleDownload();
-                    },
-                    loading: isDownloading,
-                    disabled: isBusy,
+              <div className="bg-surface-muted/30 p-3 sm:p-4">
+                <SplitPageGrid
+                  key={`${uploadedPdf.file.name}-${uploadedPdf.pageCount}`}
+                  pdfBytes={uploadedPdf.pdfBytes}
+                  totalPages={uploadedPdf.pageCount}
+                  mode={mode}
+                  selectedPages={selectedPages}
+                  pageGroups={pageGroupsPreview.groups}
+                  groupsError={pageGroupsPreview.error}
+                  selectable={mode === "individual"}
+                  onTogglePage={togglePage}
+                  onSelectAll={() => {
+                    invalidateResult();
+                    setSelectedPages(
+                      Array.from(
+                        { length: uploadedPdf.pageCount },
+                        (_, index) => index + 1,
+                      ),
+                    );
                   }}
-                  startOver={{
-                    label: "Start over",
-                    onClick: clearPdf,
-                    disabled: isBusy,
+                  onClearSelection={() => {
+                    invalidateResult();
+                    setSelectedPages([]);
                   }}
+                  disabled={isBusy}
                 />
               </div>
             </div>
-          )}
+          ) : null
+        }
+        controlPanel={
+          uploadedPdf ? (
+            <ToolControlPanel
+              aria-label="Split PDF controls"
+              footer={
+                hasResult && downloadState ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="hidden md:block">
+                      <ActionButton
+                        size="lg"
+                        className="w-full"
+                        loading={isDownloading}
+                        disabled={isBusy}
+                        onClick={() => {
+                          void handleDownload();
+                        }}
+                      >
+                        {downloadState.outputCount === 1
+                          ? "Download split PDF"
+                          : "Download split PDFs (ZIP)"}
+                      </ActionButton>
+                    </div>
+                    <ActionButton
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                      disabled={isBusy}
+                      onClick={handleChangeSettings}
+                    >
+                      Change settings
+                    </ActionButton>
+                    <div className="hidden md:block">
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        disabled={isBusy}
+                        onClick={clearPdf}
+                      >
+                        Start over
+                      </ActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[11px] leading-snug text-scanonix-muted">
+                      {splitHint}
+                    </p>
+                    <ActionButton
+                      size="lg"
+                      className="w-full shadow-[var(--shadow-orange-sm)]"
+                      loading={status === "loading"}
+                      disabled={!canSplit}
+                      onClick={() => {
+                        void handleSplit();
+                      }}
+                    >
+                      {status === "loading" ? "Splitting PDF…" : "Split PDF"}
+                    </ActionButton>
+                    <ActionButton
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                      disabled={isBusy}
+                      onClick={clearPdf}
+                    >
+                      Start over
+                    </ActionButton>
+                  </div>
+                )
+              }
+            >
+              {hasResult && downloadState ? (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Result
+                    </p>
+                    <p className="mt-1.5 text-sm font-semibold text-green-700 dark:text-green-400">
+                      ✓ PDF split
+                    </p>
+                    <p className="mt-1 text-xs text-scanonix-muted">
+                      Your split{" "}
+                      {downloadState.outputCount === 1 ? "PDF is" : "PDFs are"}{" "}
+                      ready to download.
+                    </p>
+                  </div>
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-white">Split PDF</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {mode === "individual" && selectedPages.length === 0
-                    ? "Select at least one page to continue."
-                    : pageGroupsPreview.error
-                      ? "Fix the errors above before splitting."
-                      : canSplit
-                        ? `Ready to create ${pageGroupsPreview.groups.length} file${pageGroupsPreview.groups.length === 1 ? "" : "s"}.`
-                        : "Configure your split options above."}
-                </p>
-              </div>
+                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Files created</dt>
+                      <dd className="font-semibold text-foreground">
+                        {downloadState.outputCount}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Package size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(downloadState.blob.size)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Format</dt>
+                      <dd className="font-semibold text-foreground">
+                        {downloadState.outputCount === 1 ? "PDF" : "ZIP of PDFs"}
+                      </dd>
+                    </div>
+                    <div className="min-w-0 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Filename</dt>
+                      <dd className="mt-0.5 truncate font-semibold text-foreground">
+                        {downloadState.filename}
+                      </dd>
+                    </div>
+                  </dl>
 
-              <ActionButton
-                size="lg"
-                className="w-full sm:w-auto"
-                loading={status === "loading"}
-                disabled={!canSplit}
-                onClick={handleSplit}
-              >
-                {status === "loading" ? "Splitting PDF…" : "Split PDF"}
-              </ActionButton>
-            </div>
+                  {downloadState.groups.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                        Output files
+                      </p>
+                      <ul className="max-h-48 space-y-1.5 overflow-y-auto">
+                        {downloadState.groups.map((group, index) => (
+                          <li
+                            key={`${group.join("-")}-${index}`}
+                            className="rounded-md border border-border bg-surface-muted/50 px-2.5 py-2 text-xs"
+                          >
+                            <span className="font-semibold text-foreground">
+                              {splitOutputs?.[index]?.filename ??
+                                `File ${index + 1}`}
+                            </span>
+                            <span className="mt-0.5 block text-scanonix-muted">
+                              Pages {group.join(", ")}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Split PDF
+                    </p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-scanonix-muted">
+                      Split one PDF into separate files by selected pages,
+                      ranges, every page, or fixed intervals.
+                    </p>
+                  </div>
 
-            <div className="mt-4 border-t border-scanonix-border pt-4">
-              <PrivacyNotice />
-            </div>
-          </div>
-        </>
-      )}
+                  <SplitModePanel
+                    mode={mode}
+                    onModeChange={handleModeChange}
+                    rangeInput={rangeInput}
+                    onRangeInputChange={handleRangeInputChange}
+                    interval={interval}
+                    onIntervalChange={handleIntervalChange}
+                    rangeError={rangeError}
+                    disabled={isBusy}
+                  />
+
+                  <section className="space-y-2 border-t border-border/80 pt-4">
+                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Summary
+                    </h2>
+                    <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                      <div className="flex justify-between gap-3 px-3 py-2.5">
+                        <dt className="text-scanonix-muted">Total pages</dt>
+                        <dd className="font-semibold text-foreground">
+                          {uploadedPdf.pageCount}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-3 px-3 py-2.5">
+                        <dt className="text-scanonix-muted">Method</dt>
+                        <dd className="font-semibold text-foreground">
+                          {modeSummaryLabel}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-3 px-3 py-2.5">
+                        <dt className="text-scanonix-muted">Selected pages</dt>
+                        <dd className="font-semibold text-foreground">
+                          {pageGroupsPreview.error ? "—" : selectedPageCount}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-3 px-3 py-2.5">
+                        <dt className="text-scanonix-muted">Output files</dt>
+                        <dd className="font-semibold text-foreground">
+                          {pageGroupsPreview.error
+                            ? "—"
+                            : pageGroupsPreview.groups.length}
+                        </dd>
+                      </div>
+                    </dl>
+
+                    {!pageGroupsPreview.error &&
+                      pageGroupsPreview.groups.length > 0 &&
+                      mode !== "individual" && (
+                        <ul className="mt-2 max-h-40 space-y-1.5 overflow-y-auto">
+                          {pageGroupsPreview.groups.map((group, index) => (
+                            <li
+                              key={`${group.join("-")}-${index}`}
+                              className="rounded-md border border-border bg-surface px-2.5 py-2 text-xs"
+                            >
+                              <span className="font-semibold text-scanonix-orange">
+                                File {index + 1}
+                              </span>
+                              <span className="mt-0.5 block text-scanonix-muted">
+                                Pages {group.join(", ")}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                  </section>
+
+                  <div className="border-t border-border/80 pt-4">
+                    <PrivacyNotice message={PRIVACY_MESSAGE} />
+                  </div>
+                </div>
+              )}
+            </ToolControlPanel>
+          ) : null
+        }
+      />
 
       <ToolStickyMobileActionBar
         visible={hasResult}

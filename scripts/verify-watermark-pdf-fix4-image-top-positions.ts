@@ -445,7 +445,7 @@ async function run() {
   const previewSource = read("components/tools/watermark-pdf-client/WatermarkPdfPreview.tsx");
   assert(
     "FIX2 blinking regression",
-    previewSource.includes("imageOverlayStyle = useMemo") &&
+    previewSource.includes("imageOverlayStyles = useMemo") &&
       !previewSource.match(/useEffect\([\s\S]*?imagePreviewUrl[\s\S]*?loadPdfJsDocument/),
   );
 

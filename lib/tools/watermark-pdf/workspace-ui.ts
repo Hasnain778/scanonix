@@ -26,9 +26,15 @@ import {
   type ImageWatermarkOptions,
   type TextWatermarkOptions,
   type WatermarkPdfOptions,
+  type WatermarkPlacementMode,
   type WatermarkPosition,
+  type WatermarkRepeatPattern,
   type WatermarkType,
 } from "./types";
+import {
+  DEFAULT_WATERMARK_PLACEMENT_MODE,
+  DEFAULT_WATERMARK_REPEAT_PATTERN,
+} from "./tile-geometry";
 import { WatermarkPdfError, type WatermarkPdfErrorCode } from "./types";
 import {
   containsUnsupportedWinAnsiCharacters,
@@ -106,6 +112,8 @@ export interface WatermarkWorkspaceSettings {
   allPages: boolean;
   pageRangeInput: string;
   relativeWidthPercent: number;
+  placementMode: WatermarkPlacementMode;
+  repeatPattern: WatermarkRepeatPattern;
 }
 
 export interface ImageWorkspaceAsset {
@@ -160,6 +168,8 @@ export function createDefaultWorkspaceSettings(): WatermarkWorkspaceSettings {
     allPages: true,
     pageRangeInput: "",
     relativeWidthPercent: relativeWidthRatioToPercent(DEFAULT_RELATIVE_WIDTH_RATIO),
+    placementMode: DEFAULT_WATERMARK_PLACEMENT_MODE,
+    repeatPattern: DEFAULT_WATERMARK_REPEAT_PATTERN,
   };
 }
 
@@ -282,6 +292,8 @@ export function buildTextWatermarkExportOptions(
     rotationDegrees: settings.rotationDegrees,
     allPages: settings.allPages,
     pageRangeInput: settings.pageRangeInput,
+    placementMode: settings.placementMode,
+    repeatPattern: settings.repeatPattern,
   };
 }
 
@@ -299,6 +311,8 @@ export function buildImageWatermarkExportOptions(
     rotationDegrees: settings.rotationDegrees,
     allPages: settings.allPages,
     pageRangeInput: settings.pageRangeInput,
+    placementMode: settings.placementMode,
+    repeatPattern: settings.repeatPattern,
   };
 }
 

@@ -1,13 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FileText,
+  LayoutGrid,
+  Lightbulb,
+  RotateCw,
+  Trash2,
+} from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ResultActionBar } from "@/components/tools/ResultActionBar";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
+import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
@@ -47,23 +55,9 @@ interface UploadedPdfState {
 const PRIVACY_MESSAGE =
   "Your PDF is organized locally in your browser and is not uploaded to Scanonix servers.";
 
-function PdfDropIcon() {
+function OrganizeDropIcon({ className = "h-7 w-7" }: { className?: string }) {
   return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M8 7v12M12 7v12M16 7v12" />
-    </svg>
+    <LayoutGrid className={className} aria-hidden="true" strokeWidth={1.75} />
   );
 }
 
@@ -328,150 +322,313 @@ export function OrganizePdfTool() {
     }
   };
 
+  const handleChangeSettings = useCallback(() => {
+    invalidateResult();
+  }, [invalidateResult]);
+
+  const exportHint = canExport
+    ? `Ready to export ${pages.length} page${pages.length === 1 ? "" : "s"}.`
+    : pages.length === 0
+      ? "At least one page is required to export."
+      : "Organize pages, then export.";
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {!uploadedPdf && (
-        <>
-          <FileDropZone
-            onFilesSelected={handleUpload}
-            accept={ACCEPTED_PDF_EXTENSIONS}
-            validateFile={isAcceptedPdfFile}
-            multiple={false}
-            disabled={isBusy}
-            icon={<PdfDropIcon />}
-            label="Drop a PDF file here to organize"
-            hint="or click to browse — processed locally in your browser"
-          />
-          <PrivacyNotice message={PRIVACY_MESSAGE} />
-        </>
-      )}
+    <div className="space-y-5 overflow-x-hidden">
+      <ToolStatusBanner
+        status={isReadingPdf ? "loading" : status}
+        message={isReadingPdf ? "Reading PDF…" : statusMessage}
+        progress={progress}
+      />
 
-      {uploadedPdf && (
-        <>
-          <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-foreground sm:text-base">
-                  {uploadedPdf.file.name}
-                </p>
-                <p className="mt-1 text-xs text-foreground-muted sm:text-sm">
-                  {formatFileSize(uploadedPdf.file.size)} · {pages.length} page
-                  {pages.length === 1 ? "" : "s"}
-                  {summary && summary.deletedCount > 0
-                    ? ` · ${summary.deletedCount} deleted`
-                    : ""}
-                  {summary && summary.rotatedCount > 0
-                    ? ` · ${summary.rotatedCount} rotated`
-                    : ""}
-                </p>
-              </div>
-              <ActionButton
-                variant="outline"
-                size="sm"
-                className="shrink-0 rounded-xl"
-                disabled={isBusy}
-                onClick={resetWorkspace}
-              >
-                Choose another PDF
-              </ActionButton>
-            </div>
-          </div>
-
-          <OrganizePageGrid
-            pdfBytes={uploadedPdf.bytes}
-            pages={pages}
-            disabled={isBusy}
-            onReorder={handleReorder}
-            onMoveFirst={handleMoveFirst}
-            onMoveEarlier={handleMoveEarlier}
-            onMoveLater={handleMoveLater}
-            onMoveLast={handleMoveLast}
-            onRotate={handleRotate}
-            onDelete={handleDelete}
-          />
-
-          <ToolStatusBanner
-            status={isReadingPdf ? "loading" : status}
-            message={isReadingPdf ? "Reading PDF…" : statusMessage}
-            progress={progress}
-          />
-
-          {hasResult && resultBlob && (
-            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-foreground">
-                Organized PDF ready
-              </h2>
-              <p className="text-sm text-foreground-muted">
-                Download your reorganized PDF ({pages.length} page
-                {pages.length === 1 ? "" : "s"}).
-              </p>
-              <div className="mt-5">
-                <ResultActionBar
-                  phase={resultActionPhase}
-                  primary={{
-                    label: isDownloading ? "Downloading…" : "Download PDF",
-                    onClick: () => {
-                      void handleDownload();
-                    },
-                    loading: isDownloading,
-                    disabled: isDownloading,
-                  }}
-                  startOver={{
-                    label: "Start over",
-                    onClick: resetWorkspace,
-                    disabled: isBusy,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="hidden flex-col gap-4 sm:flex">
-            <div className="flex flex-wrap items-stretch gap-4">
-              <ActionButton
-                variant="primary"
-                size="lg"
-                className="min-h-[3.25rem] shrink-0 rounded-2xl px-8 text-base"
-                disabled={!canExport}
-                onClick={handleExport}
-              >
-                {isExporting ? "Organizing…" : "Export organized PDF"}
-              </ActionButton>
-
-              {summary && (
-                <div className="flex min-w-0 flex-1 flex-wrap gap-2">
-                  <div className="rounded-xl border border-border bg-surface-muted px-4 py-2.5">
-                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-foreground-muted">
-                      Pages
-                    </p>
-                    <p className="text-lg font-semibold text-foreground">
-                      {summary.currentPages}
-                    </p>
+      <ToolWorkspaceShell
+        isEmpty={!uploadedPdf}
+        empty={
+          <>
+            <FileDropZone
+              onFilesSelected={handleUpload}
+              accept={ACCEPTED_PDF_EXTENSIONS}
+              validateFile={isAcceptedPdfFile}
+              multiple={false}
+              disabled={isBusy}
+              icon={<OrganizeDropIcon />}
+              label="Drop a PDF file here to organize"
+              hint="or click to browse — processed locally in your browser"
+            />
+            <PrivacyNotice message={PRIVACY_MESSAGE} />
+          </>
+        }
+        workArea={
+          uploadedPdf ? (
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                    <FileText className="h-4 w-4" aria-hidden="true" />
                   </div>
-                  <div className="rounded-xl border border-border bg-surface-muted px-4 py-2.5">
-                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-foreground-muted">
-                      Rotated
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {uploadedPdf.file.name}
                     </p>
-                    <p className="text-lg font-semibold text-foreground">
-                      {summary.rotatedCount}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-border bg-surface-muted px-4 py-2.5">
-                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-foreground-muted">
-                      File size
-                    </p>
-                    <p className="text-lg font-semibold text-foreground">
-                      {formatFileSize(uploadedPdf.file.size)}
+                    <p className="truncate text-[11px] text-scanonix-muted">
+                      {formatFileSize(uploadedPdf.file.size)} · {pages.length}{" "}
+                      page{pages.length === 1 ? "" : "s"}
+                      {summary && summary.deletedCount > 0
+                        ? ` · ${summary.deletedCount} deleted`
+                        : ""}
+                      {summary && summary.rotatedCount > 0
+                        ? ` · ${summary.rotatedCount} rotated`
+                        : ""}
                     </p>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
+                <div
+                  className={
+                    stickyVisible
+                      ? "hidden w-full sm:w-auto md:block"
+                      : "w-full sm:w-auto"
+                  }
+                >
+                  <ActionButton
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-lg sm:w-auto"
+                    disabled={isBusy}
+                    onClick={resetWorkspace}
+                  >
+                    {hasResult ? "Start over" : "Choose another PDF"}
+                  </ActionButton>
+                </div>
+              </div>
 
-          <PrivacyNotice message={PRIVACY_MESSAGE} />
-        </>
-      )}
+              <div className="bg-surface-muted/30 p-3 sm:p-4">
+                <OrganizePageGrid
+                  pdfBytes={uploadedPdf.bytes}
+                  pages={pages}
+                  disabled={isBusy}
+                  onReorder={handleReorder}
+                  onMoveFirst={handleMoveFirst}
+                  onMoveEarlier={handleMoveEarlier}
+                  onMoveLater={handleMoveLater}
+                  onMoveLast={handleMoveLast}
+                  onRotate={handleRotate}
+                  onDelete={handleDelete}
+                />
+              </div>
+            </div>
+          ) : null
+        }
+        controlPanel={
+          uploadedPdf ? (
+            <ToolControlPanel
+              aria-label="Organize PDF controls"
+              footer={
+                hasResult && resultBlob ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="hidden md:block">
+                      <ActionButton
+                        size="lg"
+                        className="w-full"
+                        loading={isDownloading}
+                        disabled={isDownloading}
+                        onClick={() => {
+                          void handleDownload();
+                        }}
+                      >
+                        Download PDF
+                      </ActionButton>
+                    </div>
+                    <ActionButton
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                      disabled={isBusy}
+                      onClick={handleChangeSettings}
+                    >
+                      Change settings
+                    </ActionButton>
+                    <div className="hidden md:block">
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        disabled={isBusy}
+                        onClick={resetWorkspace}
+                      >
+                        Start over
+                      </ActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[11px] leading-snug text-scanonix-muted">
+                      {exportHint}
+                    </p>
+                    <div
+                      className={
+                        stickyVisible ? "hidden md:block" : undefined
+                      }
+                    >
+                      <ActionButton
+                        size="lg"
+                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        loading={isExporting}
+                        disabled={!canExport}
+                        onClick={handleExport}
+                      >
+                        {isExporting ? "Organizing…" : "Export organized PDF"}
+                      </ActionButton>
+                    </div>
+                    <div
+                      className={
+                        stickyVisible ? "hidden md:block" : undefined
+                      }
+                    >
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        disabled={isBusy}
+                        onClick={resetWorkspace}
+                      >
+                        Start over
+                      </ActionButton>
+                    </div>
+                  </div>
+                )
+              }
+            >
+              {hasResult && resultBlob ? (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Result
+                    </p>
+                    <p className="mt-1.5 text-sm font-semibold text-green-700">
+                      ✓ Organize complete
+                    </p>
+                    <p className="mt-1 text-xs text-scanonix-muted">
+                      Your reorganized PDF is ready to download.
+                    </p>
+                  </div>
+
+                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Pages</dt>
+                      <dd className="font-semibold text-foreground">
+                        {pages.length}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">File size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(resultBlob.size)}
+                      </dd>
+                    </div>
+                    <div className="min-w-0 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Filename</dt>
+                      <dd className="mt-0.5 truncate font-semibold text-foreground">
+                        {resultFilename}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <LayoutGrid
+                        className="h-4 w-4 text-scanonix-orange"
+                        aria-hidden="true"
+                      />
+                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                        Organize PDF
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm leading-snug text-scanonix-muted">
+                      Reorder pages, rotate, or delete pages from your PDF.
+                    </p>
+                  </div>
+
+                  {summary && (
+                    <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                      <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                        <dt className="flex items-center gap-2 text-scanonix-muted">
+                          <LayoutGrid
+                            className="h-3.5 w-3.5 shrink-0"
+                            aria-hidden="true"
+                          />
+                          Total pages
+                        </dt>
+                        <dd className="font-semibold text-foreground">
+                          {summary.currentPages}
+                        </dd>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                        <dt className="flex items-center gap-2 text-scanonix-muted">
+                          <RotateCw
+                            className="h-3.5 w-3.5 shrink-0"
+                            aria-hidden="true"
+                          />
+                          Rotated pages
+                        </dt>
+                        <dd className="font-semibold text-foreground">
+                          {summary.rotatedCount}
+                        </dd>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                        <dt className="flex items-center gap-2 text-scanonix-muted">
+                          <Trash2
+                            className="h-3.5 w-3.5 shrink-0"
+                            aria-hidden="true"
+                          />
+                          Deleted pages
+                        </dt>
+                        <dd className="font-semibold text-foreground">
+                          {summary.deletedCount}
+                        </dd>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                        <dt className="flex items-center gap-2 text-scanonix-muted">
+                          <FileText
+                            className="h-3.5 w-3.5 shrink-0"
+                            aria-hidden="true"
+                          />
+                          File size
+                        </dt>
+                        <dd className="font-semibold text-foreground">
+                          {formatFileSize(uploadedPdf.file.size)}
+                        </dd>
+                      </div>
+                    </dl>
+                  )}
+
+                  <div className="rounded-xl border border-scanonix-orange/25 bg-scanonix-orange/10 px-3 py-3">
+                    <div className="flex items-start gap-2.5">
+                      <Lightbulb
+                        className="mt-0.5 h-4 w-4 shrink-0 text-scanonix-orange"
+                        aria-hidden="true"
+                      />
+                      <div>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-scanonix-orange">
+                          Tip
+                        </p>
+                        <p className="mt-1 text-xs leading-relaxed text-foreground">
+                          Drag and drop pages to reorder. Use the buttons below
+                          each page to rotate or delete.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border/80 pt-4">
+                    <PrivacyNotice message={PRIVACY_MESSAGE} />
+                  </div>
+                </div>
+              )}
+            </ToolControlPanel>
+          ) : null
+        }
+      />
 
       <ToolStickyMobileActionBar
         visible={stickyVisible}
@@ -509,10 +666,6 @@ export function OrganizePdfTool() {
         startOverLabel="Start over"
         startOverDisabled={isBusy}
       />
-
-      {!uploadedPdf && (
-        <ToolStatusBanner status={status} message={statusMessage} />
-      )}
     </div>
   );
 }

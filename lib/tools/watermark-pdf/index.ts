@@ -64,6 +64,23 @@ export {
 } from "./geometry";
 
 export {
+  WATERMARK_REPEAT_PATTERNS,
+  DEFAULT_WATERMARK_PLACEMENT_MODE,
+  DEFAULT_WATERMARK_REPEAT_PATTERN,
+  computeImageRepeatTileAnchors,
+  computeRepeatTileCenters,
+  computeTextRepeatTileAnchors,
+  enumerateImageWatermarkAnchors,
+  enumerateTextWatermarkAnchors,
+  getRepeatPatternLabel,
+  getRepeatPatternTileCount,
+  isWatermarkPlacementMode,
+  isWatermarkRepeatPattern,
+  parseRepeatPattern,
+  watermarkMayOverlapInRepeatPattern,
+} from "./tile-geometry";
+
+export {
   containsUnsupportedWinAnsiCharacters,
   findUnsupportedWinAnsiCharacters,
   validateHexColor,
@@ -104,7 +121,9 @@ export {
   type WatermarkPdfErrorCode,
   type WatermarkPdfExportResult,
   type WatermarkPdfOptions,
+  type WatermarkPlacementMode,
   type WatermarkPosition,
+  type WatermarkRepeatPattern,
   type WatermarkType,
 } from "./types";
 
@@ -115,8 +134,10 @@ export {
   computeCropPreviewRenderPlan,
   computeImagePreviewDimensions,
   computeImagePreviewOverlayStyle,
+  computeImagePreviewOverlayStyles,
   computeTextPreviewOverlayNormalized,
   computeTextPreviewOverlayStyle,
+  computeTextPreviewOverlayStyles,
   createPreviewGeometry,
   isBottomWatermarkPosition,
   isTopWatermarkPosition,

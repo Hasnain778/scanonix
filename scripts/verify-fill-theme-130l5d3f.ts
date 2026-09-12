@@ -41,10 +41,11 @@ assert(
   tool.includes("bg-surface-muted"),
 );
 assert(
-  "ResultActionBar usage preserved (frozen shared)",
-  tool.includes("ResultActionBar") &&
-    tool.includes('label: "Download filled PDF"') &&
-    tool.includes('label: "Start over"'),
+  "Workspace rail download/start-over actions preserved",
+  tool.includes("ToolControlPanel") &&
+    tool.includes("ToolWorkspaceShell") &&
+    tool.includes("Download filled PDF") &&
+    tool.includes("Start over"),
 );
 assert(
   "Export/download handlers preserved",

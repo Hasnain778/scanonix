@@ -38,7 +38,8 @@ assert(
 const grid = read("components/tools/organize-pdf/OrganizePageGrid.tsx");
 assert(
   "OrganizePageGrid Pages heading uses text-foreground",
-  grid.includes('text-lg font-semibold text-foreground">Pages') &&
+  grid.includes('text-lg font-semibold text-foreground') &&
+    grid.includes("Pages (") &&
     !grid.includes('text-lg font-semibold text-white">Pages'),
 );
 assert(

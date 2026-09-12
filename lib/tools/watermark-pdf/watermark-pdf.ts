@@ -4,13 +4,15 @@ import { detectExistingDigitalSignatures } from "./detect-signatures";
 import { buildWatermarkedPdfFilename } from "./filename";
 import {
   computeImageDrawSize,
-  computeImageWatermarkAnchor,
-  computeTextWatermarkAnchor,
   createWatermarkPageGeometry,
   localAnchorToPdfDrawOptions,
   validateImageFitsInVisibleBox,
   validateTextFitsInVisibleBox,
 } from "./geometry";
+import {
+  enumerateImageWatermarkAnchors,
+  enumerateTextWatermarkAnchors,
+} from "./tile-geometry";
 import type {
   ValidatedWatermarkPdfOptions,
   WatermarkPdfExportResult,
@@ -110,6 +112,7 @@ export async function watermarkPdfDocument(
         );
 
         if (
+          validated.placementMode !== "repeat" &&
           !validateTextFitsInVisibleBox(
             geometry,
             validated.position,
@@ -124,30 +127,33 @@ export async function watermarkPdfDocument(
           );
         }
 
-        const anchor = computeTextWatermarkAnchor(
-          geometry,
-          validated.position,
-          validated.margin,
+        const anchors = enumerateTextWatermarkAnchors(geometry, {
+          placementMode: validated.placementMode,
+          repeatPattern: validated.repeatPattern,
+          position: validated.position,
+          margin: validated.margin,
           textWidth,
-          validated.fontSize,
-        );
-
-        const drawOptions = localAnchorToPdfDrawOptions(
-          anchor,
-          geometry,
-          validated.rotationDegrees,
-          validated.color,
-        );
-
-        page.drawText(validated.text, {
-          x: drawOptions.x,
-          y: drawOptions.y,
-          size: validated.fontSize,
-          font,
-          color: drawOptions.color,
-          rotate: drawOptions.rotate,
-          opacity: validated.opacity,
+          fontSize: validated.fontSize,
         });
+
+        for (const anchor of anchors) {
+          const drawOptions = localAnchorToPdfDrawOptions(
+            anchor,
+            geometry,
+            validated.rotationDegrees,
+            validated.color,
+          );
+
+          page.drawText(validated.text, {
+            x: drawOptions.x,
+            y: drawOptions.y,
+            size: validated.fontSize,
+            font,
+            color: drawOptions.color,
+            rotate: drawOptions.rotate,
+            opacity: validated.opacity,
+          });
+        }
       }
     } else {
       const embeddedImage = await embedWatermarkImage(pdf, validated.imageBytes);
@@ -173,6 +179,7 @@ export async function watermarkPdfDocument(
         );
 
         if (
+          validated.placementMode !== "repeat" &&
           !validateImageFitsInVisibleBox(
             geometry,
             validated.position,
@@ -188,29 +195,32 @@ export async function watermarkPdfDocument(
           );
         }
 
-        const anchor = computeImageWatermarkAnchor(
-          geometry,
-          validated.position,
-          validated.margin,
+        const anchors = enumerateImageWatermarkAnchors(geometry, {
+          placementMode: validated.placementMode,
+          repeatPattern: validated.repeatPattern,
+          position: validated.position,
+          margin: validated.margin,
           imageWidth,
           imageHeight,
-          validated.rotationDegrees,
-        );
-
-        const drawOptions = localAnchorToPdfDrawOptions(
-          anchor,
-          geometry,
-          validated.rotationDegrees,
-        );
-
-        page.drawImage(embeddedImage, {
-          x: drawOptions.x,
-          y: drawOptions.y,
-          width: imageWidth,
-          height: imageHeight,
-          rotate: drawOptions.rotate,
-          opacity: validated.opacity,
+          rotationDegrees: validated.rotationDegrees,
         });
+
+        for (const anchor of anchors) {
+          const drawOptions = localAnchorToPdfDrawOptions(
+            anchor,
+            geometry,
+            validated.rotationDegrees,
+          );
+
+          page.drawImage(embeddedImage, {
+            x: drawOptions.x,
+            y: drawOptions.y,
+            width: imageWidth,
+            height: imageHeight,
+            rotate: drawOptions.rotate,
+            opacity: validated.opacity,
+          });
+        }
       }
     }
 

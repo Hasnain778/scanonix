@@ -1,19 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { RotateCw } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
+import { PdfPreviewGrid } from "@/components/tools/pdf-to-image/PdfPreviewGrid";
 import { RotationPanel } from "@/components/tools/rotate-pdf/RotationPanel";
-import { PdfPageGrid } from "@/components/tools/split-pdf/PdfPageGrid";
-import { ResultActionBar } from "@/components/tools/ResultActionBar";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import {
-  createProcessAttempt,
-  planErrorMessageToCode,
-} from "@/lib/analytics/process-lifecycle";
+import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
+import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -40,27 +39,14 @@ interface UploadedPdfState {
   pdfBytes: ArrayBuffer;
 }
 
-function PdfDropIcon() {
+/** Clean rotate affordance for dropzone / file chrome (lucide — replaces broken custom SVG). */
+function PdfDropIcon({ className = "h-7 w-7" }: { className?: string }) {
   return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
+    <RotateCw
+      className={className}
       aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4 4v5h5M20 4v5h-5M4 20v-5h5M20 20v-5h-5"
-      />
-    </svg>
+      strokeWidth={1.75}
+    />
   );
 }
 
@@ -90,6 +76,9 @@ export function RotatePdfTool() {
     }
     return [...selectedPages].sort((a, b) => a - b);
   }, [uploadedPdf, applyToAll, selectedPages]);
+
+  /** Highlight planned rotation targets on the real preview grid. */
+  const highlightedPages = useMemo(() => pagesToRotate, [pagesToRotate]);
 
   const canRotate =
     uploadedPdf !== null &&
@@ -245,157 +234,242 @@ export function RotatePdfTool() {
     }
   };
 
+  const handleChangeSettings = useCallback(() => {
+    invalidateResult();
+  }, [invalidateResult]);
+
+  const rotateHint =
+    !applyToAll && selectedPages.length === 0
+      ? "Select at least one page to rotate."
+      : canRotate
+        ? `Ready to rotate ${pagesToRotate.length} page${pagesToRotate.length === 1 ? "" : "s"} by ${rotation}°.`
+        : "Configure rotation options.";
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
         progress={progress}
       />
 
-      {!uploadedPdf && (
-        <>
-          <FileDropZone
-            onFilesSelected={handleUpload}
-            accept={ACCEPTED_PDF_EXTENSIONS}
-            validateFile={isAcceptedPdfFile}
-            multiple={false}
-            disabled={isBusy}
-            label="Drop a PDF file here to rotate pages"
-            hint="or click to browse — processed locally in your browser"
-            icon={<PdfDropIcon />}
-          />
-          <PrivacyNotice />
-        </>
-      )}
-
-      {uploadedPdf && (
-        <>
-          <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
-                <PdfDropIcon />
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
-                  {uploadedPdf.file.name}
-                </p>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {formatFileSize(uploadedPdf.file.size)} ·{" "}
-                  {uploadedPdf.pageCount} page
-                  {uploadedPdf.pageCount === 1 ? "" : "s"}
-                </p>
-              </div>
-            </div>
-            {!hasResult && (
-              <ActionButton
-                variant="outline"
-                className="w-full sm:w-auto"
-                disabled={isBusy}
-                onClick={resetTool}
-              >
-                Start over
-              </ActionButton>
-            )}
-          </div>
-
-          <RotationPanel
-            rotation={rotation}
-            applyToAll={applyToAll}
-            selectedCount={selectedPages.length}
-            totalPages={uploadedPdf.pageCount}
-            disabled={isBusy}
-            onRotationChange={(value) => {
-              invalidateResult();
-              setRotation(value);
-            }}
-            onApplyToAllChange={(value) => {
-              invalidateResult();
-              setApplyToAll(value);
-            }}
-          />
-
-          {!applyToAll && (
-            <PdfPageGrid
-              totalPages={uploadedPdf.pageCount}
-              selectedPages={selectedPages}
-              onTogglePage={togglePage}
-              onSelectAll={() => {
-                invalidateResult();
-                setSelectedPages(
-                  Array.from(
-                    { length: uploadedPdf.pageCount },
-                    (_, index) => index + 1,
-                  ),
-                );
-              }}
-              onClearSelection={() => {
-                invalidateResult();
-                setSelectedPages([]);
-              }}
+      <ToolWorkspaceShell
+        isEmpty={!uploadedPdf}
+        empty={
+          <>
+            <FileDropZone
+              onFilesSelected={handleUpload}
+              accept={ACCEPTED_PDF_EXTENSIONS}
+              validateFile={isAcceptedPdfFile}
+              multiple={false}
               disabled={isBusy}
+              label="Drop a PDF file here to rotate pages"
+              hint="or click to browse — processed locally in your browser"
+              icon={<PdfDropIcon />}
             />
-          )}
+            <PrivacyNotice />
+          </>
+        }
+        workArea={
+          uploadedPdf ? (
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                    <PdfDropIcon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {uploadedPdf.file.name}
+                    </p>
+                    <p className="truncate text-[11px] text-scanonix-muted">
+                      {formatFileSize(uploadedPdf.file.size)} ·{" "}
+                      {uploadedPdf.pageCount} page
+                      {uploadedPdf.pageCount === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={
+                    hasResult
+                      ? "hidden w-full sm:w-auto md:block"
+                      : "w-full sm:w-auto"
+                  }
+                >
+                  <ActionButton
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-lg sm:w-auto"
+                    disabled={isBusy}
+                    onClick={resetTool}
+                  >
+                    {hasResult ? "Start over" : "Remove PDF"}
+                  </ActionButton>
+                </div>
+              </div>
 
-          {hasResult && resultBlob && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
-              <p className="text-sm text-scanonix-muted">
-                {rotatedPageCount} page{rotatedPageCount === 1 ? "" : "s"} rotated
-                by {rotation}° · {formatFileSize(resultBlob.size)} ·{" "}
-                {resultFilename}
-              </p>
-              <div className="mt-5">
-                <ResultActionBar
-                  phase={resultActionPhase}
-                  primary={{
-                    label: "Download rotated PDF",
-                    onClick: () => {
-                      void handleDownload();
-                    },
-                    loading: isDownloading,
-                    disabled: isBusy,
+              <div className="space-y-3 bg-surface-muted/30 p-3 sm:p-4">
+                {applyToAll && (
+                  <p className="text-xs text-scanonix-muted">
+                    All {uploadedPdf.pageCount} page
+                    {uploadedPdf.pageCount === 1 ? "" : "s"} will be rotated.
+                    Switch to “Selected pages only” to pick individual pages.
+                  </p>
+                )}
+                <PdfPreviewGrid
+                  key={`${uploadedPdf.file.name}-${uploadedPdf.pageCount}`}
+                  pdfBytes={uploadedPdf.pdfBytes}
+                  totalPages={uploadedPdf.pageCount}
+                  selectedPages={selectedPages}
+                  highlightedPages={highlightedPages}
+                  selectable={!applyToAll}
+                  onTogglePage={togglePage}
+                  onSelectAll={() => {
+                    invalidateResult();
+                    setSelectedPages(
+                      Array.from(
+                        { length: uploadedPdf.pageCount },
+                        (_, index) => index + 1,
+                      ),
+                    );
                   }}
-                  startOver={{
-                    label: "Start over",
-                    onClick: resetTool,
-                    disabled: isBusy,
+                  onClearSelection={() => {
+                    invalidateResult();
+                    setSelectedPages([]);
                   }}
+                  disabled={isBusy}
                 />
               </div>
             </div>
-          )}
+          ) : null
+        }
+        controlPanel={
+          uploadedPdf ? (
+            <ToolControlPanel
+              aria-label="Rotate PDF controls"
+              footer={
+                hasResult && resultBlob ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="hidden md:block">
+                      <ActionButton
+                        size="lg"
+                        className="w-full"
+                        loading={isDownloading}
+                        disabled={isBusy}
+                        onClick={() => {
+                          void handleDownload();
+                        }}
+                      >
+                        Download rotated PDF
+                      </ActionButton>
+                    </div>
+                    <ActionButton
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                      disabled={isBusy}
+                      onClick={handleChangeSettings}
+                    >
+                      Change settings
+                    </ActionButton>
+                    <div className="hidden md:block">
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        disabled={isBusy}
+                        onClick={resetTool}
+                      >
+                        Start over
+                      </ActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-[11px] leading-snug text-scanonix-muted">
+                      {rotateHint}
+                    </p>
+                    <ActionButton
+                      size="lg"
+                      className="w-full shadow-[var(--shadow-orange-sm)]"
+                      loading={status === "loading"}
+                      disabled={!canRotate}
+                      onClick={handleRotate}
+                    >
+                      {status === "loading" ? "Rotating…" : "Rotate PDF"}
+                    </ActionButton>
+                  </div>
+                )
+              }
+            >
+              {hasResult && resultBlob ? (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Result
+                    </p>
+                    <p className="mt-1.5 text-sm font-semibold text-green-700">
+                      ✓ Rotation complete
+                    </p>
+                    <p className="mt-1 text-xs text-scanonix-muted">
+                      Your rotated PDF is ready to download.
+                    </p>
+                  </div>
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-white">Rotate PDF</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {!applyToAll && selectedPages.length === 0
-                    ? "Select at least one page to rotate."
-                    : canRotate
-                      ? `Ready to rotate ${pagesToRotate.length} page${pagesToRotate.length === 1 ? "" : "s"} by ${rotation}° locally in your browser.`
-                      : "Configure rotation options above."}
-                </p>
-              </div>
-
-              <ActionButton
-                size="lg"
-                className="w-full sm:w-auto"
-                loading={status === "loading"}
-                disabled={!canRotate}
-                onClick={handleRotate}
-              >
-                {status === "loading" ? "Rotating…" : "Rotate PDF"}
-              </ActionButton>
-            </div>
-
-            <div className="mt-4 border-t border-scanonix-border pt-4">
-              <PrivacyNotice />
-            </div>
-          </div>
-        </>
-      )}
+                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Pages rotated</dt>
+                      <dd className="font-semibold text-foreground">
+                        {rotatedPageCount}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Angle</dt>
+                      <dd className="font-semibold text-foreground">
+                        {rotation}°
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">File size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(resultBlob.size)}
+                      </dd>
+                    </div>
+                    <div className="min-w-0 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Filename</dt>
+                      <dd className="mt-0.5 truncate font-semibold text-foreground">
+                        {resultFilename}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  <RotationPanel
+                    compact
+                    rotation={rotation}
+                    applyToAll={applyToAll}
+                    selectedCount={selectedPages.length}
+                    totalPages={uploadedPdf.pageCount}
+                    disabled={isBusy}
+                    onRotationChange={(value) => {
+                      invalidateResult();
+                      setRotation(value);
+                    }}
+                    onApplyToAllChange={(value) => {
+                      invalidateResult();
+                      setApplyToAll(value);
+                    }}
+                  />
+                  <div className="border-t border-border/80 pt-4">
+                    <PrivacyNotice />
+                  </div>
+                </div>
+              )}
+            </ToolControlPanel>
+          ) : null
+        }
+      />
 
       <ToolStickyMobileActionBar
         visible={hasResult}

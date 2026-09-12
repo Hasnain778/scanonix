@@ -1,48 +1,36 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Combine, Files, Plus } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
-import { PdfFileList } from "@/components/tools/PdfFileList";
+import { MergeDocumentGrid } from "@/components/tools/merge-pdf/MergeDocumentGrid";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ResultActionBar } from "@/components/tools/ResultActionBar";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
+import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
 } from "@/lib/analytics/process-lifecycle";
+import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
+import { validateAnonymousUploadSize } from "@/lib/plan/tool-access";
 import { downloadBlob } from "@/lib/tools/download";
 import { createFileId, formatFileSize } from "@/lib/tools/format-utils";
 import { mergePdfs } from "@/lib/tools/merge-pdf/merge-pdfs";
 import { getPdfPageCount, isAcceptedPdfFile } from "@/lib/tools/pdf-utils";
 import type { PdfFileItem, ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
-import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
-function PdfDropIcon() {
+const PRIVACY_MESSAGE =
+  "Your files are processed locally in your browser and never uploaded to any server. Scanonix does not store or access your documents.";
+
+function MergeDropIcon({ className = "h-7 w-7" }: { className?: string }) {
   return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M14 3v4a2 2 0 002 2h4M12 11v6m-3-3h6"
-      />
-    </svg>
+    <Combine className={className} aria-hidden="true" strokeWidth={1.75} />
   );
 }
 
@@ -61,7 +49,6 @@ export function MergePdfTool() {
   const isReadingPages = files.some((file) => file.pageCount === null);
   const hasResult = mergedBlob !== null && status === "success";
 
-  /** Presentational adapter only — does not replace the ToolStatus state machine. */
   const resultActionPhase: ResultActionPhase = useMemo(() => {
     if (status === "loading") return "processing";
     if (hasResult) return "success";
@@ -69,6 +56,8 @@ export function MergePdfTool() {
     if (canMerge) return "ready";
     return "idle";
   }, [status, hasResult, canMerge]);
+
+  const stickyVisible = Boolean(files.length > 0 && (canMerge || hasResult || status === "loading" || status === "error"));
 
   useEffect(() => {
     mergedBlobRef.current = mergedBlob;
@@ -152,19 +141,29 @@ export function MergePdfTool() {
     setIsDownloading(false);
   }, []);
 
+  const handleChangeOrder = useCallback(() => {
+    mergedBlobRef.current = null;
+    setMergedBlob(null);
+    if (status === "success") {
+      setStatus("idle");
+      setStatusMessage(undefined);
+    }
+  }, [status]);
+
   const handleMerge = async () => {
     if (!canMerge || isBusy) return;
 
-    const attempt = createProcessAttempt("merge-pdf");
-
     const totalBytes = files.reduce((sum, item) => sum + item.file.size, 0);
-    const gate = await gateToolOperation("merge-pdf", totalBytes);
-    if (!gate.ok) {
+
+    // Non-consuming plan size check first (same helper gateToolOperation uses for free tools).
+    const sizeError = validateAnonymousUploadSize("merge-pdf", totalBytes);
+    if (sizeError) {
       setStatus("error");
-      setStatusMessage(gate.message);
+      setStatusMessage(sizeError);
       return;
     }
 
+    const attempt = createProcessAttempt("merge-pdf");
     if (!attempt?.markStarted()) return;
 
     setStatus("loading");
@@ -178,7 +177,17 @@ export function MergePdfTool() {
         (current, total) => setProgress({ current, total }),
       );
 
-      const totalPages = files.reduce(
+      // Consume only after a successful client merge.
+      const gate = await gateToolOperation("merge-pdf", totalBytes);
+      if (!gate.ok) {
+        attempt.error(planErrorMessageToCode(gate.message));
+        setStatus("error");
+        setStatusMessage(gate.message);
+        setProgress(undefined);
+        return;
+      }
+
+      const totalPagesMerged = files.reduce(
         (sum, file) => sum + (file.pageCount ?? 0),
         0,
       );
@@ -187,7 +196,7 @@ export function MergePdfTool() {
       attempt.success(1);
       setStatus("success");
       setStatusMessage(
-        `Merged ${files.length} PDFs (${totalPages} pages) — ready to download.`,
+        `Merged ${files.length} PDFs (${totalPagesMerged} pages) — ready to download.`,
       );
       setProgress(undefined);
     } catch (error) {
@@ -206,130 +215,349 @@ export function MergePdfTool() {
 
     setIsDownloading(true);
     try {
-      downloadBlob(blob, "scanonix-merged.pdf", buildToolDownloadMeta("merge-pdf", 1));
+      downloadBlob(
+        blob,
+        "scanonix-merged.pdf",
+        buildToolDownloadMeta("merge-pdf", 1),
+      );
     } finally {
       setIsDownloading(false);
     }
   };
 
+  const addMoreInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddMoreClick = useCallback(() => {
+    if (isBusy) return;
+    addMoreInputRef.current?.click();
+  }, [isBusy]);
+
+  const handleAddMoreChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const list = event.target.files;
+      if (!list || list.length === 0) return;
+
+      const selected = Array.from(list).filter(isAcceptedPdfFile);
+      if (selected.length > 0) {
+        addFiles(selected);
+      }
+      event.target.value = "";
+    },
+    [addFiles],
+  );
+
   const totalPages = files.reduce((sum, file) => sum + (file.pageCount ?? 0), 0);
+  const totalSize = files.reduce((sum, file) => sum + file.file.size, 0);
+
+  const mergeHint =
+    files.length < 2
+      ? "Add at least 2 PDF files to merge."
+      : isReadingPages
+        ? "Reading page counts…"
+        : status === "loading"
+          ? "Merging PDFs…"
+          : `Ready to merge ${files.length} PDFs.`;
 
   return (
-    <div className="space-y-8">
+    <div
+      className={`space-y-5 overflow-x-hidden md:pb-0 ${
+        stickyVisible ? "pb-40" : "pb-8"
+      }`}
+    >
       <ToolStatusBanner
         status={status}
         message={statusMessage}
         progress={progress}
       />
 
-      <FileDropZone
-        onFilesSelected={addFiles}
-        accept={ACCEPTED_PDF_EXTENSIONS}
-        validateFile={isAcceptedPdfFile}
-        disabled={isBusy}
-        label="Drop PDF files here to merge"
-        hint="or click to browse — PDF files only"
-        icon={<PdfDropIcon />}
-      />
-
-      {files.length > 0 && (
-        <>
-          <PdfFileList
-            files={files}
-            onRemove={removeFile}
-            onReorder={reorderFiles}
-            disabled={isBusy}
-          />
-
-          {hasResult && mergedBlob && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-foreground">Results</h2>
-              <p className="text-sm text-scanonix-muted">
-                {files.length} files · {totalPages} pages ·{" "}
-                {formatFileSize(mergedBlob.size)}
-              </p>
-              <div className="mt-5">
-                <ResultActionBar
-                  phase={resultActionPhase}
-                  primary={{
-                    label: "Download merged PDF",
-                    onClick: () => {
-                      void handleDownload();
-                    },
-                    loading: isDownloading,
-                    disabled: isBusy,
-                  }}
-                  startOver={{
-                    label: "Start over",
-                    onClick: clearAll,
-                    disabled: isBusy,
-                  }}
-                />
-              </div>
+      <ToolWorkspaceShell
+        isEmpty={files.length === 0}
+        empty={
+          <>
+            <FileDropZone
+              onFilesSelected={addFiles}
+              accept={ACCEPTED_PDF_EXTENSIONS}
+              validateFile={isAcceptedPdfFile}
+              disabled={isBusy}
+              label="Drop PDF files here to merge"
+              hint="or click to browse — PDF files only"
+              icon={<MergeDropIcon />}
+            />
+            <div className="pr-24 sm:pr-36 lg:pr-0">
+              <PrivacyNotice message={PRIVACY_MESSAGE} />
             </div>
-          )}
-
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">Merge PDFs</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {files.length < 2
-                    ? "Add at least 2 PDF files to merge."
-                    : isReadingPages
-                      ? "Reading page counts…"
-                      : `Ready to merge ${files.length} files in order.`}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <ActionButton
-                  size="lg"
-                  className="w-full sm:w-auto"
-                  loading={status === "loading"}
-                  disabled={!canMerge || isBusy}
-                  onClick={() => {
-                    void handleMerge();
-                  }}
+          </>
+        }
+        workArea={
+          files.length > 0 ? (
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                    <Files className="h-4 w-4" aria-hidden="true" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      Merge workspace
+                    </p>
+                    <p className="truncate text-[11px] text-scanonix-muted">
+                      {files.length} PDF{files.length === 1 ? "" : "s"}
+                      {totalPages > 0 ? ` · ${totalPages} pages` : ""}
+                      {` · ${formatFileSize(totalSize)}`}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={`w-full sm:w-auto ${hasResult ? "hidden md:block" : ""}`.trim()}
                 >
-                  {status === "loading" ? "Merging PDFs…" : "Merge PDFs"}
-                </ActionButton>
-                {!hasResult && (
                   <ActionButton
                     variant="outline"
-                    className="w-full sm:w-auto"
+                    size="sm"
+                    className="w-full rounded-lg sm:w-auto"
                     disabled={isBusy}
                     onClick={clearAll}
                   >
-                    Clear all
+                    {hasResult ? "Start over" : "Clear all"}
                   </ActionButton>
-                )}
+                </div>
+              </div>
+
+              <div className="bg-surface-muted/30 p-3 sm:p-4">
+                <input
+                  ref={addMoreInputRef}
+                  type="file"
+                  accept={ACCEPTED_PDF_EXTENSIONS}
+                  multiple
+                  disabled={isBusy}
+                  className="sr-only"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                  onChange={handleAddMoreChange}
+                />
+                <MergeDocumentGrid
+                  files={files}
+                  onRemove={removeFile}
+                  onReorder={reorderFiles}
+                  disabled={isBusy}
+                  headerAction={
+                    <ActionButton
+                      variant="outline"
+                      size="sm"
+                      className="w-full rounded-lg sm:w-auto"
+                      disabled={isBusy}
+                      onClick={handleAddMoreClick}
+                    >
+                      <span className="inline-flex items-center justify-center gap-1.5">
+                        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                        Add PDFs
+                      </span>
+                    </ActionButton>
+                  }
+                />
               </div>
             </div>
+          ) : null
+        }
+        controlPanel={
+          files.length > 0 ? (
+            <ToolControlPanel
+              aria-label="Merge PDF controls"
+              footer={
+                hasResult && mergedBlob ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="hidden md:block">
+                      <ActionButton
+                        size="lg"
+                        className="w-full"
+                        loading={isDownloading}
+                        disabled={isBusy}
+                        onClick={() => {
+                          void handleDownload();
+                        }}
+                      >
+                        Download PDF
+                      </ActionButton>
+                    </div>
+                    <ActionButton
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                      disabled={isBusy}
+                      onClick={handleChangeOrder}
+                    >
+                      Change order
+                    </ActionButton>
+                    <div className="hidden md:block">
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        disabled={isBusy}
+                        onClick={clearAll}
+                      >
+                        Start over
+                      </ActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[11px] leading-snug text-scanonix-muted">
+                      {mergeHint}
+                    </p>
+                    <div className="hidden md:block space-y-2">
+                      <ActionButton
+                        size="lg"
+                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        loading={status === "loading"}
+                        disabled={!canMerge || isBusy}
+                        onClick={() => {
+                          void handleMerge();
+                        }}
+                      >
+                        {status === "loading" ? "Merging PDFs…" : "Merge PDFs"}
+                      </ActionButton>
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        disabled={isBusy}
+                        onClick={clearAll}
+                      >
+                        Start over
+                      </ActionButton>
+                    </div>
+                  </div>
+                )
+              }
+            >
+              {hasResult && mergedBlob ? (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Result
+                    </p>
+                    <p className="mt-1.5 text-sm font-semibold text-foreground">
+                      <span className="text-green-600" aria-hidden="true">
+                        ✓{" "}
+                      </span>
+                      PDFs merged
+                    </p>
+                    <p className="mt-1 text-xs text-scanonix-muted">
+                      Your merged PDF is ready to download.
+                    </p>
+                  </div>
 
-            <div className="mt-4 border-t border-scanonix-border pt-4">
-              <PrivacyNotice />
-            </div>
-          </div>
-        </>
-      )}
+                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Files merged</dt>
+                      <dd className="font-semibold text-foreground">
+                        {files.length}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Total pages</dt>
+                      <dd className="font-semibold text-foreground">
+                        {totalPages}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Output size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(mergedBlob.size)}
+                      </dd>
+                    </div>
+                    <div className="min-w-0 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Filename</dt>
+                      <dd className="mt-0.5 truncate font-semibold text-foreground">
+                        scanonix-merged.pdf
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Combine
+                        className="h-4 w-4 text-scanonix-orange"
+                        aria-hidden="true"
+                      />
+                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                        Merge PDF
+                      </p>
+                    </div>
+                    <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
+                      Combine your PDFs in the order shown.
+                    </p>
+                  </div>
 
-      {files.length === 0 && <PrivacyNotice />}
+                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">PDF files</dt>
+                      <dd className="font-semibold text-foreground">
+                        {files.length}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Total pages</dt>
+                      <dd className="font-semibold text-foreground">
+                        {isReadingPages ? "…" : totalPages}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Total size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(totalSize)}
+                      </dd>
+                    </div>
+                  </dl>
 
-      {/*
-        Opt-in result mode (phase prop). Ready-state merge CTA stays inline only —
-        sticky must never show Download before hasResult.
-      */}
+                  <div>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Merge order
+                    </p>
+                    <ol className="max-h-48 space-y-1.5 overflow-y-auto rounded-xl border border-border bg-surface-muted/40 p-2.5 text-sm">
+                      {files.map((item, index) => (
+                        <li
+                          key={item.id}
+                          className="flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1"
+                        >
+                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-scanonix-orange/30 bg-scanonix-orange/10 text-[10px] font-bold text-scanonix-orange">
+                            {index + 1}
+                          </span>
+                          <span className="min-w-0 truncate text-foreground">
+                            {item.file.name}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  <div className="border-t border-border/80 pt-3 pr-24 sm:pr-36 lg:pr-0">
+                    <PrivacyNotice message={PRIVACY_MESSAGE} />
+                  </div>
+                </div>
+              )}
+            </ToolControlPanel>
+          ) : null
+        }
+      />
+
       <ToolStickyMobileActionBar
-        visible={hasResult}
+        visible={stickyVisible}
         phase={resultActionPhase}
-        primaryLabel="Download merged PDF"
-        primaryLoading={isDownloading}
-        primaryDisabled={isBusy}
+        primaryLabel={hasResult ? "Download PDF" : "Merge PDFs"}
+        primaryLoading={hasResult ? isDownloading : status === "loading"}
+        primaryDisabled={hasResult ? isBusy || !mergedBlob : !canMerge || isBusy}
+        showPrimaryOnError
         onPrimaryClick={() => {
-          void handleDownload();
+          if (hasResult) {
+            void handleDownload();
+          } else {
+            void handleMerge();
+          }
         }}
-        onStartOver={clearAll}
+        onStartOver={hasResult || files.length > 0 ? clearAll : undefined}
         startOverLabel="Start over"
         startOverDisabled={isBusy}
       />

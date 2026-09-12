@@ -29,9 +29,17 @@ import type {
   ValidatedTextWatermarkOptions,
   ValidatedWatermarkPdfOptions,
   WatermarkPdfOptions,
+  WatermarkPlacementMode,
   WatermarkPosition,
+  WatermarkRepeatPattern,
 } from "./types";
 import { WatermarkPdfError } from "./types";
+import {
+  DEFAULT_WATERMARK_PLACEMENT_MODE,
+  DEFAULT_WATERMARK_REPEAT_PATTERN,
+  isWatermarkPlacementMode,
+  isWatermarkRepeatPattern,
+} from "./tile-geometry";
 
 const WATERMARK_POSITIONS: WatermarkPosition[] = [
   "top-left",
@@ -254,6 +262,36 @@ function assertPosition(position: WatermarkPosition): WatermarkPosition {
   return position;
 }
 
+function assertPlacementMode(
+  mode: WatermarkPlacementMode | undefined,
+): WatermarkPlacementMode {
+  if (mode === undefined) {
+    return DEFAULT_WATERMARK_PLACEMENT_MODE;
+  }
+  if (!isWatermarkPlacementMode(mode)) {
+    throw new WatermarkPdfError(
+      "EXPORT_FAILED",
+      "Unsupported watermark placement mode.",
+    );
+  }
+  return mode;
+}
+
+function assertRepeatPattern(
+  pattern: WatermarkRepeatPattern | undefined,
+): WatermarkRepeatPattern {
+  if (pattern === undefined) {
+    return DEFAULT_WATERMARK_REPEAT_PATTERN;
+  }
+  if (!isWatermarkRepeatPattern(pattern)) {
+    throw new WatermarkPdfError(
+      "EXPORT_FAILED",
+      "Unsupported watermark repeat pattern.",
+    );
+  }
+  return pattern;
+}
+
 function resolveSelectedPageIndices(
   allPages: boolean,
   pageRangeInput: string,
@@ -298,6 +336,8 @@ export function validateTextWatermarkOptions(
       options.pageRangeInput,
       totalPages,
     ),
+    placementMode: assertPlacementMode(options.placementMode),
+    repeatPattern: assertRepeatPattern(options.repeatPattern),
   };
 }
 
@@ -334,6 +374,8 @@ export function validateImageWatermarkOptions(
       options.pageRangeInput,
       totalPages,
     ),
+    placementMode: assertPlacementMode(options.placementMode),
+    repeatPattern: assertRepeatPattern(options.repeatPattern),
   };
 }
 

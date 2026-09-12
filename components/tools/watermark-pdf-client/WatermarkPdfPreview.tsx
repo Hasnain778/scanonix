@@ -4,13 +4,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { configurePdfWorker } from "@/lib/pdf/configure-worker";
 import {
   CROP_PREVIEW_JPEG_QUALITY,
-  computeImagePreviewOverlayStyle,
-  computeTextPreviewOverlayStyle,
+  computeImagePreviewOverlayStyles,
+  computeTextPreviewOverlayStyles,
   measurePreviewTextWidth,
   resolvePreviewWatermark,
   canUseBoldInWorkspace,
   type WatermarkPageEntry,
+  type WatermarkPlacementMode,
   type WatermarkPosition,
+  type WatermarkRepeatPattern,
   type WatermarkType,
 } from "@/lib/tools/watermark-pdf";
 import {
@@ -39,6 +41,8 @@ interface WatermarkPdfPreviewProps {
   imageIntrinsicHeight: number;
   allPages: boolean;
   pageRangeInput: string;
+  placementMode: WatermarkPlacementMode;
+  repeatPattern: WatermarkRepeatPattern;
 }
 
 export function WatermarkPdfPreview({
@@ -61,6 +65,8 @@ export function WatermarkPdfPreview({
   imageIntrinsicHeight,
   allPages,
   pageRangeInput,
+  placementMode,
+  repeatPattern,
 }: WatermarkPdfPreviewProps) {
   const [pageImageUrl, setPageImageUrl] = useState<string | null>(null);
   const [isRendering, setIsRendering] = useState(true);
@@ -104,17 +110,17 @@ export function WatermarkPdfPreview({
     return measurePreviewTextWidth(trimmedText, fontSize, useBold);
   }, [mode, trimmedText, fontSize, useBold]);
 
-  const textOverlayStyle = useMemo(() => {
+  const textOverlayStyles = useMemo(() => {
     if (
       mode !== "text" ||
       !previewSelection.isWatermarked ||
       !trimmedText ||
       !displaySize
     ) {
-      return null;
+      return [];
     }
 
-    return computeTextPreviewOverlayStyle({
+    return computeTextPreviewOverlayStyles({
       pageEntry,
       position,
       margin,
@@ -125,6 +131,8 @@ export function WatermarkPdfPreview({
       rotationDegrees,
       bold: useBold,
       cssHeight: displaySize.height,
+      placementMode,
+      repeatPattern,
     });
   }, [
     mode,
@@ -140,9 +148,11 @@ export function WatermarkPdfPreview({
     opacity,
     rotationDegrees,
     useBold,
+    placementMode,
+    repeatPattern,
   ]);
 
-  const imageOverlayStyle = useMemo(() => {
+  const imageOverlayStyles = useMemo(() => {
     if (
       mode !== "image" ||
       !previewSelection.isWatermarked ||
@@ -150,10 +160,10 @@ export function WatermarkPdfPreview({
       imageIntrinsicWidth <= 0 ||
       imageIntrinsicHeight <= 0
     ) {
-      return null;
+      return [];
     }
 
-    return computeImagePreviewOverlayStyle({
+    return computeImagePreviewOverlayStyles({
       pageEntry,
       position,
       margin,
@@ -162,6 +172,8 @@ export function WatermarkPdfPreview({
       relativeWidthRatio: relativeWidthPercent / 100,
       opacity,
       rotationDegrees,
+      placementMode,
+      repeatPattern,
     });
   }, [
     mode,
@@ -175,6 +187,8 @@ export function WatermarkPdfPreview({
     relativeWidthPercent,
     opacity,
     rotationDegrees,
+    placementMode,
+    repeatPattern,
   ]);
 
   useEffect(() => {
@@ -337,48 +351,56 @@ export function WatermarkPdfPreview({
                 </div>
               )}
 
-              {mode === "text" && textOverlayStyle && trimmedText && (
-                <span
-                  data-watermark-pdf-overlay
-                  data-watermark-pdf-text-overlay
-                  className="pointer-events-none absolute whitespace-nowrap font-sans leading-none"
-                  style={{
-                    left: textOverlayStyle.left,
-                    top: textOverlayStyle.top,
-                    fontSize: textOverlayStyle.fontSize,
-                    color: textOverlayStyle.color,
-                    opacity: textOverlayStyle.opacity,
-                    transform: textOverlayStyle.transform,
-                    transformOrigin: textOverlayStyle.transformOrigin,
-                    fontWeight: textOverlayStyle.fontWeight,
-                  }}
-                  aria-hidden="true"
-                >
-                  {trimmedText}
-                </span>
-              )}
+              {mode === "text" &&
+                trimmedText &&
+                textOverlayStyles.map((textOverlayStyle, index) => (
+                  <span
+                    key={`text-tile-${index}`}
+                    data-watermark-pdf-overlay
+                    data-watermark-pdf-text-overlay
+                    data-watermark-pdf-tile-index={index}
+                    className="pointer-events-none absolute whitespace-nowrap font-sans leading-none"
+                    style={{
+                      left: textOverlayStyle.left,
+                      top: textOverlayStyle.top,
+                      fontSize: textOverlayStyle.fontSize,
+                      color: textOverlayStyle.color,
+                      opacity: textOverlayStyle.opacity,
+                      transform: textOverlayStyle.transform,
+                      transformOrigin: textOverlayStyle.transformOrigin,
+                      fontWeight: textOverlayStyle.fontWeight,
+                    }}
+                    aria-hidden="true"
+                  >
+                    {trimmedText}
+                  </span>
+                ))}
 
-              {mode === "image" && imageOverlayStyle && imagePreviewUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imagePreviewUrl}
-                  alt=""
-                  data-watermark-pdf-overlay
-                  data-watermark-pdf-image-overlay
-                  className="pointer-events-none absolute object-contain"
-                  style={{
-                    left: imageOverlayStyle.left,
-                    top: imageOverlayStyle.top,
-                    bottom: imageOverlayStyle.bottom,
-                    width: imageOverlayStyle.width,
-                    height: imageOverlayStyle.height,
-                    opacity: imageOverlayStyle.opacity,
-                    transform: imageOverlayStyle.transform,
-                    transformOrigin: imageOverlayStyle.transformOrigin,
-                  }}
-                  aria-hidden="true"
-                />
-              )}
+              {mode === "image" &&
+                imagePreviewUrl &&
+                imageOverlayStyles.map((imageOverlayStyle, index) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={`image-tile-${index}`}
+                    src={imagePreviewUrl}
+                    alt=""
+                    data-watermark-pdf-overlay
+                    data-watermark-pdf-image-overlay
+                    data-watermark-pdf-tile-index={index}
+                    className="pointer-events-none absolute object-contain"
+                    style={{
+                      left: imageOverlayStyle.left,
+                      top: imageOverlayStyle.top,
+                      bottom: imageOverlayStyle.bottom,
+                      width: imageOverlayStyle.width,
+                      height: imageOverlayStyle.height,
+                      opacity: imageOverlayStyle.opacity,
+                      transform: imageOverlayStyle.transform,
+                      transformOrigin: imageOverlayStyle.transformOrigin,
+                    }}
+                    aria-hidden="true"
+                  />
+                ))}
 
               {showExcludedBanner && (
                 <div

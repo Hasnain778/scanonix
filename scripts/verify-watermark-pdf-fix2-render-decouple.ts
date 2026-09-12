@@ -99,8 +99,8 @@ function run() {
   );
   assert(
     "overlay styles are memoized separately from PDF render effect",
-    previewSource.includes("textOverlayStyle = useMemo") &&
-      previewSource.includes("imageOverlayStyle = useMemo"),
+    previewSource.includes("textOverlayStyles = useMemo") &&
+      previewSource.includes("imageOverlayStyles = useMemo"),
   );
 
   const pageEntry = makePageEntry();

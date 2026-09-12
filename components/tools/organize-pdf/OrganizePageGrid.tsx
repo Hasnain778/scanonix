@@ -1,7 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ActionButton } from "@/components/ui/ActionButton";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronsDown,
+  ChevronsUp,
+  RotateCw,
+  Trash2,
+} from "lucide-react";
 import {
   canDeletePage,
   canMovePageEarlier,
@@ -32,6 +39,43 @@ interface ThumbnailState {
   url: string | null;
   loading: boolean;
   error?: boolean;
+}
+
+type PageControlTone = "neutral" | "accent" | "danger";
+
+function PageControlButton({
+  children,
+  disabled,
+  onClick,
+  "aria-label": ariaLabel,
+  tone = "neutral",
+  className = "",
+}: {
+  children: ReactNode;
+  disabled?: boolean;
+  onClick: () => void;
+  "aria-label": string;
+  tone?: PageControlTone;
+  className?: string;
+}) {
+  const toneClass =
+    tone === "accent"
+      ? "border-scanonix-orange/45 bg-scanonix-orange/10 text-scanonix-orange hover:border-scanonix-orange/60 hover:bg-scanonix-orange/15"
+      : tone === "danger"
+        ? "border-red-500/30 bg-red-500/[0.06] text-red-700 hover:border-red-500/45 hover:bg-red-500/10 dark:text-red-400"
+        : "border-border bg-surface-muted text-foreground hover:border-scanonix-orange/35 hover:bg-surface-raised";
+
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className={`inline-flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold leading-tight tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/35 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-surface-muted ${toneClass} ${className}`.trim()}
+    >
+      {children}
+    </button>
+  );
 }
 
 export function OrganizePageGrid({
@@ -166,15 +210,18 @@ export function OrganizePageGrid({
 
   return (
     <div className="space-y-4 overflow-x-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold text-foreground">Pages</h2>
-        <p className="text-xs text-foreground-muted">
-          Drag to reorder · or use move buttons on each page
+      <div className="space-y-1">
+        <h2 className="text-lg font-semibold text-foreground">
+          Pages ({pages.length})
+        </h2>
+        <p className="text-xs leading-relaxed text-scanonix-muted sm:text-sm">
+          Drag and drop to reorder pages. Use the controls below each page to
+          rotate or delete.
         </p>
       </div>
 
       <div
-        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
         aria-live="polite"
       >
         {pages.map((page, index) => {
@@ -188,6 +235,7 @@ export function OrganizePageGrid({
             page.rotationDelta,
           );
           const allowDelete = canDeletePage(pages.length);
+          const showRotationBadge = effectiveRotation !== 0;
 
           return (
             <article
@@ -197,9 +245,9 @@ export function OrganizePageGrid({
               onDragOver={(event) => handleDragOver(event, index)}
               onDrop={() => handleDrop(index)}
               onDragEnd={handleDragEnd}
-              className={`flex flex-col overflow-hidden rounded-2xl border bg-surface transition-all duration-200 ${
+              className={`flex flex-col overflow-hidden rounded-xl border bg-surface shadow-sm transition-all duration-200 ${
                 dragOverIndex === index
-                  ? "border-scanonix-orange ring-2 ring-scanonix-orange/30"
+                  ? "border-scanonix-orange shadow-[0_0_0_2px_color-mix(in_srgb,var(--scanonix-orange)_30%,transparent)]"
                   : "border-border"
               } ${draggedIndex === index ? "opacity-50" : ""} ${
                 disabled ? "" : "cursor-grab active:cursor-grabbing"
@@ -211,9 +259,11 @@ export function OrganizePageGrid({
                   {displayNumber}
                 </div>
 
-                <div className="absolute right-2 top-2 z-10 flex h-8 min-w-[2rem] items-center justify-center rounded-lg bg-black/80 px-2 text-sm font-semibold text-white shadow-sm">
-                  {effectiveRotation}°
-                </div>
+                {showRotationBadge && (
+                  <div className="absolute right-2 top-2 z-10 flex h-8 min-w-[2rem] items-center justify-center rounded-lg bg-black/80 px-2 text-sm font-semibold text-white shadow-sm">
+                    {effectiveRotation}°
+                  </div>
+                )}
 
                 {isLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/20">
@@ -257,69 +307,59 @@ export function OrganizePageGrid({
                 )}
               </div>
 
-              <div className="flex flex-col gap-2.5 border-t border-border p-3">
+              <div className="flex flex-col gap-2 border-t border-border bg-surface-muted/40 p-2.5 sm:p-3">
                 <div className="grid grid-cols-4 gap-1.5">
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg px-1.5 text-xs"
+                  <PageControlButton
                     disabled={disabled || !canMovePageFirst(index)}
                     onClick={() => onMoveFirst(page.id)}
                     aria-label={`Move page ${displayNumber} to first position`}
                   >
-                    First
-                  </ActionButton>
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg px-1.5 text-xs"
+                    <ChevronsUp className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>First</span>
+                  </PageControlButton>
+                  <PageControlButton
                     disabled={disabled || !canMovePageEarlier(index)}
                     onClick={() => onMoveEarlier(page.id)}
                     aria-label={`Move page ${displayNumber} earlier`}
                   >
-                    Earlier
-                  </ActionButton>
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg px-1.5 text-xs"
+                    <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>Earlier</span>
+                  </PageControlButton>
+                  <PageControlButton
                     disabled={
                       disabled || !canMovePageLater(index, pages.length)
                     }
                     onClick={() => onMoveLater(page.id)}
                     aria-label={`Move page ${displayNumber} later`}
                   >
-                    Later
-                  </ActionButton>
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg px-1.5 text-xs"
+                    <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>Later</span>
+                  </PageControlButton>
+                  <PageControlButton
                     disabled={
                       disabled || !canMovePageLast(index, pages.length)
                     }
                     onClick={() => onMoveLast(page.id)}
                     aria-label={`Move page ${displayNumber} to last position`}
                   >
-                    Last
-                  </ActionButton>
+                    <ChevronsDown className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>Last</span>
+                  </PageControlButton>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <ActionButton
-                    variant="secondary"
-                    size="sm"
-                    className="rounded-lg text-sm"
+                <div className="grid grid-cols-2 gap-1.5">
+                  <PageControlButton
+                    tone="accent"
                     disabled={disabled}
                     onClick={() => onRotate(page.id)}
                     aria-label={`Rotate page ${displayNumber} clockwise 90 degrees`}
+                    className="min-h-10 flex-row gap-1.5 text-[11px]"
                   >
-                    Rotate 90°
-                  </ActionButton>
-                  <ActionButton
-                    variant="danger"
-                    size="sm"
-                    className="rounded-lg text-sm"
+                    <RotateCw className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span>Rotate 90°</span>
+                  </PageControlButton>
+                  <PageControlButton
+                    tone="danger"
                     disabled={disabled || !allowDelete}
                     onClick={() => onDelete(page.id)}
                     aria-label={
@@ -327,9 +367,11 @@ export function OrganizePageGrid({
                         ? `Delete page ${displayNumber}`
                         : `Delete disabled — at least one page is required`
                     }
+                    className="min-h-10 flex-row gap-1.5 text-[11px]"
                   >
-                    Delete
-                  </ActionButton>
+                    <Trash2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span>Delete</span>
+                  </PageControlButton>
                 </div>
               </div>
             </article>

@@ -307,7 +307,7 @@ function run() {
   );
   assert(
     "20 preview keeps image overlay memoized separately",
-    previewSource.includes("imageOverlayStyle = useMemo"),
+    previewSource.includes("imageOverlayStyles = useMemo"),
   );
 
   // 21. Export calls 124B image engine

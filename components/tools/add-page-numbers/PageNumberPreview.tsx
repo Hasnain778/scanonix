@@ -216,17 +216,23 @@ export function PageNumberPreview({
 
   return (
     <div className="w-full overflow-x-hidden">
-      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-white">Preview</h2>
-          <p className="mt-1 text-sm text-scanonix-muted">
+          <h2 className="text-base font-semibold tracking-tight text-foreground">
+            Preview
+          </h2>
+          <p className="mt-0.5 text-xs text-scanonix-muted sm:text-sm">
             Page {currentPageIndex + 1} of {pageCount}
+            {previewNumbering.isNumbered && previewNumbering.text
+              ? ` · shows “${previewNumbering.text}”`
+              : " · not numbered"}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ActionButton
             variant="outline"
             size="sm"
+            className="rounded-lg"
             disabled={currentPageIndex <= 0 || disabled || isRendering}
             onClick={() => onPageChange(Math.max(0, currentPageIndex - 1))}
           >
@@ -240,7 +246,7 @@ export function PageNumberPreview({
             value={currentPageIndex}
             disabled={disabled || isRendering}
             onChange={(event) => onPageChange(Number(event.target.value))}
-            className="rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+            className="rounded-lg border border-border bg-surface-muted px-3 py-2 text-sm text-foreground focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
           >
             {Array.from({ length: pageCount }, (_, index) => (
               <option key={index} value={index}>
@@ -251,6 +257,7 @@ export function PageNumberPreview({
           <ActionButton
             variant="outline"
             size="sm"
+            className="rounded-lg"
             disabled={currentPageIndex >= pageCount - 1 || disabled || isRendering}
             onClick={() =>
               onPageChange(Math.min(pageCount - 1, currentPageIndex + 1))
@@ -264,7 +271,7 @@ export function PageNumberPreview({
       <div className="mx-auto max-w-full">
         <div
           data-page-number-preview-root
-          className="relative mx-auto border border-scanonix-border bg-white shadow-lg"
+          className="relative mx-auto overflow-hidden rounded-lg border border-border bg-white shadow-[var(--shadow-soft)]"
           style={
             displaySize
               ? { width: displaySize.width, maxWidth: "100%" }
@@ -272,12 +279,12 @@ export function PageNumberPreview({
           }
         >
           {isRendering && (
-            <div className="flex min-h-[420px] items-center justify-center bg-scanonix-surface text-sm text-scanonix-muted">
+            <div className="flex min-h-[420px] items-center justify-center bg-surface-muted text-sm text-scanonix-muted">
               Rendering page…
             </div>
           )}
           {renderError && (
-            <div className="flex min-h-[420px] items-center justify-center bg-scanonix-surface px-4 text-center text-sm text-red-300">
+            <div className="flex min-h-[420px] items-center justify-center bg-surface-muted px-4 text-center text-sm text-red-500">
               {renderError}
             </div>
           )}

@@ -6,13 +6,29 @@ import {
   useMemo,
   useRef,
   useState,
+  type ButtonHTMLAttributes,
+  type ReactNode,
 } from "react";
+import {
+  Check,
+  Download,
+  Eraser,
+  List,
+  Maximize2,
+  Redo2,
+  Square,
+  Trash2,
+  Undo2,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
+import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -57,7 +73,7 @@ import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { RedactPdfPreview } from "./RedactPdfPreview";
 import { RedactionsDrawer } from "./RedactionsDrawer";
-import { createProcessAttempt, planErrorMessageToCode } from "@/lib/analytics/process-lifecycle";
+import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface RedactPdfClientToolProps {
@@ -74,23 +90,59 @@ interface UploadedPdfState {
   hasExistingDigitalSignatures: boolean;
 }
 
-function PdfDropIcon() {
+function PdfDropIcon({ className = "h-7 w-7" }: { className?: string }) {
+  return <Eraser className={className} aria-hidden="true" strokeWidth={1.75} />;
+}
+
+function ToolbarIconButton({
+  label,
+  disabled,
+  active,
+  destructive,
+  onClick,
+  children,
+  className = "",
+  ...rest
+}: {
+  label: string;
+  disabled?: boolean;
+  active?: boolean;
+  destructive?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  className?: string;
+} & Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "onClick" | "disabled" | "children" | "className"
+>) {
   return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      aria-pressed={active}
+      disabled={disabled}
+      onClick={onClick}
+      className={`inline-flex h-8 w-8 items-center justify-center rounded-md border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-40 ${
+        active
+          ? "border-scanonix-orange bg-scanonix-orange/15 text-scanonix-orange"
+          : destructive
+            ? "border-red-500/35 bg-surface text-red-700 hover:bg-red-500/10"
+            : "border-border bg-surface text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
+      } ${className}`.trim()}
+      {...rest}
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6M12 4v6" />
-    </svg>
+      {children}
+    </button>
+  );
+}
+
+function ToolbarDivider() {
+  return (
+    <span
+      className="mx-0.5 hidden h-5 w-px shrink-0 bg-border sm:block"
+      aria-hidden="true"
+    />
   );
 }
 
@@ -487,319 +539,495 @@ export function RedactPdfClientTool({
     handleRedo,
   ]);
 
+  const stickyVisible = Boolean(uploadedPdf && canExport && !hasResult);
+  const exportLabel = proGateActive
+    ? "Upgrade to Pro to export"
+    : isExporting
+      ? "Applying…"
+      : "Apply & download";
+  const showFormWarning =
+    uploadedPdf !== null && shouldShowFormAnnotationWarning(uploadedPdf.document);
+
+  const pageNav = uploadedPdf ? (
+    <div
+      data-redact-page-nav
+      className="flex flex-wrap items-center justify-center gap-2"
+    >
+      <ActionButton
+        variant="outline"
+        size="sm"
+        data-redact-page-prev
+        disabled={currentPageIndex <= 0 || isBusy}
+        onClick={() => setCurrentPageIndex(Math.max(0, currentPageIndex - 1))}
+      >
+        Previous
+      </ActionButton>
+      <span
+        data-redact-page-indicator
+        className="min-w-[6.5rem] text-center text-xs font-medium text-scanonix-muted sm:text-sm"
+      >
+        Page {currentPageIndex + 1} of {pageCount}
+      </span>
+      <ActionButton
+        variant="outline"
+        size="sm"
+        data-redact-page-next
+        disabled={currentPageIndex >= pageCount - 1 || isBusy}
+        onClick={() =>
+          setCurrentPageIndex(Math.min(pageCount - 1, currentPageIndex + 1))
+        }
+      >
+        Next
+      </ActionButton>
+    </div>
+  ) : null;
+
+  const editorToolbar = (
+    <div
+      data-redact-toolbar
+      className="flex flex-wrap items-center gap-1.5 border-b border-border/80 px-3 py-2 sm:gap-2 sm:px-4"
+    >
+      <span
+        data-redact-draw-mode
+        className="inline-flex items-center gap-1.5 rounded-md border border-scanonix-orange bg-scanonix-orange/10 px-2.5 py-1.5 text-xs font-semibold text-foreground"
+      >
+        <Square className="h-3.5 w-3.5 text-scanonix-orange" aria-hidden="true" />
+        Redact area
+      </span>
+
+      <ToolbarDivider />
+
+      <ToolbarIconButton
+        label="Undo"
+        data-redact-undo=""
+        disabled={!canUndo || isBusy}
+        onClick={handleUndo}
+      >
+        <Undo2 className="h-4 w-4" aria-hidden="true" />
+      </ToolbarIconButton>
+      <ToolbarIconButton
+        label="Redo"
+        data-redact-redo=""
+        disabled={!canRedo || isBusy}
+        onClick={handleRedo}
+      >
+        <Redo2 className="h-4 w-4" aria-hidden="true" />
+      </ToolbarIconButton>
+
+      <ToolbarDivider />
+
+      <ToolbarIconButton
+        label="Delete selected"
+        data-redact-delete-selected=""
+        disabled={!selectedRedactionId || isBusy}
+        onClick={handleDeleteSelected}
+      >
+        <Trash2 className="h-4 w-4" aria-hidden="true" />
+      </ToolbarIconButton>
+      <ToolbarIconButton
+        label="Clear page"
+        data-redact-clear-page=""
+        disabled={activePageRedactions.length === 0 || isBusy}
+        destructive
+        onClick={handleClearPage}
+      >
+        <Eraser className="h-4 w-4" aria-hidden="true" />
+      </ToolbarIconButton>
+      <ToolbarIconButton
+        label="Clear all"
+        data-redact-clear-all=""
+        disabled={redactionCount === 0 || isBusy}
+        destructive
+        onClick={handleClearAll}
+      >
+        <span className="text-[10px] font-bold leading-none">All</span>
+      </ToolbarIconButton>
+
+      <ToolbarDivider />
+
+      <div
+        data-redact-zoom-controls
+        className="flex flex-wrap items-center gap-1 sm:ml-auto"
+      >
+        <ToolbarIconButton
+          label="Zoom out"
+          data-redact-zoom-out=""
+          disabled={isBusy}
+          onClick={() => setZoom((current) => stepRedactZoom(current, "out"))}
+        >
+          <ZoomOut className="h-4 w-4" aria-hidden="true" />
+        </ToolbarIconButton>
+        <span
+          data-redact-zoom-indicator
+          className="min-w-[3rem] text-center text-xs font-medium text-scanonix-muted"
+        >
+          {Math.round(zoom * 100)}%
+        </span>
+        <ToolbarIconButton
+          label="Zoom in"
+          data-redact-zoom-in=""
+          disabled={isBusy}
+          onClick={() => setZoom((current) => stepRedactZoom(current, "in"))}
+        >
+          <ZoomIn className="h-4 w-4" aria-hidden="true" />
+        </ToolbarIconButton>
+        <ToolbarIconButton
+          label="Fit width"
+          data-redact-zoom-fit=""
+          disabled={isBusy}
+          onClick={handleFitWidth}
+        >
+          <Maximize2 className="h-4 w-4" aria-hidden="true" />
+        </ToolbarIconButton>
+      </div>
+
+      <ActionButton
+        variant="outline"
+        size="sm"
+        data-redactions-drawer-toggle
+        disabled={isBusy}
+        onClick={() => setDrawerOpen((open) => !open)}
+        className="gap-1.5"
+      >
+        <List className="h-3.5 w-3.5" aria-hidden="true" />
+        Redactions ({redactionCount})
+      </ActionButton>
+    </div>
+  );
+
   return (
-    <div className="space-y-8 overflow-x-hidden">
+    <div className="space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
       />
 
-      {!uploadedPdf && (
-        <>
-          <FileDropZone
-            onFilesSelected={handleUpload}
-            accept={ACCEPTED_PDF_EXTENSIONS}
-            validateFile={isAcceptedPdfFile}
-            multiple={false}
-            disabled={isBusy}
-            inputId="redact-pdf-client-input"
-            inputDataAttributes={{ "data-redact-pdf-input": "true" }}
-            label="Drop a PDF file here to redact"
-            hint="or click to browse — up to 10 MB, processed locally in your browser"
-            icon={<PdfDropIcon />}
-          />
-          <PrivacyNotice message={REDACT_PRIVACY_COPY} />
-          <p className="text-sm text-foreground-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
-          <p className="text-sm text-foreground-muted">{REDACT_SANITIZATION_LIMITATION_COPY}</p>
-        </>
-      )}
-
-      {uploadedPdf && currentPage && !hasResult && (
-        <div
-          data-redact-pdf-workspace
-          className="overflow-hidden rounded-xl border border-border/80 bg-surface"
-        >
-          <div
-            data-redact-pdf-header
-            className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/80 px-3 py-2 sm:px-4"
-          >
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <span className="shrink-0 text-sm font-semibold text-foreground">
-                Redact PDF
-              </span>
-              <span
-                className="truncate text-xs text-foreground-muted sm:text-sm"
-                title={uploadedPdf.file.name}
-              >
-                {uploadedPdf.file.name}
-              </span>
-              <span className="hidden text-xs text-foreground-muted sm:inline">
-                · {formatFileSize(uploadedPdf.file.size)}
-              </span>
-            </div>
-
-            <div
-              data-redact-page-nav
-              className="flex flex-wrap items-center justify-center gap-1.5 sm:flex-1"
-            >
-              <ActionButton
-                variant="outline"
-                size="sm"
-                data-redact-page-prev
-                disabled={currentPageIndex <= 0 || isBusy}
-                onClick={() => setCurrentPageIndex(Math.max(0, currentPageIndex - 1))}
-              >
-                Previous
-              </ActionButton>
-              <span
-                data-redact-page-indicator
-                className="min-w-[5rem] text-center text-xs text-foreground-muted sm:text-sm"
-              >
-                Page {currentPageIndex + 1} / {pageCount}
-              </span>
-              <ActionButton
-                variant="outline"
-                size="sm"
-                data-redact-page-next
-                disabled={currentPageIndex >= pageCount - 1 || isBusy}
-                onClick={() =>
-                  setCurrentPageIndex(Math.min(pageCount - 1, currentPageIndex + 1))
-                }
-              >
-                Next
-              </ActionButton>
-            </div>
-
-            <ActionButton
-              variant="outline"
-              size="sm"
-              data-redact-choose-another
+      <ToolWorkspaceShell
+        isEmpty={!uploadedPdf && !hasResult}
+        empty={
+          <>
+            <FileDropZone
+              onFilesSelected={handleUpload}
+              accept={ACCEPTED_PDF_EXTENSIONS}
+              validateFile={isAcceptedPdfFile}
+              multiple={false}
               disabled={isBusy}
-              onClick={resetWorkspace}
-              className="w-full sm:ml-auto sm:w-auto"
-            >
-              Choose another PDF
-            </ActionButton>
-          </div>
-
-          {uploadedPdf.hasExistingDigitalSignatures && (
-            <div
-              data-redact-signature-warning
-              className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-3"
-            >
-              <p className="text-sm text-foreground">
-                {DIGITAL_SIGNATURE_REDACT_WARNING}
-              </p>
-            </div>
-          )}
-
-          <div
-            data-redact-toolbar
-            className="flex flex-wrap items-center gap-2 border-b border-border/80 px-3 py-2 sm:px-4"
-          >
-            <span
-              data-redact-draw-mode
-              className="rounded-lg border border-scanonix-orange bg-scanonix-orange/10 px-3 py-1.5 text-xs font-medium text-foreground"
-            >
-              Redact area
-            </span>
-
-            <ActionButton
-              variant="outline"
-              size="sm"
-              data-redact-undo
-              disabled={!canUndo || isBusy}
-              onClick={handleUndo}
-            >
-              Undo
-            </ActionButton>
-            <ActionButton
-              variant="outline"
-              size="sm"
-              data-redact-redo
-              disabled={!canRedo || isBusy}
-              onClick={handleRedo}
-            >
-              Redo
-            </ActionButton>
-            <ActionButton
-              variant="outline"
-              size="sm"
-              data-redact-delete-selected
-              disabled={!selectedRedactionId || isBusy}
-              onClick={handleDeleteSelected}
-            >
-              Delete selected
-            </ActionButton>
-            <ActionButton
-              variant="outline"
-              size="sm"
-              data-redact-clear-page
-              disabled={activePageRedactions.length === 0 || isBusy}
-              onClick={handleClearPage}
-            >
-              Clear page
-            </ActionButton>
-            <ActionButton
-              variant="outline"
-              size="sm"
-              data-redact-clear-all
-              disabled={redactionCount === 0 || isBusy}
-              onClick={handleClearAll}
-            >
-              Clear all
-            </ActionButton>
-
-            <div
-              data-redact-zoom-controls
-              className="ml-auto flex flex-wrap items-center gap-1.5"
-            >
-              <ActionButton
-                variant="outline"
-                size="sm"
-                data-redact-zoom-out
-                disabled={isBusy}
-                onClick={() => setZoom((current) => stepRedactZoom(current, "out"))}
-                aria-label="Zoom out"
-              >
-                −
-              </ActionButton>
-              <span
-                data-redact-zoom-indicator
-                className="min-w-[3.5rem] text-center text-xs text-foreground-muted"
-              >
-                {Math.round(zoom * 100)}%
-              </span>
-              <ActionButton
-                variant="outline"
-                size="sm"
-                data-redact-zoom-in
-                disabled={isBusy}
-                onClick={() => setZoom((current) => stepRedactZoom(current, "in"))}
-                aria-label="Zoom in"
-              >
-                +
-              </ActionButton>
-              <ActionButton
-                variant="outline"
-                size="sm"
-                data-redact-zoom-fit
-                disabled={isBusy}
-                onClick={handleFitWidth}
-              >
-                Fit width
-              </ActionButton>
-            </div>
-
-            <ActionButton
-              variant="outline"
-              size="sm"
-              data-redactions-drawer-toggle
-              disabled={isBusy}
-              onClick={() => setDrawerOpen((open) => !open)}
-            >
-              Redactions ({redactionCount})
-            </ActionButton>
-          </div>
-
-          <div className="space-y-3 px-3 py-3 sm:px-4">
-            <p className="text-xs text-foreground-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
-            <p className="text-xs text-foreground-muted">{REDACT_RASTER_QUALITY_COPY}</p>
-            <p className="text-xs text-foreground-muted">
+              inputId="redact-pdf-client-input"
+              inputDataAttributes={{ "data-redact-pdf-input": "true" }}
+              label="Drop a PDF here to redact"
+              hint="or click to browse — up to 10 MB, processed locally in your browser"
+              icon={<PdfDropIcon />}
+            />
+            <PrivacyNotice message={REDACT_PRIVACY_COPY} />
+            <p className="text-sm text-scanonix-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
+            <p className="text-sm text-scanonix-muted">
               {REDACT_SANITIZATION_LIMITATION_COPY}
             </p>
-            {shouldShowFormAnnotationWarning(uploadedPdf.document) && (
-              <p
-                data-redact-form-warning
-                className="text-xs text-foreground"
-              >
-                {REDACT_FORM_ANNOTATION_WARNING}
-              </p>
-            )}
-          </div>
-
-          <div
-            ref={previewContainerRef}
-            data-redact-pdf-preview-panel
-            className="bg-surface-muted p-4 sm:p-6"
-          >
-            <RedactPdfPreview
-              pageEntry={currentPage}
-              pdfBytes={uploadedPdf.bytes}
-              redactions={activePageRedactions}
-              selectedRedactionId={selectedRedactionId}
-              drawModeActive={drawModeActive}
-              zoom={zoom}
-              disabled={isBusy}
-              onSelectRedaction={setSelectedRedactionId}
-              onRedactionChange={handleRedactionChange}
-              onDrawComplete={handleDrawComplete}
-              onBaseDisplaySizeChange={({ width }) => setBaseDisplayWidth(width)}
-            />
-          </div>
-
-          <div className="border-t border-border/80 p-4 sm:p-5">
-            <ActionButton
-              size="lg"
-              data-redact-export-button
-              className="w-full"
-              loading={isExporting}
-              disabled={!canExport}
-              onClick={handleExport}
-            >
-              {proGateActive
-                ? "Upgrade to Pro to export"
-                : isExporting
-                  ? "Applying redactions…"
-                  : "Apply redactions & download"}
-            </ActionButton>
-            <div className="mt-3">
-              <PrivacyNotice message={REDACT_PRIVACY_COPY} />
+          </>
+        }
+        workArea={
+          hasResult ? (
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+              <div className="border-b border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+                <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Check
+                    className="h-4 w-4 shrink-0 text-emerald-600"
+                    aria-hidden="true"
+                    strokeWidth={2.5}
+                  />
+                  Redacted PDF ready
+                </p>
+                <p className="mt-0.5 text-xs text-scanonix-muted">
+                  Selected areas were permanently removed.
+                </p>
+              </div>
+              <div className="space-y-1 px-4 py-4">
+                <p className="text-sm font-medium text-foreground">{resultFilename}</p>
+                <p className="text-xs text-scanonix-muted">
+                  {formatFileSize(resultSize)}
+                  {redactionCount > 0
+                    ? ` · ${redactionCount} redaction${redactionCount === 1 ? "" : "s"}`
+                    : ""}
+                  {pageCount > 0
+                    ? ` · ${pageCount} page${pageCount === 1 ? "" : "s"}`
+                    : ""}
+                </p>
+              </div>
             </div>
-          </div>
+          ) : uploadedPdf && currentPage ? (
+            <div
+              data-redact-pdf-workspace
+              className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]"
+            >
+              <div
+                data-redact-pdf-header
+                className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 bg-surface-muted/40 px-3 py-2.5 sm:px-4"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {uploadedPdf.file.name}
+                  </p>
+                  <p className="text-xs text-scanonix-muted">
+                    {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
+                    {pageCount === 1 ? "" : "s"}
+                  </p>
+                </div>
+              </div>
 
-          <RedactionsDrawer
-            open={drawerOpen}
-            state={uploadedPdf.document}
-            selectedRedactionId={selectedRedactionId}
-            onClose={() => setDrawerOpen(false)}
-            onNavigate={(pageIndex, redactionId) => {
-              const pageIdx = pages.findIndex(
-                (page) => page.sourcePageIndex === pageIndex,
-              );
-              if (pageIdx >= 0) {
-                setCurrentPageIndex(pageIdx);
+              {uploadedPdf.hasExistingDigitalSignatures ? (
+                <div
+                  data-redact-signature-warning
+                  className="border-b border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 sm:px-4"
+                >
+                  <p className="text-sm text-foreground">
+                    {DIGITAL_SIGNATURE_REDACT_WARNING}
+                  </p>
+                </div>
+              ) : null}
+
+              {editorToolbar}
+
+              <div className="border-b border-border/80 px-3 py-2.5 sm:px-4">
+                <div className="rounded-lg border border-border bg-surface-muted/50 px-3 py-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-scanonix-muted">
+                    Before you export
+                  </p>
+                  <ul className="mt-1.5 space-y-1 text-xs leading-snug text-foreground">
+                    <li>
+                      <span className="font-semibold">Permanent redaction. </span>
+                      <span className="text-scanonix-muted">
+                        {REDACT_PERMANENT_APPLIED_COPY}
+                      </span>
+                    </li>
+                    <li>
+                      <span className="font-semibold">Image rebuild. </span>
+                      <span className="text-scanonix-muted">
+                        {REDACT_RASTER_QUALITY_COPY}
+                      </span>
+                    </li>
+                    <li>
+                      <span className="font-semibold">Hidden data. </span>
+                      <span className="text-scanonix-muted">
+                        {REDACT_SANITIZATION_LIMITATION_COPY}
+                      </span>
+                    </li>
+                    {showFormWarning ? (
+                      <li data-redact-form-warning>
+                        <span className="font-semibold">Forms / annotations. </span>
+                        <span className="text-scanonix-muted">
+                          {REDACT_FORM_ANNOTATION_WARNING}
+                        </span>
+                      </li>
+                    ) : null}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="border-b border-border/80 px-3 py-2 sm:px-4">
+                {pageNav}
+              </div>
+
+              <div
+                ref={previewContainerRef}
+                data-redact-pdf-preview-panel
+                className="bg-surface-muted p-3 sm:p-5"
+              >
+                <div className="mx-auto max-w-full overflow-x-auto rounded-xl border border-border bg-surface p-2 shadow-[var(--shadow-soft)] sm:p-3">
+                  <RedactPdfPreview
+                    pageEntry={currentPage}
+                    pdfBytes={uploadedPdf.bytes}
+                    redactions={activePageRedactions}
+                    selectedRedactionId={selectedRedactionId}
+                    drawModeActive={drawModeActive}
+                    zoom={zoom}
+                    disabled={isBusy}
+                    onSelectRedaction={setSelectedRedactionId}
+                    onRedactionChange={handleRedactionChange}
+                    onDrawComplete={handleDrawComplete}
+                    onBaseDisplaySizeChange={({ width }) =>
+                      setBaseDisplayWidth(width)
+                    }
+                  />
+                </div>
+              </div>
+
+              <RedactionsDrawer
+                open={drawerOpen}
+                state={uploadedPdf.document}
+                selectedRedactionId={selectedRedactionId}
+                onClose={() => setDrawerOpen(false)}
+                onNavigate={(pageIndex, redactionId) => {
+                  const pageIdx = pages.findIndex(
+                    (page) => page.sourcePageIndex === pageIndex,
+                  );
+                  if (pageIdx >= 0) {
+                    setCurrentPageIndex(pageIdx);
+                  }
+                  setSelectedRedactionId(redactionId);
+                }}
+              />
+            </div>
+          ) : null
+        }
+        controlPanel={
+          uploadedPdf || hasResult ? (
+            <ToolControlPanel
+              aria-label="Redact PDF controls"
+              footer={
+                <div className="flex flex-col gap-2">
+                  {hasResult ? (
+                    <>
+                      <ActionButton
+                        size="lg"
+                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        onClick={handleDownload}
+                      >
+                        Download PDF
+                      </ActionButton>
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        onClick={resetWorkspace}
+                      >
+                        Start over
+                      </ActionButton>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-[11px] leading-snug text-scanonix-muted">
+                        {proGateActive
+                          ? "Upgrade to Pro to apply redactions and download."
+                          : canExport
+                            ? "Permanently removes marked areas, then downloads your PDF."
+                            : "Mark at least one area to continue."}
+                      </p>
+                      <div
+                        className={
+                          stickyVisible ? "hidden md:block" : undefined
+                        }
+                      >
+                        <ActionButton
+                          size="md"
+                          data-redact-export-button
+                          className="h-11 w-full whitespace-nowrap px-4 text-sm shadow-[var(--shadow-orange-sm)]"
+                          loading={isExporting}
+                          disabled={!canExport}
+                          onClick={handleExport}
+                        >
+                          {!proGateActive ? (
+                            <Download
+                              className="h-4 w-4 shrink-0"
+                              aria-hidden="true"
+                              strokeWidth={2}
+                            />
+                          ) : null}
+                          {exportLabel}
+                        </ActionButton>
+                      </div>
+                      <div
+                        className={
+                          stickyVisible ? "hidden md:block" : undefined
+                        }
+                      >
+                        <ActionButton
+                          variant="outline"
+                          size="lg"
+                          className="w-full"
+                          data-redact-choose-another
+                          disabled={isBusy}
+                          onClick={resetWorkspace}
+                        >
+                          Choose another PDF
+                        </ActionButton>
+                      </div>
+                    </>
+                  )}
+                </div>
               }
-              setSelectedRedactionId(redactionId);
-            }}
-          />
-        </div>
-      )}
+            >
+              <div className="space-y-4">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                    Redact PDF
+                  </p>
+                  <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
+                    {hasResult
+                      ? "Your redacted file is ready to download."
+                      : "Draw boxes over content you want permanently removed."}
+                  </p>
+                </div>
 
-      {hasResult && (
-        <ToolResultsPanel
-          title="Redacted PDF ready"
-          primaryLabel="Download PDF"
-          onPrimaryClick={handleDownload}
-          onStartOver={resetWorkspace}
-          startOverLabel="Start over"
-        >
-          <p className="text-sm text-foreground-muted">
-            {resultFilename} · {formatFileSize(resultSize)}
-          </p>
-        </ToolResultsPanel>
-      )}
+                {uploadedPdf ? (
+                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                    <div className="min-w-0 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Selected file</dt>
+                      <dd className="mt-0.5 truncate font-semibold text-foreground">
+                        {uploadedPdf.file.name}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(uploadedPdf.file.size)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Pages</dt>
+                      <dd className="font-semibold text-foreground">{pageCount}</dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Redactions</dt>
+                      <dd className="font-semibold text-foreground">
+                        {redactionCount}
+                      </dd>
+                    </div>
+                  </dl>
+                ) : null}
+
+                {!hasResult ? (
+                  <div className="rounded-xl border border-border bg-surface-muted/40 px-3 py-2.5">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-scanonix-muted">
+                      Security
+                    </p>
+                    <p className="mt-1 text-xs leading-snug text-scanonix-muted">
+                      {REDACT_PERMANENT_APPLIED_COPY}
+                    </p>
+                    {uploadedPdf?.hasExistingDigitalSignatures ? (
+                      <p className="mt-2 text-xs leading-snug text-foreground">
+                        {DIGITAL_SIGNATURE_REDACT_WARNING}
+                      </p>
+                    ) : null}
+                    {showFormWarning ? (
+                      <p
+                        data-redact-form-warning
+                        className="mt-2 text-xs leading-snug text-foreground"
+                      >
+                        {REDACT_FORM_ANNOTATION_WARNING}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="text-xs leading-snug text-scanonix-muted">
+                    Selected areas were permanently removed.
+                  </p>
+                )}
+
+                <PrivacyNotice message={REDACT_PRIVACY_COPY} />
+              </div>
+            </ToolControlPanel>
+          ) : null
+        }
+      />
 
       <ToolStickyMobileActionBar
-        visible={Boolean(uploadedPdf && canExport && !hasResult)}
-        primaryLabel={
-          proGateActive ? "Upgrade to Pro to export" : "Apply redactions & download"
-        }
+        visible={stickyVisible}
+        primaryLabel={exportLabel}
         primaryLoading={isExporting}
         primaryDisabled={!canExport}
         onPrimaryClick={handleExport}
-        secondaryLabel={uploadedPdf ? "Choose another PDF" : undefined}
-        onSecondaryClick={uploadedPdf ? resetWorkspace : undefined}
+        secondaryLabel="Choose another PDF"
+        onSecondaryClick={resetWorkspace}
         secondaryDisabled={isBusy}
       />
     </div>

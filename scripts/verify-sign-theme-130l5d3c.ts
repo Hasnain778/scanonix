@@ -52,8 +52,17 @@ assert(
 
 const drawPad = read("components/tools/sign-pdf/SignatureDrawPad.tsx");
 assert(
-  "DrawPad stroke #111111 preserved",
-  (drawPad.match(/strokeStyle = "#111111"/g) || []).length >= 2,
+  "DrawPad separates Dark display ink from document-safe ink",
+  drawPad.includes('DOCUMENT_SAFE_INK = "#111111"') &&
+    drawPad.includes("DARK_MODE_DISPLAY_INK") &&
+    drawPad.includes('getAttribute("data-theme") === "dark"') &&
+    drawPad.includes("createDrawnSignatureAssetFromStrokes"),
+);
+assert(
+  "DrawPad does not export via canvas bitmap (avoids white Dark ink in PDF)",
+  !drawPad.includes("toDataURL") &&
+    !drawPad.includes("createDrawnSignatureAssetFromCanvas") &&
+    drawPad.includes("createDrawnSignatureAssetFromStrokes"),
 );
 assert(
   "DrawPad canvas remains bg-transparent",

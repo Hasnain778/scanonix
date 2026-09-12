@@ -1,13 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FileDigit } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import { ResultActionBar } from "@/components/tools/ResultActionBar";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
+import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
+import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import {
@@ -39,7 +41,7 @@ import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
-import { PageNumberPreview } from "./PageNumberPreview";
+import { PageNumberThumbGrid } from "./PageNumberThumbGrid";
 import { PositionPicker } from "./PositionPicker";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
@@ -49,23 +51,9 @@ interface UploadedPdfState {
   document: PageNumberDocumentState;
 }
 
-function PdfDropIcon() {
+function PageNumbersDropIcon({ className = "h-7 w-7" }: { className?: string }) {
   return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6M12 4v6" />
-    </svg>
+    <FileDigit className={className} aria-hidden="true" strokeWidth={1.75} />
   );
 }
 
@@ -73,7 +61,6 @@ export function AddPageNumbersTool() {
   const defaults = createDefaultPageNumberOptions();
 
   const [uploadedPdf, setUploadedPdf] = useState<UploadedPdfState | null>(null);
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [allPages, setAllPages] = useState(defaults.allPages);
   const [pageRangeInput, setPageRangeInput] = useState(defaults.pageRangeInput);
   const [startingNumber, setStartingNumber] = useState(defaults.startingNumber);
@@ -94,7 +81,6 @@ export function AddPageNumbersTool() {
   const resultBlobRef = useRef<Blob | null>(null);
 
   const pageCount = uploadedPdf?.document.pageCount ?? 0;
-  const currentPageEntry = uploadedPdf?.document.pages[currentPageIndex];
   const isBusy = isReadingPdf || isExporting || isDownloading;
   const hasResult = resultBlob !== null && status === "success";
 
@@ -177,7 +163,6 @@ export function AddPageNumbersTool() {
   const resetWorkspace = useCallback(() => {
     resultBlobRef.current = null;
     setUploadedPdf(null);
-    setCurrentPageIndex(0);
     setResultBlob(null);
     setResultFilename("scanonix-numbered.pdf");
     setStatus("idle");
@@ -225,7 +210,6 @@ export function AddPageNumbersTool() {
       });
 
       setUploadedPdf({ file, bytes, document });
-      setCurrentPageIndex(0);
       setResultFilename(buildNumberedPdfFilename(file.name));
       resetSettings();
     } catch (error) {
@@ -313,374 +297,466 @@ export function AddPageNumbersTool() {
     }
   };
 
-  const previewNumbering = uploadedPdf
-    ? resolvePreviewNumbering(
-        allPages,
-        pageRangeInput,
-        pageCount,
-        currentPageIndex,
-        startingNumber,
-        format,
-      )
-    : null;
+  const handleChangeSettings = useCallback(() => {
+    invalidateResult();
+  }, [invalidateResult]);
+
+  const exportHint = canExport
+    ? `Ready to number ${selection.pages.length || pageCount} page${
+        (selection.pages.length || pageCount) === 1 ? "" : "s"
+      }.`
+    : selection.error
+      ? "Fix the page range before continuing."
+      : "Configure numbering options.";
+
+  const settingsBody = uploadedPdf ? (
+    <div className="space-y-4">
+      <div>
+        <div className="flex items-center gap-2">
+          <FileDigit
+            className="h-4 w-4 text-scanonix-orange"
+            aria-hidden="true"
+          />
+          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+            Add page numbers
+          </p>
+        </div>
+        <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
+          Choose where and how page numbers appear in your PDF.
+        </p>
+      </div>
+
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="space-y-2">
+          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+            Position
+          </p>
+          <PositionPicker
+            value={position}
+            disabled={isBusy}
+            onChange={(nextPosition) => {
+              setPosition(nextPosition);
+              handleSettingChange();
+            }}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+            Margin
+          </p>
+          <div className="flex flex-col gap-1.5">
+            {MARGIN_PRESET_OPTIONS.map((preset) => {
+              const selected = margin === preset.value;
+              return (
+                <button
+                  key={preset.value}
+                  type="button"
+                  disabled={isBusy}
+                  aria-pressed={selected}
+                  onClick={() => {
+                    setMargin(preset.value);
+                    handleSettingChange();
+                  }}
+                  className={`rounded-md border px-3 py-2 text-left text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
+                    selected
+                      ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground shadow-[0_0_0_1px_color-mix(in_srgb,var(--scanonix-orange)_35%,transparent)]"
+                      : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-2 border-t border-border/80 pt-4">
+        <label className="block text-sm">
+          <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+            First number
+          </span>
+          <input
+            type="number"
+            min={MIN_STARTING_NUMBER}
+            max={MAX_STARTING_NUMBER}
+            step={1}
+            value={startingNumber}
+            disabled={isBusy}
+            onChange={(event) => {
+              setStartingNumber(Number(event.target.value));
+              handleSettingChange();
+            }}
+            className="w-full rounded-lg border border-border bg-surface-muted px-3 py-2 text-foreground focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+          />
+        </label>
+
+        <div>
+          <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+            Format
+          </span>
+          <div className="grid grid-cols-2 gap-1.5">
+            {FORMAT_OPTIONS.map((option) => {
+              const selected = format === option.value;
+              const example = resolvePreviewNumbering(
+                true,
+                "",
+                Math.max(pageCount, 1),
+                0,
+                1,
+                option.value,
+              ).text;
+
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  disabled={isBusy}
+                  aria-pressed={selected}
+                  onClick={() => {
+                    setFormat(option.value);
+                    handleSettingChange();
+                  }}
+                  className={`rounded-md border px-2.5 py-2 text-left transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
+                    selected
+                      ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground shadow-[0_0_0_1px_color-mix(in_srgb,var(--scanonix-orange)_30%,transparent)]"
+                      : "border-border/80 bg-surface-muted/80 text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
+                  }`}
+                >
+                  <span
+                    className={`block text-sm font-semibold ${
+                      selected ? "text-foreground" : "text-scanonix-muted"
+                    }`}
+                  >
+                    {example ?? option.example}
+                  </span>
+                  <span className="mt-0.5 block text-[10px] text-scanonix-muted">
+                    {option.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-2.5 border-t border-border/80 pt-4">
+        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+          Which pages do you want to number?
+        </p>
+        <div className="space-y-2">
+          <label className="flex items-center gap-3 text-sm text-foreground">
+            <input
+              type="radio"
+              name="page-selection"
+              checked={allPages}
+              disabled={isBusy}
+              onChange={() => {
+                setAllPages(true);
+                handleSettingChange();
+              }}
+              className="h-4 w-4 accent-scanonix-orange"
+            />
+            All pages
+          </label>
+          <label className="flex items-center gap-3 text-sm text-foreground">
+            <input
+              type="radio"
+              name="page-selection"
+              checked={!allPages}
+              disabled={isBusy}
+              onChange={() => {
+                setAllPages(false);
+                handleSettingChange();
+              }}
+              className="h-4 w-4 accent-scanonix-orange"
+            />
+            Custom range
+          </label>
+          {!allPages && (
+            <div>
+              <label
+                className="mb-1 block text-xs text-scanonix-muted"
+                htmlFor="add-page-numbers-range"
+              >
+                Page range
+              </label>
+              <input
+                id="add-page-numbers-range"
+                type="text"
+                value={pageRangeInput}
+                disabled={isBusy}
+                placeholder="e.g. 1-5, 8, 10-12"
+                onChange={(event) => {
+                  setPageRangeInput(event.target.value);
+                  handleSettingChange();
+                }}
+                className="w-full rounded-lg border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-scanonix-muted/70 focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+              />
+              {selection.error && (
+                <p className="mt-2 text-xs text-red-400">{selection.error}</p>
+              )}
+              {!selection.error && selection.pages.length > 0 && (
+                <p className="mt-2 text-xs text-scanonix-muted">
+                  {selection.pages.length} page
+                  {selection.pages.length === 1 ? "" : "s"} selected
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-2 border-t border-border/80 pt-4">
+        <label className="block text-sm">
+          <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+            Size
+          </span>
+          <input
+            type="number"
+            min={MIN_PAGE_NUMBER_FONT_SIZE}
+            max={MAX_PAGE_NUMBER_FONT_SIZE}
+            step={1}
+            value={fontSize}
+            disabled={isBusy}
+            onChange={(event) => {
+              setFontSize(Number(event.target.value));
+              handleSettingChange();
+            }}
+            className="w-full rounded-lg border border-border bg-surface-muted px-2.5 py-2 text-sm text-foreground focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+            aria-label="Font size"
+          />
+        </label>
+        <div>
+          <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+            Color
+          </span>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={
+                /^#[0-9a-fA-F]{6}$/.test(color)
+                  ? color
+                  : DEFAULT_PAGE_NUMBER_COLOR
+              }
+              disabled={isBusy}
+              onChange={(event) => handleColorChange(event.target.value)}
+              className="h-9 w-10 cursor-pointer rounded-md border border-border bg-surface-muted p-0.5"
+              aria-label="Page number color"
+            />
+            <input
+              type="text"
+              value={color}
+              disabled={isBusy}
+              onChange={(event) => handleColorChange(event.target.value)}
+              onBlur={handleColorBlur}
+              placeholder="#000000"
+              className="min-w-0 flex-1 rounded-lg border border-border bg-surface-muted px-2 py-1.5 font-mono text-xs text-foreground focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
+              aria-label="Page number hex color"
+            />
+          </div>
+        </div>
+      </section>
+
+      <div className="border-t border-border/80 pt-3">
+        <PrivacyNotice message={PAGE_NUMBERS_UI_PRIVACY_COPY} />
+      </div>
+    </div>
+  ) : null;
 
   return (
-    <div className="space-y-8 overflow-x-hidden">
+    <div className="space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
       />
 
-      {!uploadedPdf && (
-        <>
-          <FileDropZone
-            onFilesSelected={handleUpload}
-            accept={ACCEPTED_PDF_EXTENSIONS}
-            validateFile={isAcceptedPageNumbersPdfFile}
-            multiple={false}
-            disabled={isBusy}
-            label="Drop a PDF file here to add page numbers"
-            hint="or click to browse — processed locally in your browser"
-            icon={<PdfDropIcon />}
-          />
-          <PrivacyNotice message={PAGE_NUMBERS_UI_PRIVACY_COPY} />
-        </>
-      )}
-
-      {uploadedPdf && currentPageEntry && (
-        <>
-          <div className="flex flex-col gap-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-scanonix-border bg-black/40 text-scanonix-orange">
-                <PdfDropIcon />
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">
-                  {uploadedPdf.file.name}
-                </p>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
-                  {pageCount === 1 ? "" : "s"}
-                  {!allPages && selection.pages.length > 0
-                    ? ` · ${selection.pages.length} selected`
-                    : ""}
-                </p>
-              </div>
-            </div>
-            <ActionButton
-              variant="outline"
-              className="w-full sm:w-auto"
+      <ToolWorkspaceShell
+        isEmpty={!uploadedPdf}
+        empty={
+          <>
+            <FileDropZone
+              onFilesSelected={handleUpload}
+              accept={ACCEPTED_PDF_EXTENSIONS}
+              validateFile={isAcceptedPageNumbersPdfFile}
+              multiple={false}
               disabled={isBusy}
-              onClick={resetWorkspace}
-            >
-              Choose another PDF
-            </ActionButton>
-          </div>
-
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-            <div className="space-y-4 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <PageNumberPreview
-                pageEntry={currentPageEntry}
-                pdfBytes={uploadedPdf.bytes}
-                pageCount={pageCount}
-                currentPageIndex={currentPageIndex}
-                onPageChange={setCurrentPageIndex}
-                allPages={allPages}
-                pageRangeInput={pageRangeInput}
-                startingNumber={startingNumber}
-                format={format}
-                position={position}
-                fontSize={fontSize}
-                margin={margin}
-                color={color}
-                disabled={isBusy}
-              />
-              {previewNumbering?.isNumbered && previewNumbering.text && (
-                <p className="text-sm text-scanonix-muted">
-                  Preview shows <span className="text-white">{previewNumbering.text}</span> on
-                  this page.
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-6 rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <div>
-                <h2 className="text-lg font-semibold text-white">Numbering settings</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  Choose which pages to number and how they appear.
-                </p>
-              </div>
-
-              <fieldset className="space-y-3">
-                <legend className="text-sm font-medium text-white">Pages to number</legend>
-                <label className="flex items-center gap-3 text-sm text-scanonix-muted">
-                  <input
-                    type="radio"
-                    name="page-selection"
-                    checked={allPages}
-                    disabled={isBusy}
-                    onChange={() => {
-                      setAllPages(true);
-                      handleSettingChange();
-                    }}
-                    className="h-4 w-4 accent-scanonix-orange"
-                  />
-                  All pages
-                </label>
-                <label className="flex items-center gap-3 text-sm text-scanonix-muted">
-                  <input
-                    type="radio"
-                    name="page-selection"
-                    checked={!allPages}
-                    disabled={isBusy}
-                    onChange={() => {
-                      setAllPages(false);
-                      handleSettingChange();
-                    }}
-                    className="h-4 w-4 accent-scanonix-orange"
-                  />
-                  Custom pages
-                </label>
-                {!allPages && (
-                  <div>
-                    <label className="sr-only" htmlFor="add-page-numbers-range">
-                      Custom page range
-                    </label>
-                    <input
-                      id="add-page-numbers-range"
-                      type="text"
-                      value={pageRangeInput}
-                      disabled={isBusy}
-                      placeholder="e.g. 1-5, 8, 10-12"
-                      onChange={(event) => {
-                        setPageRangeInput(event.target.value);
-                        handleSettingChange();
-                      }}
-                      className="w-full rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-sm text-white placeholder:text-scanonix-muted/70 focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
-                    />
-                    {selection.error && (
-                      <p className="mt-2 text-xs text-red-300">{selection.error}</p>
-                    )}
-                    {!selection.error && selection.pages.length > 0 && (
-                      <p className="mt-2 text-xs text-scanonix-muted">
-                        {selection.pages.length} page
-                        {selection.pages.length === 1 ? "" : "s"} selected
-                      </p>
-                    )}
+              label="Drop a PDF file here to add page numbers"
+              hint="or click to browse — processed locally in your browser"
+              icon={<PageNumbersDropIcon />}
+            />
+            <PrivacyNotice message={PAGE_NUMBERS_UI_PRIVACY_COPY} />
+          </>
+        }
+        workArea={
+          uploadedPdf ? (
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                    <PageNumbersDropIcon className="h-4 w-4" />
                   </div>
-                )}
-              </fieldset>
-
-              <label className="block text-sm">
-                <span className="mb-1 block text-scanonix-muted">Starting number</span>
-                <input
-                  type="number"
-                  min={MIN_STARTING_NUMBER}
-                  max={MAX_STARTING_NUMBER}
-                  step={1}
-                  value={startingNumber}
-                  disabled={isBusy}
-                  onChange={(event) => {
-                    setStartingNumber(Number(event.target.value));
-                    handleSettingChange();
-                  }}
-                  className="w-full rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
-                />
-              </label>
-
-              <fieldset className="space-y-3">
-                <legend className="text-sm font-medium text-white">Format</legend>
-                <div className="grid grid-cols-2 gap-2">
-                  {FORMAT_OPTIONS.map((option) => {
-                    const selected = format === option.value;
-                    const example = resolvePreviewNumbering(
-                      true,
-                      "",
-                      Math.max(pageCount, 1),
-                      0,
-                      1,
-                      option.value,
-                    ).text;
-
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        disabled={isBusy}
-                        aria-pressed={selected}
-                        onClick={() => {
-                          setFormat(option.value);
-                          handleSettingChange();
-                        }}
-                        className={`rounded-xl border px-3 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
-                          selected
-                            ? "border-scanonix-orange bg-scanonix-orange/10"
-                            : "border-scanonix-border bg-black/30 hover:border-scanonix-orange/50"
-                        }`}
-                      >
-                        <span className="block text-sm font-medium text-white">
-                          {example ?? option.example}
-                        </span>
-                        <span className="mt-1 block text-xs text-scanonix-muted">
-                          {option.label}
-                        </span>
-                      </button>
-                    );
-                  })}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {uploadedPdf.file.name}
+                    </p>
+                    <p className="truncate text-[11px] text-scanonix-muted">
+                      {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
+                      {pageCount === 1 ? "" : "s"}
+                      {!allPages && selection.pages.length > 0
+                        ? ` · ${selection.pages.length} selected`
+                        : ""}
+                    </p>
+                  </div>
                 </div>
-              </fieldset>
-
-              <div className="space-y-3">
-                <p className="text-sm font-medium text-white">Position</p>
-                <PositionPicker
-                  value={position}
-                  disabled={isBusy}
-                  onChange={(nextPosition) => {
-                    setPosition(nextPosition);
-                    handleSettingChange();
-                  }}
-                />
-              </div>
-
-              <label className="block text-sm">
-                <span className="mb-1 block text-scanonix-muted">
-                  Font size ({MIN_PAGE_NUMBER_FONT_SIZE}–{MAX_PAGE_NUMBER_FONT_SIZE} pt)
-                </span>
-                <input
-                  type="number"
-                  min={MIN_PAGE_NUMBER_FONT_SIZE}
-                  max={MAX_PAGE_NUMBER_FONT_SIZE}
-                  step={1}
-                  value={fontSize}
-                  disabled={isBusy}
-                  onChange={(event) => {
-                    setFontSize(Number(event.target.value));
-                    handleSettingChange();
-                  }}
-                  className="w-full rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
-                />
-              </label>
-
-              <div className="space-y-2">
-                <span className="block text-sm text-scanonix-muted">Color</span>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={
-                      /^#[0-9a-fA-F]{6}$/.test(color)
-                        ? color
-                        : DEFAULT_PAGE_NUMBER_COLOR
-                    }
+                <div
+                  className={
+                    stickyVisible
+                      ? "hidden w-full sm:w-auto md:block"
+                      : "w-full sm:w-auto"
+                  }
+                >
+                  <ActionButton
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-lg sm:w-auto"
                     disabled={isBusy}
-                    onChange={(event) => handleColorChange(event.target.value)}
-                    className="h-11 w-14 cursor-pointer rounded-lg border border-scanonix-border bg-black/40 p-1"
-                    aria-label="Page number color"
-                  />
-                  <input
-                    type="text"
-                    value={color}
-                    disabled={isBusy}
-                    onChange={(event) => handleColorChange(event.target.value)}
-                    onBlur={handleColorBlur}
-                    placeholder="#000000"
-                    className="min-w-0 flex-1 rounded-xl border border-scanonix-border bg-black/40 px-3 py-2 font-mono text-sm text-white focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20"
-                    aria-label="Page number hex color"
-                  />
+                    onClick={resetWorkspace}
+                  >
+                    {hasResult ? "Start over" : "Choose another PDF"}
+                  </ActionButton>
                 </div>
               </div>
 
-              <fieldset className="space-y-3">
-                <legend className="text-sm font-medium text-white">Margin</legend>
-                <div className="flex flex-wrap gap-2">
-                  {MARGIN_PRESET_OPTIONS.map((preset) => {
-                    const selected = margin === preset.value;
-                    return (
-                      <button
-                        key={preset.value}
-                        type="button"
-                        disabled={isBusy}
-                        aria-pressed={selected}
-                        onClick={() => {
-                          setMargin(preset.value);
-                          handleSettingChange();
-                        }}
-                        className={`rounded-xl border px-4 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
-                          selected
-                            ? "border-scanonix-orange bg-scanonix-orange/10 text-white"
-                            : "border-scanonix-border bg-black/30 text-scanonix-muted hover:border-scanonix-orange/50"
-                        }`}
-                      >
-                        {preset.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-            </div>
-          </div>
-
-          {hasResult && resultBlob && (
-            <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-              <h2 className="mb-2 text-lg font-semibold text-white">Results</h2>
-              <p className="text-sm text-scanonix-muted">
-                {selection.pages.length || pageCount} numbered page
-                {(selection.pages.length || pageCount) === 1 ? "" : "s"} ·{" "}
-                {formatFileSize(resultBlob.size)} · {resultFilename}
-              </p>
-              <div className="mt-5">
-                <ResultActionBar
-                  phase={resultActionPhase}
-                  primary={{
-                    label: "Download numbered PDF",
-                    onClick: () => {
-                      void handleDownload();
-                    },
-                    loading: isDownloading,
-                    disabled: isBusy,
-                  }}
-                  startOver={{
-                    label: "Start over",
-                    onClick: resetWorkspace,
-                    disabled: isBusy,
-                  }}
+              <div className="bg-surface-muted/30 p-3 sm:p-4">
+                <PageNumberThumbGrid
+                  pdfBytes={uploadedPdf.bytes}
+                  totalPages={pageCount}
+                  numberedPages={selection.pages}
+                  allPages={allPages}
+                  pageRangeInput={pageRangeInput}
+                  startingNumber={startingNumber}
+                  format={format}
+                  position={position}
+                  disabled={isBusy}
                 />
               </div>
             </div>
-          )}
+          ) : null
+        }
+        controlPanel={
+          uploadedPdf ? (
+            <ToolControlPanel
+              aria-label="Page number controls"
+              footer={
+                hasResult && resultBlob ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="hidden md:block">
+                      <ActionButton
+                        size="lg"
+                        className="w-full"
+                        loading={isDownloading}
+                        disabled={isBusy}
+                        onClick={() => {
+                          void handleDownload();
+                        }}
+                      >
+                        Download PDF
+                      </ActionButton>
+                    </div>
+                    <ActionButton
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                      disabled={isBusy}
+                      onClick={handleChangeSettings}
+                    >
+                      Change settings
+                    </ActionButton>
+                    <div className="hidden md:block">
+                      <ActionButton
+                        variant="outline"
+                        size="lg"
+                        className="w-full"
+                        disabled={isBusy}
+                        onClick={resetWorkspace}
+                      >
+                        Start over
+                      </ActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[11px] leading-snug text-scanonix-muted">
+                      {exportHint}
+                    </p>
+                    <div
+                      className={
+                        stickyVisible ? "hidden md:block" : undefined
+                      }
+                    >
+                      <ActionButton
+                        size="lg"
+                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        loading={isExporting}
+                        disabled={!canExport}
+                        onClick={handleExport}
+                      >
+                        {isExporting ? "Adding…" : "Add page numbers"}
+                      </ActionButton>
+                    </div>
+                  </div>
+                )
+              }
+            >
+              {hasResult && resultBlob ? (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                      Result
+                    </p>
+                    <p className="mt-1.5 text-sm font-semibold text-green-700">
+                      ✓ Page numbers added
+                    </p>
+                    <p className="mt-1 text-xs text-scanonix-muted">
+                      Your numbered PDF is ready to download.
+                    </p>
+                  </div>
 
-          <div className="rounded-2xl border border-scanonix-border bg-scanonix-surface p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-white">Export numbered PDF</h2>
-                <p className="mt-1 text-sm text-scanonix-muted">
-                  {canExport
-                    ? "Export adds page numbers to a new PDF for download."
-                    : selection.error
-                      ? "Fix the page range before exporting."
-                      : "Add a PDF before exporting."}
-                </p>
-              </div>
-              <ActionButton
-                size="lg"
-                className="hidden w-full sm:w-auto xl:inline-flex"
-                loading={isExporting}
-                disabled={!canExport}
-                onClick={handleExport}
-              >
-                {isExporting ? "Exporting…" : "Export numbered PDF"}
-              </ActionButton>
-            </div>
-            <div className="mt-4 border-t border-scanonix-border pt-4">
-              <PrivacyNotice message={PAGE_NUMBERS_UI_PRIVACY_COPY} />
-            </div>
-          </div>
-        </>
-      )}
+                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Pages numbered</dt>
+                      <dd className="font-semibold text-foreground">
+                        {selection.pages.length || pageCount}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">File size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(resultBlob.size)}
+                      </dd>
+                    </div>
+                    <div className="min-w-0 px-3 py-2.5">
+                      <dt className="text-scanonix-muted">Filename</dt>
+                      <dd className="mt-0.5 truncate font-semibold text-foreground">
+                        {resultFilename}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : (
+                settingsBody
+              )}
+            </ToolControlPanel>
+          ) : null
+        }
+      />
 
       <ToolStickyMobileActionBar
         visible={stickyVisible}
         phase={resultActionPhase}
-        primaryLabel={hasResult ? "Download numbered PDF" : "Export numbered PDF"}
+        primaryLabel={hasResult ? "Download PDF" : "Add page numbers"}
         primaryLoading={hasResult ? isDownloading : isExporting}
         primaryDisabled={hasResult ? isBusy || !resultBlob : !canExport}
         onPrimaryClick={() => {

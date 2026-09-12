@@ -9,7 +9,7 @@ export default function WatermarkPdfPage() {
   return (
     <ToolRoute
       toolId="watermark-pdf"
-      icon={<ToolIcon type="word" className="h-7 w-7" />}
+      icon={<ToolIcon type="watermark-pdf" className="h-7 w-7" />}
     >
       <LazyWatermarkPdfClientTool />
     </ToolRoute>

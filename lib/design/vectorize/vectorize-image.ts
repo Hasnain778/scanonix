@@ -19,7 +19,12 @@ export type {
   VectorizePreset,
   VectorizeTraceMetadata,
 } from "./types";
-export { VectorizeError, VECTORIZE_MAX_BYTES, VECTORIZE_MAX_DIMENSION } from "./types";
+export {
+  VectorizeError,
+  VECTORIZE_MAX_BYTES,
+  VECTORIZE_MAX_DIMENSION,
+  VECTORIZE_MAX_INPUT_PIXELS,
+} from "./types";
 export { validateSvgIsRealVector } from "./validate-svg";
 export { resolveVectorizeSettings } from "./presets";
 

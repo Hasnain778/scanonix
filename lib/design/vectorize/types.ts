@@ -48,6 +48,7 @@ export type VectorizeErrorCode =
   | "UNSUPPORTED_TYPE"
   | "INVALID_IMAGE"
   | "DIMENSIONS_TOO_LARGE"
+  | "PIXEL_LIMIT_EXCEEDED"
   | "TRACE_FAILED"
   | "INVALID_SVG_OUTPUT";
 
@@ -61,7 +62,13 @@ export class VectorizeError extends Error {
   }
 }
 
-/** Prototype safety limits — tighten/raise when tools go public. */
+/** Prototype / API safety limits — tighten further before heavy public traffic. */
 export const VECTORIZE_MAX_BYTES = 5 * 1024 * 1024;
 export const VECTORIZE_MAX_DIMENSION = 2048;
 export const VECTORIZE_MIN_DIMENSION = 1;
+/**
+ * Sharp `limitInputPixels` cap — bound decode memory before full raster expand.
+ * Matches max logical canvas (2048×2048).
+ */
+export const VECTORIZE_MAX_INPUT_PIXELS =
+  VECTORIZE_MAX_DIMENSION * VECTORIZE_MAX_DIMENSION;

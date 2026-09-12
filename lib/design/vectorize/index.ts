@@ -5,6 +5,7 @@ export {
   VectorizeError,
   VECTORIZE_MAX_BYTES,
   VECTORIZE_MAX_DIMENSION,
+  VECTORIZE_MAX_INPUT_PIXELS,
 } from "./vectorize-image";
 
 export type {

@@ -57,6 +57,7 @@
     "verify:seo-canonical-host": "npx --yes tsx scripts/verify-seo-canonical-host.ts",
     "verify:favicon": "npx --yes tsx scripts/verify-favicon.ts",
     "verify:vector-engine": "npx --yes tsx scripts/verify-vector-engine.ts",
+    "verify:logo-vectorizer-api": "npx --yes tsx scripts/verify-logo-vectorizer-api.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {

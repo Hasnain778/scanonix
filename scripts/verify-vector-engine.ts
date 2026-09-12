@@ -273,6 +273,55 @@ async function run() {
     fail("8 logo preset produces non-empty usable deterministic output", err);
   }
 
+  try {
+    // Programmatic oversized raster — no committed binary.
+    const oversized = await sharp({
+      create: {
+        width: 3000,
+        height: 3000,
+        channels: 3,
+        background: { r: 200, g: 40, b: 40 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    let rejected = false;
+    let code: string | undefined;
+    try {
+      await vectorizeImage({ buffer: oversized, fileName: "oversized.png" });
+    } catch (err) {
+      if (err instanceof VectorizeError) {
+        code = err.code;
+        rejected =
+          err.code === "PIXEL_LIMIT_EXCEEDED" ||
+          err.code === "DIMENSIONS_TOO_LARGE";
+      }
+    }
+    assert.equal(rejected, true, `expected pixel/dimension rejection, got ${code}`);
+    ok("9 oversized dimensions / pixel limit rejected");
+  } catch (err) {
+    fail("9 oversized dimensions / pixel limit rejected", err);
+  }
+
+  try {
+    const logoPng = await makeTwoColorLogoPng();
+    const jpeg = await makeGeometryJpeg();
+    const logo = await vectorizeImage(
+      { buffer: logoPng, fileName: "logo.png" },
+      { preset: "logo" },
+    );
+    const shapes = await vectorizeImage(
+      { buffer: jpeg, fileName: "shapes.jpg" },
+      { preset: "general" },
+    );
+    assertRealVector(logo.svg, "post-limit logo PNG");
+    assertRealVector(shapes.svg, "post-limit JPEG");
+    ok("10 ordinary PNG/JPEG fixtures still pass after pixel-cap");
+  } catch (err) {
+    fail("10 ordinary PNG/JPEG fixtures still pass after pixel-cap", err);
+  }
+
   console.log(`\n${passed} passed, ${failed} failed\n`);
   process.exit(failed > 0 ? 1 : 0);
 }

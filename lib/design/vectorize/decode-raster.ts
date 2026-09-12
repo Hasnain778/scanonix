@@ -2,6 +2,7 @@ import sharp from "sharp";
 import {
   VECTORIZE_MAX_BYTES,
   VECTORIZE_MAX_DIMENSION,
+  VECTORIZE_MAX_INPUT_PIXELS,
   VECTORIZE_MIN_DIMENSION,
   VectorizeError,
   type VectorizeInputMime,
@@ -116,12 +117,23 @@ export async function decodeRasterForVectorize(
 
   let decoded: { data: Buffer; info: { width: number; height: number } };
   try {
-    decoded = await sharp(input, { failOn: "none" })
+    // limitInputPixels rejects oversized rasters during decode (before full expand).
+    decoded = await sharp(input, {
+      failOn: "none",
+      limitInputPixels: VECTORIZE_MAX_INPUT_PIXELS,
+    })
       .rotate()
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
-  } catch {
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (/pixel limit/i.test(message) || /limitInputPixels/i.test(message)) {
+      throw new VectorizeError(
+        "PIXEL_LIMIT_EXCEEDED",
+        `Image exceeds the ${VECTORIZE_MAX_DIMENSION}×${VECTORIZE_MAX_DIMENSION} pixel limit.`,
+      );
+    }
     throw new VectorizeError("INVALID_IMAGE", "Could not decode image.");
   }
 

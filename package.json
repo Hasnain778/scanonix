@@ -56,6 +56,7 @@
     "verify:stripe-customer-132c": "npx --yes tsx scripts/verify-stripe-customer-132c.ts",
     "verify:seo-canonical-host": "npx --yes tsx scripts/verify-seo-canonical-host.ts",
     "verify:favicon": "npx --yes tsx scripts/verify-favicon.ts",
+    "verify:vector-engine": "npx --yes tsx scripts/verify-vector-engine.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {
@@ -68,6 +69,7 @@
     "docx": "^9.7.1",
     "framer-motion": "^12.42.2",
     "heic2any": "^0.0.4",
+    "imagetracerjs": "^1.2.6",
     "jspdf": "^4.2.1",
     "jsqr": "^1.4.0",
     "jszip": "^3.10.1",

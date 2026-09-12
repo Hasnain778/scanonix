@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
+import { isOpenAiConfigured } from "@/config/env";
 import {
   isValidRewriteLength,
   isValidRewriteTone,
   OpenAiError,
+  REWRITE_MAX_CHARACTERS,
   rewriteText,
+  type RewriteLength,
+  type RewriteTone,
 } from "@/lib/ai/openai-server";
 import { AI_REWRITE_UNAVAILABLE } from "@/lib/ai/messages";
 import {
@@ -45,6 +49,8 @@ export async function POST(request: Request) {
 
     const tone = body.tone?.trim() ?? "";
     const length = body.length?.trim() ?? "";
+    const text = typeof body.text === "string" ? body.text : "";
+    const trimmed = text.trim();
 
     if (!isValidRewriteTone(tone)) {
       return NextResponse.json({ error: "Please choose a valid tone." }, { status: 400 });
@@ -52,11 +58,33 @@ export async function POST(request: Request) {
     if (!isValidRewriteLength(length)) {
       return NextResponse.json({ error: "Please choose a valid length option." }, { status: 400 });
     }
+    if (!trimmed) {
+      return NextResponse.json({ error: "Text is required." }, { status: 400 });
+    }
+    if (trimmed.length > REWRITE_MAX_CHARACTERS) {
+      return NextResponse.json(
+        {
+          error: `Text exceeds the ${REWRITE_MAX_CHARACTERS.toLocaleString()} character limit.`,
+        },
+        { status: 400 },
+      );
+    }
 
     const uploadError = validateUploadSize(route, body.fileSizeBytes, access.limits);
     if (uploadError) {
       return uploadError;
     }
+
+    if (!isOpenAiConfigured()) {
+      return NextResponse.json({ error: AI_REWRITE_UNAVAILABLE }, { status: 503 });
+    }
+
+    const rewritten = await rewriteText(
+      text,
+      tone as RewriteTone,
+      length as RewriteLength,
+      body.preserveMeaning !== false,
+    );
 
     const usage = await consumeUsage(access.user.id, access.plan);
     if (!usage.allowed) {
@@ -71,13 +99,6 @@ export async function POST(request: Request) {
         },
       );
     }
-
-    const rewritten = await rewriteText(
-      body.text ?? "",
-      tone,
-      length,
-      body.preserveMeaning !== false,
-    );
 
     return NextResponse.json({
       text: rewritten,

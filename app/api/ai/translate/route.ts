@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isOpenAiConfigured } from "@/config/env";
 import { OpenAiError, translateTextAdvanced } from "@/lib/ai/openai-server";
 import {
   AI_TRANSLATION_UNAVAILABLE,
@@ -84,6 +85,16 @@ export async function POST(request: Request) {
       return uploadError;
     }
 
+    if (!isOpenAiConfigured()) {
+      return NextResponse.json({ error: AI_TRANSLATION_UNAVAILABLE }, { status: 503 });
+    }
+
+    const result = await translateTextAdvanced(
+      body.text ?? "",
+      sourceLanguage,
+      targetLanguage,
+    );
+
     const usage = await consumeUsage(access.user.id, access.plan);
     if (!usage.allowed) {
       return limitReachedResponse(
@@ -97,12 +108,6 @@ export async function POST(request: Request) {
         },
       );
     }
-
-    const result = await translateTextAdvanced(
-      body.text ?? "",
-      sourceLanguage,
-      targetLanguage,
-    );
 
     return NextResponse.json({
       translatedText: result.translatedText,

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isOpenAiConfigured } from "@/config/env";
 import { OpenAiError, summarizeText } from "@/lib/ai/openai-server";
 import { AI_SUMMARY_UNAVAILABLE } from "@/lib/ai/messages";
 import {
@@ -29,6 +30,12 @@ export async function POST(request: Request) {
       return uploadError;
     }
 
+    if (!isOpenAiConfigured()) {
+      return NextResponse.json({ error: AI_SUMMARY_UNAVAILABLE }, { status: 503 });
+    }
+
+    const summary = await summarizeText(body.text ?? "");
+
     const usage = await consumeUsage(access.user.id, access.plan);
     if (!usage.allowed) {
       return limitReachedResponse(
@@ -43,7 +50,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const summary = await summarizeText(body.text ?? "");
     return NextResponse.json({
       text: summary,
       remaining: usage.remaining,

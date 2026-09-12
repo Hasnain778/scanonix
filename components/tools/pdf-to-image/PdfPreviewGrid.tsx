@@ -73,13 +73,23 @@ export function PdfPreviewGrid({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-foreground">Page previews</h2>
+        <div>
+          <h2 className="text-base font-semibold tracking-tight text-foreground">
+            Page previews
+          </h2>
+          {selectable && (
+            <p className="mt-0.5 text-xs text-scanonix-muted">
+              {selectedPages.length} of {totalPages} page
+              {totalPages === 1 ? "" : "s"} selected
+            </p>
+          )}
+        </div>
         {selectable && (
           <div className="flex gap-2">
             <ActionButton
               variant="outline"
               size="sm"
-              className="rounded-xl"
+              className="rounded-lg"
               disabled={disabled}
               onClick={onSelectAll}
             >
@@ -88,7 +98,7 @@ export function PdfPreviewGrid({
             <ActionButton
               variant="ghost"
               size="sm"
-              className="rounded-xl"
+              className="rounded-lg"
               disabled={disabled || selectedPages.length === 0}
               onClick={onClearSelection}
             >
@@ -98,14 +108,7 @@ export function PdfPreviewGrid({
         )}
       </div>
 
-      {selectable && (
-        <p className="text-sm text-scanonix-muted">
-          {selectedPages.length} of {totalPages} page
-          {totalPages === 1 ? "" : "s"} selected
-        </p>
-      )}
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
         {pages.map((page) => {
           const highlighted = isHighlighted(page);
           const isLoading = loadingPages[page];
@@ -114,7 +117,7 @@ export function PdfPreviewGrid({
           const content = (
             <>
               {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
                   <svg
                     className="h-6 w-6 animate-spin text-scanonix-orange"
                     viewBox="0 0 24 24"
@@ -155,10 +158,10 @@ export function PdfPreviewGrid({
             </>
           );
 
-          const cardClasses = `relative aspect-[3/4] overflow-hidden rounded-xl border bg-surface-muted transition-all duration-200 ${
+          const cardClasses = `relative aspect-[3/4] overflow-hidden rounded-lg border bg-surface transition-all duration-200 ${
             highlighted
-              ? "border-scanonix-orange ring-2 ring-scanonix-orange/30"
-              : "border-border"
+              ? "border-scanonix-orange shadow-[0_0_0_2px_color-mix(in_srgb,var(--scanonix-orange)_35%,transparent)]"
+              : "border-border/70 shadow-sm hover:border-scanonix-orange/40"
           }`;
 
           if (selectable) {
@@ -169,17 +172,19 @@ export function PdfPreviewGrid({
                 disabled={disabled}
                 onClick={() => onTogglePage?.(page)}
                 className={`group text-left ${cardClasses} ${
-                  disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-scanonix-orange/50"
+                  disabled
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer"
                 }`}
                 aria-pressed={highlighted}
                 aria-label={`Page ${page}${highlighted ? ", selected" : ""}`}
               >
                 {content}
                 <div
-                  className={`absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold ${
+                  className={`absolute left-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-md px-1 text-[11px] font-bold tabular-nums ${
                     highlighted
                       ? "bg-scanonix-orange text-white"
-                      : "border border-border bg-surface text-foreground"
+                      : "border border-border bg-surface/95 text-foreground backdrop-blur-sm"
                   }`}
                 >
                   {page}
@@ -192,10 +197,10 @@ export function PdfPreviewGrid({
             <div key={page} className={cardClasses}>
               {content}
               <div
-                className={`absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold ${
+                className={`absolute left-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-md px-1 text-[11px] font-bold tabular-nums ${
                   highlighted
                     ? "bg-scanonix-orange text-white"
-                    : "border border-border bg-surface text-foreground"
+                    : "border border-border bg-surface/95 text-foreground backdrop-blur-sm"
                 }`}
               >
                 {page}

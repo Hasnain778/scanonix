@@ -18,6 +18,8 @@ interface PdfToImageOptionsPanelProps {
   onScaleChange: (scale: ImageExportScale) => void;
   rangeError?: string;
   disabled?: boolean;
+  /** Compact vertical layout for sticky control rails */
+  compact?: boolean;
 }
 
 const MODES: {
@@ -60,12 +62,34 @@ const SCALES: { value: ImageExportScale; label: string }[] = [
   { value: 3, label: "3x" },
 ];
 
-function chipClass(selected: boolean, disabled: boolean) {
-  return `cursor-pointer rounded-xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
+function chipClass(selected: boolean, disabled: boolean, compact: boolean) {
+  return `cursor-pointer rounded-lg border text-sm font-semibold transition-all duration-200 ${
+    compact ? "px-3 py-1.5" : "px-5 py-2.5"
+  } ${
     selected
-      ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
-      : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
+      ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground shadow-[0_0_0_1px_color-mix(in_srgb,var(--scanonix-orange)_35%,transparent)]"
+      : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40 hover:bg-surface-muted hover:text-foreground"
   } ${disabled ? "cursor-not-allowed opacity-50" : ""}`;
+}
+
+function SectionLabel({
+  children,
+  compact,
+}: {
+  children: string;
+  compact: boolean;
+}) {
+  return (
+    <h2
+      className={
+        compact
+          ? "text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted"
+          : "text-lg font-semibold text-foreground"
+      }
+    >
+      {children}
+    </h2>
+  );
 }
 
 export function PdfToImageOptionsPanel({
@@ -81,25 +105,38 @@ export function PdfToImageOptionsPanel({
   onScaleChange,
   rangeError,
   disabled = false,
+  compact = false,
 }: PdfToImageOptionsPanelProps) {
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
-        <h2 className="text-lg font-semibold text-foreground">Pages to convert</h2>
-        <p className="mt-1 text-sm text-scanonix-muted">
-          Choose which pages to export as images.
-        </p>
+    <div className={compact ? "space-y-5" : "space-y-4"}>
+      <section className={compact ? "space-y-2.5" : "rounded-2xl border border-border bg-surface p-4 sm:p-5"}>
+        <div>
+          <SectionLabel compact={compact}>Pages to convert</SectionLabel>
+          {!compact && (
+            <p className="mt-1 text-sm text-scanonix-muted">
+              Choose which pages to export as images.
+            </p>
+          )}
+        </div>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <div
+          className={
+            compact
+              ? "grid gap-1.5"
+              : "mt-4 grid gap-2 sm:grid-cols-3"
+          }
+        >
           {MODES.map((option) => {
             const selected = mode === option.value;
             return (
               <label
                 key={option.value}
-                className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 ${
+                className={`cursor-pointer rounded-xl border transition-all duration-200 ${
+                  compact ? "px-3 py-2.5" : "p-4"
+                } ${
                   selected
-                    ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
-                    : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
+                    ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground shadow-[0_0_0_1px_color-mix(in_srgb,var(--scanonix-orange)_30%,transparent)]"
+                    : "border-border/80 bg-surface-muted/80 text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
                 } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
               >
                 <input
@@ -118,7 +155,7 @@ export function PdfToImageOptionsPanel({
                 >
                   {option.label}
                 </span>
-                <span className="mt-1 block text-xs text-scanonix-muted">
+                <span className="mt-0.5 block text-[11px] leading-snug text-scanonix-muted">
                   {option.description}
                 </span>
               </label>
@@ -127,10 +164,10 @@ export function PdfToImageOptionsPanel({
         </div>
 
         {mode === "ranges" && (
-          <div className="mt-4">
+          <div className={compact ? "pt-1" : "mt-4"}>
             <label
               htmlFor="image-page-ranges"
-              className="mb-2 block text-sm font-medium text-foreground"
+              className="mb-1.5 block text-xs font-medium text-foreground"
             >
               Page ranges
             </label>
@@ -141,37 +178,51 @@ export function PdfToImageOptionsPanel({
               onChange={(event) => onRangeInputChange(event.target.value)}
               disabled={disabled}
               placeholder="e.g. 1-3, 5, 8-10"
-              className="w-full rounded-xl border border-border bg-surface-muted px-4 py-3 text-sm text-foreground placeholder:text-scanonix-muted/60 focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20 disabled:opacity-50"
+              className="w-full rounded-lg border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-scanonix-muted/60 focus:border-scanonix-orange focus:outline-none focus:ring-2 focus:ring-scanonix-orange/20 disabled:opacity-50"
             />
             {rangeError ? (
               <p className="mt-2 text-sm text-red-400" role="alert">
                 {rangeError}
               </p>
             ) : (
-              <p className="mt-2 text-xs text-scanonix-muted">
+              <p className="mt-1.5 text-[11px] text-scanonix-muted">
                 Each page in the ranges will be exported as a separate image.
               </p>
             )}
           </div>
         )}
-      </div>
+      </section>
 
-      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
-        <h2 className="text-lg font-semibold text-foreground">Export settings</h2>
-        <p className="mt-1 text-sm text-scanonix-muted">
-          Choose format, quality, and resolution.
-        </p>
+      <section
+        className={
+          compact
+            ? "space-y-3 border-t border-border/80 pt-5"
+            : "rounded-2xl border border-border bg-surface p-4 sm:p-5"
+        }
+      >
+        <div>
+          <SectionLabel compact={compact}>Export settings</SectionLabel>
+          {!compact && (
+            <p className="mt-1 text-sm text-scanonix-muted">
+              Choose format, quality, and resolution.
+            </p>
+          )}
+        </div>
 
-        <div className="mt-4 space-y-4">
+        <div className={compact ? "space-y-3.5" : "mt-4 space-y-4"}>
           <fieldset disabled={disabled}>
-            <legend className="mb-2 text-sm font-medium text-foreground">
+            <legend className="mb-1.5 text-xs font-medium text-foreground">
               Format
             </legend>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {FORMATS.map((option) => (
                 <label
                   key={option.value}
-                  className={chipClass(format === option.value, disabled)}
+                  className={chipClass(
+                    format === option.value,
+                    disabled,
+                    compact,
+                  )}
                 >
                   <input
                     type="radio"
@@ -188,14 +239,18 @@ export function PdfToImageOptionsPanel({
           </fieldset>
 
           <fieldset disabled={disabled}>
-            <legend className="mb-2 text-sm font-medium text-foreground">
+            <legend className="mb-1.5 text-xs font-medium text-foreground">
               Quality
             </legend>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {QUALITIES.map((option) => (
                 <label
                   key={option.value}
-                  className={chipClass(quality === option.value, disabled)}
+                  className={chipClass(
+                    quality === option.value,
+                    disabled,
+                    compact,
+                  )}
                 >
                   <input
                     type="radio"
@@ -210,21 +265,21 @@ export function PdfToImageOptionsPanel({
               ))}
             </div>
             {format === "png" && (
-              <p className="mt-2 text-xs text-scanonix-muted">
+              <p className="mt-1.5 text-[11px] text-scanonix-muted">
                 PNG is always lossless regardless of quality setting.
               </p>
             )}
           </fieldset>
 
           <fieldset disabled={disabled}>
-            <legend className="mb-2 text-sm font-medium text-foreground">
+            <legend className="mb-1.5 text-xs font-medium text-foreground">
               Resolution
             </legend>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {SCALES.map((option) => (
                 <label
                   key={option.value}
-                  className={chipClass(scale === option.value, disabled)}
+                  className={chipClass(scale === option.value, disabled, compact)}
                 >
                   <input
                     type="radio"
@@ -238,12 +293,12 @@ export function PdfToImageOptionsPanel({
                 </label>
               ))}
             </div>
-            <p className="mt-2 text-xs text-scanonix-muted">
+            <p className="mt-1.5 text-[11px] text-scanonix-muted">
               Higher resolution produces sharper images with larger file sizes.
             </p>
           </fieldset>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

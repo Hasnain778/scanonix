@@ -55,10 +55,10 @@ export function ToolIcon({ type, className = "h-6 w-6" }: ToolIconProps) {
     case "organize-pdf":
       return (
         <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-          <rect {...common} x="3" y="4" width="7" height="9" rx="1.5" />
-          <rect {...common} x="14" y="4" width="7" height="9" rx="1.5" />
-          <rect {...common} x="3" y="15" width="7" height="5" rx="1.5" />
-          <path {...common} d="M14 17h7M17.5 14.5v5" />
+          <rect {...common} x="3" y="3" width="8" height="8" rx="1.5" />
+          <rect {...common} x="13" y="3" width="8" height="8" rx="1.5" />
+          <rect {...common} x="3" y="13" width="8" height="8" rx="1.5" />
+          <rect {...common} x="13" y="13" width="8" height="8" rx="1.5" />
         </svg>
       );
     case "crop-pdf":

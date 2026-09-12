@@ -507,6 +507,33 @@ div:focus:not([role]):not([tabindex]) {
   box-shadow: 0 0 0 1px color-mix(in srgb, white 4%, transparent);
 }
 
+/*
+ * Hero verdict badge must follow html[data-theme], NOT prefers-color-scheme.
+ * Tailwind dark: is media-based here, so Bright + OS-dark was applying
+ * translucent dark:red tokens on pale bright surfaces (unreadable DANGEROUS).
+ */
+.report-verdict-badge--dangerous {
+  border-width: 2px;
+  border-style: solid;
+  font-weight: 800;
+  box-shadow: 0 1px 2px color-mix(in srgb, #141210 8%, transparent);
+}
+
+html[data-theme="bright"] .report-verdict-badge--dangerous {
+  background-color: #991b1b;
+  border-color: #450a0a;
+  color: #fef2f2;
+}
+
+html[data-theme="dark"] .report-verdict-badge--dangerous,
+:root:not([data-theme="bright"]) .report-verdict-badge--dangerous {
+  background-color: color-mix(in srgb, #ef4444 20%, transparent);
+  border-color: color-mix(in srgb, #f87171 50%, transparent);
+  color: #fecaca;
+  font-weight: 700;
+  box-shadow: none;
+}
+
 .report-card {
   transition: border-color 200ms ease, transform 200ms ease;
 }

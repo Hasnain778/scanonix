@@ -1,5 +1,7 @@
 export { ToolShell, ToolPageHeader, ToolLayout } from "./ToolShell";
 export { ToolRoute } from "./ToolRoute";
+export { ToolWorkspaceShell } from "./ToolWorkspaceShell";
+export { ToolControlPanel } from "./ToolControlPanel";
 export { ToolResultsPanel } from "@/components/tools/ToolResultsPanel";
 export { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 export { ResultActionBar } from "@/components/tools/ResultActionBar";

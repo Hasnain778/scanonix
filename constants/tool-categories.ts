@@ -58,6 +58,7 @@ export const TOOL_CATEGORY_MATRIX: ToolCategoryMeta[] = [
   { toolId: "image-compressor", primaryCategory: "image", displayOrder: 210 },
   { toolId: "image-resizer", primaryCategory: "image", displayOrder: 220 },
   { toolId: "image-upscaler", primaryCategory: "image", displayOrder: 230 },
+  { toolId: "logo-vectorizer", primaryCategory: "image", displayOrder: 235 },
   { toolId: "png-to-jpg", primaryCategory: "image", displayOrder: 240 },
   { toolId: "jpg-to-png", primaryCategory: "image", displayOrder: 250 },
   { toolId: "png-to-webp", primaryCategory: "image", displayOrder: 260 },

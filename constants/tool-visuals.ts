@@ -1,6 +1,6 @@
 /**
  * Central tool visual identity — single source for icon, accent, glow, and motion.
- * Covers all 36 canonical workspace tools (Phase 128F-FIX1).
+ * Covers all canonical workspace tools (Phase 128F-FIX1).
  */
 
 import { CANONICAL_TOOL_IDS } from "@/constants/tool-categories";
@@ -215,6 +215,14 @@ export const TOOL_VISUALS: Record<string, ToolVisualMeta> = {
     accentColor: "#38bdf8",
     glowColor: "rgba(56, 189, 248, 0.22)",
     motion: "resize",
+  },
+  "logo-vectorizer": {
+    slug: "logo-vectorizer",
+    icon: "convert",
+    iconFamily: "image-edit",
+    accentColor: "#fb923c",
+    glowColor: "rgba(251, 146, 60, 0.22)",
+    motion: "convert",
   },
   "image-upscaler": {
     slug: "image-upscaler",

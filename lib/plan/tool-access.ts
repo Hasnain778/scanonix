@@ -55,6 +55,7 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "qr-scanner": { ...FREE_CLIENT, route: "qr-scanner" },
   "image-compressor": { ...FREE_SERVER, route: "image-compressor" },
   "image-resizer": { ...FREE_SERVER, route: "image-resizer" },
+  "logo-vectorizer": { ...FREE_SERVER, route: "logo-vectorizer" },
   "jpg-to-png": { ...FREE_CLIENT, route: "jpg-to-png" },
   "png-to-jpg": { ...FREE_CLIENT, route: "png-to-jpg" },
   "jpg-to-webp": { ...FREE_CLIENT, route: "jpg-to-webp" },

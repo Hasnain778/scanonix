@@ -58,6 +58,7 @@
     "verify:favicon": "npx --yes tsx scripts/verify-favicon.ts",
     "verify:vector-engine": "npx --yes tsx scripts/verify-vector-engine.ts",
     "verify:logo-vectorizer-api": "npx --yes tsx scripts/verify-logo-vectorizer-api.ts",
+    "verify:logo-vectorizer-tool": "npx --yes tsx scripts/verify-logo-vectorizer-tool.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {

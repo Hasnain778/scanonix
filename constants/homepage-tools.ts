@@ -270,6 +270,24 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "logo-vectorizer",
+    name: "Logo Vectorizer",
+    shortDescription: "Turn logos into real SVG paths.",
+    description:
+      "Convert logos and simple artwork into real SVG vector paths — best for icons and flat graphics.",
+    href: "/tools/logo-vectorizer",
+    category: "image",
+    icon: "convert",
+    aliases: [
+      "logo to svg",
+      "vectorize logo",
+      "logo vectorizer",
+      "raster to svg",
+      "convert logo to vector",
+    ],
+    available: true,
+  },
+  {
     id: "image-upscaler",
     name: "Image Upscaler",
     shortDescription: "Enlarge images 2× or 4× with Lanczos.",
@@ -545,6 +563,7 @@ const HOMEPAGE_GRID_TOOL_IDS: Record<HomepageToolCategory, string[]> = {
   image: [
     "image-compressor",
     "image-resizer",
+    "logo-vectorizer",
     "jpg-to-png",
     "png-to-jpg",
     "png-to-webp",
@@ -643,6 +662,7 @@ export const NAV_DROPDOWN_TOOLS: Record<
     tools: [
       { name: "Image Compressor", href: "/tools/image-compressor" },
       { name: "Image Upscaler", href: "/tools/image-upscaler" },
+      { name: "Logo Vectorizer", href: "/tools/logo-vectorizer" },
       { name: "PNG to JPG", href: "/tools/png-to-jpg" },
       { name: "HEIC to JPG", href: "/tools/heic-to-jpg" },
       { name: "JPG to WEBP", href: "/tools/jpg-to-webp" },

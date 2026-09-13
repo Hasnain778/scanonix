@@ -246,6 +246,14 @@ export const IMAGE_HUB_EDIT_TOOLS: ImageHubTool[] = [
     kind: "edit",
   },
   {
+    id: "logo-vectorizer",
+    title: "Logo Vectorizer",
+    description: "Turn logos into real SVG vector paths.",
+    href: "/tools/logo-vectorizer",
+    fileSupport: "PNG, JPG, WebP",
+    kind: "edit",
+  },
+  {
     id: "image-upscaler",
     title: "Image Upscaler",
     description: "Enlarge images 2× or 4× with Lanczos resampling.",

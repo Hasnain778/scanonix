@@ -259,8 +259,8 @@ async function run() {
     assert(`6 Pro tool ${toolId} has no misleading free claims`, issue === null, issue ?? "");
   }
 
-  // 7. Tool schema coverage (35 directory tools)
-  assert("7 tools directory count is 35", SCANONIX_TOOLS.length === 35);
+  // 7. Tool schema coverage (36 directory tools)
+  assert("7 tools directory count is 36", SCANONIX_TOOLS.length === 36);
 
   for (const tool of SCANONIX_TOOLS) {
     const seoId = tool.id;

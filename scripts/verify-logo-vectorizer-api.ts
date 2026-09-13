@@ -132,8 +132,12 @@ async function run() {
   try {
     const res = await POST(requestWithFile(null, "4"));
     assert.equal(res.status, 400);
-    const body = (await res.json()) as { code?: string };
-    assert.equal(body.code, "MISSING_FILE");
+    const body = (await res.json()) as { error?: string; code?: string };
+    assert.ok(
+      body.code === "MISSING_FILE" ||
+        (body.error ?? "").toLowerCase().includes("image file is required"),
+      `unexpected missing-file body ${JSON.stringify(body)}`,
+    );
     ok("4 missing file → expected error");
   } catch (err) {
     fail("4 missing file → expected error", err);

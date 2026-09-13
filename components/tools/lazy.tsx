@@ -235,6 +235,14 @@ export const LazyImageResizerTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyLogoVectorizerTool = dynamic(
+  () =>
+    import("@/components/tools/logo-vectorizer/LogoVectorizerTool").then((m) => ({
+      default: m.LogoVectorizerTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazyImageUpscalerTool = dynamic(
   () =>
     import("@/components/tools/image-upscaler/ImageUpscalerTool").then((m) => ({

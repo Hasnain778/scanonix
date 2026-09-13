@@ -166,7 +166,7 @@ async function run() {
   );
 
   // 5. All 35 tools inherit central OG (no per-tool overrides)
-  assert("5 tools directory count is 35", SCANONIX_TOOLS.length === 35);
+  assert("5 tools directory count is 36", SCANONIX_TOOLS.length === 36);
   for (const tool of SCANONIX_TOOLS) {
     const metadata = createToolPageMetadata(tool.id);
     const og = getOgImageFromMetadata(metadata);

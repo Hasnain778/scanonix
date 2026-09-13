@@ -1302,6 +1302,61 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     relatedToolIds: ["image-compressor", "image-upscaler", "png-to-jpg", "heic-to-jpg"],
     keywords: ["resize image", "scale image online", "change image dimensions"],
   },
+  "logo-vectorizer": {
+    id: "logo-vectorizer",
+    path: "/tools/logo-vectorizer",
+    seoTitle: toolTitle("Logo Vectorizer Online", "Convert Logos to SVG"),
+    metaDescription:
+      "Turn logos and simple artwork into real SVG vector paths online. Best for logos, icons and flat graphics — not photo reconstruction.",
+    h1: "Logo Vectorizer",
+    pageDescription:
+      "Turn logos and simple images into real SVG vector paths. Best for logos, icons and flat artwork — complex photos may not convert cleanly.",
+    howToSteps: [
+      "Upload a PNG, JPG or WebP logo.",
+      "Click Vectorize Logo to create SVG paths.",
+      "Preview the result and download the SVG file.",
+    ],
+    whyUse: [
+      "Get editable SVG paths from a simple logo image.",
+      "Avoid fake SVGs that only wrap a bitmap.",
+      "Prepare icons and brand marks for the web without desktop software.",
+    ],
+    keyFeatures: [
+      "Real SVG path output",
+      "Built for logos and simple artwork",
+      "PNG, JPG and WebP support",
+      "Instant preview and download",
+    ],
+    faqs: [
+      {
+        question: "Does this create a real vector SVG?",
+        answer:
+          "Yes. Scanonix traces shapes into SVG paths. It does not wrap your image inside an SVG as a raster.",
+      },
+      {
+        question: "Will photos convert cleanly?",
+        answer:
+          "Photos and complex gradients often produce noisy results. Use simple logos, icons and flat graphics for best quality.",
+      },
+      {
+        question: "Is this AI reconstruction?",
+        answer:
+          "No. Logo Vectorizer uses classical path tracing, not generative AI.",
+      },
+      {
+        question: "Which formats are supported?",
+        answer: "PNG, JPG/JPEG and WebP up to the tool size limit.",
+      },
+    ],
+    relatedToolIds: ["image-resizer", "png-to-jpg", "image-compressor", "jpg-to-png"],
+    keywords: [
+      "logo vectorizer",
+      "logo to svg",
+      "convert logo to vector",
+      "raster to svg logo",
+      "svg logo maker",
+    ],
+  },
   "image-upscaler": {
     id: "image-upscaler",
     path: "/tools/image-upscaler",

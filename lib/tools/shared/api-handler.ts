@@ -45,17 +45,24 @@ export async function readImageFromFormData(
 ): Promise<ImageToolFileInput | NextResponse> {
   const file = formData.get(field);
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: "An image file is required." }, { status: 400 });
+    return NextResponse.json(
+      { error: "An image file is required.", code: "MISSING_FILE" },
+      { status: 400 },
+    );
   }
 
   if (file.size <= 0) {
-    return NextResponse.json({ error: "The uploaded file is empty." }, { status: 400 });
+    return NextResponse.json(
+      { error: "The uploaded file is empty.", code: "EMPTY_FILE" },
+      { status: 400 },
+    );
   }
 
   if (file.size > maxBytes) {
     return NextResponse.json(
       {
         error: `Image exceeds the ${Math.round(maxBytes / (1024 * 1024))}MB limit.`,
+        code: "FILE_TOO_LARGE",
       },
       { status: 400 },
     );
@@ -64,7 +71,10 @@ export async function readImageFromFormData(
   const mimeType = detectImageMimeType(file.name, file.type);
   if (!mimeType || !isSupportedImageMime(mimeType)) {
     return NextResponse.json(
-      { error: "Unsupported image format. Use JPG, PNG, WEBP, or HEIC." },
+      {
+        error: "Unsupported image format. Use JPG, PNG, WEBP, or HEIC.",
+        code: "UNSUPPORTED_TYPE",
+      },
       { status: 400 },
     );
   }

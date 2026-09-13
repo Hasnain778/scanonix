@@ -23,6 +23,7 @@ export const IMAGE_FORMAT_CLUSTERS = {
     "image-compressor",
     "image-resizer",
     "image-upscaler",
+    "logo-vectorizer",
   ] as const,
 } as const;
 

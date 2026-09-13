@@ -251,6 +251,14 @@ export const LazyImageToSvgTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyRasterToVectorTool = dynamic(
+  () =>
+    import("@/components/tools/raster-to-vector/RasterToVectorTool").then((m) => ({
+      default: m.RasterToVectorTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazyImageUpscalerTool = dynamic(
   () =>
     import("@/components/tools/image-upscaler/ImageUpscalerTool").then((m) => ({

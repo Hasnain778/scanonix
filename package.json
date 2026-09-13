@@ -61,6 +61,8 @@
     "verify:logo-vectorizer-tool": "npx --yes tsx scripts/verify-logo-vectorizer-tool.ts",
     "verify:image-to-svg-api": "npx --yes tsx scripts/verify-image-to-svg-api.ts",
     "verify:image-to-svg-tool": "npx --yes tsx scripts/verify-image-to-svg-tool.ts",
+    "verify:raster-to-vector-api": "npx --yes tsx scripts/verify-raster-to-vector-api.ts",
+    "verify:raster-to-vector-tool": "npx --yes tsx scripts/verify-raster-to-vector-tool.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {

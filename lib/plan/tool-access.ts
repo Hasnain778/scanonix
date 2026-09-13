@@ -57,6 +57,7 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "image-resizer": { ...FREE_SERVER, route: "image-resizer" },
   "logo-vectorizer": { ...FREE_SERVER, route: "logo-vectorizer" },
   "image-to-svg": { ...FREE_SERVER, route: "image-to-svg" },
+  "raster-to-vector": { ...FREE_SERVER, route: "raster-to-vector" },
   "jpg-to-png": { ...FREE_CLIENT, route: "jpg-to-png" },
   "png-to-jpg": { ...FREE_CLIENT, route: "png-to-jpg" },
   "jpg-to-webp": { ...FREE_CLIENT, route: "jpg-to-webp" },

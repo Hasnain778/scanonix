@@ -91,10 +91,11 @@ function run() {
       apiSource.includes("isHeicMime"),
   );
   assert(
-    "10 future Raster/PSD tools remain absent",
-    !existsSync(join(root, "app", "tools", "raster-to-vector", "page.tsx")) &&
+    "10 PSD tools remain absent; Raster to Vector is separate",
+    existsSync(join(root, "app", "tools", "raster-to-vector", "page.tsx")) &&
       !existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
-      !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")),
+      !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")) &&
+      !uiSource.includes("Convert to Vector"),
   );
   assert(
     "11 Logo Vectorizer appears exactly once in directory/discovery",

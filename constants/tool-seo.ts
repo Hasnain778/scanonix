@@ -1348,7 +1348,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "PNG, JPG/JPEG and WebP up to the tool size limit.",
       },
     ],
-    relatedToolIds: ["image-to-svg", "image-resizer", "png-to-jpg", "image-compressor"],
+    relatedToolIds: ["image-to-svg", "raster-to-vector", "image-resizer", "png-to-jpg", "image-compressor"],
     keywords: [
       "logo vectorizer",
       "logo to svg",
@@ -1407,14 +1407,87 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer:
           "Logo Vectorizer is tuned for logos and icons with fewer colours. Image to SVG uses a broader general tracing profile for illustrations and graphics.",
       },
+      {
+        question: "How is this different from Raster to Vector?",
+        answer:
+          "Raster to Vector adds controls for colors, detail, smoothing and background handling. Image to SVG is the one-click general converter.",
+      },
     ],
-    relatedToolIds: ["logo-vectorizer", "image-resizer", "png-to-jpg", "jpg-to-png"],
+    relatedToolIds: ["logo-vectorizer", "raster-to-vector", "image-resizer", "png-to-jpg", "jpg-to-png"],
     keywords: [
       "image to svg",
       "convert image to svg",
       "png to svg",
       "jpg to svg",
       "raster to svg",
+    ],
+  },
+  "raster-to-vector": {
+    id: "raster-to-vector",
+    path: "/tools/raster-to-vector",
+    seoTitle: toolTitle(
+      "Raster to Vector Converter Online",
+      "Control SVG Tracing",
+    ),
+    metaDescription:
+      "Convert raster images to SVG with control over colors, detail, smoothing, and background handling. For illustrations and graphics that need more than one-click tracing.",
+    h1: "Raster to Vector",
+    pageDescription:
+      "Convert raster images into real SVG vector paths with adjustable colors, detail, smoothing and background handling. Best for illustrations and graphics — complex photos and gradients may look noisy. Not AI, not lossless, and not layered Illustrator or PSD output.",
+    howToSteps: [
+      "Upload a PNG, JPG or WebP image.",
+      "Choose colors, detail, smoothing and whether to ignore a flat background.",
+      "Click Convert to Vector, preview the result, then download the SVG.",
+    ],
+    whyUse: [
+      "Get real SVG paths with more control than one-click converters.",
+      "Tune color count, detail and edge smoothing for your artwork.",
+      "Avoid fake SVGs that only embed a bitmap.",
+    ],
+    keyFeatures: [
+      "Real SVG path output",
+      "Adjustable colors, detail and smoothing",
+      "Optional flat background ignore",
+      "PNG, JPG and WebP support",
+    ],
+    faqs: [
+      {
+        question: "Does this create a real vector SVG?",
+        answer:
+          "Yes. Scanonix traces shapes into SVG paths. It does not wrap your image inside an SVG as a raster.",
+      },
+      {
+        question: "Is this AI?",
+        answer:
+          "No. Raster to Vector uses classical path tracing with user-controlled settings, not generative AI.",
+      },
+      {
+        question: "Will complex photos convert cleanly?",
+        answer:
+          "Complex photographs and gradients often produce noisy results. It is not lossless and works best on illustrations and simpler graphics.",
+      },
+      {
+        question: "Is the output like Illustrator or PSD layers?",
+        answer:
+          "No. You get a flat SVG with traced paths — not layered Illustrator or Photoshop files.",
+      },
+      {
+        question: "How is this different from Image to SVG?",
+        answer:
+          "Image to SVG is a one-click general converter. Raster to Vector keeps the advanced preset and exposes four tracing controls.",
+      },
+      {
+        question: "Which formats are supported?",
+        answer: "PNG, JPG/JPEG and WebP up to the tool size limit.",
+      },
+    ],
+    relatedToolIds: ["image-to-svg", "logo-vectorizer", "image-resizer", "png-to-jpg"],
+    keywords: [
+      "raster to vector",
+      "raster to svg",
+      "advanced image to svg",
+      "vectorize with controls",
+      "trace image to svg",
     ],
   },
   "image-upscaler": {

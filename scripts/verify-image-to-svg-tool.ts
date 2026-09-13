@@ -103,9 +103,11 @@ function run() {
       HOMEPAGE_TOOLS.some((t) => t.id === "logo-vectorizer"),
   );
   assert(
-    "11 Raster to Vector absent",
-    !existsSync(join(root, "app", "tools", "raster-to-vector", "page.tsx")) &&
-      !HOMEPAGE_TOOLS.some((t) => t.id === "raster-to-vector"),
+    "11 Raster to Vector related (not a clone assertion)",
+    existsSync(join(root, "app", "tools", "raster-to-vector", "page.tsx")) &&
+      HOMEPAGE_TOOLS.some((t) => t.id === "raster-to-vector") &&
+      !uiSource.includes("Convert to Vector") &&
+      uiSource.includes("Convert to SVG"),
   );
   assert(
     "12 PSD tools absent",

@@ -232,6 +232,14 @@ export const TOOL_VISUALS: Record<string, ToolVisualMeta> = {
     glowColor: "rgba(249, 115, 22, 0.22)",
     motion: "convert",
   },
+  "raster-to-vector": {
+    slug: "raster-to-vector",
+    icon: "convert",
+    iconFamily: "image-edit",
+    accentColor: "#ea580c",
+    glowColor: "rgba(234, 88, 12, 0.22)",
+    motion: "convert",
+  },
   "image-upscaler": {
     slug: "image-upscaler",
     icon: "image-upscale",

@@ -224,6 +224,14 @@ export const TOOL_VISUALS: Record<string, ToolVisualMeta> = {
     glowColor: "rgba(251, 146, 60, 0.22)",
     motion: "convert",
   },
+  "image-to-svg": {
+    slug: "image-to-svg",
+    icon: "convert",
+    iconFamily: "image-edit",
+    accentColor: "#f97316",
+    glowColor: "rgba(249, 115, 22, 0.22)",
+    motion: "convert",
+  },
   "image-upscaler": {
     slug: "image-upscaler",
     icon: "image-upscale",

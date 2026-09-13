@@ -91,9 +91,8 @@ function run() {
       apiSource.includes("isHeicMime"),
   );
   assert(
-    "10 future vector/PSD tools remain absent",
-    !existsSync(join(root, "app", "tools", "image-to-svg", "page.tsx")) &&
-      !existsSync(join(root, "app", "tools", "raster-to-vector", "page.tsx")) &&
+    "10 future Raster/PSD tools remain absent",
+    !existsSync(join(root, "app", "tools", "raster-to-vector", "page.tsx")) &&
       !existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
       !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")),
   );

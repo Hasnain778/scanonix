@@ -163,8 +163,8 @@ function run() {
 
   // 10. Tool directory behavior preserved
   assert(
-    "10 tools directory lists 36 tools",
-    SCANONIX_TOOLS.length === 36,
+    "10 tools directory lists 37 tools",
+    SCANONIX_TOOLS.length === 37,
   );
   assert(
     "10 ToolsDirectory retains search, filters, and grid sections",

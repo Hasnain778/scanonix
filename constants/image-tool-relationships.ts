@@ -24,6 +24,7 @@ export const IMAGE_FORMAT_CLUSTERS = {
     "image-resizer",
     "image-upscaler",
     "logo-vectorizer",
+    "image-to-svg",
   ] as const,
 } as const;
 

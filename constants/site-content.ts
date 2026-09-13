@@ -135,6 +135,7 @@ export const WORKSPACES: Workspace[] = [
       { name: "Image Upscaler", href: "/tools/image-upscaler", available: true },
       { name: "Image Resizer", href: "/tools/image-resizer", available: true },
       { name: "Logo Vectorizer", href: "/tools/logo-vectorizer", available: true },
+      { name: "Image to SVG", href: "/tools/image-to-svg", available: true },
       { name: "HEIC to JPG", href: "/tools/heic-to-jpg", available: true },
       { name: "Convert", href: "/tools/pdf-to-image", available: true },
     ],

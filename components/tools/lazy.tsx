@@ -243,6 +243,14 @@ export const LazyLogoVectorizerTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyImageToSvgTool = dynamic(
+  () =>
+    import("@/components/tools/image-to-svg/ImageToSvgTool").then((m) => ({
+      default: m.ImageToSvgTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazyImageUpscalerTool = dynamic(
   () =>
     import("@/components/tools/image-upscaler/ImageUpscalerTool").then((m) => ({

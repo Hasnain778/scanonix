@@ -1348,13 +1348,73 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "PNG, JPG/JPEG and WebP up to the tool size limit.",
       },
     ],
-    relatedToolIds: ["image-resizer", "png-to-jpg", "image-compressor", "jpg-to-png"],
+    relatedToolIds: ["image-to-svg", "image-resizer", "png-to-jpg", "image-compressor"],
     keywords: [
       "logo vectorizer",
       "logo to svg",
       "convert logo to vector",
       "raster to svg logo",
       "svg logo maker",
+    ],
+  },
+  "image-to-svg": {
+    id: "image-to-svg",
+    path: "/tools/image-to-svg",
+    seoTitle: toolTitle("Image to SVG Converter Online", "Convert Images to SVG"),
+    metaDescription:
+      "Convert images into real SVG vector paths online. Best for illustrations, graphics and simple artwork — not photo reconstruction.",
+    h1: "Image to SVG",
+    pageDescription:
+      "Convert images into real SVG vector paths. Best for illustrations, graphics and simple artwork — complex photographs may not convert cleanly.",
+    howToSteps: [
+      "Upload a PNG, JPG or WebP image.",
+      "Click Convert to SVG to create vector paths.",
+      "Preview the result and download the SVG file.",
+    ],
+    whyUse: [
+      "Turn flat illustrations and graphics into editable SVG paths.",
+      "Avoid fake SVGs that only wrap a bitmap.",
+      "Prepare simple artwork for the web without desktop software.",
+    ],
+    keyFeatures: [
+      "Real SVG path output",
+      "Built for illustrations and simple artwork",
+      "PNG, JPG and WebP support",
+      "Instant preview and download",
+    ],
+    faqs: [
+      {
+        question: "Does this create a real vector SVG?",
+        answer:
+          "Yes. Scanonix traces shapes into SVG paths. It does not wrap your image inside an SVG as a raster.",
+      },
+      {
+        question: "Will photographs convert cleanly?",
+        answer:
+          "Complex photographs and gradients often produce noisy results. Use illustrations, graphics and flat artwork for best quality.",
+      },
+      {
+        question: "Is this AI reconstruction?",
+        answer:
+          "No. Image to SVG uses classical path tracing, not generative AI.",
+      },
+      {
+        question: "Which formats are supported?",
+        answer: "PNG, JPG/JPEG and WebP up to the tool size limit.",
+      },
+      {
+        question: "How is this different from Logo Vectorizer?",
+        answer:
+          "Logo Vectorizer is tuned for logos and icons with fewer colours. Image to SVG uses a broader general tracing profile for illustrations and graphics.",
+      },
+    ],
+    relatedToolIds: ["logo-vectorizer", "image-resizer", "png-to-jpg", "jpg-to-png"],
+    keywords: [
+      "image to svg",
+      "convert image to svg",
+      "png to svg",
+      "jpg to svg",
+      "raster to svg",
     ],
   },
   "image-upscaler": {

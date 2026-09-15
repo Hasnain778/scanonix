@@ -66,6 +66,8 @@
     "verify:psd-engine": "npx --yes tsx scripts/verify-psd-engine.ts",
     "verify:jpg-to-psd-api": "npx --yes tsx scripts/verify-jpg-to-psd-api.ts",
     "verify:jpg-to-psd-tool": "npx --yes tsx scripts/verify-jpg-to-psd-tool.ts",
+    "verify:png-to-psd-api": "npx --yes tsx scripts/verify-png-to-psd-api.ts",
+    "verify:png-to-psd-tool": "npx --yes tsx scripts/verify-png-to-psd-tool.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {

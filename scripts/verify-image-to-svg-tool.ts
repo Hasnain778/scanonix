@@ -110,9 +110,9 @@ function run() {
       uiSource.includes("Convert to SVG"),
   );
   assert(
-    "12 JPG-to-PSD public; PNG-to-PSD absent",
+    "12 JPG-to-PSD and PNG-to-PSD public",
     existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
-      !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")),
+      existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")),
   );
   assert(
     "13 Background Remover absent",

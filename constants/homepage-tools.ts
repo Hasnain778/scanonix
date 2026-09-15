@@ -343,6 +343,23 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "png-to-psd",
+    name: "PNG to PSD",
+    shortDescription: "Convert PNG images into a single-layer PSD.",
+    description:
+      "Convert a PNG image into a Photoshop-compatible PSD with one raster image layer. Transparency is preserved when present.",
+    href: "/tools/png-to-psd",
+    category: "image",
+    icon: "convert",
+    aliases: [
+      "png to psd",
+      "convert png to psd",
+      "png to photoshop",
+      "transparent png to psd",
+    ],
+    available: true,
+  },
+  {
     id: "image-upscaler",
     name: "Image Upscaler",
     shortDescription: "Enlarge images 2× or 4× with Lanczos.",
@@ -723,6 +740,7 @@ export const NAV_DROPDOWN_TOOLS: Record<
       { name: "Image to SVG", href: "/tools/image-to-svg" },
       { name: "Raster to Vector", href: "/tools/raster-to-vector" },
       { name: "JPG to PSD", href: "/tools/jpg-to-psd" },
+      { name: "PNG to PSD", href: "/tools/png-to-psd" },
       { name: "PNG to JPG", href: "/tools/png-to-jpg" },
       { name: "HEIC to JPG", href: "/tools/heic-to-jpg" },
       { name: "JPG to WEBP", href: "/tools/jpg-to-webp" },

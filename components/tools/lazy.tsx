@@ -267,6 +267,14 @@ export const LazyJpgToPsdTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyPngToPsdTool = dynamic(
+  () =>
+    import("@/components/tools/png-to-psd/PngToPsdTool").then((m) => ({
+      default: m.PngToPsdTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazyImageUpscalerTool = dynamic(
   () =>
     import("@/components/tools/image-upscaler/ImageUpscalerTool").then((m) => ({

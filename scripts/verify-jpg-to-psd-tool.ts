@@ -239,13 +239,13 @@ function run() {
     homepage.length === 1 &&
       directory.length === 1 &&
       homepage[0]?.available === true &&
-      SCANONIX_TOOLS.length === 39,
+      SCANONIX_TOOLS.length === 40,
   );
   assert(
     "28 image nav/hub discovery",
     (IMAGE_TOOL_IDS as readonly string[]).includes("jpg-to-psd") &&
       IMAGE_HUB_EDIT_TOOLS.some((t) => t.id === "jpg-to-psd") &&
-      HOMEPAGE_TOOLS.filter((t) => t.category === "image").length === 15,
+      HOMEPAGE_TOOLS.filter((t) => t.category === "image").length === 16,
   );
   assert(
     "29 not in POPULAR_TOOL_IDS",
@@ -255,16 +255,15 @@ function run() {
     "30 related live tools sane",
     (seo?.relatedToolIds ?? []).includes("jpg-to-png") &&
       (seo?.relatedToolIds ?? []).includes("png-to-jpg") &&
-      !(seo?.relatedToolIds ?? []).includes("png-to-psd") &&
+      (seo?.relatedToolIds ?? []).includes("png-to-psd") &&
       (TOOL_SEO["jpg-to-png"]?.relatedToolIds ?? []).includes("jpg-to-psd") &&
       (TOOL_SEO["png-to-jpg"]?.relatedToolIds ?? []).includes("jpg-to-psd"),
   );
   assert(
-    "31 PNG-to-PSD absent",
-    !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")) &&
-      !existsSync(join(root, "app", "api", "tools", "png-to-psd", "route.ts")) &&
-      !("png-to-psd" in TOOL_SEO) &&
-      !HOMEPAGE_TOOLS.some((t) => t.id === "png-to-psd"),
+    "31 PNG-to-PSD public surface present",
+    existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")) &&
+      "png-to-psd" in TOOL_SEO &&
+      HOMEPAGE_TOOLS.some((t) => t.id === "png-to-psd"),
   );
   assert(
     "32 Background Remover absent",

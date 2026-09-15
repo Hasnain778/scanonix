@@ -488,12 +488,12 @@ async function run() {
   }
 
   try {
-    assert.equal(existsSync(join(root, "app/api/tools/png-to-psd/route.ts")), false);
-    assert.equal(existsSync(join(root, "app/tools/png-to-psd/page.tsx")), false);
+    assert.equal(existsSync(join(root, "app/api/tools/png-to-psd/route.ts")), true);
+    assert.equal(existsSync(join(root, "app/tools/png-to-psd/page.tsx")), true);
     assert.equal(existsSync(join(root, "app/tools/jpg-to-psd/page.tsx")), true);
-    ok("38 JPG-to-PSD page present; PNG-to-PSD remains absent");
+    ok("38 JPG-to-PSD and PNG-to-PSD public pages present");
   } catch (e) {
-    fail("38 JPG-to-PSD page present; PNG-to-PSD remains absent", e);
+    fail("38 JPG-to-PSD and PNG-to-PSD public pages present", e);
   }
 
   try {

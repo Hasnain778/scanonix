@@ -1571,7 +1571,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. Pick a background colour before converting when your PNG has transparency.",
       },
     ],
-    relatedToolIds: ["jpg-to-png", "jpg-to-psd", "png-to-webp", "image-compressor", "image-resizer"],
+    relatedToolIds: ["jpg-to-png", "jpg-to-psd", "png-to-psd", "png-to-webp", "image-compressor"],
     keywords: ["png to jpg", "png to jpeg", "convert png online", "png to jpg free"],
   },
   "jpg-to-psd": {
@@ -1627,13 +1627,81 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Designed for Photoshop-compatible PSD workflows.",
       },
     ],
-    relatedToolIds: ["jpg-to-png", "png-to-jpg", "image-compressor", "image-resizer"],
+    relatedToolIds: ["jpg-to-png", "png-to-jpg", "png-to-psd", "image-compressor", "image-resizer"],
     keywords: [
       "jpg to psd",
       "jpeg to psd",
       "convert jpg to psd",
       "jpg to photoshop",
       "jpeg to photoshop online",
+    ],
+  },
+  "png-to-psd": {
+    id: "png-to-psd",
+    path: "/tools/png-to-psd",
+    seoTitle: toolTitle("PNG to PSD Converter Online"),
+    metaDescription:
+      "Convert PNG to PSD online. Turn a PNG into a single-layer Photoshop-compatible PSD — transparency preserved when present, no layer recovery.",
+    h1: "PNG to PSD Converter",
+    headerDescription:
+      "Convert a PNG image into a Photoshop-compatible PSD with one raster image layer. PNG transparency is preserved when present. This does not recreate editable Photoshop layers.",
+    pageDescription:
+      "Convert PNG images into a PSD file that contains a single raster image layer. Transparency is preserved when present. Useful when a workflow expects PSD input. This is not layer recovery and does not produce a fully editable multi-layer Photoshop document.",
+    howToSteps: [
+      "Upload a PNG image (single-frame; animated PNG is not supported).",
+      "Click Convert to PSD to create a single-layer PSD.",
+      "Download the PSD file for Photoshop-compatible workflows.",
+    ],
+    whyUse: [
+      "Get a PSD wrapper when a tool or handoff expects .psd input.",
+      "Keep PNG transparency on a single raster layer when present.",
+      "Avoid claiming multi-layer recovery from flattened PNG files.",
+    ],
+    keyFeatures: [
+      "Single raster image layer output",
+      "PNG transparency preserved when present",
+      "Photoshop-compatible PSD container",
+      "Server-side conversion",
+    ],
+    faqs: [
+      {
+        question: "Does PNG transparency remain?",
+        answer:
+          "Yes. When the PNG has transparency, it is preserved on the single raster layer in the PSD. Fully opaque PNGs produce an opaque layer.",
+      },
+      {
+        question: "Is the PSD fully editable?",
+        answer:
+          "No. The output is a single raster image layer. It is not a fully editable multi-layer Photoshop document.",
+      },
+      {
+        question: "How many layers are created?",
+        answer: "Exactly one raster image layer with your converted picture.",
+      },
+      {
+        question: "What color and bit depth does the PSD use?",
+        answer:
+          "RGB 8-bit. 16-bit PNGs are accepted but normalized to 8-bit. Exact ICC profile fidelity is not claimed.",
+      },
+      {
+        question: "Does it work with Photoshop-compatible PSD workflows?",
+        answer:
+          "Designed for Photoshop-compatible PSD workflows such as opening in Photoshop or Photopea. Full Photoshop feature parity is not claimed.",
+      },
+    ],
+    relatedToolIds: [
+      "jpg-to-psd",
+      "png-to-jpg",
+      "jpg-to-png",
+      "image-compressor",
+      "image-resizer",
+    ],
+    keywords: [
+      "png to psd",
+      "convert png to psd",
+      "png to photoshop",
+      "transparent png to psd",
+      "png to psd online",
     ],
   },
   "jpg-to-png": {
@@ -1680,7 +1748,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. JPG to PNG conversion is free in your browser.",
       },
     ],
-    relatedToolIds: ["png-to-jpg", "jpg-to-psd", "heic-to-jpg", "png-to-webp", "image-compressor"],
+    relatedToolIds: ["png-to-jpg", "jpg-to-psd", "png-to-psd", "png-to-webp", "image-compressor"],
     keywords: ["jpg to png", "jpeg to png", "convert jpg online", "jpg to png free"],
   },
   "png-to-webp": {

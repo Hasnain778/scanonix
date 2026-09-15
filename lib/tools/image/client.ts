@@ -9,6 +9,8 @@ export interface ImageToolStats {
   height?: number;
   originalWidth?: number;
   originalHeight?: number;
+  /** From X-Image-Has-Alpha when the API emits it (PNG to PSD). */
+  hasAlpha?: boolean;
 }
 
 function parseHeaderInt(headers: Headers, key: string): number | undefined {
@@ -54,6 +56,13 @@ export async function submitImageToolForm(
     originalWidth: parseHeaderInt(response.headers, "X-Original-Width"),
     originalHeight: parseHeaderInt(response.headers, "X-Original-Height"),
   };
+
+  const alphaHeader = response.headers.get("X-Image-Has-Alpha")?.trim().toLowerCase();
+  if (alphaHeader === "true") {
+    stats.hasAlpha = true;
+  } else if (alphaHeader === "false") {
+    stats.hasAlpha = false;
+  }
 
   return { ok: true, blob, fileName, stats };
 }

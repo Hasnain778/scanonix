@@ -62,7 +62,7 @@ function run() {
   const canonicalSlugs = listCanonicalToolSlugs();
   const availableHomepageIds = getAvailableHomepageToolIds();
   const directoryIds = SCANONIX_TOOLS.map((tool) => tool.id).sort();
-  const expectedCanonicalCount = 39;
+  const expectedCanonicalCount = 40;
 
   // 1. canonical tool count matches expected inventory
   assert(

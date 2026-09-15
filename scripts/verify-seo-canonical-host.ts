@@ -121,7 +121,7 @@ async function run() {
   }
 
   // 3. Representative tool + all 35 directory tools
-  assert("3 tools directory count is 39", SCANONIX_TOOLS.length === 39);
+  assert("3 tools directory count is 40", SCANONIX_TOOLS.length === 40);
 
   const repMetadata = createToolPageMetadata("merge-pdf");
   const repCanonical = getCanonicalFromMetadata(repMetadata);

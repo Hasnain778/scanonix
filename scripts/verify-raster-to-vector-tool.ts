@@ -188,9 +188,9 @@ function run() {
     !(POPULAR_TOOL_IDS as readonly string[]).includes("raster-to-vector"),
   );
   assert(
-    "17 PNG-to-PSD + Background Remover absent; JPG-to-PSD public",
+    "17 PNG-to-PSD + JPG-to-PSD public; Background Remover absent",
     existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
-      !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")) &&
+      existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")) &&
       !existsSync(join(root, "app", "tools", "background-remover", "page.tsx")) &&
       !HOMEPAGE_TOOLS.some(
         (t) => t.id === "background-remover" || t.id === "bg-remove",

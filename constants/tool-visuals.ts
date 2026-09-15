@@ -248,6 +248,14 @@ export const TOOL_VISUALS: Record<string, ToolVisualMeta> = {
     glowColor: "rgba(2, 132, 199, 0.22)",
     motion: "convert",
   },
+  "png-to-psd": {
+    slug: "png-to-psd",
+    icon: "convert",
+    iconFamily: "image-convert",
+    accentColor: "#0369a1",
+    glowColor: "rgba(3, 105, 161, 0.22)",
+    motion: "convert",
+  },
   "image-upscaler": {
     slug: "image-upscaler",
     icon: "image-upscale",

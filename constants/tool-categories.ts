@@ -63,6 +63,7 @@ export const TOOL_CATEGORY_MATRIX: ToolCategoryMeta[] = [
   { toolId: "raster-to-vector", primaryCategory: "image", displayOrder: 238 },
   { toolId: "png-to-jpg", primaryCategory: "image", displayOrder: 240 },
   { toolId: "jpg-to-psd", primaryCategory: "image", displayOrder: 241 },
+  { toolId: "png-to-psd", primaryCategory: "image", displayOrder: 242 },
   { toolId: "jpg-to-png", primaryCategory: "image", displayOrder: 250 },
   { toolId: "png-to-webp", primaryCategory: "image", displayOrder: 260 },
   { toolId: "jpg-to-webp", primaryCategory: "image", displayOrder: 270 },

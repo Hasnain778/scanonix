@@ -426,15 +426,14 @@ async function run() {
     fail("orientation foundation: engine preserves supplied dims/pixels", e);
   }
 
-  // Public page: JPG-to-PSD present; PNG-to-PSD remains absent
+  // Public pages: JPG-to-PSD and PNG-to-PSD both present
   try {
     const { existsSync } = await import("node:fs");
     assert.equal(existsSync(join(process.cwd(), "app/tools/jpg-to-psd/page.tsx")), true);
-    assert.equal(existsSync(join(process.cwd(), "app/tools/png-to-psd/page.tsx")), false);
-    assert.equal(existsSync(join(process.cwd(), "app/api/tools/png-to-psd/route.ts")), false);
-    ok("public JPG-to-PSD page present; PNG PSD routes remain absent");
+    assert.equal(existsSync(join(process.cwd(), "app/tools/png-to-psd/page.tsx")), true);
+    ok("public JPG-to-PSD and PNG-to-PSD pages present");
   } catch (e) {
-    fail("public JPG-to-PSD page present; PNG PSD routes remain absent", e);
+    fail("public JPG-to-PSD and PNG-to-PSD pages present", e);
   }
 
   assertNoCanvasPackageLoaded();

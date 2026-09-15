@@ -138,6 +138,7 @@ export const WORKSPACES: Workspace[] = [
       { name: "Image to SVG", href: "/tools/image-to-svg", available: true },
       { name: "Raster to Vector", href: "/tools/raster-to-vector", available: true },
       { name: "JPG to PSD", href: "/tools/jpg-to-psd", available: true },
+      { name: "PNG to PSD", href: "/tools/png-to-psd", available: true },
       { name: "HEIC to JPG", href: "/tools/heic-to-jpg", available: true },
       { name: "Convert", href: "/tools/pdf-to-image", available: true },
     ],

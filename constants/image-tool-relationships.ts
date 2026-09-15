@@ -18,7 +18,7 @@ export const IMAGE_TOOL_IDS = TOOL_CATEGORY_MATRIX.filter(
 export const IMAGE_FORMAT_CLUSTERS = {
   webp: ["png-to-webp", "jpg-to-webp", "webp-to-jpg", "webp-to-png"] as const,
   heic: ["heic-to-jpg", "heic-to-png"] as const,
-  raster: ["png-to-jpg", "jpg-to-png"] as const,
+  raster: ["png-to-jpg", "jpg-to-png", "jpg-to-psd"] as const,
   edit: [
     "image-compressor",
     "image-resizer",

@@ -63,6 +63,9 @@
     "verify:image-to-svg-tool": "npx --yes tsx scripts/verify-image-to-svg-tool.ts",
     "verify:raster-to-vector-api": "npx --yes tsx scripts/verify-raster-to-vector-api.ts",
     "verify:raster-to-vector-tool": "npx --yes tsx scripts/verify-raster-to-vector-tool.ts",
+    "verify:psd-engine": "npx --yes tsx scripts/verify-psd-engine.ts",
+    "verify:jpg-to-psd-api": "npx --yes tsx scripts/verify-jpg-to-psd-api.ts",
+    "verify:jpg-to-psd-tool": "npx --yes tsx scripts/verify-jpg-to-psd-tool.ts",
     "generate:favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {
@@ -71,6 +74,7 @@
     "@react-pdf/renderer": "^4.5.1",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.5",
+    "ag-psd": "^31.0.2",
     "cheerio": "^1.2.0",
     "docx": "^9.7.1",
     "framer-motion": "^12.42.2",

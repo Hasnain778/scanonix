@@ -325,6 +325,24 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "jpg-to-psd",
+    name: "JPG to PSD",
+    shortDescription: "Convert JPG images into a single-layer PSD.",
+    description:
+      "Convert a JPG or JPEG image into a Photoshop-compatible PSD with one raster image layer.",
+    href: "/tools/jpg-to-psd",
+    category: "image",
+    icon: "convert",
+    aliases: [
+      "jpg to psd",
+      "jpeg to psd",
+      "convert jpg to psd",
+      "jpg to photoshop",
+      "jpeg to photoshop",
+    ],
+    available: true,
+  },
+  {
     id: "image-upscaler",
     name: "Image Upscaler",
     shortDescription: "Enlarge images 2× or 4× with Lanczos.",
@@ -704,6 +722,7 @@ export const NAV_DROPDOWN_TOOLS: Record<
       { name: "Logo Vectorizer", href: "/tools/logo-vectorizer" },
       { name: "Image to SVG", href: "/tools/image-to-svg" },
       { name: "Raster to Vector", href: "/tools/raster-to-vector" },
+      { name: "JPG to PSD", href: "/tools/jpg-to-psd" },
       { name: "PNG to JPG", href: "/tools/png-to-jpg" },
       { name: "HEIC to JPG", href: "/tools/heic-to-jpg" },
       { name: "JPG to WEBP", href: "/tools/jpg-to-webp" },

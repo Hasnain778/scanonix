@@ -1571,8 +1571,70 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. Pick a background colour before converting when your PNG has transparency.",
       },
     ],
-    relatedToolIds: ["jpg-to-png", "png-to-webp", "image-compressor", "image-resizer"],
+    relatedToolIds: ["jpg-to-png", "jpg-to-psd", "png-to-webp", "image-compressor", "image-resizer"],
     keywords: ["png to jpg", "png to jpeg", "convert png online", "png to jpg free"],
+  },
+  "jpg-to-psd": {
+    id: "jpg-to-psd",
+    path: "/tools/jpg-to-psd",
+    seoTitle: toolTitle("JPG to PSD Converter Online"),
+    metaDescription:
+      "Convert JPG to PSD online. Turn a JPEG into a single-layer Photoshop-compatible PSD — no layer recovery, just one raster image layer.",
+    h1: "JPG to PSD Converter",
+    headerDescription:
+      "Convert a JPG or JPEG image into a Photoshop-compatible PSD with one raster image layer. JPG files are flattened — this does not recreate editable Photoshop layers.",
+    pageDescription:
+      "Convert JPG or JPEG images into a PSD file that contains a single raster image layer. Useful when a workflow expects PSD input. This is not layer recovery and does not produce a fully editable multi-layer Photoshop document.",
+    howToSteps: [
+      "Upload a JPG or JPEG image.",
+      "Click Convert to PSD to create a single-layer PSD.",
+      "Download the PSD file for Photoshop-compatible workflows.",
+    ],
+    whyUse: [
+      "Get a PSD wrapper when a tool or handoff expects .psd input.",
+      "Keep a simple one-layer raster document from a JPG source.",
+      "Avoid claiming multi-layer recovery from flattened JPEG files.",
+    ],
+    keyFeatures: [
+      "Single raster image layer output",
+      "JPG and JPEG support",
+      "Photoshop-compatible PSD container",
+      "Server-side conversion",
+    ],
+    faqs: [
+      {
+        question: "Does JPG to PSD recreate Photoshop layers?",
+        answer:
+          "No. JPG is a flattened raster format, so the output cannot recover separate Photoshop layers that were never in the file.",
+      },
+      {
+        question: "What does the PSD contain?",
+        answer: "One raster image layer with your converted picture.",
+      },
+      {
+        question: "Does it work with JPEG?",
+        answer:
+          "Yes. JPG and JPEG are the same format with different naming — both are accepted.",
+      },
+      {
+        question: "Is color preserved?",
+        answer:
+          "Color is normalized to RGB/sRGB-compatible 8-bit output. Exact original ICC profile fidelity is not claimed.",
+      },
+      {
+        question: "Will it open in Photoshop?",
+        answer:
+          "Designed for Photoshop-compatible PSD workflows.",
+      },
+    ],
+    relatedToolIds: ["jpg-to-png", "png-to-jpg", "image-compressor", "image-resizer"],
+    keywords: [
+      "jpg to psd",
+      "jpeg to psd",
+      "convert jpg to psd",
+      "jpg to photoshop",
+      "jpeg to photoshop online",
+    ],
   },
   "jpg-to-png": {
     id: "jpg-to-png",
@@ -1618,7 +1680,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Yes. JPG to PNG conversion is free in your browser.",
       },
     ],
-    relatedToolIds: ["png-to-jpg", "heic-to-jpg", "png-to-webp", "image-compressor"],
+    relatedToolIds: ["png-to-jpg", "jpg-to-psd", "heic-to-jpg", "png-to-webp", "image-compressor"],
     keywords: ["jpg to png", "jpeg to png", "convert jpg online", "jpg to png free"],
   },
   "png-to-webp": {

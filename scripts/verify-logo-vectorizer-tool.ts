@@ -91,9 +91,9 @@ function run() {
       apiSource.includes("isHeicMime"),
   );
   assert(
-    "10 PSD tools remain absent; Raster to Vector is separate",
+    "10 PNG-to-PSD remains absent; JPG-to-PSD and Raster to Vector are separate",
     existsSync(join(root, "app", "tools", "raster-to-vector", "page.tsx")) &&
-      !existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
+      existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
       !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")) &&
       !uiSource.includes("Convert to Vector"),
   );

@@ -270,6 +270,14 @@ export const IMAGE_HUB_EDIT_TOOLS: ImageHubTool[] = [
     kind: "edit",
   },
   {
+    id: "jpg-to-psd",
+    title: "JPG to PSD",
+    description: "Convert a JPG into a single-layer PSD file.",
+    href: "/tools/jpg-to-psd",
+    fileSupport: "JPG, JPEG",
+    kind: "edit",
+  },
+  {
     id: "image-upscaler",
     title: "Image Upscaler",
     description: "Enlarge images 2× or 4× with Lanczos resampling.",

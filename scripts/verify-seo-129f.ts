@@ -86,7 +86,7 @@ function run() {
   console.log("\nThin tool content depth verification (Phase 129F)\n");
 
   // 1. Registry — 37 tools, exactly 4 WEBP converters
-  assert("1 tools directory count is 38", SCANONIX_TOOLS.length === 38);
+  assert("1 tools directory count is 39", SCANONIX_TOOLS.length === 39);
 
   const directoryWebpIds = SCANONIX_TOOLS.map((tool) => tool.id).filter((id) =>
     /webp/i.test(id),

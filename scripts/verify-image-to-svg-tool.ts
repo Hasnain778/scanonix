@@ -110,8 +110,8 @@ function run() {
       uiSource.includes("Convert to SVG"),
   );
   assert(
-    "12 PSD tools absent",
-    !existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
+    "12 JPG-to-PSD public; PNG-to-PSD absent",
+    existsSync(join(root, "app", "tools", "jpg-to-psd", "page.tsx")) &&
       !existsSync(join(root, "app", "tools", "png-to-psd", "page.tsx")),
   );
   assert(

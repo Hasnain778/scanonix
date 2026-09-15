@@ -88,8 +88,8 @@ function run() {
 
   // 2. Image tool inventory (matrix + converters)
   assert(
-    "2 image category matrix lists 14 workspace tools",
-    IMAGE_TOOL_IDS.length === 14,
+    "2 image category matrix lists 15 workspace tools",
+    IMAGE_TOOL_IDS.length === 15,
     IMAGE_TOOL_IDS.join(", "),
   );
 

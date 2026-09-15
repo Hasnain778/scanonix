@@ -80,10 +80,10 @@ function run() {
 
   console.log("");
 
-  // 1. Matrix covers all 38 canonical tools
+  // 1. Matrix covers all 39 canonical tools
   assert(
-    "1 matrix contains 38 canonical tools",
-    TOOL_CATEGORY_MATRIX.length === 38,
+    "1 matrix contains 39 canonical tools",
+    TOOL_CATEGORY_MATRIX.length === 39,
     `got ${TOOL_CATEGORY_MATRIX.length}`,
   );
 
@@ -116,7 +116,7 @@ function run() {
   // 4. Tools not in wrong top-level categories
   const categoryChecks: Array<{ filter: ToolCategoryFilterId; expectedCount: number }> = [
     { filter: "pdf", expectedCount: 18 },
-    { filter: "image", expectedCount: 14 },
+    { filter: "image", expectedCount: 15 },
     { filter: "ai", expectedCount: 5 },
     { filter: "security", expectedCount: 5 },
   ];

@@ -259,6 +259,14 @@ export const LazyRasterToVectorTool = dynamic(
   { loading: toolLoading },
 );
 
+export const LazyJpgToPsdTool = dynamic(
+  () =>
+    import("@/components/tools/jpg-to-psd/JpgToPsdTool").then((m) => ({
+      default: m.JpgToPsdTool,
+    })),
+  { loading: toolLoading },
+);
+
 export const LazyImageUpscalerTool = dynamic(
   () =>
     import("@/components/tools/image-upscaler/ImageUpscalerTool").then((m) => ({

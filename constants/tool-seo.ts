@@ -1261,8 +1261,86 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "You control quality level to balance size and visual fidelity.",
       },
     ],
-    relatedToolIds: ["image-resizer", "image-upscaler", "png-to-jpg", "jpg-to-webp"],
+    relatedToolIds: ["image-resizer", "image-editor", "image-upscaler", "png-to-jpg", "jpg-to-webp"],
     keywords: ["compress image", "reduce image size", "optimize image online"],
+  },
+  "image-editor": {
+    id: "image-editor",
+    path: "/tools/image-editor",
+    seoTitle: toolTitle("Image Editor", "Edit Photos Online Free"),
+    metaDescription:
+      "Edit images online with crop, resize, filters, adjustments, backgrounds, text, social media presets and PNG, JPEG or WebP export.",
+    h1: "Image Editor",
+    headerDescription:
+      "Edit images in your browser with crop, resize, adjustments, filters, backgrounds, text and export.",
+    pageDescription:
+      "Use the Scanonix Image Editor to crop, resize, adjust colour, apply filters, set backgrounds, add text and export PNG, JPEG or WebP — processed in your browser.",
+    howToSteps: [
+      "Open Image Editor and upload a photo or image file.",
+      "Crop, resize, adjust, filter, set a background or add text as needed.",
+      "Export PNG, JPEG or WebP when you are ready.",
+    ],
+    whyUse: [
+      "One workspace for crop, resize, adjustments, filters, backgrounds and text.",
+      "Editing runs in your browser — image files are not uploaded to Scanonix servers.",
+      "Social size presets help prepare posts without leaving the editor.",
+      "Export PNG, JPEG or WebP with client-side rendering.",
+    ],
+    useCases: [
+      "Crop and resize a photo for a social post.",
+      "Apply a quick filter and colour adjustment before sharing.",
+      "Add a short caption or heading with the built-in text tools.",
+      "Export a finished image as PNG, JPEG or WebP.",
+    ],
+    limitations: [
+      "Does not include AI generative edit, background removal, layers, drawing or stickers.",
+      "Very large images may be limited by browser memory.",
+      "Supported uploads depend on browser-decodable image formats.",
+    ],
+    keyFeatures: [
+      "Crop, resize and transform",
+      "Adjustments and filters",
+      "Backgrounds and text",
+      "Social presets",
+      "PNG, JPEG and WebP export",
+      "Local browser processing",
+    ],
+    faqs: [
+      {
+        question: "Is the Scanonix Image Editor free?",
+        answer:
+          "Yes. The Image Editor is free to use in your browser with no account required for core editing and export.",
+      },
+      {
+        question: "Are my images uploaded to Scanonix servers?",
+        answer:
+          "No. Editing and export run in your browser. Image files stay on your device for this tool.",
+      },
+      {
+        question: "What can I edit?",
+        answer:
+          "You can crop, resize, rotate, adjust colour, apply filters, change backgrounds, add text and export PNG, JPEG or WebP.",
+      },
+      {
+        question: "Does it include AI editing or background removal?",
+        answer:
+          "Not in this release. Use dedicated Scanonix tools such as Image Upscaler or converters for specialised workflows.",
+      },
+    ],
+    relatedToolIds: [
+      "image-resizer",
+      "image-compressor",
+      "jpg-to-psd",
+      "png-to-psd",
+      "logo-vectorizer",
+    ],
+    keywords: [
+      "image editor",
+      "photo editor online",
+      "edit image online free",
+      "crop image online",
+      "online image editor",
+    ],
   },
   "image-resizer": {
     id: "image-resizer",
@@ -1299,7 +1377,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Downscaling usually looks sharp; upscaling may soften details unless you use Image Upscaler.",
       },
     ],
-    relatedToolIds: ["image-compressor", "image-upscaler", "png-to-jpg", "heic-to-jpg"],
+    relatedToolIds: ["image-compressor", "image-editor", "image-upscaler", "png-to-jpg", "heic-to-jpg"],
     keywords: ["resize image", "scale image online", "change image dimensions"],
   },
   "logo-vectorizer": {
@@ -1627,7 +1705,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
           "Designed for Photoshop-compatible PSD workflows.",
       },
     ],
-    relatedToolIds: ["jpg-to-png", "png-to-jpg", "png-to-psd", "image-compressor", "image-resizer"],
+    relatedToolIds: ["jpg-to-png", "png-to-jpg", "png-to-psd", "image-editor", "image-compressor"],
     keywords: [
       "jpg to psd",
       "jpeg to psd",
@@ -1693,8 +1771,8 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "jpg-to-psd",
       "png-to-jpg",
       "jpg-to-png",
+      "image-editor",
       "image-compressor",
-      "image-resizer",
     ],
     keywords: [
       "png to psd",
@@ -2526,7 +2604,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
         answer: "Many tools are free with daily limits; Pro unlocks higher limits and advanced features.",
       },
     ],
-    relatedToolIds: ["image-compressor", "png-to-jpg", "heic-to-jpg", "image-upscaler"],
+    relatedToolIds: ["image-editor", "image-compressor", "png-to-jpg", "heic-to-jpg", "image-upscaler"],
     keywords: ["image tools online", "image converter", "image compressor"],
   },
 };

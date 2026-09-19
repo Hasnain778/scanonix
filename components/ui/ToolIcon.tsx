@@ -250,6 +250,15 @@ export function ToolIcon({ type, className = "h-6 w-6" }: ToolIconProps) {
           <path {...common} d="M3 9V3h6M21 15v6h-6M3 15v6h6M21 9V3h-6" />
         </svg>
       );
+    case "image-editor":
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect {...common} x="3" y="4" width="14" height="14" rx="2" />
+          <circle {...common} cx="8.5" cy="9.5" r="1.5" />
+          <path {...common} d="M5 16l3.5-3.5L12 16" />
+          <path {...common} d="M17 8l4 4-7 7H10v-4l7-7z" />
+        </svg>
+      );
     case "image-upscale":
       return (
         <svg viewBox="0 0 24 24" className={className} aria-hidden="true">

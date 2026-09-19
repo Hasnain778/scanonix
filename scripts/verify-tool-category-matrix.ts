@@ -80,10 +80,10 @@ function run() {
 
   console.log("");
 
-  // 1. Matrix covers all 40 canonical tools
+  // 1. Matrix covers all 41 canonical tools
   assert(
-    "1 matrix contains 40 canonical tools",
-    TOOL_CATEGORY_MATRIX.length === 40,
+    "1 matrix contains 41 canonical tools",
+    TOOL_CATEGORY_MATRIX.length === 41,
     `got ${TOOL_CATEGORY_MATRIX.length}`,
   );
 
@@ -116,7 +116,7 @@ function run() {
   // 4. Tools not in wrong top-level categories
   const categoryChecks: Array<{ filter: ToolCategoryFilterId; expectedCount: number }> = [
     { filter: "pdf", expectedCount: 18 },
-    { filter: "image", expectedCount: 16 },
+    { filter: "image", expectedCount: 17 },
     { filter: "ai", expectedCount: 5 },
     { filter: "security", expectedCount: 5 },
   ];
@@ -216,6 +216,106 @@ function run() {
     "11 top-level filters defined",
     TOP_LEVEL_CATEGORY_FILTERS.length === 5,
   );
+
+  // 12. SV2-1.1 Image / AI / Security subcategory coverage
+  const imageSubs: Record<string, number> = {
+    "convert-image": 8,
+    "compress-image": 3,
+    "vector-image": 3,
+    "edit-image": 3,
+  };
+  for (const [filterId, expected] of Object.entries(imageSubs)) {
+    const matched = directoryIds.filter((id) =>
+      toolMatchesCategoryFilter(id, filterId as ToolCategoryFilterId),
+    );
+    assert(
+      `12 ${filterId} has ${expected} tools`,
+      matched.length === expected,
+      `got ${matched.length}: ${matched.join(", ")}`,
+    );
+  }
+
+  const aiSubs: Record<string, number> = {
+    "write-ai": 2,
+    "extract-ai": 2,
+    "analyze-ai": 1,
+  };
+  for (const [filterId, expected] of Object.entries(aiSubs)) {
+    const matched = directoryIds.filter((id) =>
+      toolMatchesCategoryFilter(id, filterId as ToolCategoryFilterId),
+    );
+    assert(
+      `12 ${filterId} has ${expected} tools`,
+      matched.length === expected,
+      `got ${matched.length}`,
+    );
+  }
+
+  assert(
+    "12 protect-security has 4 tools",
+    directoryIds.filter((id) => toolMatchesCategoryFilter(id, "protect-security")).length === 4,
+  );
+  assert(
+    "12 scan-security is security-scan only",
+    directoryIds.filter((id) => toolMatchesCategoryFilter(id, "scan-security")).join(",") ===
+      "security-scan",
+  );
+
+  // 13. Every image/ai tool has a subcategory; every matrix entry has valid primary
+  let missingSub = "";
+  for (const entry of TOOL_CATEGORY_MATRIX) {
+    if (entry.primaryCategory === "image" && !entry.imageSubcategory) {
+      missingSub = `${entry.toolId} missing imageSubcategory`;
+      break;
+    }
+    if (entry.primaryCategory === "ai" && !entry.aiSubcategory) {
+      missingSub = `${entry.toolId} missing aiSubcategory`;
+      break;
+    }
+    if (entry.primaryCategory === "pdf" && !entry.pdfSubcategory) {
+      missingSub = `${entry.toolId} missing pdfSubcategory`;
+      break;
+    }
+    if (entry.primaryCategory === "security" && !entry.securitySubcategory) {
+      missingSub = `${entry.toolId} missing securitySubcategory`;
+      break;
+    }
+  }
+  assert("13 every tool has family subcategory metadata", missingSub === "", missingSub);
+
+  // 14. Image Editor present; Background Remover absent
+  assert(
+    "14 image-editor present in matrix once",
+    CANONICAL_TOOL_IDS.filter((id) => id === "image-editor").length === 1,
+  );
+  assert(
+    "14 image-editor is edit-create",
+    getToolCategoryMeta("image-editor")?.imageSubcategory === "edit-create" &&
+      getToolCategoryMeta("image-editor")?.primaryCategory === "image",
+  );
+  assert(
+    "14 background-remover absent from matrix",
+    !CANONICAL_TOOL_IDS.includes("background-remover"),
+  );
+
+  // 15. New subcategory URL round-trips
+  for (const filterId of [
+    "convert-image",
+    "compress-image",
+    "vector-image",
+    "edit-image",
+    "write-ai",
+    "extract-ai",
+    "analyze-ai",
+    "protect-security",
+    "scan-security",
+  ] as ToolCategoryFilterId[]) {
+    const href = getToolsCategoryHref(filterId);
+    const parsed = parseToolsCategoryParam(
+      new URL(href, "https://scanonix.com").searchParams.get("category"),
+    );
+    assert(`15 ${filterId} href round-trips`, parsed === filterId);
+  }
 
   console.log(`\n${passed} passed, ${failed} failed\n`);
   process.exit(failed > 0 ? 1 : 0);

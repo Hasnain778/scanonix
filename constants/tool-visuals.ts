@@ -216,6 +216,14 @@ export const TOOL_VISUALS: Record<string, ToolVisualMeta> = {
     glowColor: "rgba(56, 189, 248, 0.22)",
     motion: "resize",
   },
+  "image-editor": {
+    slug: "image-editor",
+    icon: "image-editor",
+    iconFamily: "image-edit",
+    accentColor: "#ff6a00",
+    glowColor: "rgba(255, 106, 0, 0.24)",
+    motion: "none",
+  },
   "logo-vectorizer": {
     slug: "logo-vectorizer",
     icon: "convert",

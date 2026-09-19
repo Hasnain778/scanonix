@@ -1,24 +1,31 @@
 interface ToolsEmptyStateProps {
   query: string;
   categoryLabel: string;
-  onClear: () => void;
+  onClearSearch: () => void;
+  onBrowseCategoryAll: () => void;
+  onClearAll: () => void;
+  showBrowseCategoryAll?: boolean;
 }
 
 export function ToolsEmptyState({
   query,
   categoryLabel,
-  onClear,
+  onClearSearch,
+  onBrowseCategoryAll,
+  onClearAll,
+  showBrowseCategoryAll = false,
 }: ToolsEmptyStateProps) {
+  const hasQuery = Boolean(query.trim());
+
   return (
-    <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 px-6 py-16 text-center sm:py-20">
-      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl glass text-scanonix-orange">
+    <div className="tools-v2-empty">
+      <div className="tools-v2-empty__icon" aria-hidden="true">
         <svg
-          className="h-8 w-8"
+          className="h-7 w-7"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
           strokeWidth={1.75}
-          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -27,19 +34,39 @@ export function ToolsEmptyState({
           />
         </svg>
       </div>
-      <h3 className="text-xl font-semibold text-white">No tools found</h3>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-scanonix-muted">
-        {query.trim()
-          ? `Nothing matched "${query}" in ${categoryLabel}. Try a different search term or category.`
+      <h3>No tools found</h3>
+      <p>
+        {hasQuery
+          ? `No tools match “${query.trim()}” in ${categoryLabel}. Try a different search term or browse the full category.`
           : `No tools are available in ${categoryLabel} right now.`}
       </p>
-      <button
-        type="button"
-        onClick={onClear}
-        className="mt-6 inline-flex items-center justify-center rounded-xl border border-white/15 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:border-scanonix-orange/50 hover:text-scanonix-orange"
-      >
-        Clear filters
-      </button>
+      <div className="tools-v2-empty__actions">
+        {hasQuery ? (
+          <button type="button" onClick={onClearSearch} className="tools-v2-empty__btn">
+            Clear search
+          </button>
+        ) : null}
+        {showBrowseCategoryAll ? (
+          <button
+            type="button"
+            onClick={onBrowseCategoryAll}
+            className={hasQuery ? "tools-v2-empty__btn tools-v2-empty__btn--ghost" : "tools-v2-empty__btn"}
+          >
+            View all in category
+          </button>
+        ) : null}
+        <button
+          type="button"
+          onClick={onClearAll}
+          className={
+            hasQuery || showBrowseCategoryAll
+              ? "tools-v2-empty__btn tools-v2-empty__btn--ghost"
+              : "tools-v2-empty__btn"
+          }
+        >
+          Browse all tools
+        </button>
+      </div>
     </div>
   );
 }

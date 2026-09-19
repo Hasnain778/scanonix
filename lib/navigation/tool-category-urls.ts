@@ -1,4 +1,5 @@
 import {
+  ALL_DIRECTORY_FILTER_IDS,
   type ToolCategoryFilterId,
   type ToolCategoryId,
 } from "@/constants/tool-categories";
@@ -7,15 +8,7 @@ export const TOOLS_DIRECTORY_PATH = "/tools";
 
 const VALID_DIRECTORY_CATEGORIES = new Set<ToolCategoryFilterId>([
   "all",
-  "pdf",
-  "image",
-  "ai",
-  "security",
-  "organize-pdf",
-  "convert-pdf",
-  "edit-pdf",
-  "optimize-pdf",
-  "security-pdf",
+  ...ALL_DIRECTORY_FILTER_IDS,
 ]);
 
 /** Build a deep-linkable /tools URL for the given directory category filter. */

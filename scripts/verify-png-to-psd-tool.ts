@@ -195,7 +195,7 @@ function run() {
   assert(
     "28 catalog discovery",
     directory.length === 1 &&
-      SCANONIX_TOOLS.length === 40 &&
+      SCANONIX_TOOLS.length === 41 &&
       HOMEPAGE_TOOLS.filter((t) => t.category === "image" && t.available).length ===
         16,
   );

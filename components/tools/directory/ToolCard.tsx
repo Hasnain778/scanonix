@@ -6,10 +6,7 @@ import { ProBadge } from "@/components/ui/ProBadge";
 import { resolveToolVisual } from "@/constants/tool-visuals";
 import { FEATURED_TOOL_IDS } from "@/constants/tools-directory-data";
 import { getToolAccess } from "@/lib/plan/tool-access";
-import {
-  getCategoryLabel,
-  type ToolDirectoryEntry,
-} from "@/lib/tools-directory";
+import type { ToolDirectoryEntry } from "@/lib/tools-directory";
 
 interface ToolCardProps {
   tool: ToolDirectoryEntry;
@@ -29,39 +26,28 @@ export function ToolCard({ tool, featured = false }: ToolCardProps) {
   return (
     <Link
       href={tool.href}
-      className="tool-card-neon group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+      className={`tool-card-v2 group focus-visible:outline-none${featured ? " tool-card-v2--featured" : ""}`}
       style={cardStyle}
     >
-      <div className="flex items-start justify-between gap-3">
-        <ToolVisual
-          slug={tool.id}
-          icon={tool.icon}
-          size={featured ? "lg" : "md"}
-          animated
-        />
+      <div className="tool-card-v2__top">
+        <span className="tool-card-v2__icon-tile" aria-hidden="true">
+          <ToolVisual slug={tool.id} icon={tool.icon} size="lg" animated />
+        </span>
 
-        <div className="flex flex-wrap justify-end gap-1.5">
-          {isPopular ? (
-            <span className="tool-badge-popular">Popular</span>
-          ) : null}
-          {access?.requiresPro ? <ProBadge /> : null}
-          <span className="tool-badge-category">{getCategoryLabel(tool.category)}</span>
-        </div>
+        {(isPopular || access?.requiresPro) && (
+          <div className="tool-card-v2__meta">
+            {isPopular ? <span className="tool-card-v2__popular">Popular</span> : null}
+            {access?.requiresPro ? <ProBadge /> : null}
+          </div>
+        )}
       </div>
 
-      <h3 className={`text-tool-name mt-4 ${featured ? "text-[0.9375rem] sm:text-base" : "text-sm sm:text-[0.9375rem]"}`}>
-        {tool.name}
-      </h3>
-      <p className="text-body-bright mt-1 flex-1 text-sm leading-relaxed line-clamp-2">
-        {tool.description}
-      </p>
+      <h3 className="tool-card-v2__title">{tool.name}</h3>
+      <p className="tool-card-v2__desc">{tool.description}</p>
 
-      <span className="mt-3.5 inline-flex items-center gap-1.5 text-sm font-medium text-scanonix-orange-light transition-colors group-hover:text-scanonix-orange">
+      <span className="tool-card-v2__cta">
         Open tool
-        <ArrowRight
-          className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-          aria-hidden="true"
-        />
+        <ArrowRight aria-hidden="true" />
       </span>
     </Link>
   );

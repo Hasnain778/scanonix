@@ -120,19 +120,27 @@ export function getFeaturedTools(
 export function getCategoryCounts(
   tools: ToolDirectoryEntry[] = SCANONIX_TOOLS,
 ): Record<ToolCategoryFilterId, number> {
-  const topFilters = TOP_LEVEL_CATEGORY_FILTERS.map((item) => item.id);
-  const pdfSubFilters = [
-    "pdf",
+  const filterIds: ToolCategoryFilterId[] = [
+    ...TOP_LEVEL_CATEGORY_FILTERS.map((item) => item.id),
     "organize-pdf",
     "convert-pdf",
     "edit-pdf",
     "optimize-pdf",
     "security-pdf",
-  ] as const;
+    "convert-image",
+    "compress-image",
+    "vector-image",
+    "edit-image",
+    "write-ai",
+    "extract-ai",
+    "analyze-ai",
+    "protect-security",
+    "scan-security",
+  ];
 
   const counts = {} as Record<ToolCategoryFilterId, number>;
 
-  for (const filterId of [...topFilters, ...pdfSubFilters]) {
+  for (const filterId of filterIds) {
     counts[filterId] = tools.filter((tool) =>
       toolMatchesCategoryFilter(tool.id, filterId),
     ).length;

@@ -239,7 +239,7 @@ function run() {
     homepage.length === 1 &&
       directory.length === 1 &&
       homepage[0]?.available === true &&
-      SCANONIX_TOOLS.length === 40,
+      SCANONIX_TOOLS.length === 41,
   );
   assert(
     "28 image nav/hub discovery",

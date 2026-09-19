@@ -1,0 +1,138 @@
+/**
+ * Image Editor — premium visual system (editor-scoped only).
+ * Tokens live under [data-image-editor-workspace] and follow html[data-theme].
+ */
+
+html[data-theme="dark"] [data-image-editor-workspace],
+:root [data-image-editor-workspace] {
+  --ie-pasteboard: #0b0c10;
+  --ie-chrome: #13151b;
+  --ie-surface: #171a21;
+  --ie-surface-elevated: #1c2029;
+  --ie-surface-hover: #242933;
+  --ie-control: rgba(255, 255, 255, 0.04);
+  --ie-control-hover: rgba(255, 255, 255, 0.07);
+  --ie-selected: color-mix(in srgb, var(--scanonix-orange) 16%, transparent);
+  --ie-selected-muted: color-mix(in srgb, var(--scanonix-orange) 10%, transparent);
+  --ie-border-subtle: rgba(255, 255, 255, 0.055);
+  --ie-border: rgba(255, 255, 255, 0.09);
+  --ie-border-strong: rgba(255, 255, 255, 0.14);
+  --ie-text: #f3f4f7;
+  --ie-text-secondary: #c8cbd4;
+  --ie-text-muted: #8f94a3;
+  --ie-accent: var(--scanonix-orange);
+  --ie-accent-soft: color-mix(in srgb, var(--scanonix-orange) 18%, transparent);
+  --ie-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --ie-shadow-md: 0 8px 28px rgba(0, 0, 0, 0.38);
+  --ie-shadow-canvas: 0 12px 40px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --ie-radius-sm: 8px;
+  --ie-radius-md: 11px;
+  --ie-radius-lg: 14px;
+  --ie-ease: 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ie-scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --ie-scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
+  --ie-scrollbar-track: transparent;
+}
+
+html[data-theme="bright"] [data-image-editor-workspace] {
+  --ie-pasteboard: #e6e3de;
+  --ie-chrome: #ffffff;
+  --ie-surface: #fbfaf8;
+  --ie-surface-elevated: #ffffff;
+  --ie-surface-hover: #f2efe9;
+  --ie-control: rgba(20, 18, 16, 0.035);
+  --ie-control-hover: rgba(20, 18, 16, 0.06);
+  --ie-selected: color-mix(in srgb, var(--scanonix-orange) 12%, #fff);
+  --ie-selected-muted: color-mix(in srgb, var(--scanonix-orange) 8%, #fff);
+  --ie-border-subtle: rgba(20, 18, 16, 0.06);
+  --ie-border: rgba(20, 18, 16, 0.09);
+  --ie-border-strong: rgba(20, 18, 16, 0.14);
+  --ie-text: #16141f;
+  --ie-text-secondary: #3f3b36;
+  --ie-text-muted: #6e6963;
+  --ie-accent: var(--scanonix-orange);
+  --ie-accent-soft: color-mix(in srgb, var(--scanonix-orange) 14%, transparent);
+  --ie-shadow-sm: 0 1px 2px rgba(20, 18, 16, 0.06);
+  --ie-shadow-md: 0 8px 24px rgba(20, 18, 16, 0.08);
+  --ie-shadow-canvas: 0 10px 36px rgba(20, 18, 16, 0.14), 0 2px 6px rgba(20, 18, 16, 0.08);
+  --ie-scrollbar-thumb: rgba(20, 18, 16, 0.22);
+  --ie-scrollbar-thumb-hover: rgba(20, 18, 16, 0.34);
+}
+
+[data-image-editor-workspace] {
+  color: var(--ie-text);
+  background: var(--ie-chrome);
+  border-color: var(--ie-border);
+}
+
+/* Scrollbars — inspector scoped */
+[data-image-editor-workspace] .ie-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ie-scrollbar-thumb) var(--ie-scrollbar-track);
+}
+[data-image-editor-workspace] .ie-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+[data-image-editor-workspace] .ie-scroll::-webkit-scrollbar-track {
+  background: var(--ie-scrollbar-track);
+}
+[data-image-editor-workspace] .ie-scroll::-webkit-scrollbar-thumb {
+  background: var(--ie-scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+[data-image-editor-workspace] .ie-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--ie-scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Premium range slider */
+[data-image-editor-workspace] .ie-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ie-border-strong);
+  outline: none;
+  cursor: pointer;
+}
+[data-image-editor-workspace] .ie-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+[data-image-editor-workspace] .ie-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--ie-accent);
+  border: 2px solid color-mix(in srgb, var(--ie-chrome) 35%, #fff);
+  box-shadow: var(--ie-shadow-sm);
+  transition: transform var(--ie-ease);
+}
+[data-image-editor-workspace] .ie-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.08);
+}
+[data-image-editor-workspace] .ie-slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--ie-accent);
+  border: 2px solid color-mix(in srgb, var(--ie-chrome) 35%, #fff);
+  box-shadow: var(--ie-shadow-sm);
+}
+[data-image-editor-workspace] .ie-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ie-border-strong);
+}
+
+[data-image-editor-workspace] .ie-focus-ring:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--ie-accent) 55%, transparent);
+  outline-offset: 2px;
+}

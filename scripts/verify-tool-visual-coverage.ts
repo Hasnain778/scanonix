@@ -43,6 +43,7 @@ const VALID_ICON_TYPES = new Set([
   "word-to-pdf",
   "image-compress",
   "image-resize",
+  "image-editor",
   "image-upscale",
   "png-to-jpg",
   "jpg-to-png",
@@ -77,13 +78,13 @@ function run() {
   const duplicates = getDuplicateVisualSlugs();
 
   assert(
-    "Canonical tool count is 40",
-    CANONICAL_TOOL_IDS.length === 40,
+    "Canonical tool count is 41",
+    CANONICAL_TOOL_IDS.length === 41,
     `got ${CANONICAL_TOOL_IDS.length}`,
   );
 
   assert(
-    "TOOL_VISUALS covers all 40 canonical tools",
+    "TOOL_VISUALS covers all 41 canonical tools",
     missing.length === 0,
     missing.length ? `missing: ${missing.join(", ")}` : "",
   );
@@ -95,8 +96,8 @@ function run() {
   );
 
   assert(
-    "TOOL_VISUALS has exactly 40 entries",
-    TOOL_VISUAL_SLUGS.length === 40,
+    "TOOL_VISUALS has exactly 41 entries",
+    TOOL_VISUAL_SLUGS.length === 41,
     `got ${TOOL_VISUAL_SLUGS.length}`,
   );
 

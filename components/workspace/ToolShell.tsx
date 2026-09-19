@@ -88,13 +88,15 @@ export function ToolPageHeader({
 
 interface ToolLayoutProps {
   children: ReactNode;
-  maxWidth?: "5xl" | "6xl" | "7xl";
+  maxWidth?: "5xl" | "6xl" | "7xl" | "tools";
 }
 
 const maxWidthClasses = {
   "5xl": "max-w-5xl",
   "6xl": "max-w-6xl",
   "7xl": "max-w-7xl",
+  /** SV2-1 tools directory — 90rem / 1440px content width */
+  tools: "tools-v2-layout max-w-[90rem]",
 };
 
 export function ToolLayout({

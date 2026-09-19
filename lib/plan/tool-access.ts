@@ -55,6 +55,7 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "qr-scanner": { ...FREE_CLIENT, route: "qr-scanner" },
   "image-compressor": { ...FREE_SERVER, route: "image-compressor" },
   "image-resizer": { ...FREE_SERVER, route: "image-resizer" },
+  "image-editor": { ...FREE_CLIENT, route: "image-editor" },
   "logo-vectorizer": { ...FREE_SERVER, route: "logo-vectorizer" },
   "image-to-svg": { ...FREE_SERVER, route: "image-to-svg" },
   "raster-to-vector": { ...FREE_SERVER, route: "raster-to-vector" },

@@ -94,7 +94,7 @@ function main(): void {
   assert("8 Image canonical count is 16", image.length === 16, `got ${image.length}`);
   assert("9 AI canonical count is 5", ai.length === 5, `got ${ai.length}`);
   assert("10 Security canonical count is 5", security.length === 5, `got ${security.length}`);
-  assert("11 directory total remains 40", SCANONIX_TOOLS.length === 40);
+  assert("11 directory total remains 41", SCANONIX_TOOLS.length === 41);
 
   for (const [label, ids] of [
     ["PDF", pdf],

@@ -219,8 +219,10 @@ function run() {
   // 16. ToolsDirectory PDF subfilters
   assert(
     "16 ToolsDirectory uses PDF subcategory filters",
-    directorySource.includes("PDF_SUBCATEGORY_FILTERS") &&
-      directorySource.includes("isPdfCategoryFilter"),
+    (directorySource.includes("PDF_SUBCATEGORY_FILTERS") ||
+      directorySource.includes("getSubcategoryFilters")) &&
+      (directorySource.includes("isPdfCategoryFilter") ||
+        directorySource.includes("getPrimaryFamily")),
   );
   assert(
     "16 ToolsDirectory scrollable category chips on mobile",

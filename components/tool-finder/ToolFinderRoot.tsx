@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -35,6 +36,12 @@ const EXAMPLE_PROMPTS = [
 ] as const;
 
 export function ToolFinderRoot() {
+  const pathname = usePathname();
+  /** Narrow: hide FAB on Image Editor workspaces (public + dev). */
+  const hideForDevEditor =
+    typeof pathname === "string" &&
+    (pathname.startsWith("/dev/image-editor") ||
+      pathname.startsWith("/tools/image-editor"));
   const reduceMotion = useReducedMotion();
   const mounted = useClientMounted();
   const consentDecision = useConsentDecision();
@@ -132,7 +139,7 @@ export function ToolFinderRoot() {
     return () => window.removeEventListener("mousedown", onPointerDown);
   }, [close, open]);
 
-  if (consentPending) {
+  if (hideForDevEditor || consentPending) {
     return null;
   }
 

@@ -33,13 +33,13 @@ export default async function ToolsPage({
 
   return (
     <ToolShell>
-      <div className="tools-directory-shell">
-        <ToolLayout>
-          <div className="tools-directory-page space-y-8 sm:space-y-10">
+      <div className="tools-directory-shell tools-v2">
+        <ToolLayout maxWidth="tools">
+          <div className="tools-directory-page">
             <div className="tools-directory-hero-zone">
               <ToolsDirectoryHeroHeader />
-              <ToolsDirectory initialCategory={initialCategory} />
             </div>
+            <ToolsDirectory initialCategory={initialCategory} />
           </div>
         </ToolLayout>
       </div>

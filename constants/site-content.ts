@@ -127,6 +127,11 @@ export const WORKSPACES: Workspace[] = [
     accent: "from-violet-500/20 via-purple-500/10 to-transparent",
     items: [
       {
+        name: "Image Editor",
+        href: "/tools/image-editor",
+        available: true,
+      },
+      {
         name: "Image Compressor",
         href: "/tools/image-compressor",
         available: true,

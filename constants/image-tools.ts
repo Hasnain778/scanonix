@@ -230,6 +230,15 @@ export const IMAGE_HUB_FEATURED_MEDIUM = ["heic-to-jpg", "png-to-jpg", "jpg-to-w
 
 export const IMAGE_HUB_EDIT_TOOLS: ImageHubTool[] = [
   {
+    id: "image-editor",
+    title: "Image Editor",
+    description:
+      "Crop, resize, adjust, filter, add text, and export PNG, JPEG or WebP.",
+    href: "/tools/image-editor",
+    fileSupport: "JPG, PNG, WEBP, HEIC",
+    kind: "edit",
+  },
+  {
     id: "image-compressor",
     title: "Image Compressor",
     description: "Reduce image file size with adjustable quality.",

@@ -270,6 +270,26 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
     available: true,
   },
   {
+    id: "image-editor",
+    name: "Image Editor",
+    shortDescription: "Edit images with crop, filters, text and export.",
+    description:
+      "Edit images with crop, resize, adjustments, filters, backgrounds, text, social presets and export controls.",
+    href: "/tools/image-editor",
+    category: "image",
+    icon: "image-editor",
+    aliases: [
+      "image editor",
+      "photo editor",
+      "edit image",
+      "edit photo",
+      "online image editor",
+      "crop image",
+      "filter image",
+    ],
+    available: true,
+  },
+  {
     id: "logo-vectorizer",
     name: "Logo Vectorizer",
     shortDescription: "Turn logos into real SVG paths.",
@@ -734,6 +754,7 @@ export const NAV_DROPDOWN_TOOLS: Record<
     href: "/#image-tools",
     viewAllHref: getToolsCategoryHref("image"),
     tools: [
+      { name: "Image Editor", href: "/tools/image-editor" },
       { name: "Image Compressor", href: "/tools/image-compressor" },
       { name: "Image Upscaler", href: "/tools/image-upscaler" },
       { name: "Logo Vectorizer", href: "/tools/logo-vectorizer" },

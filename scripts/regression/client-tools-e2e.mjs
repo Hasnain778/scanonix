@@ -307,10 +307,17 @@ async function runWatermarkPdf(results) {
     await installDownloadHook(page);
     await uploadFiles(page, fp("two-page.pdf"));
     await waitForBodyText(page, "two-page.pdf", 60000);
-    const textInput = await page.$('input[type="text"]');
-    if (textInput) await textInput.type("SCANONIX TEST");
+    const textInput = await page.waitForSelector(
+      '[data-watermark-text-input]',
+      { timeout: 30000 },
+    );
+    // Clear default "CONFIDENTIAL" so we do not append into an oversized string.
+    await textInput.click({ clickCount: 3 });
+    await page.keyboard.press("Backspace");
+    await textInput.type("SCANONIX TEST");
     await clickButtonContaining(page, "Download watermarked PDF");
-    await waitForBodyText(page, "ready to download", 120000).catch(() => {});
+    await waitForBodyText(page, "Watermarked PDF downloaded.", 120000);
+    await sleep(500);
     const blobs = await readAllBlobs(page);
     const pdf = blobs.find((b) => isPdf(b.bytes));
     const jpegPreview = blobs.find((b) => isJpeg(b.bytes));
@@ -407,7 +414,15 @@ async function runOcr(results) {
     await uploadFiles(page, fp("ocr-test.png"));
     await waitForBodyText(page, "ocr-test.png", 30000);
     await clickButtonContaining(page, "Extract text");
-    await waitForBodyText(page, "Extracted text", 300000);
+    // "Extracted text" heading appears during loading — wait for fixture result instead.
+    await page.waitForFunction(
+      () => {
+        const ta = document.querySelector("textarea");
+        return ta instanceof HTMLTextAreaElement
+          && /SCANONIX OCR TEST 12345/i.test(ta.value);
+      },
+      { timeout: 300000 },
+    );
     const text = await page.$eval("textarea", (el) => el.value).catch(() => "");
     const ok =
       FORCE_FAIL === slug ? false : /SCANONIX OCR TEST 12345/i.test(text);

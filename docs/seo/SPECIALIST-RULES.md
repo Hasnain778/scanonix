@@ -10,7 +10,7 @@ Operating guide for Cursor and human SEO work on Scanonix.
 4. **Prioritize real user intent.** Tools must match what searchers need (merge PDF, compress PDF, etc.).
 5. **No keyword stuffing, doorway pages, fake reviews, or false Free/Privacy claims.**
 
-## Thresholds (Phase 129C)
+## Thresholds (Phase 129C + SEO-AUTO-2)
 
 | Metric | Threshold | Label |
 |--------|-----------|-------|
@@ -18,7 +18,12 @@ Operating guide for Cursor and human SEO work on Scanonix.
 | Cannibalization (total query imp) | ≥ 20 | Below = EARLY SIGNAL |
 | Cannibalization (per URL imp) | ≥ 5 | Minimum per competing URL |
 | High-impression CTR review | ≥ 50 imp, CTR < 2% | ACTION_CANDIDATE |
-| Position bands | 4–15, 8–20 | Striking distance monitoring |
+| Legacy position bands | 4–15, 8–20 | Striking distance monitoring |
+| Position TOP | 1–10 | Snippet/CTR review territory |
+| Position STRIKING_DISTANCE | 11–30 | Ranking/content/internal-link |
+| Position EMERGING | 31–60 | Emerging relevance |
+| Position DEEP | 61–100 | Intent/content/authority — not CTR-only |
+| Evidence STRONG / SPARSE / INSUFFICIENT | see `lib/seo/local/evidence.ts` | Sparse blocks content-change proposals |
 
 ## Protected surfaces
 
@@ -27,6 +32,7 @@ Operating guide for Cursor and human SEO work on Scanonix.
 - **Canonicals / sitemap** — do not change casually; require tests + human approval
 - **Legal pages** — self-canonical (`/privacy`, `/terms`, `/contact`)
 - **Canonical host** — `https://www.scanonix.com` (129B-FIX1)
+- **OCR measurement hold** — report/classify only; no actionable title/H1/content proposals while hold is active (`lib/seo/local/holds.ts`)
 
 ## Workflow
 
@@ -34,16 +40,26 @@ Operating guide for Cursor and human SEO work on Scanonix.
 
 ```bash
 npm run seo:report
+npm run seo:propose
 ```
 
-Review: baseline 28d, 7d vs previous 7d (label low volume), opportunities, sitemap status.
+Review: baseline 28d, 7d vs previous 7d (label low volume), opportunities, evidence quality, proposals under `.tmp-seo/proposals/`.
+
+**`seo:propose` NEVER edits production SEO.** It only writes gitignored proposal artifacts for human review.
+
+Full experiment workflow: [EXPERIMENTS.md](./EXPERIMENTS.md)
+
+```text
+GSC DATA → PROPOSAL → HUMAN REVIEW → separate approved edit phase → validation → deliberate release → measurement hold → 7/14/28-day evaluation
+```
 
 ### Before SEO code changes
 
-1. Run `verify-seo-canonical-host`, `verify-seo-129b`, tool matrix regressions
-2. Document hypothesis with GSC evidence (not single-day spikes)
+1. Run `verify-seo-canonical-host`, `verify-seo-129b`, `verify:seo-auto-2`, tool matrix regressions as relevant
+2. Document hypothesis with GSC evidence (not single-day spikes); require STRONG evidence for content changes
 3. Propose minimal diff — metadata/copy only unless P0 technical issue
 4. Human review + commit/deploy approval required
+5. Record experiment baseline in `.tmp-seo/experiments/` (gitignored)
 
 ### Optional deep dive
 
@@ -77,6 +93,9 @@ Flag when multiple Scanonix URLs earn meaningful impressions for the same query.
 | `npm run seo:report` | Baseline + opportunities + sitemap |
 | `npm run seo:gsc` | Alias for `seo:report` |
 | `npm run seo:index-audit` | 36-tool index audit |
+| `npm run seo:propose` | Proposal artifacts only (never edits production SEO) |
+| `npm run seo:experiment-status` | Post-change measurement signals (not causality) |
+| `npm run verify:seo-auto-2` | Deterministic SEO-AUTO-2 checks |
 
 ## Release gate
 
@@ -86,3 +105,4 @@ Proposed SEO releases require:
 - [ ] No secrets in diff
 - [ ] Human approved commit/deploy
 - [ ] Before/after GSC comparison scheduled (28d window)
+- [ ] Measurement hold respected for pages under observation (e.g. OCR)

@@ -30,6 +30,7 @@ import {
   fetchGscSitemapStatus,
   formatSitemapSummary,
 } from "@/lib/seo/local/sitemap-report";
+import { persistSnapshotFromReport } from "@/lib/seo/local/snapshots";
 import type { SeoReportPayload } from "@/lib/seo/local/types";
 
 export interface RunSeoReportOptions {
@@ -174,6 +175,12 @@ export function writeReportJson(payload: SeoReportPayload, cwd = process.cwd()) 
     JSON.stringify(payload, null, 2),
     "utf8",
   );
+  // SEO-AUTO-3: also persist a historical snapshot (deduped; never stores secrets).
+  try {
+    persistSnapshotFromReport(payload, { source: "seo-report", cwd });
+  } catch {
+    // Snapshot persistence must not break the convenience report write.
+  }
 }
 
 export function printSeoReport(payload: SeoReportPayload): void {

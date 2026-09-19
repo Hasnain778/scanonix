@@ -56,11 +56,24 @@ npm run seo:auth
 ## Step 4 — Run reports
 
 ```bash
-npm run seo:report      # full baseline + opportunities (alias: seo:gsc)
+npm run seo:report      # full baseline + opportunities + sitemap (alias: npm run seo:gsc)
+npm run seo:propose     # proposal artifacts only — NEVER edits production SEO
+npm run seo:monitor     # snapshot compare / watchlist (SEO-AUTO-3)
+npm run seo:experiment-status  # ledger vs report (correlation only)
 npm run seo:index-audit # optional 36-tool URL inspection (~40s, rate-limited)
+npm run verify:seo-auto-2      # deterministic SEO-AUTO-2 checks
+npm run verify:seo-auto-3      # deterministic SEO-AUTO-3 checks
 ```
 
-JSON output (gitignored): `.tmp-seo/seo-report.json`
+JSON output (gitignored):
+
+- `.tmp-seo/seo-report.json`
+- `.tmp-seo/snapshots/*.json`
+- `.tmp-seo/proposals/latest.json`
+- `.tmp-seo/monitor/latest.json`
+- `.tmp-seo/experiments/*.json`
+
+See [EXPERIMENTS.md](./EXPERIMENTS.md) and [MONITORING.md](./MONITORING.md).
 
 ## Property identification
 
@@ -82,11 +95,13 @@ GSC_SITE_URL=https://www.scanonix.com/
 | No properties listed | Verify Google account has GSC access |
 | Write scope error | Delete `token.json`, re-run `seo:auth` with read-only scope |
 | Empty analytics | Normal for new/low-volume sites — see EARLY SIGNAL rules in SPECIALIST-RULES.md |
+| `seo:propose` missing report | Run `seo:report` first, or `--from-report <path>`, or `--live` with credentials |
 
 ## What this does NOT do
 
-- No production code changes
+- No production code changes (`seo:propose` included)
 - No sitemap submit/remove
 - No Indexing API
 - No new GSC property creation
+- No automatic Git stage/commit/push/deploy
 - No GA4 installation (see ANALYTICS-DECISION.md)

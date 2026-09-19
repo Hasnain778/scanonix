@@ -1,4 +1,5 @@
 import { THRESHOLDS } from "@/lib/seo/local/constants";
+import { classifyPositionBand } from "@/lib/seo/local/position-bands";
 import type {
   OpportunityItem,
   SearchAnalyticsRow,
@@ -13,6 +14,82 @@ function signalForVolume(impressions: number): "EARLY_SIGNAL" | "ACTION_CANDIDAT
 function isBrandQuery(query: string): boolean {
   const lower = query.toLowerCase();
   return THRESHOLDS.brandTerms.some((term) => lower.includes(term));
+}
+
+/**
+ * Append SEO-AUTO-2 position-band signals for pages.
+ * TOP / STRIKING / EMERGING / DEEP are mutually exclusive categories.
+ */
+function pushPositionBandPageSignals(
+  opportunities: OpportunityItem[],
+  page: string,
+  row: SearchAnalyticsRow,
+  signal: "EARLY_SIGNAL" | "ACTION_CANDIDATE",
+): void {
+  const band = classifyPositionBand(row.position);
+
+  if (band === "TOP") {
+    if (
+      row.impressions >= THRESHOLDS.highImpressionsFloor &&
+      row.ctr < THRESHOLDS.lowCtrThreshold
+    ) {
+      opportunities.push({
+        category: "TOP_LOW_CTR",
+        signal,
+        page,
+        clicks: row.clicks,
+        impressions: row.impressions,
+        ctr: row.ctr,
+        position: row.position,
+        note: "TOP (1–10) with meaningful impressions and weak CTR — snippet/title review may be reasonable (not a deep-rank content overhaul).",
+      });
+    }
+    return;
+  }
+
+  if (band === "STRIKING_DISTANCE" && row.impressions >= THRESHOLDS.minImpressionsMeaningful) {
+    opportunities.push({
+      category: "STRIKING_DISTANCE",
+      signal,
+      page,
+      clicks: row.clicks,
+      impressions: row.impressions,
+      ctr: row.ctr,
+      position: row.position,
+      note: "STRIKING_DISTANCE (11–30) — ranking/content/internal-link opportunity; not equivalent to a top-10 CTR issue.",
+    });
+    return;
+  }
+
+  if (band === "EMERGING" && row.impressions >= THRESHOLDS.minImpressionsMeaningful) {
+    opportunities.push({
+      category: "EMERGING",
+      signal,
+      page,
+      clicks: row.clicks,
+      impressions: row.impressions,
+      ctr: row.ctr,
+      position: row.position,
+      note: "EMERGING (31–60) — emerging relevance signal; confirm trend before copy changes.",
+    });
+    return;
+  }
+
+  if (
+    band === "DEEP" &&
+    row.impressions >= THRESHOLDS.deepRankingHighImpressionsFloor
+  ) {
+    opportunities.push({
+      category: "DEEP_RANKING",
+      signal,
+      page,
+      clicks: row.clicks,
+      impressions: row.impressions,
+      ctr: row.ctr,
+      position: row.position,
+      note: "DEEP_RANKING (61–100) with high impressions — Google sees relevance but page is far from competitive. Investigate intent/content/authority; do NOT treat as a position-7 CTR tweak.",
+    });
+  }
 }
 
 export function buildOpportunityReport(
@@ -134,6 +211,7 @@ export function buildOpportunityReport(
       row.impressions >= THRESHOLDS.highImpressionsFloor &&
       row.ctr < THRESHOLDS.lowCtrThreshold
     ) {
+      const band = classifyPositionBand(row.position);
       opportunities.push({
         category: "HIGH_IMPRESSIONS_LOW_CTR_PAGE",
         signal,
@@ -142,14 +220,21 @@ export function buildOpportunityReport(
         impressions: row.impressions,
         ctr: row.ctr,
         position: row.position,
-        note: "Page-level CTR opportunity — compare with query→landing map.",
+        note:
+          band === "DEEP"
+            ? "High impressions + low CTR at DEEP position — prioritize intent/content review over snippet-only CTR fixes."
+            : band === "TOP"
+              ? "Page-level CTR opportunity in TOP band — compare with query→landing map for snippet/title review."
+              : "Page-level CTR opportunity — interpret using position band; compare with query→landing map.",
       });
     }
+
+    pushPositionBandPageSignals(opportunities, page, row, signal);
   }
 
   return dedupeOpportunities(opportunities)
     .sort((a, b) => b.impressions - a.impressions)
-    .slice(0, 50);
+    .slice(0, 80);
 }
 
 function dedupeOpportunities(items: OpportunityItem[]): OpportunityItem[] {

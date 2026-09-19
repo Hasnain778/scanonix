@@ -2,4 +2,4 @@
 export const TOOLS_DIRECTORY_H1 = "All Tools";
 
 export const TOOLS_DIRECTORY_DESCRIPTION =
-  "36 powerful tools for PDF, image and document workflows.";
+  "41 powerful tools for PDF, image and document workflows.";

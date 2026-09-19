@@ -2258,7 +2258,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     seoTitle: "OCR Online — Extract Text from Scanned PDFs & Images | Scanonix",
     metaDescription:
       "Free OCR online: extract text from scanned PDFs, photos, and images in your browser. Upload a scan, choose the language, and copy or download editable text — processed locally on your device.",
-    h1: "Extract Text from Scanned PDFs and Images",
+    h1: "Online OCR for Scanned PDFs & Images",
     headerDescription:
       "Run OCR on scanned documents and image files to pull out readable text. Upload a scan or photo, choose the document language, and copy or download the extracted text from your browser.",
     pageDescription:

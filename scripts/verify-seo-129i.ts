@@ -176,7 +176,10 @@ function run() {
     "5 ocr metaDescription mentions reader or extract",
     /reader|extract/i.test(ocr.metaDescription),
   );
-  assert("5 ocr h1 unchanged core intent", /Extract Text from Scanned PDFs and Images/i.test(ocr.h1));
+  assert(
+    "5 ocr h1 Online OCR for scanned PDFs and images",
+    /^Online OCR for Scanned PDFs & Images$/i.test(ocr.h1),
+  );
 
   // 6. QR scanner explicitly QR-focused
   const qrCopy = [

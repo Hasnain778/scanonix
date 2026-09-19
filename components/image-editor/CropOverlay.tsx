@@ -84,7 +84,6 @@ export function CropOverlay({
 
   const rotatedSize = rotatedFullSize(sourceSize, doc.rotation);
   const crop = getWorkingCrop(doc, sourceSize);
-  latestCropRef.current = crop;
   const rotatedCrop = cropRectToRotatedBounds(crop, sourceSize, doc.rotation);
 
   const topLeft = documentToStagePoint(

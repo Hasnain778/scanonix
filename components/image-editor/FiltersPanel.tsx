@@ -34,10 +34,10 @@ export function FiltersPanel({
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const genRef = useRef(0);
   const catalog = getFilterCatalog();
+  const displayThumbs = source ? thumbs : {};
 
   useEffect(() => {
     if (!source) {
-      setThumbs({});
       return;
     }
     const token = ++genRef.current;
@@ -97,10 +97,10 @@ export function FiltersPanel({
                   />
                 ) : null}
                 <div className="aspect-[4/3] w-full overflow-hidden bg-[var(--ie-surface)]">
-                  {thumbs[preset.id] ? (
+                  {displayThumbs[preset.id] ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={thumbs[preset.id]}
+                      src={displayThumbs[preset.id]}
                       alt=""
                       className="h-full w-full object-cover transition-transform duration-150 group-hover:scale-[1.02]"
                     />

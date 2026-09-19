@@ -96,7 +96,7 @@ async function main(): Promise<void> {
   await test("B. successful trigger does not wait/poll for claim", async () => {
     let triggerCount = 0;
     let getJobCalls = 0;
-    let job = baseJob();
+    const job = baseJob();
 
     const outcome = await dispatchUpscaleWorkerWithClaimVerification(JOB_ID, {
       sleep: async () => {
@@ -149,7 +149,7 @@ async function main(): Promise<void> {
 
   await test("D. no worker_claim_timeout path after successful trigger", async () => {
     let triggerCount = 0;
-    let job = baseJob();
+    const job = baseJob();
     let updateCalled = false;
 
     const outcome = await dispatchUpscaleWorkerWithClaimVerification(JOB_ID, {
@@ -175,7 +175,7 @@ async function main(): Promise<void> {
 
   await test("E. first HTTP fail then success -> 2 triggers, no claim wait", async () => {
     let triggerCount = 0;
-    let job = baseJob();
+    const job = baseJob();
 
     const outcome = await dispatchUpscaleWorkerWithClaimVerification(JOB_ID, {
       sleep: async () => {},
@@ -292,7 +292,7 @@ async function main(): Promise<void> {
 
   await test("I. retries stop immediately after first successful trigger", async () => {
     let triggerCount = 0;
-    let job = baseJob();
+    const job = baseJob();
 
     const outcome = await dispatchUpscaleWorkerWithClaimVerification(JOB_ID, {
       sleep: async () => {},

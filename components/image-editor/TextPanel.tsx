@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -75,11 +75,16 @@ export function TextPanel({
   canAdd,
 }: TextPanelProps) {
   const selected = texts.find((t) => t.id === selectedTextId) ?? null;
-  const [hexDraft, setHexDraft] = useState(selected?.color ?? "#000000");
-
-  useEffect(() => {
-    setHexDraft(selected?.color ?? "#000000");
-  }, [selected?.id, selected?.color]);
+  const selectedColor = selected?.color ?? "#000000";
+  const [hexDraft, setHexDraft] = useState(selectedColor);
+  const [hexSyncKey, setHexSyncKey] = useState(
+    `${selected?.id ?? ""}:${selectedColor}`,
+  );
+  const nextHexSyncKey = `${selected?.id ?? ""}:${selectedColor}`;
+  if (nextHexSyncKey !== hexSyncKey) {
+    setHexSyncKey(nextHexSyncKey);
+    setHexDraft(selectedColor);
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">

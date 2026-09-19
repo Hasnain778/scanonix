@@ -66,10 +66,6 @@ export function FontPicker({ value, onChange }: FontPickerProps) {
   const current = getFontFamily(value);
 
   useEffect(() => {
-    setRecent(readRecent());
-  }, []);
-
-  useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
@@ -86,14 +82,18 @@ export function FontPicker({ value, onChange }: FontPickerProps) {
   }, [open]);
 
   useEffect(() => {
-    if (open) {
-      const t = window.setTimeout(() => searchRef.current?.focus(), 40);
-      return () => window.clearTimeout(t);
-    }
-    setQuery("");
-    return undefined;
+    if (!open) return;
+    const t = window.setTimeout(() => searchRef.current?.focus(), 40);
+    return () => window.clearTimeout(t);
   }, [open]);
 
+  const toggleOpen = () => {
+    if (!open) {
+      setRecent(readRecent());
+      setQuery("");
+    }
+    setOpen((v) => !v);
+  };
   const filtered = useMemo(
     () => listEditorFonts(category, query),
     [category, query],
@@ -185,7 +185,7 @@ export function FontPicker({ value, onChange }: FontPickerProps) {
         className="ie-focus-ring flex w-full items-center justify-between gap-2 rounded-[var(--ie-radius-sm)] border-0 bg-[var(--ie-surface-elevated)] px-3 py-2.5 text-left text-sm text-[var(--ie-text)] shadow-[var(--ie-shadow-sm)] outline-none ring-1 ring-[var(--ie-border-subtle)] transition-shadow duration-150 hover:bg-[var(--ie-surface-hover)]"
         aria-haspopup="listbox"
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggleOpen}
       >
         <span
           className="min-w-0 truncate"

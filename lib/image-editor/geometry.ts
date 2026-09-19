@@ -146,8 +146,8 @@ export function clampContentOffsets(
 export function clampCropRect(crop: CropRect, source: Size): CropRect {
   const maxW = Math.max(1, source.width);
   const maxH = Math.max(1, source.height);
-  let width = Math.min(Math.max(1, Math.round(crop.width)), maxW);
-  let height = Math.min(Math.max(1, Math.round(crop.height)), maxH);
+  const width = Math.min(Math.max(1, Math.round(crop.width)), maxW);
+  const height = Math.min(Math.max(1, Math.round(crop.height)), maxH);
   let x = Math.round(crop.x);
   let y = Math.round(crop.y);
   x = Math.min(Math.max(0, x), maxW - width);
@@ -223,7 +223,7 @@ export function resizeCropRect(
   ratioId: CropRatioId,
 ): CropRect {
   const ratio = ratioValue(ratioId, source);
-  let nextCrop: CropRect = {
+  const nextCrop: CropRect = {
     x: next.x ?? current.x,
     y: next.y ?? current.y,
     width: next.width ?? current.width,

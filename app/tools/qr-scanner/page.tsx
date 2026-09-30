@@ -9,7 +9,9 @@ export default function QrScannerPage() {
   return (
     <ToolRoute
       toolId="qr-scanner"
-      icon={<ToolIcon type="qr" className="h-7 w-7" />}
+      icon={<ToolIcon type="qr" className="h-5 w-5" />}
+      headerCompact
+      usageTone="quiet"
     >
       <LazyQrScannerTool />
     </ToolRoute>

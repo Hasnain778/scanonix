@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, FileText } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { ProToolGate } from "@/components/plan/ProToolGate";
 import { FileDropZone } from "@/components/tools/FileDropZone";
@@ -9,8 +8,8 @@ import { PdfToWordProgressBanner } from "@/components/tools/pdf-to-word/PdfToWor
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/simple-document-action-premium.css";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
@@ -205,24 +204,25 @@ export function PdfToWordTool() {
     return "idle";
   }, [isReading, status, hasResult, uploadedPdf]);
 
-  const convertHint = !uploadedPdf
-    ? "Upload a PDF before converting."
-    : status === "loading"
-      ? "Converting via CloudConvert…"
-      : isReading
-        ? "Reading PDF…"
-        : "Ready to convert this PDF to Word.";
+  const stickyVisible = Boolean(uploadedPdf);
+  const primaryLabel = hasResult
+    ? "Download Word Document"
+    : status === "loading" || isReading
+      ? isReading
+        ? "Reading PDF\u2026"
+        : "Converting\u2026"
+      : "Convert to Word";
 
   return (
     <ProToolGate
       toolName="PDF to Word"
       description="Sign in and upgrade to Scanonix Pro to convert PDFs to editable Word documents with CloudConvert."
     >
-      <div className="space-y-5 overflow-x-hidden">
+      <div className="simple-document-action-premium space-y-5 overflow-x-hidden">
         <PdfToWordProgressBanner
           status={isReading ? "loading" : status}
           phase={phase}
-          message={isReading ? "Reading PDF…" : statusMessage}
+          message={isReading ? "Reading PDF\u2026" : statusMessage}
         />
 
         <ToolWorkspaceShell
@@ -230,288 +230,98 @@ export function PdfToWordTool() {
           empty={
             <>
               <FileDropZone
+                className="simple-doc-drop"
                 onFilesSelected={handleUpload}
                 accept={ACCEPTED_PDF_EXTENSIONS}
                 validateFile={isAcceptedPdfFile}
                 multiple={false}
                 disabled={isBusy}
                 label="Drop a PDF file here to convert"
-                hint="or click to browse — Pro feature, server-side conversion"
+                hint="or click to browse \u2014 Pro feature, server-side conversion"
                 icon={<PdfDropIcon />}
               />
-              <PrivacyNotice message={PRIVACY_MESSAGE} />
+              <div className="simple-doc-privacy">
+                <PrivacyNotice message={PRIVACY_MESSAGE} />
+              </div>
             </>
           }
           workArea={
             uploadedPdf ? (
-              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-                <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+              <div className="simple-doc-block w-full lg:max-w-[36rem]">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
                       <PdfDropIcon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-foreground">
                         {uploadedPdf.file.name}
                       </p>
-                      <p className="truncate text-[11px] text-scanonix-muted">
-                        {formatFileSize(uploadedPdf.file.size)} ·{" "}
-                        {uploadedPdf.pageCount} page
-                        {uploadedPdf.pageCount === 1 ? "" : "s"} · PDF
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    className={`w-full sm:w-auto ${hasResult ? "hidden md:block" : ""}`.trim()}
-                  >
-                    <ActionButton
-                      variant="outline"
-                      size="sm"
-                      className="w-full rounded-lg sm:w-auto"
-                      disabled={isBusy}
-                      onClick={resetTool}
-                    >
-                      {hasResult ? "Start over" : "Upload another"}
-                    </ActionButton>
-                  </div>
-                </div>
-
-                <div className="bg-surface-muted/30 p-4 sm:p-5">
-                  <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface px-5 py-8 text-center sm:py-10">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-surface-muted text-scanonix-orange">
-                      <PdfDropIcon className="h-6 w-6" />
-                    </div>
-                    <div className="min-w-0 space-y-1">
-                      <p className="text-sm font-semibold text-foreground">
-                        PDF document
-                      </p>
-                      <p className="truncate text-sm text-scanonix-muted">
-                        {uploadedPdf.file.name}
-                      </p>
-                      <p className="text-xs text-scanonix-muted">
-                        {formatFileSize(uploadedPdf.file.size)} ·{" "}
+                      <p className="truncate text-xs text-scanonix-muted">
+                        {formatFileSize(uploadedPdf.file.size)}
+                        {" \u00B7 "}
                         {uploadedPdf.pageCount} page
                         {uploadedPdf.pageCount === 1 ? "" : "s"}
                       </p>
                     </div>
-                    <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-muted/80 px-3 py-1.5 text-xs font-medium text-foreground">
-                      <span>PDF</span>
-                      <ArrowRight
-                        className="h-3.5 w-3.5 text-scanonix-orange"
-                        aria-hidden="true"
-                        strokeWidth={2}
-                      />
-                      <span>DOCX</span>
-                    </div>
+                  </div>
+                  <div className={stickyVisible && hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
+                    <ActionButton
+                      variant="outline"
+                      size="sm"
+                      className="rounded-lg"
+                      disabled={isBusy}
+                      onClick={resetTool}
+                    >
+                      {hasResult ? "Start over" : "Choose another file"}
+                    </ActionButton>
                   </div>
                 </div>
+
+                <p className="mt-4 text-sm leading-relaxed text-foreground">
+                  {hasResult
+                    ? "Word document ready to download."
+                    : status === "loading"
+                      ? "Converting via CloudConvert\u2026"
+                      : isReading
+                        ? "Reading PDF\u2026"
+                        : "Converts this PDF to an editable DOCX on Scanonix servers. Complex layouts may still need light editing afterward."}
+                </p>
+
+                <div className={stickyVisible ? "mt-5 hidden lg:block" : "mt-5"}>
+                  <ActionButton
+                    size="lg"
+                    className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
+                    loading={hasResult ? isDownloading : status === "loading"}
+                    disabled={hasResult ? isBusy || !docxBlob : !uploadedPdf || isBusy}
+                    onClick={() => {
+                      if (hasResult) void handleDownload();
+                      else void handleConvert();
+                    }}
+                  >
+                    {primaryLabel}
+                  </ActionButton>
+                </div>
+
+                <div className="simple-doc-privacy mt-4">
+                  <PrivacyNotice message={PRIVACY_MESSAGE} />
+                </div>
               </div>
-            ) : null
-          }
-          controlPanel={
-            uploadedPdf ? (
-              hasResult && docxBlob ? (
-                <aside
-                  aria-label="PDF to Word result"
-                  className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-5.5rem)] lg:w-[320px] lg:shrink-0"
-                  data-tool-control-panel=""
-                >
-                  <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-3.5 py-3 sm:px-4">
-                    <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Result
-                      </p>
-                      <p className="mt-1 text-sm font-semibold text-green-700">
-                        ✓ Word document ready
-                      </p>
-                    </div>
-
-                    <dl className="divide-y divide-border/70 overflow-hidden rounded-lg border border-border bg-surface-muted/60 text-sm">
-                      <div className="min-w-0 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Original</dt>
-                        <dd className="mt-0.5 truncate font-semibold text-foreground">
-                          {uploadedPdf.file.name}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Original size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {formatFileSize(uploadedPdf.file.size)}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Pages</dt>
-                        <dd className="font-semibold text-foreground">
-                          {uploadedPdf.pageCount}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Format</dt>
-                        <dd className="font-semibold text-foreground">DOCX</dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Output size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {formatFileSize(docxBlob.size)}
-                        </dd>
-                      </div>
-                      <div className="flex min-w-0 items-baseline justify-between gap-3 px-3 py-1.5">
-                        <dt className="shrink-0 text-scanonix-muted">Filename</dt>
-                        <dd className="truncate font-semibold text-foreground">
-                          {resultFileName ?? "scanonix-converted.docx"}
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-
-                  <div className="hidden shrink-0 border-t border-border bg-surface-raised/80 px-3.5 py-2.5 sm:px-4 md:block">
-                    <div className="flex flex-col gap-1.5">
-                      <ActionButton
-                        size="md"
-                        className="w-full whitespace-nowrap"
-                        loading={isDownloading}
-                        disabled={isBusy || !docxBlob}
-                        onClick={() => {
-                          void handleDownload();
-                        }}
-                      >
-                        Download Word Document
-                      </ActionButton>
-                      <ActionButton
-                        variant="outline"
-                        size="md"
-                        className="w-full whitespace-nowrap"
-                        disabled={isBusy}
-                        onClick={resetTool}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
-                  </div>
-                </aside>
-              ) : (
-                <ToolControlPanel
-                  aria-label="PDF to Word controls"
-                  footer={
-                    <div className="flex flex-col gap-2">
-                      <p className="text-[11px] leading-snug text-scanonix-muted">
-                        {convertHint}
-                      </p>
-                      <div className="hidden md:block">
-                        <ActionButton
-                          size="lg"
-                          className="w-full shadow-[var(--shadow-orange-sm)]"
-                          loading={status === "loading"}
-                          disabled={!uploadedPdf || isBusy}
-                          onClick={() => {
-                            void handleConvert();
-                          }}
-                        >
-                          {status === "loading"
-                            ? "Converting…"
-                            : "Convert to Word"}
-                        </ActionButton>
-                      </div>
-                    </div>
-                  }
-                >
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <FileText
-                          className="h-4 w-4 text-scanonix-orange"
-                          aria-hidden="true"
-                          strokeWidth={1.75}
-                        />
-                        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                          PDF to Word
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-border/80 pt-3">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Format
-                      </p>
-                      <p className="mt-1.5 inline-flex items-center gap-2 text-sm font-medium text-foreground">
-                        <span>PDF</span>
-                        <ArrowRight
-                          className="h-3.5 w-3.5 text-scanonix-orange"
-                          aria-hidden="true"
-                          strokeWidth={2}
-                        />
-                        <span>DOCX</span>
-                      </p>
-                    </div>
-
-                    <div className="border-t border-border/80 pt-3">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Document
-                      </p>
-                      <dl className="mt-2 space-y-2 text-sm">
-                        <div className="min-w-0">
-                          <dt className="text-scanonix-muted">Filename</dt>
-                          <dd className="mt-0.5 truncate font-medium text-foreground">
-                            {uploadedPdf.file.name}
-                          </dd>
-                        </div>
-                        <div className="flex justify-between gap-3">
-                          <dt className="text-scanonix-muted">File size</dt>
-                          <dd className="font-medium text-foreground">
-                            {formatFileSize(uploadedPdf.file.size)}
-                          </dd>
-                        </div>
-                        <div className="flex justify-between gap-3">
-                          <dt className="text-scanonix-muted">Pages</dt>
-                          <dd className="font-medium text-foreground">
-                            {uploadedPdf.pageCount}
-                          </dd>
-                        </div>
-                      </dl>
-                    </div>
-
-                    <div className="border-t border-border/80 pt-3">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Conversion
-                      </p>
-                      <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
-                        CloudConvert-backed Word conversion. Complex layouts may
-                        still need light editing afterward.
-                      </p>
-                    </div>
-
-                    <div className="border-t border-border/80 pt-3">
-                      <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Privacy
-                      </p>
-                      <PrivacyNotice message={PRIVACY_MESSAGE} />
-                    </div>
-                  </div>
-                </ToolControlPanel>
-              )
             ) : null
           }
         />
 
         <ToolStickyMobileActionBar
-          visible={Boolean(uploadedPdf)}
+          visible={stickyVisible}
+          stickyUntil="lg"
           phase={resultActionPhase}
-          primaryLabel={
-            hasResult ? "Download Word Document" : "Convert to Word"
-          }
-          primaryLoading={
-            hasResult ? isDownloading : status === "loading" || isReading
-          }
-          primaryDisabled={
-            hasResult ? isBusy || !docxBlob : !uploadedPdf || isBusy
-          }
+          primaryLabel={primaryLabel}
+          primaryLoading={hasResult ? isDownloading : status === "loading" || isReading}
+          primaryDisabled={hasResult ? isBusy || !docxBlob : !uploadedPdf || isBusy}
           showPrimaryOnError
           onPrimaryClick={() => {
-            if (hasResult) {
-              void handleDownload();
-            } else {
-              void handleConvert();
-            }
+            if (hasResult) void handleDownload();
+            else void handleConvert();
           }}
           onStartOver={hasResult ? resetTool : undefined}
           startOverLabel="Start over"

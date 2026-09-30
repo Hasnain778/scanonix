@@ -31,6 +31,7 @@ import {
   type OcrProgressPhase,
 } from "@/lib/tools/ocr/languages";
 import { renderPagePreviewDataUrl } from "@/lib/tools/pdf-to-image/pdf-render";
+import "@/styles/ocr-premium.css";
 import { getPdfPageCountFromBytes } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 
@@ -265,7 +266,7 @@ export function OcrTool() {
       : "Ready to extract text from this document.";
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="ocr-premium space-y-5 overflow-x-hidden">
       <OcrProgressBanner
         status={isPreparing ? "loading" : status}
         phase={ocrPhase}
@@ -286,6 +287,7 @@ export function OcrTool() {
               label="Drop a file here for OCR"
               hint="or click to browse — JPG, JPEG, PNG, WEBP, or PDF"
               icon={<OcrDropIcon />}
+              className="ocr-drop"
             />
             <p className="text-center text-sm text-scanonix-muted">
               Extract editable text from images and PDFs.
@@ -295,81 +297,102 @@ export function OcrTool() {
         }
         workArea={
           uploadedFile ? (
-            <div className="space-y-4">
-              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-                <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                      <OcrDropIcon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-foreground">
-                        {uploadedFile.file.name}
-                      </p>
-                      <p className="truncate text-[11px] text-scanonix-muted">
-                        {formatFileSize(uploadedFile.file.size)} ·{" "}
-                        {fileTypeLabel(uploadedFile)}
-                        {uploadedFile.isPdf && uploadedFile.pageCount !== undefined
-                          ? ` · ${uploadedFile.pageCount} page${uploadedFile.pageCount === 1 ? "" : "s"}`
-                          : ""}
-                      </p>
-                    </div>
+            <div className="ocr-source">
+              <div className="ocr-filebar">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                    <OcrDropIcon className="h-4 w-4" />
                   </div>
-                  <div
-                    className={
-                      hasResult
-                        ? "hidden w-full sm:w-auto md:block"
-                        : "w-full sm:w-auto"
-                    }
-                  >
-                    <ActionButton
-                      variant="outline"
-                      size="sm"
-                      className="w-full rounded-lg sm:w-auto"
-                      disabled={isBusy}
-                      onClick={resetTool}
-                    >
-                      {hasResult ? "Start over" : "Upload another file"}
-                    </ActionButton>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {uploadedFile.file.name}
+                    </p>
+                    <p className="truncate text-[11px] text-scanonix-muted">
+                      {formatFileSize(uploadedFile.file.size)} ·{" "}
+                      {fileTypeLabel(uploadedFile)}
+                      {uploadedFile.isPdf && uploadedFile.pageCount !== undefined
+                        ? ` · ${uploadedFile.pageCount} page${uploadedFile.pageCount === 1 ? "" : "s"}`
+                        : ""}
+                    </p>
                   </div>
                 </div>
-
-                <div className="bg-surface-muted/30 p-3 sm:p-4">
-                  {uploadedFile.isPdf ? (
-                    <p className="mb-3 text-[11px] text-scanonix-muted">
-                      Page 1 preview — OCR processes all pages in this PDF.
-                    </p>
-                  ) : null}
-                  <OcrFilePreview
-                    fileName={uploadedFile.file.name}
-                    fileSizeLabel={formatFileSize(uploadedFile.file.size)}
-                    previewUrl={uploadedFile.previewUrl}
-                    isPdf={uploadedFile.isPdf}
-                    pageCount={uploadedFile.pageCount}
-                  />
+                <div
+                  className={
+                    hasResult
+                      ? "hidden w-full sm:w-auto md:block"
+                      : "w-full sm:w-auto"
+                  }
+                >
+                  <ActionButton
+                    variant="outline"
+                    size="sm"
+                    className="w-full whitespace-nowrap rounded-lg sm:w-auto"
+                    disabled={isBusy}
+                    onClick={resetTool}
+                  >
+                    {hasResult ? "Start over" : "Upload another file"}
+                  </ActionButton>
                 </div>
               </div>
 
+              {uploadedFile.isPdf ? (
+                <p className="px-4 pt-3 text-[11px] text-scanonix-muted">
+                  Page 1 preview — OCR processes all pages in this PDF.
+                </p>
+              ) : null}
+              <OcrFilePreview
+                fileName={uploadedFile.file.name}
+                previewUrl={uploadedFile.previewUrl}
+                isPdf={uploadedFile.isPdf}
+              />
+
               {showExtractedWorkspace ? (
-                <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-                  <div className="border-b border-border/80 px-3.5 py-2.5 sm:px-4">
-                    <p className="text-sm font-semibold text-foreground">
-                      Extracted text
-                    </p>
-                    <p className="text-[11px] text-scanonix-muted">
-                      Edit the text before copying or downloading.
-                    </p>
+                <div className="ocr-result">
+                  <div className="ocr-result-head">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">
+                        Extracted text
+                      </p>
+                      <p className="text-[11px] text-scanonix-muted">
+                        Edit the text before copying or downloading.
+                      </p>
+                    </div>
+                    <div className="ocr-result-actions">
+                      <ActionButton
+                        size="sm"
+                        className="hidden md:inline-flex"
+                        disabled={!extractedText || isBusy}
+                        onClick={() => {
+                          void handleCopy();
+                        }}
+                      >
+                        {copyFeedback ?? "Copy text"}
+                      </ActionButton>
+                      <ActionButton
+                        variant="outline"
+                        size="sm"
+                        className="whitespace-nowrap"
+                        loading={isDownloading}
+                        disabled={!extractedText || isBusy}
+                        onClick={() => {
+                          void handleDownload();
+                        }}
+                      >
+                        Download TXT
+                      </ActionButton>
+                    </div>
                   </div>
-                  <div className="p-3 sm:p-4">
-                    <textarea
-                      value={extractedText}
-                      onChange={(event) => setExtractedText(event.target.value)}
-                      dir="auto"
-                      rows={16}
-                      placeholder="Extracted text will appear here…"
-                      className="input-field min-h-[320px] resize-y leading-relaxed"
-                    />
-                  </div>
+                  <textarea
+                    value={extractedText}
+                    onChange={(event) => setExtractedText(event.target.value)}
+                    dir="auto"
+                    rows={16}
+                    placeholder="Extracted text will appear here…"
+                    className="input-field ocr-result-text"
+                  />
+                  <p className="mt-2 text-[11px] text-scanonix-muted">
+                    Downloads as scanonix-ocr.txt
+                  </p>
                 </div>
               ) : null}
             </div>
@@ -381,54 +404,17 @@ export function OcrTool() {
               aria-label="OCR controls"
               footer={
                 hasResult ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="hidden md:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full"
-                        disabled={!extractedText || isBusy}
-                        onClick={() => {
-                          void handleCopy();
-                        }}
-                      >
-                        {copyFeedback ?? "Copy text"}
-                      </ActionButton>
-                    </div>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      loading={isDownloading}
-                      disabled={!extractedText || isBusy}
-                      onClick={() => {
-                        void handleDownload();
-                      }}
-                    >
-                      Download TXT
-                    </ActionButton>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={() => {
-                        void handleExtract();
-                      }}
-                    >
-                      Extract again
-                    </ActionButton>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={resetTool}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
-                  </div>
+                  <ActionButton
+                    variant="outline"
+                    size="lg"
+                    className="w-full whitespace-nowrap"
+                    disabled={isBusy}
+                    onClick={() => {
+                      void handleExtract();
+                    }}
+                  >
+                    Extract again
+                  </ActionButton>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <p className="text-[11px] leading-snug text-scanonix-muted">
@@ -436,7 +422,7 @@ export function OcrTool() {
                     </p>
                     <ActionButton
                       size="lg"
-                      className="w-full shadow-[var(--shadow-orange-sm)]"
+                      className="w-full whitespace-nowrap shadow-[var(--shadow-orange-sm)]"
                       loading={status === "loading"}
                       disabled={isBusy}
                       onClick={() => {
@@ -445,61 +431,26 @@ export function OcrTool() {
                     >
                       {status === "loading" ? "Extracting text…" : "Extract text"}
                     </ActionButton>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={resetTool}
-                    >
-                      Start over
-                    </ActionButton>
                   </div>
                 )
               }
             >
               {hasResult ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                       Result
                     </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700 dark:text-green-400">
+                    <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
                       ✓ Text extracted
                     </p>
                     <p className="mt-1 text-xs text-scanonix-muted">
-                      Edit the text on the left, then copy or download.
+                      Edit the text, then copy or download.
                     </p>
                   </div>
-
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Language</dt>
-                      <dd className="font-semibold text-foreground">
-                        {languageLabel(language)}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Type</dt>
-                      <dd className="font-semibold text-foreground">
-                        {fileTypeLabel(uploadedFile)}
-                      </dd>
-                    </div>
-                    {uploadedFile.isPdf && uploadedFile.pageCount !== undefined ? (
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Pages</dt>
-                        <dd className="font-semibold text-foreground">
-                          {uploadedFile.pageCount}
-                        </dd>
-                      </div>
-                    ) : null}
-                    <div className="min-w-0 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Download</dt>
-                      <dd className="mt-0.5 font-semibold text-foreground">
-                        scanonix-ocr.txt
-                      </dd>
-                    </div>
-                  </dl>
+                  <p className="text-xs text-scanonix-muted">
+                    Language · {languageLabel(language)}
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-5">
@@ -512,56 +463,11 @@ export function OcrTool() {
                     </p>
                   </div>
 
-                  <section className="space-y-2.5">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Language
-                    </h2>
-                    <OcrLanguageSelect
-                      value={language}
-                      onChange={setLanguage}
-                      disabled={isBusy}
-                    />
-                  </section>
-
-                  <section className="space-y-2.5 border-t border-border/80 pt-4">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Document
-                    </h2>
-                    <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                      <div className="min-w-0 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Filename</dt>
-                        <dd className="mt-0.5 truncate font-semibold text-foreground">
-                          {uploadedFile.file.name}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Type</dt>
-                        <dd className="font-semibold text-foreground">
-                          {fileTypeLabel(uploadedFile)}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {formatFileSize(uploadedFile.file.size)}
-                        </dd>
-                      </div>
-                      {uploadedFile.isPdf && uploadedFile.pageCount !== undefined ? (
-                        <div className="flex justify-between gap-3 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Pages</dt>
-                          <dd className="font-semibold text-foreground">
-                            {uploadedFile.pageCount}
-                          </dd>
-                        </div>
-                      ) : null}
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Language</dt>
-                        <dd className="font-semibold text-foreground">
-                          {languageLabel(language)}
-                        </dd>
-                      </div>
-                    </dl>
-                  </section>
+                  <OcrLanguageSelect
+                    value={language}
+                    onChange={setLanguage}
+                    disabled={isBusy}
+                  />
 
                   <section className="space-y-2 border-t border-border/80 pt-4">
                     <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">

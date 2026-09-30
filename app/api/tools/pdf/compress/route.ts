@@ -14,6 +14,7 @@ import {
 } from "@/lib/providers/pdf/compression/types";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
 import { compressPdfBytes } from "@/lib/tools/compress-pdf/compress-pdf";
+import { selectNonGrowingPdfBytes } from "@/lib/tools/compress-pdf/no-growth";
 import {
   type CompressionLevel,
   PdfCompressionError,
@@ -98,7 +99,9 @@ export async function POST(request: Request) {
         level: mapLegacyCompressionLevel(level),
       });
 
-      return new NextResponse(new Uint8Array(result.output), {
+      const output = selectNonGrowingPdfBytes(input, result.output);
+
+      return new NextResponse(new Uint8Array(output), {
         status: 200,
         headers: {
           "Content-Type": "application/pdf",

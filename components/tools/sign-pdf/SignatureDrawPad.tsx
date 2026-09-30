@@ -193,7 +193,7 @@ export function SignatureDrawPad({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        className={`w-full touch-none rounded-xl border border-border bg-transparent ${
+        className={`sign-draw-surface w-full touch-none rounded-xl border border-border bg-transparent ${
           isDrawing ? "cursor-crosshair" : "cursor-crosshair"
         } ${disabled ? "opacity-50" : ""}`}
         style={{ maxHeight: 180 }}

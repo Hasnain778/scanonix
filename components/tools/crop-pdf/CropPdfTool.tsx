@@ -23,7 +23,6 @@ import {
   countCompatiblePages,
   countCustomCropPages,
   cropPdfDocument,
-  CROP_NOT_REDACTION_WARNING,
   CROP_PRIVACY_COPY,
   CropPdfError,
   formatApplyCropSummary,
@@ -43,6 +42,7 @@ import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { CropPageEditor } from "./CropPageEditor";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
+import "@/styles/crop-pdf-premium.css";
 
 interface UploadedPdfState {
   file: File;
@@ -326,17 +326,17 @@ export function CropPdfTool() {
   const exportHint = !canExport
     ? "Add a PDF before exporting."
     : isExporting
-      ? "Creating cropped PDF…"
+      ? "Creating cropped PDF\u2026"
       : customCropCount > 0
-        ? `Ready to export · ${customCropCount} page${customCropCount === 1 ? "" : "s"} with custom crop.`
-        : "Ready to export · visible area unchanged unless you adjust the crop.";
+        ? "Ready to export"
+        : "No crop changes yet";
 
   const percentInputs = currentPage
     ? normalizedCropToPercentInputs(currentPage.normalizedCropRect)
     : null;
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="crop-pdf-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -355,17 +355,18 @@ export function CropPdfTool() {
               label="Drop a PDF file here to crop"
               hint="or click to browse — processed locally in your browser"
               icon={<CropDropIcon />}
+              className="crop-pdf-drop"
             />
             <PrivacyNotice message={CROP_PRIVACY_COPY} />
           </>
         }
         workArea={
           uploadedPdf && currentPage ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <CropDropIcon className="h-4 w-4" />
+            <div className="crop-stage overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+              <div className="crop-stage-bar flex flex-col gap-1.5 border-b border-border/80 bg-surface-muted/40 px-0.5 py-1 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-surface text-scanonix-orange">
+                    <CropDropIcon className="h-3.5 w-3.5" />
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">
@@ -399,65 +400,60 @@ export function CropPdfTool() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 bg-surface px-3 py-2 sm:px-4">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">
-                    Page {currentPageIndex + 1} of {pageCount}
-                  </p>
-                  <p className="text-[11px] text-scanonix-muted">
-                    {hasCustomCrop(currentPage)
-                      ? "Custom crop on this page"
-                      : "Full visible area"}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg"
-                    disabled={currentPageIndex <= 0 || isBusy}
-                    onClick={() =>
-                      setCurrentPageIndex((index) => Math.max(0, index - 1))
-                    }
-                  >
-                    Previous
-                  </ActionButton>
-                  <label className="sr-only" htmlFor="crop-pdf-page-select">
-                    Select page
-                  </label>
-                  <select
-                    id="crop-pdf-page-select"
-                    value={currentPageIndex}
-                    disabled={isBusy}
-                    onChange={(event) =>
-                      setCurrentPageIndex(Number(event.target.value))
-                    }
-                    className="select-field w-auto min-w-[8.5rem] px-3 py-2 text-sm"
-                  >
-                    {pages.map((page, index) => (
-                      <option key={page.id} value={index}>
-                        Page {index + 1}
-                        {hasCustomCrop(page) ? " (cropped)" : ""}
-                      </option>
-                    ))}
-                  </select>
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg"
-                    disabled={currentPageIndex >= pageCount - 1 || isBusy}
-                    onClick={() =>
-                      setCurrentPageIndex((index) =>
-                        Math.min(pageCount - 1, index + 1),
-                      )
-                    }
-                  >
-                    Next
-                  </ActionButton>
-                </div>
+              <div className="crop-page-toolbar flex flex-wrap items-center gap-1.5 px-0 py-0.5">
+                <ActionButton
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                  disabled={currentPageIndex <= 0 || isBusy}
+                  onClick={() =>
+                    setCurrentPageIndex((index) => Math.max(0, index - 1))
+                  }
+                >
+                  Previous
+                </ActionButton>
+                <label className="sr-only" htmlFor="crop-pdf-page-select">
+                  Select page
+                </label>
+                <select
+                  id="crop-pdf-page-select"
+                  value={currentPageIndex}
+                  disabled={isBusy}
+                  onChange={(event) =>
+                    setCurrentPageIndex(Number(event.target.value))
+                  }
+                  className="select-field crop-page-select text-sm"
+                >
+                  {pages.map((page, index) => (
+                    <option key={page.id} value={index}>
+                      Page {index + 1}
+                      {hasCustomCrop(page) ? " (cropped)" : ""}
+                    </option>
+                  ))}
+                </select>
+                <ActionButton
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                  disabled={currentPageIndex >= pageCount - 1 || isBusy}
+                  onClick={() =>
+                    setCurrentPageIndex((index) =>
+                      Math.min(pageCount - 1, index + 1),
+                    )
+                  }
+                >
+                  Next
+                </ActionButton>
+                <p className="crop-page-status min-w-0 truncate text-[11px] text-scanonix-muted">
+                  Page {currentPageIndex + 1} of {pageCount}
+                  {" \u00B7 "}
+                  {hasCustomCrop(currentPage)
+                    ? "Custom crop on this page"
+                    : "Full visible area"}
+                </p>
               </div>
 
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
+              <div className="crop-canvas pt-1.5">
                 <CropPageEditor
                   pageEntry={currentPage}
                   pdfBytes={uploadedPdf.bytes}
@@ -498,23 +494,10 @@ export function CropPdfTool() {
                     >
                       Change crop
                     </ActionButton>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={resetWorkspace}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      {exportHint}
-                    </p>
+                  <div className="flex flex-col gap-1.5">
+                    <p className="crop-export-cue">{exportHint}</p>
                     <div
                       className={
                         stickyVisible ? "hidden md:block" : undefined
@@ -532,21 +515,6 @@ export function CropPdfTool() {
                         {isExporting ? "Exporting…" : "Export cropped PDF"}
                       </ActionButton>
                     </div>
-                    <div
-                      className={
-                        stickyVisible ? "hidden md:block" : undefined
-                      }
-                    >
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={resetWorkspace}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
                   </div>
                 )
               }
@@ -557,7 +525,7 @@ export function CropPdfTool() {
                     <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                       Result
                     </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700 dark:text-green-400">
+                    <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
                       ✓ PDF cropped
                     </p>
                     <p className="mt-1 text-xs text-scanonix-muted">
@@ -591,67 +559,57 @@ export function CropPdfTool() {
                   </dl>
                 </div>
               ) : (
-                <div className="space-y-5">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Crop PDF
-                    </p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-scanonix-muted">
-                      Drag the orange crop area on the page. Export writes a new
-                      PDF with updated visible page boxes.
+                <div className="crop-inspector">
+                  <div className="crop-inspector-intro">
+                    <p className="crop-inspector-title">Crop settings</p>
+                    <p className="crop-inspector-lead">
+                      Drag the orange frame, or enter exact values.
                     </p>
                   </div>
 
-                  <section className="space-y-2.5">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Crop area
-                    </h2>
-                    <p className="text-xs text-scanonix-muted">
-                      Values are percentages of the visible page area.
-                    </p>
-                    <div className="grid grid-cols-2 gap-2.5">
+                  <section className="crop-section">
+                    <h2 className="crop-section-label">Crop area</h2>
+                    <div className="crop-fields">
                       {(
                         [
-                          ["xPercent", "Left (%)"],
-                          ["yPercent", "Top (%)"],
-                          ["widthPercent", "Width (%)"],
-                          ["heightPercent", "Height (%)"],
+                          ["xPercent", "Left", "Left percent"],
+                          ["yPercent", "Top", "Top percent"],
+                          ["widthPercent", "Width", "Width percent"],
+                          ["heightPercent", "Height", "Height percent"],
                         ] as const
-                      ).map(([field, label]) => (
-                        <label key={field} className="block text-sm">
-                          <span className="mb-1 block text-xs text-foreground-muted">
-                            {label}
+                      ).map(([field, label, accessibleName]) => (
+                        <label key={field} className="crop-field">
+                          <span className="crop-field-label">{label}</span>
+                          <span className="crop-field-control">
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              step={0.1}
+                              disabled={isBusy}
+                              aria-label={accessibleName}
+                              value={percentInputs[field]}
+                              onChange={(event) =>
+                                handlePercentInputChange(field, event.target.value)
+                              }
+                              className="input-field"
+                            />
+                            <span className="crop-field-unit" aria-hidden="true">
+                              %
+                            </span>
                           </span>
-                          <input
-                            type="number"
-                            min={0}
-                            max={100}
-                            step={0.1}
-                            disabled={isBusy}
-                            value={percentInputs[field]}
-                            onChange={(event) =>
-                              handlePercentInputChange(field, event.target.value)
-                            }
-                            className="input-field"
-                          />
                         </label>
                       ))}
                     </div>
                   </section>
 
-                  <section className="space-y-2.5 border-t border-border/80 pt-4">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Pages
-                    </h2>
-                    <p className="text-xs text-scanonix-muted">
-                      Compatible pages share this page’s rotation and visible
-                      size (±0.5 pt).
-                    </p>
-                    <div className="grid gap-1.5">
+                  <section className="crop-section">
+                    <h2 className="crop-section-label">Apply</h2>
+                    <div className="crop-apply-stack">
                       <ActionButton
                         variant="outline"
                         size="sm"
-                        className="w-full justify-center rounded-md"
+                        className="crop-apply w-full justify-center"
                         disabled={isBusy}
                         onClick={handleApplyCurrentPage}
                       >
@@ -660,71 +618,64 @@ export function CropPdfTool() {
                       <ActionButton
                         variant="outline"
                         size="sm"
-                        className="w-full justify-center rounded-md"
+                        className="crop-apply w-full justify-center"
                         disabled={isBusy || compatiblePageCount <= 1}
+                        title="Pages that share this rotation and visible size, within 0.5 pt."
                         onClick={handleApplyCompatiblePages}
                       >
                         Apply to compatible pages ({compatiblePageCount})
                       </ActionButton>
+                      <p className="crop-caption">Same rotation and page size.</p>
                     </div>
-                    <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Current page</dt>
-                        <dd className="font-semibold text-foreground">
-                          {currentPageIndex + 1} / {pageCount}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Custom crops</dt>
-                        <dd className="font-semibold text-foreground">
-                          {customCropCount}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Compatible</dt>
-                        <dd className="font-semibold text-foreground">
-                          {compatiblePageCount}
-                        </dd>
-                      </div>
-                    </dl>
                   </section>
 
-                  <section className="space-y-2.5 border-t border-border/80 pt-4">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Reset crop
-                    </h2>
-                    <div className="grid gap-1.5">
+                  <section className="crop-section">
+                    <h2 className="crop-section-label">Reset</h2>
+                    <div className="crop-reset-row">
                       <ActionButton
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="w-full justify-center rounded-md"
+                        className="crop-reset"
                         disabled={isBusy}
                         onClick={handleResetCurrentPage}
                       >
                         Reset current page
                       </ActionButton>
                       <ActionButton
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="w-full justify-center rounded-md"
+                        className="crop-reset"
                         disabled={isBusy}
                         onClick={handleResetAllPages}
                       >
                         Reset all pages
                       </ActionButton>
                     </div>
-                    <p className="text-[11px] text-scanonix-muted">
-                      Reset crop restores the full visible area. Start over
-                      clears the uploaded PDF.
-                    </p>
                   </section>
 
-                  <section className="space-y-2 border-t border-border/80 pt-4">
-                    <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-foreground">
-                      {CROP_NOT_REDACTION_WARNING}
-                    </p>
-                    <PrivacyNotice message={CROP_PRIVACY_COPY} />
-                  </section>
+                  <p className="crop-warning">
+                    <span className="crop-warning-mark" aria-hidden="true">
+                      !
+                    </span>
+                    <span>
+                      <strong>Not secure redaction.</strong> Content outside the
+                      crop stays in the file.
+                    </span>
+                  </p>
+                  <p className="crop-trust">
+                    <svg
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      className="crop-trust-icon"
+                    >
+                      <path
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        d="M8 1.2 3.2 3v4.1c0 2.7 1.9 5.2 4.8 6.1 2.9-.9 4.8-3.4 4.8-6.1V3L8 1.2Zm0 1.5 3.3 1.3v3.1c0 2.1-1.4 4-3.3 4.8-1.9-.8-3.3-2.7-3.3-4.8V4L8 2.7Z"
+                      />
+                    </svg>
+                    Processed locally. Not uploaded.
+                  </p>
                 </div>
               )}
             </ToolControlPanel>

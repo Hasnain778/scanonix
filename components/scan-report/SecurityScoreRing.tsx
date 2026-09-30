@@ -13,20 +13,20 @@ function getScoreColors(securityScore: number) {
     return {
       strokeLight: "#047857",
       strokeDark: "#34d399",
-      text: "text-emerald-800 dark:text-emerald-300",
+      text: "text-emerald-800 [[data-theme=dark]_&]:text-emerald-300",
     };
   }
   if (securityScore >= 40) {
     return {
       strokeLight: "#b45309",
       strokeDark: "#fbbf24",
-      text: "text-amber-900 dark:text-amber-200",
+      text: "text-amber-900 [[data-theme=dark]_&]:text-amber-200",
     };
   }
   return {
     strokeLight: "#b91c1c",
     strokeDark: "#f87171",
-    text: "text-red-800 dark:text-red-300",
+    text: "text-red-800 [[data-theme=dark]_&]:text-red-300",
   };
 }
 
@@ -63,7 +63,7 @@ export function SecurityScoreRing({ score, size = 136 }: SecurityScoreRingProps)
           fill="none"
           stroke="#94a3b8"
           strokeWidth={9}
-          className="dark:hidden"
+          className="[[data-theme=dark]_&]:hidden"
         />
         {/* Dark track */}
         <circle
@@ -73,7 +73,7 @@ export function SecurityScoreRing({ score, size = 136 }: SecurityScoreRingProps)
           fill="none"
           stroke="rgba(255,255,255,0.16)"
           strokeWidth={9}
-          className="hidden dark:block"
+          className="hidden [[data-theme=dark]_&]:block"
         />
         <motion.circle
           cx={size / 2}
@@ -85,7 +85,7 @@ export function SecurityScoreRing({ score, size = 136 }: SecurityScoreRingProps)
           strokeLinecap="round"
           strokeDasharray={circumference}
           style={{ strokeDashoffset: strokeOffset }}
-          className="dark:hidden"
+          className="[[data-theme=dark]_&]:hidden"
         />
         <motion.circle
           cx={size / 2}
@@ -97,7 +97,7 @@ export function SecurityScoreRing({ score, size = 136 }: SecurityScoreRingProps)
           strokeLinecap="round"
           strokeDasharray={circumference}
           style={{ strokeDashoffset: strokeOffset }}
-          className="hidden dark:block"
+          className="hidden [[data-theme=dark]_&]:block"
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">

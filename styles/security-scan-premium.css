@@ -1,0 +1,39 @@
+/*
+ * Security Scan entry workspace only.
+ * Does not change scan requests, progress timers, or report data.
+ */
+
+.security-scan-premium .scan-tool-card {
+  background: var(--surface);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="bright"] .security-scan-premium .scan-tool-card {
+  background: #fffcfa;
+  border-color: #e7e0d8;
+}
+
+html[data-theme="dark"] .security-scan-premium .scan-tool-card {
+  background: #141210;
+  border-color: #292524;
+}
+
+html[data-theme="bright"] .security-scan-premium .scan-url-input {
+  background: #ffffff;
+  border-color: #e7e0d8;
+}
+
+html[data-theme="dark"] .security-scan-premium .scan-url-input {
+  background: #1c1917;
+  border-color: #44403c;
+}
+
+html[data-theme="dark"] .security-scan-premium .scan-url-input input {
+  color: #fafaf9;
+}
+
+.security-scan-premium .scan-url-input input {
+  min-width: 0;
+}

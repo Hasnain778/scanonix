@@ -11,6 +11,8 @@ type PlayStoreLinkProps = {
   /** text-with-mark: compact official mark + label; badge: full official Google Play badge */
   variant?: "text-with-mark" | "badge";
   markSize?: number;
+  /** Rendered height of the official badge. Width follows the asset ratio. */
+  badgeHeight?: number;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">;
 
 export function PlayStoreLink({
@@ -19,6 +21,7 @@ export function PlayStoreLink({
   className = "",
   variant = "text-with-mark",
   markSize = 18,
+  badgeHeight = 44,
   ...props
 }: PlayStoreLinkProps) {
   const ariaLabel =
@@ -44,7 +47,7 @@ export function PlayStoreLink({
       {...props}
     >
       {variant === "badge" ? (
-        <GooglePlayBadge height={44} />
+        <GooglePlayBadge height={badgeHeight} />
       ) : (
         <>
           <GooglePlayMark size={markSize} />

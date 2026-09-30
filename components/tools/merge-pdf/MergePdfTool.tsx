@@ -260,8 +260,8 @@ export function MergePdfTool() {
 
   return (
     <div
-      className={`space-y-5 overflow-x-hidden md:pb-0 ${
-        stickyVisible ? "pb-40" : "pb-8"
+      className={`merge-pdf-prototype space-y-5 overflow-x-hidden ${
+        stickyVisible ? "pb-40 lg:pb-0" : "pb-8 md:pb-0"
       }`}
     >
       <ToolStatusBanner
@@ -275,6 +275,7 @@ export function MergePdfTool() {
         empty={
           <>
             <FileDropZone
+              className="merge-drop"
               onFilesSelected={addFiles}
               accept={ACCEPTED_PDF_EXTENSIONS}
               validateFile={isAcceptedPdfFile}
@@ -290,30 +291,38 @@ export function MergePdfTool() {
         }
         workArea={
           files.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <Files className="h-4 w-4" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
+            <div>
+              <div className="flex flex-col gap-3 px-0.5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Files className="h-4 w-4 shrink-0 text-scanonix-orange" aria-hidden="true" />
                     <p className="truncate text-sm font-semibold text-foreground">
-                      Merge workspace
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {files.length} PDF{files.length === 1 ? "" : "s"}
-                      {totalPages > 0 ? ` · ${totalPages} pages` : ""}
-                      {` · ${formatFileSize(totalSize)}`}
+                      Your PDFs
                     </p>
                   </div>
+                  <p className="mt-0.5 truncate text-xs text-scanonix-muted">
+                    {files.length} PDF{files.length === 1 ? "" : "s"}
+                    {totalPages > 0 ? ` · ${totalPages} pages` : ""}
+                    {` · ${formatFileSize(totalSize)}`}
+                  </p>
                 </div>
-                <div
-                  className={`w-full sm:w-auto ${hasResult ? "hidden md:block" : ""}`.trim()}
-                >
+                <div className="flex shrink-0 gap-2">
                   <ActionButton
                     variant="outline"
                     size="sm"
-                    className="w-full rounded-lg sm:w-auto"
+                    className="rounded-lg"
+                    disabled={isBusy}
+                    onClick={handleAddMoreClick}
+                  >
+                    <span className="inline-flex items-center justify-center gap-1.5">
+                      <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                      Add PDFs
+                    </span>
+                  </ActionButton>
+                  <ActionButton
+                    variant="outline"
+                    size="sm"
+                    className="rounded-lg"
                     disabled={isBusy}
                     onClick={clearAll}
                   >
@@ -321,8 +330,12 @@ export function MergePdfTool() {
                   </ActionButton>
                 </div>
               </div>
+              <p className="mt-3 px-0.5 text-xs leading-relaxed text-scanonix-muted">
+                Arrange your PDFs in the order they should appear. Drag a file,
+                or use the up and down buttons.
+              </p>
 
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
+              <div className="mt-3">
                 <input
                   ref={addMoreInputRef}
                   type="file"
@@ -339,20 +352,6 @@ export function MergePdfTool() {
                   onRemove={removeFile}
                   onReorder={reorderFiles}
                   disabled={isBusy}
-                  headerAction={
-                    <ActionButton
-                      variant="outline"
-                      size="sm"
-                      className="w-full rounded-lg sm:w-auto"
-                      disabled={isBusy}
-                      onClick={handleAddMoreClick}
-                    >
-                      <span className="inline-flex items-center justify-center gap-1.5">
-                        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                        Add PDFs
-                      </span>
-                    </ActionButton>
-                  }
                 />
               </div>
             </div>
@@ -361,11 +360,12 @@ export function MergePdfTool() {
         controlPanel={
           files.length > 0 ? (
             <ToolControlPanel
+              className="merge-inspector"
               aria-label="Merge PDF controls"
               footer={
                 hasResult && mergedBlob ? (
                   <div className="flex flex-col gap-2">
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full"
@@ -387,7 +387,7 @@ export function MergePdfTool() {
                     >
                       Change order
                     </ActionButton>
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         variant="outline"
                         size="lg"
@@ -404,7 +404,7 @@ export function MergePdfTool() {
                     <p className="text-[11px] leading-snug text-scanonix-muted">
                       {mergeHint}
                     </p>
-                    <div className="hidden md:block space-y-2">
+                    <div className="hidden space-y-2 lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full shadow-[var(--shadow-orange-sm)]"
@@ -447,26 +447,26 @@ export function MergePdfTool() {
                     </p>
                   </div>
 
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                  <dl className="space-y-2.5 text-sm">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Files merged</dt>
                       <dd className="font-semibold text-foreground">
                         {files.length}
                       </dd>
                     </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Total pages</dt>
                       <dd className="font-semibold text-foreground">
                         {totalPages}
                       </dd>
                     </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Output size</dt>
                       <dd className="font-semibold text-foreground">
                         {formatFileSize(mergedBlob.size)}
                       </dd>
                     </div>
-                    <div className="min-w-0 px-3 py-2.5">
+                    <div className="min-w-0">
                       <dt className="text-scanonix-muted">Filename</dt>
                       <dd className="mt-0.5 truncate font-semibold text-foreground">
                         scanonix-merged.pdf
@@ -491,20 +491,20 @@ export function MergePdfTool() {
                     </p>
                   </div>
 
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                  <dl className="space-y-2.5 text-sm">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">PDF files</dt>
                       <dd className="font-semibold text-foreground">
                         {files.length}
                       </dd>
                     </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Total pages</dt>
                       <dd className="font-semibold text-foreground">
                         {isReadingPages ? "…" : totalPages}
                       </dd>
                     </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Total size</dt>
                       <dd className="font-semibold text-foreground">
                         {formatFileSize(totalSize)}
@@ -512,28 +512,11 @@ export function MergePdfTool() {
                     </div>
                   </dl>
 
-                  <div>
-                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Merge order
-                    </p>
-                    <ol className="max-h-48 space-y-1.5 overflow-y-auto rounded-xl border border-border bg-surface-muted/40 p-2.5 text-sm">
-                      {files.map((item, index) => (
-                        <li
-                          key={item.id}
-                          className="flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1"
-                        >
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-scanonix-orange/30 bg-scanonix-orange/10 text-[10px] font-bold text-scanonix-orange">
-                            {index + 1}
-                          </span>
-                          <span className="min-w-0 truncate text-foreground">
-                            {item.file.name}
-                          </span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
+                  <p className="text-xs text-scanonix-muted">
+                    Order follows the file list.
+                  </p>
 
-                  <div className="border-t border-border/80 pt-3 pr-24 sm:pr-36 lg:pr-0">
+                  <div className="merge-privacy">
                     <PrivacyNotice message={PRIVACY_MESSAGE} />
                   </div>
                 </div>
@@ -544,6 +527,7 @@ export function MergePdfTool() {
       />
 
       <ToolStickyMobileActionBar
+        stickyUntil="lg"
         visible={stickyVisible}
         phase={resultActionPhase}
         primaryLabel={hasResult ? "Download PDF" : "Merge PDFs"}

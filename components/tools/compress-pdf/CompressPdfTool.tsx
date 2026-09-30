@@ -5,6 +5,7 @@ import { FileArchive } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { CompressDocumentOverview } from "@/components/tools/compress-pdf/CompressDocumentOverview";
+import { formatCompressPdfSavingsLabel } from "@/components/tools/compress-pdf/savings-label";
 import { CompressionLevelPanel } from "@/components/tools/compress-pdf/CompressionLevelPanel";
 import { CompressProgressBanner } from "@/components/tools/compress-pdf/CompressProgressBanner";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
@@ -175,29 +176,27 @@ export function CompressPdfTool() {
     setCompressedBlob(null);
 
     try {
-      const blob = await compressPdfViaServer({
+      const candidate = await compressPdfViaServer({
         file: uploadedPdf.file,
         level,
         onProgress: (nextPhase) => {
           setPhase(nextPhase);
         },
       });
+      const resultBlob =
+        candidate.size < uploadedPdf.file.size ? candidate : uploadedPdf.file;
 
-      setCompressedBlob(blob);
+      setCompressedBlob(resultBlob);
       attempt.success(1);
       setStatus("success");
       setPhase("complete");
 
-      const savedBytes = uploadedPdf.file.size - blob.size;
+      const savedBytes = uploadedPdf.file.size - resultBlob.size;
       if (savedBytes > 0) {
         setStatusMessage(`Complete — saved ${formatFileSize(savedBytes)}.`);
-      } else if (blob.size < uploadedPdf.file.size) {
-        setStatusMessage(
-          "Complete — file size reduced slightly. Download to compare.",
-        );
       } else {
         setStatusMessage(
-          "Complete — this PDF is already well optimized, so its size could not be reduced further.",
+          "This PDF is already well optimized. No smaller result was produced.",
         );
       }
       setProgress(undefined);
@@ -242,9 +241,14 @@ export function CompressPdfTool() {
     hasResult && compressedBlob && uploadedPdf
       ? calculateSavingsPercent(uploadedPdf.file.size, compressedBlob.size)
       : null;
+  const reduced =
+    hasResult &&
+    compressedBlob != null &&
+    uploadedPdf != null &&
+    compressedBlob.size < uploadedPdf.file.size;
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="compress-pdf-prototype space-y-5 overflow-x-hidden">
       <CompressProgressBanner
         status={isReading ? "loading" : status}
         phase={phase}
@@ -257,6 +261,7 @@ export function CompressPdfTool() {
         empty={
           <>
             <FileDropZone
+              className="compress-drop"
               onFilesSelected={handleUpload}
               accept={ACCEPTED_PDF_EXTENSIONS}
               validateFile={isAcceptedPdfFile}
@@ -271,10 +276,10 @@ export function CompressPdfTool() {
         }
         workArea={
           uploadedPdf ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+            <div className="w-full max-w-[16.5rem] sm:max-w-[17rem] lg:max-w-[28rem]">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-scanonix-orange/10 text-scanonix-orange">
                     <CompressDropIcon className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
@@ -288,7 +293,7 @@ export function CompressPdfTool() {
                     </p>
                   </div>
                 </div>
-                <div className="hidden w-full sm:w-auto md:block">
+                <div className="hidden shrink-0 lg:block">
                   <ActionButton
                     variant="outline"
                     size="sm"
@@ -302,18 +307,17 @@ export function CompressPdfTool() {
               </div>
 
               {isLargePdf && (
-                <div className="border-b border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-sm text-foreground sm:px-4">
+                <div className="mt-3 rounded-lg bg-amber-500/10 px-3 py-2 text-sm text-foreground">
                   This is a large PDF. Server compression may take longer to
                   complete.
                 </div>
               )}
 
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
+              <div className="mt-3 w-fit max-w-full rounded-xl bg-surface-strong p-3 sm:p-4">
                 <CompressDocumentOverview
                   pdfBytes={uploadedPdf.pdfBytes}
                   pageCount={uploadedPdf.pageCount}
                   fileName={uploadedPdf.file.name}
-                  originalSize={uploadedPdf.file.size}
                   level={level}
                   isCompressing={isCompressing}
                   compressedSize={compressedBlob?.size ?? null}
@@ -330,7 +334,7 @@ export function CompressPdfTool() {
               footer={
                 hasResult && compressedBlob ? (
                   <div className="flex flex-col gap-2">
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full"
@@ -352,7 +356,7 @@ export function CompressPdfTool() {
                     >
                       Change settings
                     </ActionButton>
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         variant="outline"
                         size="lg"
@@ -369,7 +373,7 @@ export function CompressPdfTool() {
                     <p className="text-[11px] leading-snug text-scanonix-muted">
                       {compressHint}
                     </p>
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full shadow-[var(--shadow-orange-sm)]"
@@ -392,36 +396,48 @@ export function CompressPdfTool() {
                     <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                       Result
                     </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700">
-                      ✓ Compression complete
+                    <p
+                      className={`mt-1.5 text-sm font-semibold ${
+                        reduced
+                          ? "text-emerald-800 [[data-theme=dark]_&]:text-emerald-300"
+                          : "text-foreground"
+                      }`}
+                    >
+                      {reduced ? "✓ Compression complete" : "No smaller file"}
                     </p>
                     <p className="mt-1 text-xs text-scanonix-muted">
-                      Your compressed PDF is ready to download.
+                      {reduced
+                        ? "Your compressed PDF is ready to download."
+                        : "This PDF is already well optimized. No smaller result was produced."}
                     </p>
                   </div>
 
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                  <dl className="space-y-2.5 text-sm">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Original size</dt>
                       <dd className="font-semibold text-foreground">
                         {formatFileSize(uploadedPdf.file.size)}
                       </dd>
                     </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Compressed size</dt>
                       <dd className="font-semibold text-foreground">
                         {formatFileSize(compressedBlob.size)}
                       </dd>
                     </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                    <div className="flex justify-between gap-3">
                       <dt className="text-scanonix-muted">Saved</dt>
                       <dd className="font-semibold text-foreground">
                         {savingsPercent != null && savingsPercent > 0
-                          ? `${savingsPercent}%`
+                          ? formatCompressPdfSavingsLabel(
+                              uploadedPdf.file.size,
+                              compressedBlob.size,
+                              savingsPercent,
+                            )
                           : "No reduction"}
                       </dd>
                     </div>
-                    <div className="min-w-0 px-3 py-2.5">
+                    <div className="min-w-0">
                       <dt className="text-scanonix-muted">Filename</dt>
                       <dd className="mt-0.5 truncate font-semibold text-foreground">
                         scanonix-compressed.pdf
@@ -438,7 +454,7 @@ export function CompressPdfTool() {
                         aria-hidden="true"
                       />
                       <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Compress PDF
+                        Settings
                       </p>
                     </div>
                     <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
@@ -455,7 +471,7 @@ export function CompressPdfTool() {
                     isPro={isPro}
                   />
 
-                  <div className="border-t border-border/80 pt-3">
+                  <div className="compress-privacy">
                     <PrivacyNotice message={PRIVACY_MESSAGE} />
                   </div>
                 </div>
@@ -466,6 +482,7 @@ export function CompressPdfTool() {
       />
 
       <ToolStickyMobileActionBar
+        stickyUntil="lg"
         visible={stickyVisible}
         phase={resultActionPhase}
         primaryLabel={hasResult ? "Download PDF" : "Compress PDF"}

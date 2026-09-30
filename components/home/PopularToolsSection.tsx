@@ -81,7 +81,7 @@ function CategoryDiscoveryCard({ category }: { category: HomepageToolCategory })
       </span>
       <span className="mt-auto flex items-center justify-between gap-2 pt-1 text-sm">
         <span className="text-body-bright">
-          {toolCount} tool{toolCount === 1 ? "" : "s"}
+          {toolCount} featured
         </span>
         <span className="inline-flex items-center gap-1 font-medium text-scanonix-orange">
           {category === "image" ? "Explore hub" : "Explore"}

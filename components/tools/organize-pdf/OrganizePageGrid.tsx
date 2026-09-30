@@ -62,7 +62,7 @@ function PageControlButton({
     tone === "accent"
       ? "border-scanonix-orange/45 bg-scanonix-orange/10 text-scanonix-orange hover:border-scanonix-orange/60 hover:bg-scanonix-orange/15"
       : tone === "danger"
-        ? "border-red-500/30 bg-red-500/[0.06] text-red-700 hover:border-red-500/45 hover:bg-red-500/10 dark:text-red-400"
+        ? "border-red-500/30 bg-red-500/[0.06] text-red-700 hover:border-red-500/45 hover:bg-red-500/10 [[data-theme=dark]_&]:text-red-400"
         : "border-border bg-surface-muted text-foreground hover:border-scanonix-orange/35 hover:bg-surface-raised";
 
   return (

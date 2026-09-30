@@ -33,6 +33,11 @@ export interface ToolStickyMobileActionBarProps {
    * Only applies in result mode (`phase` set).
    */
   showPrimaryOnError?: boolean;
+  /**
+   * Viewport where the bar hides. Default `md` keeps the current phone-only bar.
+   * `lg` is opt-in for tools whose inspector stacks until 1024px.
+   */
+  stickyUntil?: "md" | "lg";
 }
 
 const LEGACY_SPACER_FALLBACK_PX = 96; // h-24
@@ -51,7 +56,9 @@ export function ToolStickyMobileActionBar({
   onStartOver,
   startOverDisabled = false,
   showPrimaryOnError = false,
+  stickyUntil = "md",
 }: ToolStickyMobileActionBarProps) {
+  const hideFrom = stickyUntil === "lg" ? "lg:hidden" : "md:hidden";
   const resultMode = phase !== undefined;
   const barRef = useRef<HTMLDivElement>(null);
   const [barHeightPx, setBarHeightPx] = useState(LEGACY_SPACER_FALLBACK_PX);
@@ -144,14 +151,14 @@ export function ToolStickyMobileActionBar({
   return (
     <>
       <div
-        className="md:hidden"
+        className={hideFrom}
         style={{ height: barHeightPx }}
         aria-hidden="true"
         data-sticky-action-spacer=""
       />
       <div
         ref={barRef}
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--shadow-raised)] backdrop-blur-xl md:hidden"
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--shadow-raised)] backdrop-blur-xl ${hideFrom}`}
         data-sticky-action-bar=""
         data-sticky-action-mode={resultMode ? "result" : "legacy"}
         data-result-action-phase={phase ?? "legacy"}

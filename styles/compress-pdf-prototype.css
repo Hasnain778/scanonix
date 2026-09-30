@@ -1,0 +1,64 @@
+/*
+ * Compress PDF prototype only.
+ * Every rule is scoped to .compress-pdf-prototype, which exists only inside CompressPdfTool.
+ * The settings rail keeps the shared control-panel border. This file does not restyle other tools.
+ */
+
+.compress-pdf-prototype .compress-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .compress-pdf-prototype .compress-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.compress-pdf-prototype .compress-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .compress-pdf-prototype .compress-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .compress-pdf-prototype .compress-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.compress-pdf-prototype .compress-drop:hover {
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  .compress-pdf-prototype [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) 26.25rem;
+  }
+
+  .compress-pdf-prototype [data-tool-control-panel] {
+    width: 100%;
+    max-width: none;
+    /* Keep the pinned Compress action inside a 900px desktop screen. */
+    max-height: calc(100vh - 22rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .compress-pdf-prototype [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) 27.5rem;
+  }
+}
+
+.compress-pdf-prototype .compress-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 28rem;
+}

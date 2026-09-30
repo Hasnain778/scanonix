@@ -7,6 +7,7 @@ import {
   type CompressProgressPhase,
   PdfCompressionError,
 } from "./compression-levels";
+import { selectNonGrowingPdfBytes } from "./no-growth";
 
 export type CompressProgressCallback = (
   phase: CompressProgressPhase,
@@ -30,6 +31,9 @@ export async function compressPdfBytes(
   onProgress?: CompressProgressCallback,
 ): Promise<Uint8Array> {
   onProgress?.("reading");
+
+  const originalBytes = new Uint8Array(pdfBytes.byteLength);
+  originalBytes.set(new Uint8Array(pdfBytes));
 
   const settings = COMPRESSION_LEVELS[level];
   let pdfDoc: PDFDocument;
@@ -99,7 +103,7 @@ export async function compressPdfBytes(
 
   onProgress?.("complete");
 
-  return compressedBytes;
+  return selectNonGrowingPdfBytes(originalBytes, compressedBytes);
 }
 
 export async function compressPdfFile(

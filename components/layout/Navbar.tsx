@@ -15,10 +15,8 @@ import { UserMenu } from "@/components/layout/UserMenu";
 import { ThemeControl } from "@/components/theme/ThemeControl";
 import { BrandLockup } from "@/components/ui/BrandLockup";
 import { NAV_PRICING_LINK } from "@/lib/constants";
-import { PLAY_STORE_URL } from "@/config/site";
 
 const MOBILE_FOOTER_LINKS = [
-  { label: "Android App", href: PLAY_STORE_URL, external: true as const },
   { label: "Privacy", href: "/privacy", external: false as const },
   { label: "Terms", href: "/terms", external: false as const },
 ] as const;
@@ -334,7 +332,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/register"
-                    className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
+                    className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/40"
                   >
                     Create account
                   </Link>

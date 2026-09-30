@@ -129,7 +129,7 @@ export function PdfPageEditor({
       <div className="mx-auto max-w-full">
         <div
           data-sign-page-overlay-root
-          className="relative mx-auto w-full max-w-full border border-border bg-white shadow-lg"
+          className="sign-page-sheet relative mx-auto w-full max-w-full border border-border bg-white shadow-lg"
           onPointerDown={() => onSelectPlacement(null)}
         >
           {isRendering && (

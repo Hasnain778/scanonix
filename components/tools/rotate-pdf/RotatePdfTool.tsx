@@ -12,6 +12,7 @@ import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/pdf-page-tools-premium.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
@@ -246,7 +247,7 @@ export function RotatePdfTool() {
         : "Configure rotation options.";
 
   return (
-    <div className="space-y-5">
+    <div className="pdf-page-tools-premium space-y-5">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -258,6 +259,7 @@ export function RotatePdfTool() {
         empty={
           <>
             <FileDropZone
+              className="pdf-page-drop"
               onFilesSelected={handleUpload}
               accept={ACCEPTED_PDF_EXTENSIONS}
               validateFile={isAcceptedPdfFile}
@@ -272,7 +274,7 @@ export function RotatePdfTool() {
         }
         workArea={
           uploadedPdf ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+            <div className="pdf-page-stage overflow-hidden">
               <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
@@ -289,13 +291,7 @@ export function RotatePdfTool() {
                     </p>
                   </div>
                 </div>
-                <div
-                  className={
-                    hasResult
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
-                  }
-                >
+                <div className="w-full sm:w-auto">
                   <ActionButton
                     variant="outline"
                     size="sm"
@@ -350,7 +346,7 @@ export function RotatePdfTool() {
               footer={
                 hasResult && resultBlob ? (
                   <div className="flex flex-col gap-2">
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full"
@@ -372,32 +368,30 @@ export function RotatePdfTool() {
                     >
                       Change settings
                     </ActionButton>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={resetTool}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <p className="text-[11px] leading-snug text-scanonix-muted">
                       {rotateHint}
                     </p>
-                    <ActionButton
-                      size="lg"
-                      className="w-full shadow-[var(--shadow-orange-sm)]"
-                      loading={status === "loading"}
-                      disabled={!canRotate}
-                      onClick={handleRotate}
+                    <div
+                      className={
+                        resultActionPhase === "ready" ||
+                        resultActionPhase === "processing"
+                          ? "hidden lg:block"
+                          : undefined
+                      }
                     >
-                      {status === "loading" ? "Rotating…" : "Rotate PDF"}
-                    </ActionButton>
+                      <ActionButton
+                        size="lg"
+                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        loading={status === "loading"}
+                        disabled={!canRotate}
+                        onClick={handleRotate}
+                      >
+                        {status === "loading" ? "Rotating…" : "Rotate PDF"}
+                      </ActionButton>
+                    </div>
                   </div>
                 )
               }
@@ -472,17 +466,19 @@ export function RotatePdfTool() {
       />
 
       <ToolStickyMobileActionBar
-        visible={hasResult}
+        visible={Boolean(uploadedPdf)}
+        stickyUntil="lg"
         phase={resultActionPhase}
-        primaryLabel="Download rotated PDF"
-        primaryLoading={isDownloading}
-        primaryDisabled={isBusy}
+        primaryLabel={hasResult ? "Download rotated PDF" : "Rotate PDF"}
+        primaryLoading={hasResult ? isDownloading : status === "loading"}
+        primaryDisabled={hasResult ? isBusy : !canRotate || isBusy}
         onPrimaryClick={() => {
-          void handleDownload();
+          if (hasResult) {
+            void handleDownload();
+          } else {
+            handleRotate();
+          }
         }}
-        onStartOver={resetTool}
-        startOverLabel="Start over"
-        startOverDisabled={isBusy}
       />
     </div>
   );

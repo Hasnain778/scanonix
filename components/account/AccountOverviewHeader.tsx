@@ -49,7 +49,7 @@ export function AccountOverviewHeader({ user }: AccountOverviewHeaderProps) {
           <AccountAvatar user={user} />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="truncate text-lg font-bold text-foreground sm:text-xl">{displayName}</h1>
+              <p className="truncate text-lg font-bold text-foreground sm:text-xl">{displayName}</p>
               <span
                 className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${getPlanBadgeClass(plan)}`}
               >

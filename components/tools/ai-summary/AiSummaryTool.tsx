@@ -30,6 +30,7 @@ import {
 } from "@/lib/tools/ai-summary/extract-document-text";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import type { ToolStatus } from "@/lib/tools/types";
+import "@/styles/ai-text-premium.css";
 
 const SUMMARY_MAX_CHARACTERS = 100_000;
 const PRIVACY_MESSAGE =
@@ -326,7 +327,7 @@ export function AiSummaryTool() {
     >
       {/* Mobile bottom pad clears sticky CTA + ToolFinder FAB; md+ uses in-workspace CTAs */}
       <div
-        className={`space-y-5 overflow-x-hidden md:pb-0 ${
+        className={`ai-text-premium space-y-5 overflow-x-hidden md:pb-0 ${
           hasResult ? "pb-40" : "pb-28"
         }`}
       >
@@ -379,7 +380,7 @@ export function AiSummaryTool() {
         ) : null}
 
         {!hasResult ? (
-          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+          <div className="ai-text-shell overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
             <div className="border-b border-border px-4 py-3 sm:px-5">
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-foreground-muted">
                 Input source
@@ -599,11 +600,11 @@ export function AiSummaryTool() {
             </div>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+          <div className="ai-text-shell overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
             <div className="grid lg:grid-cols-2">
               <div className="border-b border-border p-4 sm:p-5 lg:border-b-0 lg:border-r">
                 <p className="mb-3 text-sm font-medium text-foreground">Document text</p>
-                <div className="max-h-80 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground">
+                <div className="ai-text-result max-h-80 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground">
                   {inputText}
                 </div>
               </div>
@@ -614,7 +615,7 @@ export function AiSummaryTool() {
                   <p className="text-sm font-medium text-foreground">Summary</p>
                   <span className="text-xs text-scanonix-orange">Complete</span>
                 </div>
-                <div className="max-h-80 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground">
+                <div className="ai-text-result max-h-80 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground">
                   {outputText}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2 pr-2 md:pr-0">

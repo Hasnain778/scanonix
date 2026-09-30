@@ -75,6 +75,7 @@ import { RedactPdfPreview } from "./RedactPdfPreview";
 import { RedactionsDrawer } from "./RedactionsDrawer";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
+import "@/styles/redact-pdf-premium.css";
 
 interface RedactPdfClientToolProps {
   /** When true, export is blocked until the user upgrades to Pro. */
@@ -696,17 +697,52 @@ export function RedactPdfClientTool({
   );
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="redact-pdf-premium overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
       />
+
+      {uploadedPdf && !hasResult ? (
+        <div
+          data-redact-pdf-header
+          className="redact-file-header flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+              <PdfDropIcon className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {uploadedPdf.file.name}
+              </p>
+              <p className="truncate text-[11px] text-scanonix-muted">
+                {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
+                {pageCount === 1 ? "" : "s"}
+              </p>
+            </div>
+          </div>
+          <div className="w-full sm:w-auto">
+            <ActionButton
+              variant="outline"
+              size="sm"
+              data-redact-choose-another
+              className="w-full rounded-lg sm:w-auto"
+              disabled={isBusy}
+              onClick={resetWorkspace}
+            >
+              Choose another PDF
+            </ActionButton>
+          </div>
+        </div>
+      ) : null}
 
       <ToolWorkspaceShell
         isEmpty={!uploadedPdf && !hasResult}
         empty={
           <>
             <FileDropZone
+              className="redact-pdf-drop"
               onFilesSelected={handleUpload}
               accept={ACCEPTED_PDF_EXTENSIONS}
               validateFile={isAcceptedPdfFile}
@@ -759,21 +795,6 @@ export function RedactPdfClientTool({
               data-redact-pdf-workspace
               className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]"
             >
-              <div
-                data-redact-pdf-header
-                className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 bg-surface-muted/40 px-3 py-2.5 sm:px-4"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {uploadedPdf.file.name}
-                  </p>
-                  <p className="text-xs text-scanonix-muted">
-                    {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
-                    {pageCount === 1 ? "" : "s"}
-                  </p>
-                </div>
-              </div>
-
               {uploadedPdf.hasExistingDigitalSignatures ? (
                 <div
                   data-redact-signature-warning
@@ -787,45 +808,7 @@ export function RedactPdfClientTool({
 
               {editorToolbar}
 
-              <div className="border-b border-border/80 px-3 py-2.5 sm:px-4">
-                <div className="rounded-lg border border-border bg-surface-muted/50 px-3 py-2.5">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-scanonix-muted">
-                    Before you export
-                  </p>
-                  <ul className="mt-1.5 space-y-1 text-xs leading-snug text-foreground">
-                    <li>
-                      <span className="font-semibold">Permanent redaction. </span>
-                      <span className="text-scanonix-muted">
-                        {REDACT_PERMANENT_APPLIED_COPY}
-                      </span>
-                    </li>
-                    <li>
-                      <span className="font-semibold">Image rebuild. </span>
-                      <span className="text-scanonix-muted">
-                        {REDACT_RASTER_QUALITY_COPY}
-                      </span>
-                    </li>
-                    <li>
-                      <span className="font-semibold">Hidden data. </span>
-                      <span className="text-scanonix-muted">
-                        {REDACT_SANITIZATION_LIMITATION_COPY}
-                      </span>
-                    </li>
-                    {showFormWarning ? (
-                      <li data-redact-form-warning>
-                        <span className="font-semibold">Forms / annotations. </span>
-                        <span className="text-scanonix-muted">
-                          {REDACT_FORM_ANNOTATION_WARNING}
-                        </span>
-                      </li>
-                    ) : null}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="border-b border-border/80 px-3 py-2 sm:px-4">
-                {pageNav}
-              </div>
+              <div data-redact-page-nav-band>{pageNav}</div>
 
               <div
                 ref={previewContainerRef}
@@ -925,22 +908,6 @@ export function RedactPdfClientTool({
                           {exportLabel}
                         </ActionButton>
                       </div>
-                      <div
-                        className={
-                          stickyVisible ? "hidden md:block" : undefined
-                        }
-                      >
-                        <ActionButton
-                          variant="outline"
-                          size="lg"
-                          className="w-full"
-                          data-redact-choose-another
-                          disabled={isBusy}
-                          onClick={resetWorkspace}
-                        >
-                          Choose another PDF
-                        </ActionButton>
-                      </div>
                     </>
                   )}
                 </div>
@@ -948,51 +915,36 @@ export function RedactPdfClientTool({
             >
               <div className="space-y-4">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                    Redact PDF
-                  </p>
-                  <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
+                  <p className="redact-title">Redact PDF</p>
+                  <p className="redact-lead mt-1">
                     {hasResult
                       ? "Your redacted file is ready to download."
-                      : "Draw boxes over content you want permanently removed."}
+                      : "Drag over an area on the page to mark it for redaction."}
                   </p>
                 </div>
 
                 {uploadedPdf ? (
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="min-w-0 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Selected file</dt>
-                      <dd className="mt-0.5 truncate font-semibold text-foreground">
-                        {uploadedPdf.file.name}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(uploadedPdf.file.size)}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Pages</dt>
-                      <dd className="font-semibold text-foreground">{pageCount}</dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
+                  <dl className="redact-meta text-sm">
+                    <div className="flex justify-between gap-3 py-2">
                       <dt className="text-scanonix-muted">Redactions</dt>
                       <dd className="font-semibold text-foreground">
                         {redactionCount}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3 py-2">
+                      <dt className="text-scanonix-muted">This page</dt>
+                      <dd className="font-semibold text-foreground">
+                        {activePageRedactions.length}
                       </dd>
                     </div>
                   </dl>
                 ) : null}
 
                 {!hasResult ? (
-                  <div className="rounded-xl border border-border bg-surface-muted/40 px-3 py-2.5">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-scanonix-muted">
-                      Security
-                    </p>
-                    <p className="mt-1 text-xs leading-snug text-scanonix-muted">
-                      {REDACT_PERMANENT_APPLIED_COPY}
-                    </p>
+                  <div className="space-y-2">
+                    <p className="redact-note">{REDACT_PERMANENT_APPLIED_COPY}</p>
+                    <p className="redact-note">{REDACT_RASTER_QUALITY_COPY}</p>
+                    <p className="redact-note">{REDACT_SANITIZATION_LIMITATION_COPY}</p>
                     {uploadedPdf?.hasExistingDigitalSignatures ? (
                       <p className="mt-2 text-xs leading-snug text-foreground">
                         {DIGITAL_SIGNATURE_REDACT_WARNING}
@@ -1026,8 +978,6 @@ export function RedactPdfClientTool({
         primaryLoading={isExporting}
         primaryDisabled={!canExport}
         onPrimaryClick={handleExport}
-        secondaryLabel="Choose another PDF"
-        onSecondaryClick={resetWorkspace}
         secondaryDisabled={isBusy}
       />
     </div>

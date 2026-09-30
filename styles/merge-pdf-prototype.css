@@ -1,0 +1,91 @@
+/*
+ * Merge PDF prototype only.
+ * Every rule is scoped to .merge-pdf-prototype, which exists only inside MergePdfTool.
+ */
+
+.merge-pdf-prototype .merge-drop {
+  border-width: 1.5px;
+  border-style: dashed;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.35rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .merge-pdf-prototype .merge-drop {
+    padding: 1.6rem 2rem;
+  }
+}
+
+.merge-pdf-prototype .merge-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.65rem;
+}
+
+html[data-theme="bright"] .merge-pdf-prototype .merge-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .merge-pdf-prototype .merge-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.merge-pdf-prototype .merge-drop:hover {
+  box-shadow: none;
+}
+
+.merge-pdf-prototype [data-tool-workspace="active"] {
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .merge-pdf-prototype [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+
+  .merge-pdf-prototype [data-tool-control-panel] {
+    width: 100%;
+    max-width: 22rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .merge-pdf-prototype [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+  }
+
+  .merge-pdf-prototype [data-tool-control-panel] {
+    max-width: 24rem;
+  }
+}
+
+.merge-pdf-prototype [data-tool-control-panel] {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+html[data-theme="bright"] .merge-pdf-prototype [data-tool-control-panel] {
+  background: #f3eee8;
+}
+
+html[data-theme="dark"] .merge-pdf-prototype [data-tool-control-panel] {
+  background: #121110;
+}
+
+.merge-pdf-prototype [data-tool-control-panel-footer] {
+  border-top: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.merge-pdf-prototype .merge-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 28rem;
+}

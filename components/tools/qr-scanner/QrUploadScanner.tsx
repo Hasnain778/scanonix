@@ -97,9 +97,10 @@ export function QrUploadScanner({
           label="Drop an image containing a QR code"
           hint="JPG, JPEG, PNG, or WEBP · under 25 MB"
           icon={<ImageDropIcon />}
+          className="qr-drop"
         />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-scanonix-border bg-black/40">
+        <div className="qr-upload-preview overflow-hidden rounded-xl bg-black/40">
           <div className="flex aspect-[4/3] items-center justify-center p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

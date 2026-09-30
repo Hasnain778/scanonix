@@ -8,8 +8,8 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/image-processing-premium.css";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
@@ -167,6 +167,7 @@ export function ImageResizerTool() {
     });
     attempt.success(1);
     setStatus("success");
+    setMessage("Image resized successfully!");
   }, [clearResultPreview, file, height, width]);
 
   const handleDownload = useCallback(() => {
@@ -176,6 +177,7 @@ export function ImageResizerTool() {
       resultFileName ?? "resized.jpg",
       buildToolDownloadMeta("image-resizer", 1),
     );
+    setMessage("Image downloaded successfully!");
   }, [resultBlob, resultFileName]);
 
   const resetTool = useCallback(() => {
@@ -207,14 +209,8 @@ export function ImageResizerTool() {
   const hasRequestedHeight =
     requestedHeight !== undefined && Number.isFinite(requestedHeight) && requestedHeight > 0;
 
-  const resizeHint = !file
-    ? "Upload an image before resizing."
-    : isBusy
-      ? "Resizing on Scanonix servers…"
-      : "Ready to resize within the requested dimensions.";
-
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="image-processing-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner status={status} message={message} />
 
       <ToolWorkspaceShell
@@ -222,10 +218,11 @@ export function ImageResizerTool() {
         empty={
           <>
             <FileDropZone
+              className="image-proc-drop"
               accept={ACCEPT_IMAGES}
               multiple={false}
               label="Drop an image to resize"
-              hint={`JPG, PNG, WEBP or HEIC — up to ${MAX_MB}MB`}
+              hint={`JPG, PNG, WEBP or HEIC \u2014 up to ${MAX_MB}MB`}
               disabled={isBusy}
               validateFile={isValidImageFile}
               icon={<ResizeDropIcon />}
@@ -247,370 +244,227 @@ export function ImageResizerTool() {
                 }
               }}
             />
-            <PrivacyNotice message={PRIVACY_MESSAGE} />
+            <div className="image-proc-privacy">
+              <PrivacyNotice message={PRIVACY_MESSAGE} />
+            </div>
           </>
         }
         workArea={
           file ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <ResizeDropIcon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(file.size)}
-                      {naturalSize
-                        ? ` · ${naturalSize.width} × ${naturalSize.height}px`
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={
-                    hasResult
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
-                  }
-                >
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={resetTool}
-                  >
-                    {hasResult ? "Start over" : "Upload another"}
-                  </ActionButton>
-                </div>
-              </div>
-
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
-                {hasResult && resultPreviewUrl ? (
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Output preview
-                    </p>
-                    <div className="overflow-hidden rounded-xl border border-scanonix-border bg-black/30">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={resultPreviewUrl}
-                        alt="Resized image preview"
-                        className="max-h-52 w-full object-contain sm:max-h-60"
-                      />
+            <div className="image-proc-layout">
+              <div className="image-proc-stage min-w-0">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
+                      <ResizeDropIcon className="h-4 w-4" />
                     </div>
-                    {previewUrl ? (
-                      <p className="truncate text-[11px] text-scanonix-muted">
-                        Source
-                        {naturalSize
-                          ? `: ${naturalSize.width} × ${naturalSize.height}px`
-                          : ""}
-                        {" · "}
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-foreground">
+                        {file.name}
+                      </p>
+                      <p className="truncate text-xs text-scanonix-muted">
                         {formatFileSize(file.size)}
+                        {naturalSize
+                          ? ` \u00B7 ${naturalSize.width} \u00D7 ${naturalSize.height}px`
+                          : ""}
                       </p>
-                    ) : null}
+                    </div>
                   </div>
-                ) : previewUrl ? (
-                  <div className="space-y-2">
-                    <div className="overflow-hidden rounded-xl border border-scanonix-border bg-black/30">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="max-h-80 w-full object-contain"
-                      />
-                    </div>
-                    {naturalSize ? (
-                      <p className="text-sm text-scanonix-muted">
-                        Original {naturalSize.width} × {naturalSize.height}px
-                      </p>
-                    ) : null}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : null
-        }
-        controlPanel={
-          file ? (
-            hasResult && resultBlob && stats ? (
-              <aside
-                aria-label="Image resizer result"
-                className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-5.5rem)] lg:w-[320px] lg:shrink-0"
-                data-tool-control-panel=""
-              >
-                <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-3.5 py-3 sm:px-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-green-700">
-                      ✓ Resize complete
-                    </p>
-                  </div>
-
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-lg border border-border bg-surface-muted/60 text-sm">
-                    {naturalSize ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Original</dt>
-                        <dd className="font-semibold text-foreground">
-                          {naturalSize.width} × {naturalSize.height}px
-                        </dd>
-                      </div>
-                    ) : null}
-                    {hasRequestedWidth || hasRequestedHeight ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Requested</dt>
-                        <dd className="font-semibold text-foreground">
-                          {hasRequestedWidth ? requestedWidth : "—"} ×{" "}
-                          {hasRequestedHeight ? requestedHeight : "—"}px
-                        </dd>
-                      </div>
-                    ) : null}
-                    {stats.width && stats.height ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Output</dt>
-                        <dd className="font-semibold text-foreground">
-                          {stats.width} × {stats.height}px
-                        </dd>
-                      </div>
-                    ) : null}
-                    <div className="flex justify-between gap-3 px-3 py-1.5">
-                      <dt className="text-scanonix-muted">Original size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(stats.originalSize)}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-1.5">
-                      <dt className="text-scanonix-muted">Output size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(stats.outputSize)}
-                      </dd>
-                    </div>
-                    {stats.outputSize < stats.originalSize ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Saved</dt>
-                        <dd className="font-semibold text-foreground">
-                          {Math.round(
-                            ((stats.originalSize - stats.outputSize) /
-                              stats.originalSize) *
-                              100,
-                          )}
-                          % ·{" "}
-                          {formatFileSize(stats.originalSize - stats.outputSize)}
-                        </dd>
-                      </div>
-                    ) : null}
-                    {outputFormat ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Output format</dt>
-                        <dd className="font-semibold text-foreground">
-                          {outputFormat}
-                        </dd>
-                      </div>
-                    ) : null}
-                    {resultFileName ? (
-                      <div className="flex min-w-0 items-baseline justify-between gap-3 px-3 py-1.5">
-                        <dt className="shrink-0 text-scanonix-muted">Filename</dt>
-                        <dd className="truncate font-semibold text-foreground">
-                          {resultFileName}
-                        </dd>
-                      </div>
-                    ) : null}
-                  </dl>
-
-                  {stats.outputSize === stats.originalSize ? (
-                    <div
-                      className="rounded-lg border border-border bg-surface-muted/80 px-2.5 py-2"
-                      role="status"
-                    >
-                      <p className="text-sm font-medium text-foreground">
-                        No size reduction
-                      </p>
-                      <p className="mt-0.5 text-[11px] leading-snug text-scanonix-muted">
-                        Resize changes dimensions; file size may stay similar.
-                      </p>
-                    </div>
-                  ) : null}
-                  {stats.outputSize > stats.originalSize ? (
-                    <div
-                      className="rounded-lg border border-border bg-surface-muted/80 px-2.5 py-2"
-                      role="status"
-                    >
-                      <p className="text-sm font-medium text-foreground">
-                        Output is larger
-                      </p>
-                      <p className="mt-0.5 text-[11px] leading-snug text-scanonix-muted">
-                        {formatFileSize(stats.outputSize - stats.originalSize)}{" "}
-                        larger than the original. Resize targets dimensions, not
-                        compression.
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-
-                <div className="hidden shrink-0 border-t border-border bg-surface-raised/80 px-3.5 py-2.5 sm:px-4 md:block">
-                  <div className="flex flex-col gap-1.5">
-                    <ActionButton
-                      size="md"
-                      className="w-full whitespace-nowrap"
-                      disabled={isBusy}
-                      onClick={handleDownload}
-                    >
-                      Download image
-                    </ActionButton>
+                  <div className={hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
                     <ActionButton
                       variant="outline"
-                      size="md"
-                      className="w-full whitespace-nowrap"
+                      size="sm"
+                      className="rounded-lg"
                       disabled={isBusy}
                       onClick={resetTool}
                     >
-                      Start over
+                      {hasResult ? "Start over" : "Choose another image"}
                     </ActionButton>
                   </div>
                 </div>
-              </aside>
-            ) : (
-              <ToolControlPanel
-                aria-label="Image resizer controls"
-                footer={
-                  <div className="flex flex-col gap-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      {resizeHint}
+
+                {hasResult && resultPreviewUrl ? (
+                  <div className="image-proc-preview">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={resultPreviewUrl} alt="Resized image preview" />
+                  </div>
+                ) : previewUrl ? (
+                  <div className="image-proc-preview">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={previewUrl} alt="" />
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="image-proc-controls min-w-0">
+                {hasResult && resultBlob && stats ? (
+                  <div className="space-y-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
+                      Result
                     </p>
-                    <div className="hidden md:block">
+                    <dl className="image-proc-stats text-sm">
+                      {naturalSize ? (
+                        <div>
+                          <dt className="text-scanonix-muted">Original</dt>
+                          <dd className="font-semibold text-foreground">
+                            {naturalSize.width} {"\u00D7"} {naturalSize.height}px
+                          </dd>
+                        </div>
+                      ) : null}
+                      {hasRequestedWidth || hasRequestedHeight ? (
+                        <div>
+                          <dt className="text-scanonix-muted">Requested</dt>
+                          <dd className="font-semibold text-foreground">
+                            {hasRequestedWidth ? requestedWidth : "\u2014"} {"\u00D7"}{" "}
+                            {hasRequestedHeight ? requestedHeight : "\u2014"}px
+                          </dd>
+                        </div>
+                      ) : null}
+                      {stats.width && stats.height ? (
+                        <div>
+                          <dt className="text-scanonix-muted">Output</dt>
+                          <dd className="font-semibold text-foreground">
+                            {stats.width} {"\u00D7"} {stats.height}px
+                          </dd>
+                        </div>
+                      ) : null}
+                      <div>
+                        <dt className="text-scanonix-muted">Original size</dt>
+                        <dd className="font-semibold text-foreground">
+                          {formatFileSize(stats.originalSize)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-scanonix-muted">Output size</dt>
+                        <dd className="font-semibold text-foreground">
+                          {formatFileSize(stats.outputSize)}
+                        </dd>
+                      </div>
+                      {stats.outputSize < stats.originalSize ? (
+                        <div>
+                          <dt className="text-scanonix-muted">Saved</dt>
+                          <dd className="font-semibold text-foreground">
+                            {Math.round(
+                              ((stats.originalSize - stats.outputSize) / stats.originalSize) * 100,
+                            )}
+                            %{" \u00B7 "}
+                            {formatFileSize(stats.originalSize - stats.outputSize)}
+                          </dd>
+                        </div>
+                      ) : null}
+                      {outputFormat ? (
+                        <div>
+                          <dt className="text-scanonix-muted">Output format</dt>
+                          <dd className="font-semibold text-foreground">{outputFormat}</dd>
+                        </div>
+                      ) : null}
+                      {resultFileName ? (
+                        <div>
+                          <dt className="shrink-0 text-scanonix-muted">Output file</dt>
+                          <dd className="min-w-0 truncate font-semibold text-foreground">
+                            {resultFileName}
+                          </dd>
+                        </div>
+                      ) : null}
+                    </dl>
+                    {stats.outputSize === stats.originalSize ? (
+                      <p className="text-sm leading-relaxed text-foreground" role="status">
+                        No size reduction. Resize changes dimensions; file size may stay similar.
+                      </p>
+                    ) : null}
+                    {stats.outputSize > stats.originalSize ? (
+                      <p className="text-sm leading-relaxed text-foreground" role="status">
+                        Output is larger by{" "}
+                        {formatFileSize(stats.outputSize - stats.originalSize)}. Resize targets
+                        dimensions, not compression.
+                      </p>
+                    ) : null}
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
+                        disabled={isBusy}
+                        onClick={handleDownload}
+                      >
+                        Download image
+                      </ActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
+                        Dimensions
+                      </p>
+                      <div className="image-proc-dimensions mt-3">
+                        <label className="block min-w-0 space-y-1.5">
+                          <span className="text-sm font-medium text-foreground">Width (px)</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={10000}
+                            value={width}
+                            onChange={(event) => handleWidthChange(event.target.value)}
+                            disabled={isBusy}
+                            className="input-field"
+                          />
+                        </label>
+                        <label className="block min-w-0 space-y-1.5">
+                          <span className="text-sm font-medium text-foreground">Height (px)</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={10000}
+                            value={height}
+                            onChange={(event) => handleHeightChange(event.target.value)}
+                            disabled={isBusy}
+                            className="input-field"
+                          />
+                        </label>
+                      </div>
+                      <label className="mt-3 flex items-center gap-2 text-sm text-foreground">
+                        <input
+                          type="checkbox"
+                          checked={lockAspect}
+                          onChange={(event) => setLockAspect(event.target.checked)}
+                          disabled={isBusy}
+                          className="accent-scanonix-orange"
+                        />
+                        Maintain aspect ratio
+                      </label>
+                      <p className="mt-2 text-sm leading-relaxed text-scanonix-muted">
+                        Image fits within the requested dimensions.
+                      </p>
+                    </div>
+                    <div className="hidden lg:block">
+                      <ActionButton
+                        size="lg"
+                        className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
                         loading={isBusy}
                         disabled={!file || isBusy}
                         onClick={() => {
                           void handleResize();
                         }}
                       >
-                        {isBusy ? "Resizing…" : "Resize image"}
+                        {isBusy ? "Resizing\u2026" : "Resize image"}
                       </ActionButton>
                     </div>
                   </div>
-                }
-              >
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Scaling
-                        className="h-4 w-4 text-scanonix-orange"
-                        aria-hidden="true"
-                        strokeWidth={1.75}
-                      />
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Resize image
-                      </p>
-                    </div>
-
-                    <div className="mt-3 grid gap-3">
-                      <label className="block space-y-1.5">
-                        <span className="text-sm font-medium text-foreground">
-                          Width (px)
-                        </span>
-                        <input
-                          type="number"
-                          min={1}
-                          max={10000}
-                          value={width}
-                          onChange={(event) =>
-                            handleWidthChange(event.target.value)
-                          }
-                          disabled={isBusy}
-                          className="input-field"
-                        />
-                      </label>
-                      <label className="block space-y-1.5">
-                        <span className="text-sm font-medium text-foreground">
-                          Height (px)
-                        </span>
-                        <input
-                          type="number"
-                          min={1}
-                          max={10000}
-                          value={height}
-                          onChange={(event) =>
-                            handleHeightChange(event.target.value)
-                          }
-                          disabled={isBusy}
-                          className="input-field"
-                        />
-                      </label>
-                      <label className="flex items-center gap-2 text-sm text-scanonix-muted">
-                        <input
-                          type="checkbox"
-                          checked={lockAspect}
-                          onChange={(event) =>
-                            setLockAspect(event.target.checked)
-                          }
-                          disabled={isBusy}
-                          className="accent-scanonix-orange"
-                        />
-                        Maintain aspect ratio
-                      </label>
-                      <p className="text-[11px] leading-snug text-scanonix-muted">
-                        Image fits within the requested dimensions.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-border/80 pt-3">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Summary
-                    </p>
-                    <dl className="mt-2 space-y-2 text-sm">
-                      {naturalSize ? (
-                        <div className="flex justify-between gap-3">
-                          <dt className="text-scanonix-muted">Original</dt>
-                          <dd className="font-medium text-foreground">
-                            {naturalSize.width} × {naturalSize.height}px
-                          </dd>
-                        </div>
-                      ) : null}
-                      {(hasRequestedWidth || hasRequestedHeight) && (
-                        <div className="flex justify-between gap-3">
-                          <dt className="text-scanonix-muted">Requested</dt>
-                          <dd className="font-medium text-foreground">
-                            {hasRequestedWidth ? requestedWidth : "—"} ×{" "}
-                            {hasRequestedHeight ? requestedHeight : "—"}px
-                          </dd>
-                        </div>
-                      )}
-                      <div className="flex justify-between gap-3">
-                        <dt className="text-scanonix-muted">Aspect ratio</dt>
-                        <dd className="font-medium text-foreground">
-                          {lockAspect ? "Locked" : "Unlocked"}
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-
-                  <div className="border-t border-border/80 pt-3">
-                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Privacy
-                    </p>
-                    <PrivacyNotice message={PRIVACY_MESSAGE} />
-                  </div>
+                )}
+                <div className="image-proc-privacy mt-4">
+                  <PrivacyNotice message={PRIVACY_MESSAGE} />
                 </div>
-              </ToolControlPanel>
-            )
+              </div>
+            </div>
           ) : null
         }
       />
 
       <ToolStickyMobileActionBar
         visible={Boolean(file)}
+        stickyUntil="lg"
         phase={resultActionPhase}
-        primaryLabel={hasResult ? "Download image" : "Resize image"}
+        primaryLabel={hasResult ? "Download image" : isBusy ? "Resizing\u2026" : "Resize image"}
         primaryLoading={!hasResult && isBusy}
         primaryDisabled={hasResult ? isBusy || !resultBlob : !file || isBusy}
         showPrimaryOnError

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useId, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState, type KeyboardEvent } from "react";
 import { ToolCard } from "@/components/tools/directory/ToolCard";
 import { ToolsEmptyState } from "@/components/tools/directory/ToolsEmptyState";
 import {
@@ -26,6 +26,25 @@ import {
 } from "@/lib/tools-directory";
 import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
 import { getImageToolsHubHref } from "@/lib/navigation/category-hub-urls";
+
+function onDirectoryTabKeyDown(
+  event: KeyboardEvent<HTMLButtonElement>,
+  index: number,
+  count: number,
+  selectIndex: (nextIndex: number) => void,
+) {
+  let nextIndex = index;
+  if (event.key === "ArrowRight") nextIndex = (index + 1) % count;
+  else if (event.key === "ArrowLeft") nextIndex = (index - 1 + count) % count;
+  else if (event.key === "Home") nextIndex = 0;
+  else if (event.key === "End") nextIndex = count - 1;
+  else return;
+
+  event.preventDefault();
+  if (nextIndex !== index) selectIndex(nextIndex);
+  const tabs = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+  tabs?.[nextIndex]?.focus();
+}
 
 interface ToolsDirectoryProps {
   /** Server-resolved category so initial HTML includes crawlable tool links. */
@@ -152,7 +171,7 @@ export function ToolsDirectory({ initialCategory }: ToolsDirectoryProps) {
           aria-label="Filter tools by category"
           className="tools-v2-cat-row -mx-1 overflow-x-auto px-1 sm:overflow-visible"
         >
-          {TOOL_CATEGORY_FILTERS.map((item) => {
+          {TOOL_CATEGORY_FILTERS.map((item, index) => {
             const isActive = topLevelActive(item.id);
             const count = categoryCounts[item.id];
             return (
@@ -162,6 +181,11 @@ export function ToolsDirectory({ initialCategory }: ToolsDirectoryProps) {
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => handlePrimaryCategory(item.id)}
+                onKeyDown={(event) =>
+                  onDirectoryTabKeyDown(event, index, TOOL_CATEGORY_FILTERS.length, (nextIndex) =>
+                    handlePrimaryCategory(TOOL_CATEGORY_FILTERS[nextIndex].id),
+                  )
+                }
                 className={`tools-v2-cat${isActive ? " tools-v2-cat--active" : ""}`}
               >
                 {item.label}
@@ -181,7 +205,7 @@ export function ToolsDirectory({ initialCategory }: ToolsDirectoryProps) {
               aria-label={`Filter ${primaryFamily} tools by type`}
               className="tools-v2-subnav__row -mx-1 overflow-x-auto px-1 sm:overflow-visible"
             >
-              {subcategoryFilters.map((item) => {
+              {subcategoryFilters.map((item, index) => {
                 const isActive = activeSubcategory === item.id;
                 return (
                   <button
@@ -190,6 +214,11 @@ export function ToolsDirectory({ initialCategory }: ToolsDirectoryProps) {
                     role="tab"
                     aria-selected={isActive}
                     onClick={() => setCategory(item.id)}
+                    onKeyDown={(event) =>
+                      onDirectoryTabKeyDown(event, index, subcategoryFilters.length, (nextIndex) =>
+                        setCategory(subcategoryFilters[nextIndex].id),
+                      )
+                    }
                     className={`tools-v2-sub${isActive ? " tools-v2-sub--active" : ""}`}
                   >
                     {item.label}

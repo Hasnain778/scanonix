@@ -150,7 +150,7 @@ export function SignatureCreatorModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-xl sm:p-6"
+        className="sign-creator max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-xl sm:p-6"
       >
         <h2 id={titleId} className="text-lg font-semibold text-foreground">
           Create signature
@@ -160,7 +160,7 @@ export function SignatureCreatorModal({
         </p>
 
         <div
-          className="mt-4 flex gap-2 border-b border-border pb-3"
+          className="sign-creator-tabs mt-4 flex gap-2 border-b border-border pb-3"
           role="tablist"
           aria-label="Signature creation method"
         >

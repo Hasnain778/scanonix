@@ -56,7 +56,7 @@ export default async function SecurityScanPage() {
             {tool.pageDescription}
           </p>
         </header>
-        <ToolUsageHeader />
+        <ToolUsageHeader tone="quiet" />
         <Suspense
           fallback={
             <LoadingState

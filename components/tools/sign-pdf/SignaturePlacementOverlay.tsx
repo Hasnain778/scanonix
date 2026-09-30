@@ -144,7 +144,7 @@ export function SignaturePlacementOverlay({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        className={`absolute inset-0 rounded border-2 bg-transparent ${
+        className={`sign-move absolute inset-0 rounded border-2 bg-transparent ${
           selected
             ? "border-scanonix-orange ring-2 ring-scanonix-orange/30"
             : "border-transparent hover:border-scanonix-orange/50"
@@ -160,7 +160,7 @@ export function SignaturePlacementOverlay({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className="absolute -bottom-3 -right-3 flex h-11 w-11 items-center justify-center rounded-full border-2 border-scanonix-orange bg-scanonix-surface text-scanonix-orange shadow-lg"
+            className="sign-resize absolute -bottom-3 -right-3 flex h-11 w-11 items-center justify-center rounded-full border-2 border-scanonix-orange bg-scanonix-surface text-scanonix-orange shadow-lg"
           >
             <span aria-hidden="true" className="text-xs font-bold">
               ↘
@@ -174,7 +174,7 @@ export function SignaturePlacementOverlay({
               event.stopPropagation();
               onDelete();
             }}
-            className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full border border-red-400/50 bg-red-500/20 text-red-200"
+            className="sign-delete absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full border border-red-400/50 bg-red-500/20 text-red-200"
           >
             ×
           </button>

@@ -20,11 +20,11 @@ export default function ContactPage() {
   return (
     <ToolShell>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-10 max-w-3xl sm:mb-12">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-scanonix-orange">
+        <header className="mb-8 max-w-3xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-scanonix-orange">
             Support
           </p>
-          <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Contact Scanonix
           </h1>
           <p className="mt-4 text-base leading-relaxed text-foreground-muted sm:text-lg">

@@ -101,7 +101,10 @@ export function PdfFormPreview({
         const hostWidth =
           canvasHostRef.current?.clientWidth ??
           computeFillPdfEditorContainerWidth(window.innerWidth);
-        const containerWidth = computeFillPdfEditorContainerWidth(hostWidth);
+        const fittedWidth = computeFillPdfEditorContainerWidth(hostWidth);
+        /* Display width only. Overlay positions stay percentages of this box. */
+        const containerWidth =
+          window.innerWidth >= 1024 ? Math.min(fittedWidth, 680) : fittedWidth;
         const plan = computeCropPreviewRenderPlan({
           viewportWidth: baseViewport.width,
           viewportHeight: baseViewport.height,

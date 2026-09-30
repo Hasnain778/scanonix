@@ -8,8 +8,8 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/image-conversion-premium.css";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
@@ -166,11 +166,7 @@ export function LogoVectorizerTool() {
   }, [status, hasResult, file]);
 
   return (
-    <div
-      className={`space-y-5 overflow-x-hidden md:pb-0 ${
-        file ? (hasResult ? "pb-8" : "pb-4") : ""
-      }`}
-    >
+    <div className="image-conversion-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner status={status} message={message} />
 
       <ToolWorkspaceShell
@@ -178,17 +174,16 @@ export function LogoVectorizerTool() {
         empty={
           <>
             <FileDropZone
+              className="image-conv-drop"
               accept={ACCEPT_IMAGES}
               multiple={false}
               label="Drop a logo to vectorize"
-              hint={`PNG, JPG or WebP — up to ${MAX_MB}MB · Best for logos, icons and simple artwork`}
+              hint={`PNG, JPG or WebP \u2014 up to ${MAX_MB}MB \u00B7 Best for logos, icons and simple artwork`}
               disabled={isBusy}
               validateFile={isSupportedRaster}
               icon={<VectorizeDropIcon />}
               onInvalidFiles={() => {
-                setMessage(
-                  `Please choose a PNG, JPG or WebP image up to ${MAX_MB}MB.`,
-                );
+                setMessage(`Please choose a PNG, JPG or WebP image up to ${MAX_MB}MB.`);
                 setStatus("error");
               }}
               onFilesSelected={(files) => {
@@ -205,262 +200,140 @@ export function LogoVectorizerTool() {
                 }
               }}
             />
-            {/* Right pad clears ToolFinder FAB on narrow screens */}
-            <div className="pr-24 sm:pr-36 lg:pr-0">
+            <div className="image-conv-privacy">
               <PrivacyNotice message={PRIVACY_MESSAGE} />
             </div>
           </>
         }
         workArea={
           file ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5 pr-16 sm:pr-0 lg:pr-0">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+            <div className="image-conv-simple">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
                     <VectorizeDropIcon className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
+                    <p className="truncate text-sm font-semibold text-foreground">{file.name}</p>
+                    <p className="truncate text-xs text-scanonix-muted">
                       {formatFileSize(file.size)}
-                      {naturalSize
-                        ? ` · ${naturalSize.width} × ${naturalSize.height}px`
-                        : ""}
+                      {naturalSize ? ` \u00B7 ${naturalSize.width} \u00D7 ${naturalSize.height}px` : ""}
                     </p>
                   </div>
                 </div>
-                <div
-                  className={
-                    hasResult
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
-                  }
-                >
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={resetTool}
-                  >
+                <div className={hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
+                  <ActionButton variant="outline" size="sm" className="rounded-lg" disabled={isBusy} onClick={resetTool}>
                     {hasResult ? "Vectorize another" : "Replace image"}
                   </ActionButton>
                 </div>
               </div>
 
-              {/*
-                ToolFinder FAB sits at fixed right-4 above the sticky CTA on mobile.
-                Right pad keeps preview / guidance clear of the launcher through <lg.
-              */}
-              <div className="bg-surface-muted/30 p-3 pr-24 sm:p-4 sm:pr-36 lg:pr-4">
-                {hasResult && resultPreviewUrl ? (
-                  <div className="space-y-3">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {previewUrl ? (
-                        <div className="space-y-1.5">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-scanonix-muted">
-                            Original
-                          </p>
-                          <div className="overflow-hidden rounded-xl border border-scanonix-border bg-[var(--surface-muted)]">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={previewUrl}
-                              alt="Original logo"
-                              className="max-h-52 w-full object-contain sm:max-h-60"
-                            />
-                          </div>
-                        </div>
-                      ) : null}
-                      <div className="space-y-1.5">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-scanonix-muted">
-                          SVG preview
-                        </p>
-                        <div className="overflow-hidden rounded-xl border border-scanonix-border bg-[var(--surface-muted)]">
-                          {/* Object URL of server-generated SVG (not user markup). */}
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={resultPreviewUrl}
-                            alt="Vectorized SVG preview"
-                            className="max-h-52 w-full object-contain sm:max-h-60"
-                          />
-                        </div>
+              {hasResult && resultPreviewUrl ? (
+                <div className="image-conv-compare">
+                  {previewUrl ? (
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">Original</p>
+                      <div className="image-conv-preview">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={previewUrl} alt="Original logo" />
                       </div>
                     </div>
-                  </div>
-                ) : previewUrl ? (
-                  <div className="space-y-2">
-                    <div className="overflow-hidden rounded-xl border border-scanonix-border bg-[var(--surface-muted)]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={previewUrl}
-                        alt="Logo preview"
-                        className="max-h-80 w-full object-contain"
-                      />
-                    </div>
-                    <p className="text-sm text-scanonix-muted">
-                      Best results come from simple logos and flat artwork.
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : null
-        }
-        controlPanel={
-          file ? (
-            hasResult && resultBlob && stats ? (
-              <aside
-                aria-label="Logo vectorizer result"
-                className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)] max-md:mb-10 lg:sticky lg:top-20 lg:max-h-[calc(100vh-5.5rem)] lg:mb-0 lg:w-[320px] lg:shrink-0"
-                data-tool-control-panel=""
-              >
-                {/*
-                  Extra bottom margin + right pad on mobile so result metadata can
-                  scroll fully clear of sticky Download CTA and ToolFinder FAB.
-                */}
-                <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-3.5 py-3 pr-24 sm:px-4 sm:pr-36 lg:pr-4">
+                  ) : null}
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-green-700">
-                      ✓ SVG ready
-                    </p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">SVG preview</p>
+                    <div className="image-conv-preview">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={resultPreviewUrl} alt="Vectorized SVG preview" />
+                    </div>
                   </div>
+                </div>
+              ) : previewUrl ? (
+                <div className="image-conv-preview">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={previewUrl} alt="Logo preview" />
+                </div>
+              ) : null}
 
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-lg border border-border bg-surface-muted/60 text-sm">
+              {hasResult && resultBlob && stats ? (
+                <div className="mt-4 space-y-4">
+                  <dl className="image-conv-stats text-sm">
                     {naturalSize ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
+                      <div>
                         <dt className="text-scanonix-muted">Source</dt>
-                        <dd className="font-semibold text-foreground">
-                          {naturalSize.width} × {naturalSize.height}px
-                        </dd>
+                        <dd className="font-semibold text-foreground">{naturalSize.width} {"\u00D7"} {naturalSize.height}px</dd>
                       </div>
                     ) : null}
                     {stats.width && stats.height ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
+                      <div>
                         <dt className="text-scanonix-muted">SVG size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {stats.width} × {stats.height}px
-                        </dd>
+                        <dd className="font-semibold text-foreground">{stats.width} {"\u00D7"} {stats.height}px</dd>
                       </div>
                     ) : null}
-                    <div className="flex justify-between gap-3 px-3 py-1.5">
+                    <div>
                       <dt className="text-scanonix-muted">Original file</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(stats.originalSize)}
-                      </dd>
+                      <dd className="font-semibold text-foreground">{formatFileSize(stats.originalSize)}</dd>
                     </div>
-                    <div className="flex justify-between gap-3 px-3 py-1.5">
+                    <div>
                       <dt className="text-scanonix-muted">SVG file</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(stats.outputSize)}
-                      </dd>
+                      <dd className="font-semibold text-foreground">{formatFileSize(stats.outputSize)}</dd>
                     </div>
                     {resultFileName ? (
-                      <div className="flex min-w-0 items-baseline justify-between gap-3 px-3 py-1.5">
+                      <div>
                         <dt className="shrink-0 text-scanonix-muted">Filename</dt>
-                        <dd className="truncate font-semibold text-foreground">
-                          {resultFileName}
-                        </dd>
+                        <dd className="min-w-0 truncate font-semibold text-foreground">{resultFileName}</dd>
                       </div>
                     ) : null}
                   </dl>
+                  <div className="hidden lg:block">
+                    <ActionButton size="lg" className="h-12 w-full shadow-[var(--shadow-orange-sm)]" onClick={handleDownload}>
+                      Download SVG
+                    </ActionButton>
+                  </div>
                 </div>
+              ) : (
+                <div className="mt-4 space-y-4">
+                  <p className="text-sm leading-relaxed text-foreground">
+                    Turn logos and simple images into real SVG vector paths. Best for logos, icons and flat artwork. Photos may look noisy.
+                  </p>
+                  <div className="hidden lg:block">
+                    <ActionButton
+                      size="lg"
+                      className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
+                      loading={isBusy}
+                      disabled={!file || isBusy}
+                      onClick={() => {
+                        void handleVectorize();
+                      }}
+                    >
+                      {isBusy ? "Vectorizing\u2026" : "Vectorize Logo"}
+                    </ActionButton>
+                  </div>
+                </div>
+              )}
 
-                <div className="hidden shrink-0 space-y-2 border-t border-border bg-surface-muted/50 px-3.5 py-3 sm:block sm:px-4">
-                  <ActionButton
-                    variant="primary"
-                    size="md"
-                    className="w-full rounded-xl"
-                    onClick={handleDownload}
-                  >
-                    Download SVG
-                  </ActionButton>
-                  <ActionButton
-                    variant="outline"
-                    size="md"
-                    className="w-full rounded-xl"
-                    onClick={resetTool}
-                  >
-                    Vectorize another
-                  </ActionButton>
-                </div>
-              </aside>
-            ) : (
-              <ToolControlPanel
-                aria-label="Logo Vectorizer controls"
-                footer={
-                  <div className="flex flex-col gap-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      Best for logos, icons and flat artwork. Photos may look noisy.
-                    </p>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)]"
-                        loading={isBusy}
-                        disabled={!file || isBusy}
-                        onClick={() => {
-                          void handleVectorize();
-                        }}
-                      >
-                        {isBusy ? "Vectorizing…" : "Vectorize Logo"}
-                      </ActionButton>
-                    </div>
-                  </div>
-                }
-              >
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <PenLine
-                        className="h-4 w-4 text-scanonix-orange"
-                        aria-hidden="true"
-                        strokeWidth={1.75}
-                      />
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Logo Vectorizer
-                      </p>
-                    </div>
-                    <p className="mt-3 text-sm text-scanonix-muted">
-                      Turn logos and simple images into real SVG vector paths.
-                    </p>
-                  </div>
-                  <div className="border-t border-border/80 pt-3 pr-24 sm:pr-36 lg:pr-0">
-                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Privacy
-                    </p>
-                    <PrivacyNotice message={PRIVACY_MESSAGE} />
-                  </div>
-                </div>
-              </ToolControlPanel>
-            )
+              <div className="image-conv-privacy mt-4">
+                <PrivacyNotice message={PRIVACY_MESSAGE} />
+              </div>
+            </div>
           ) : null
         }
       />
 
       <ToolStickyMobileActionBar
         visible={Boolean(file)}
+        stickyUntil="lg"
         phase={resultActionPhase}
         primaryLabel={hasResult ? "Download SVG" : "Vectorize Logo"}
         primaryLoading={!hasResult && isBusy}
         primaryDisabled={hasResult ? isBusy || !resultBlob : !file || isBusy}
         showPrimaryOnError
         onPrimaryClick={() => {
-          if (hasResult) {
-            handleDownload();
-          } else {
-            void handleVectorize();
-          }
+          if (hasResult) handleDownload();
+          else void handleVectorize();
         }}
         onStartOver={hasResult ? resetTool : undefined}
         startOverLabel="Vectorize another"
         startOverDisabled={isBusy}
-        secondaryLabel={!hasResult && file ? "Replace image" : undefined}
-        onSecondaryClick={!hasResult && file ? resetTool : undefined}
       />
     </div>
   );

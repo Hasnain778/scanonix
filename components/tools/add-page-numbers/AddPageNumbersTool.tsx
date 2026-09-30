@@ -10,6 +10,7 @@ import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/pdf-page-tools-premium.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import {
@@ -566,7 +567,7 @@ export function AddPageNumbersTool() {
   ) : null;
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="pdf-page-tools-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -577,6 +578,7 @@ export function AddPageNumbersTool() {
         empty={
           <>
             <FileDropZone
+              className="pdf-page-drop"
               onFilesSelected={handleUpload}
               accept={ACCEPTED_PDF_EXTENSIONS}
               validateFile={isAcceptedPageNumbersPdfFile}
@@ -591,7 +593,7 @@ export function AddPageNumbersTool() {
         }
         workArea={
           uploadedPdf ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+            <div className="pdf-page-stage overflow-hidden">
               <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
@@ -610,13 +612,7 @@ export function AddPageNumbersTool() {
                     </p>
                   </div>
                 </div>
-                <div
-                  className={
-                    stickyVisible
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
-                  }
-                >
+                <div className="w-full sm:w-auto">
                   <ActionButton
                     variant="outline"
                     size="sm"
@@ -652,7 +648,7 @@ export function AddPageNumbersTool() {
               footer={
                 hasResult && resultBlob ? (
                   <div className="flex flex-col gap-2">
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full"
@@ -674,17 +670,6 @@ export function AddPageNumbersTool() {
                     >
                       Change settings
                     </ActionButton>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={resetWorkspace}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-2">
@@ -693,7 +678,7 @@ export function AddPageNumbersTool() {
                     </p>
                     <div
                       className={
-                        stickyVisible ? "hidden md:block" : undefined
+                        stickyVisible ? "hidden lg:block" : undefined
                       }
                     >
                       <ActionButton
@@ -755,6 +740,7 @@ export function AddPageNumbersTool() {
 
       <ToolStickyMobileActionBar
         visible={stickyVisible}
+        stickyUntil="lg"
         phase={resultActionPhase}
         primaryLabel={hasResult ? "Download PDF" : "Add page numbers"}
         primaryLoading={hasResult ? isDownloading : isExporting}
@@ -766,20 +752,6 @@ export function AddPageNumbersTool() {
             void handleExport();
           }
         }}
-        secondaryLabel={
-          resultActionPhase === "ready" && uploadedPdf
-            ? "Choose another PDF"
-            : undefined
-        }
-        onSecondaryClick={
-          resultActionPhase === "ready" && uploadedPdf
-            ? resetWorkspace
-            : undefined
-        }
-        secondaryDisabled={isBusy}
-        onStartOver={hasResult ? resetWorkspace : undefined}
-        startOverLabel="Start over"
-        startOverDisabled={isBusy}
       />
     </div>
   );

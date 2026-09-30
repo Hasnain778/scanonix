@@ -14,7 +14,7 @@ export function ImageUpscalerProcessingPanel({
   factor,
 }: ImageUpscalerProcessingPanelProps) {
   return (
-    <div className="rounded-2xl border border-border bg-surface p-5 shadow-[var(--shadow-soft)] sm:p-6">
+    <div className="image-upscaler-processing space-y-4">
       <div className="mb-5 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <p className="text-sm font-medium text-foreground">{snapshot.label}</p>
@@ -42,7 +42,7 @@ export function ImageUpscalerProcessingPanel({
         </p>
       </div>
 
-      <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-border bg-black/30 p-4">
+      <div className="image-upscaler-preview min-h-40 p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={previewUrl}

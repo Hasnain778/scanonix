@@ -20,9 +20,9 @@ export function CompressProgressBanner({
   }
 
   const styles = {
-    loading: "border-scanonix-orange/40 bg-scanonix-orange/10 text-foreground",
-    success: "border-green-600/35 bg-green-500/10 text-green-700",
-    error: "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300",
+    loading: "tool-status tool-status--loading",
+    success: "tool-status tool-status--success",
+    error: "tool-status tool-status--error",
   };
 
   const loadingMessage =
@@ -41,7 +41,7 @@ export function CompressProgressBanner({
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${styles[status]}`}
+      className={styles[status]}
       role="status"
       aria-live="polite"
     >

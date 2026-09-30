@@ -20,6 +20,8 @@ interface ImagePreviewGridProps {
   onReorder: (fromIndex: number, toIndex: number) => void;
   onRotate?: (id: string) => void;
   showDimensions?: boolean;
+  /** Default keeps the built-in “Images (n)” heading for existing callers. */
+  showHeading?: boolean;
   disabled?: boolean;
 }
 
@@ -29,6 +31,7 @@ export function ImagePreviewGrid({
   onReorder,
   onRotate,
   showDimensions = false,
+  showHeading = true,
   disabled = false,
 }: ImagePreviewGridProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -64,12 +67,14 @@ export function ImagePreviewGrid({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">
-          Images ({images.length})
-        </h2>
-        <p className="text-xs text-foreground-muted">Drag to reorder</p>
-      </div>
+      {showHeading ? (
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">
+            Images ({images.length})
+          </h2>
+          <p className="text-xs text-foreground-muted">Drag to reorder</p>
+        </div>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {images.map((image, index) => (

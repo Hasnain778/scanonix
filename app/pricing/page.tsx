@@ -28,10 +28,10 @@ export default async function PricingPage({
     <>
       <PageBackground />
       <Navbar />
-      <main className="relative z-10 min-h-screen pt-28 pb-20 sm:pt-32 sm:pb-24">
+      <main className="relative z-10 min-h-screen pt-20 pb-16 sm:pt-[5.25rem] sm:pb-20">
         <div className="page-container mx-auto max-w-[1200px]">
-          <header className="mb-14 text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">Pricing</h1>
+          <header className="mb-8 text-center sm:mb-10">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Pricing</h1>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg">
               Choose the plan that&apos;s right for you.
             </p>

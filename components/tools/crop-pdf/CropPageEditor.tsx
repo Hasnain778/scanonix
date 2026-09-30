@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { configurePdfWorker } from "@/lib/pdf/configure-worker";
 import {
   CROP_PREVIEW_JPEG_QUALITY,
@@ -11,6 +11,42 @@ import {
 import { loadPdfDocument as loadPdfJsDocument } from "@/lib/tools/pdf-to-image/pdf-render";
 import type { NormalizedCropRect } from "@/lib/tools/crop-pdf/types";
 import { CropOverlay } from "./CropOverlay";
+
+const CROP_FIT_DESKTOP_MIN_WIDTH = 1024;
+const CROP_FIT_SIDE_BLEED = 8;
+const CROP_FIT_USEFUL_WIDTH = 440;
+const CROP_FIT_PREFERRED_MAX = 520;
+/** Below this viewport height, keep a usable page width and allow a little page scroll. */
+const CROP_FIT_TALL_VIEWPORT = 860;
+
+/**
+ * Display-only fit inside the editor viewport.
+ * The slot height is the available editor geometry. The page's document position is not used.
+ * Crop percentages stay relative to the rendered overlay root.
+ */
+function readCropPreviewFitWidth(pageAspect: number, slot: HTMLElement): number {
+  const slotWidth = Math.max(1, slot.clientWidth);
+  if (window.innerWidth < CROP_FIT_DESKTOP_MIN_WIDTH) {
+    return slotWidth;
+  }
+
+  const usableWidth = Math.max(1, slotWidth - CROP_FIT_SIDE_BLEED);
+  const editorHeight = slot.clientHeight;
+  if (editorHeight < 80) {
+    return Math.min(usableWidth, CROP_FIT_PREFERRED_MAX);
+  }
+
+  const usableHeight = Math.max(1, editorHeight - 12);
+  const heightLimitedWidth = usableHeight / pageAspect;
+  const fitted = Math.min(usableWidth, CROP_FIT_PREFERRED_MAX, heightLimitedWidth);
+
+  if (window.innerHeight < CROP_FIT_TALL_VIEWPORT) {
+    const usefulFloor = Math.min(CROP_FIT_USEFUL_WIDTH, usableWidth);
+    return Math.max(fitted, usefulFloor);
+  }
+
+  return fitted;
+}
 
 interface CropPageEditorProps {
   pageEntry: CropPageEntry;
@@ -32,6 +68,20 @@ export function CropPageEditor({
   const [renderError, setRenderError] = useState<string>();
   const [displaySize, setDisplaySize] = useState<{ width: number; height: number }>();
   const renderKeyRef = useRef(0);
+  const slotRef = useRef<HTMLDivElement>(null);
+  const aspectRef = useRef<number | null>(null);
+  const renderedWidthRef = useRef(0);
+
+  const applyFitWidth = useCallback((aspect: number) => {
+    const slot = slotRef.current;
+    if (!slot) return null;
+    const width = readCropPreviewFitWidth(aspect, slot);
+    setDisplaySize((current) => {
+      if (current && Math.abs(current.width - width) < 1) return current;
+      return { width, height: width * aspect };
+    });
+    return width;
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,9 +99,12 @@ export function CropPageEditor({
         const page = await pdf.getPage(pageEntry.sourcePageIndex + 1);
         const rotation = pageEntry.intrinsicRotation;
         const baseViewport = page.getViewport({ scale: 1, rotation });
-        const containerWidth = computeCropPreviewContainerWidth(
-          document.documentElement.clientWidth,
-        );
+        const pageAspect = baseViewport.height / Math.max(1, baseViewport.width);
+        aspectRef.current = pageAspect;
+        const fittedWidth =
+          (slotRef.current ? readCropPreviewFitWidth(pageAspect, slotRef.current) : null) ??
+          computeCropPreviewContainerWidth(document.documentElement.clientWidth);
+        const containerWidth = fittedWidth;
         const plan = computeCropPreviewRenderPlan({
           viewportWidth: baseViewport.width,
           viewportHeight: baseViewport.height,
@@ -61,6 +114,7 @@ export function CropPageEditor({
         const viewport = page.getViewport({ scale: plan.scale, rotation });
 
         setDisplaySize({ width: plan.cssWidth, height: plan.cssHeight });
+        renderedWidthRef.current = plan.cssWidth;
 
         const canvas = document.createElement("canvas");
         canvas.width = Math.round(viewport.width);
@@ -120,6 +174,25 @@ export function CropPageEditor({
   }, [pageEntry.id, pageEntry.sourcePageIndex, pageEntry.intrinsicRotation, pdfBytes]);
 
   useEffect(() => {
+    const onResize = () => {
+      const aspect = aspectRef.current;
+      if (!aspect) return;
+      applyFitWidth(aspect);
+    };
+
+    window.addEventListener("resize", onResize);
+    const slot = slotRef.current;
+    const observer = typeof ResizeObserver !== "undefined" && slot ? new ResizeObserver(onResize) : null;
+    observer?.observe(slot as HTMLElement);
+    onResize();
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      observer?.disconnect();
+    };
+  }, [applyFitWidth, pageImageUrl]);
+
+  useEffect(() => {
     return () => {
       if (pageImageUrl) {
         URL.revokeObjectURL(pageImageUrl);
@@ -128,11 +201,11 @@ export function CropPageEditor({
   }, [pageImageUrl]);
 
   return (
-    <div className="w-full overflow-x-hidden">
+    <div ref={slotRef} className="crop-preview-slot w-full" data-crop-preview-slot="">
       <div className="mx-auto max-w-full">
         <div
           data-crop-page-overlay-root
-          className="relative mx-auto border border-border bg-white shadow-lg"
+          className="crop-page-frame relative mx-auto border border-border bg-white shadow-lg"
           style={
             displaySize
               ? { width: displaySize.width, maxWidth: "100%" }

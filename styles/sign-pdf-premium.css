@@ -1,0 +1,435 @@
+/*
+ * Sign PDF only.
+ * Scoped to .sign-pdf-premium. Does not change placement coordinates or export.
+ */
+
+.sign-pdf-premium .sign-pdf-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .sign-pdf-premium .sign-pdf-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.sign-pdf-premium .sign-pdf-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .sign-pdf-premium .sign-pdf-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-pdf-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.sign-pdf-premium .sign-pdf-drop:hover {
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  main:has(.sign-pdf-premium) {
+    padding-top: 4.25rem;
+  }
+
+  main:has(.sign-pdf-premium) > div > :first-child {
+    margin-bottom: 0.45rem;
+  }
+
+  main:has(.sign-pdf-premium) nav[aria-label="Breadcrumb"] {
+    margin-bottom: 0.35rem;
+  }
+
+  main:has(.sign-pdf-premium) h1 {
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+
+  main:has(.sign-pdf-premium) h1 + p {
+    margin-top: 0.2rem;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .sign-pdf-premium [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .sign-pdf-premium [data-tool-control-panel] {
+    position: static;
+    top: auto;
+    width: 100%;
+    max-width: 22rem;
+    max-height: none;
+    height: auto;
+    overflow: visible;
+  }
+
+  .sign-pdf-premium .sign-preview-host {
+    width: min(100%, 42rem);
+    margin-inline: auto;
+  }
+}
+
+.sign-pdf-premium [data-tool-control-panel] {
+  width: 100%;
+  max-height: none;
+  height: auto;
+  overflow: visible;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.sign-pdf-premium [data-tool-control-panel-body],
+.sign-pdf-premium [data-tool-control-panel-footer] {
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.sign-pdf-premium [data-tool-control-panel-body] {
+  overflow: visible;
+  max-height: none;
+  flex: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sign-pdf-premium [data-tool-control-panel-footer] {
+  border-top: 1px solid color-mix(in srgb, #e4dcd2 70%, transparent);
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0.55rem;
+}
+
+html[data-theme="dark"] .sign-pdf-premium [data-tool-control-panel-footer] {
+  border-top-color: color-mix(in srgb, #e7e5e4 16%, transparent);
+}
+
+.sign-pdf-premium > [data-sign-pdf-header] + [data-tool-workspace="active"] {
+  margin-top: 0.7rem;
+}
+
+.sign-pdf-premium [data-tool-work-area] > * + * {
+  margin-top: 0.35rem;
+}
+
+.sign-pdf-premium [data-sign-page-nav] {
+  padding: 0 0 0.35rem;
+}
+
+.sign-pdf-premium .sign-page-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.sign-pdf-premium .sign-page-label {
+  margin: 0;
+  flex: 0 0 auto;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sign-pdf-premium .sign-page-select {
+  width: 7.25rem;
+  flex: 0 0 7.25rem;
+  min-height: 2.25rem;
+}
+
+html[data-theme="bright"] .sign-pdf-premium .sign-page-label {
+  color: #1c1917;
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-page-label {
+  color: #fafaf9;
+}
+
+.sign-pdf-premium .sign-preview-host {
+  padding-top: 0.15rem;
+}
+
+.sign-pdf-premium .sign-page-sheet {
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 10px 28px color-mix(in srgb, #1c1917 14%, transparent);
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-page-sheet {
+  background: #ffffff;
+  box-shadow: 0 12px 32px color-mix(in srgb, #000 45%, transparent);
+}
+
+.sign-pdf-premium [data-sign-pdf-header] .min-w-0 > p:first-child {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sign-pdf-premium [data-sign-pdf-header] .min-w-0 > p:last-child {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+html[data-theme="bright"] .sign-pdf-premium [data-sign-pdf-header] .min-w-0 > p:first-child,
+html[data-theme="bright"] .sign-pdf-premium .sign-title {
+  color: #1c1917;
+}
+
+html[data-theme="bright"] .sign-pdf-premium [data-sign-pdf-header] .min-w-0 > p:last-child,
+html[data-theme="bright"] .sign-pdf-premium .sign-lead,
+html[data-theme="bright"] .sign-pdf-premium .sign-cue {
+  color: #57534e;
+}
+
+html[data-theme="dark"] .sign-pdf-premium [data-sign-pdf-header] .min-w-0 > p:first-child,
+html[data-theme="dark"] .sign-pdf-premium .sign-title {
+  color: #fafaf9;
+}
+
+html[data-theme="dark"] .sign-pdf-premium [data-sign-pdf-header] .min-w-0 > p:last-child,
+html[data-theme="dark"] .sign-pdf-premium .sign-lead,
+html[data-theme="dark"] .sign-pdf-premium .sign-cue {
+  color: #d6d3d1;
+}
+
+.sign-pdf-premium .sign-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.sign-pdf-premium .sign-lead,
+.sign-pdf-premium .sign-cue,
+.sign-pdf-premium .sign-note {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+html[data-theme="bright"] .sign-pdf-premium .sign-note {
+  color: #44403c;
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-note {
+  color: #e7e5e4;
+}
+
+html[data-theme="bright"] .sign-pdf-premium .sign-success {
+  color: #15803d;
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-success {
+  color: #86efac;
+}
+
+.sign-pdf-premium .sign-meta {
+  margin: 0;
+}
+
+.sign-pdf-premium .sign-meta > div {
+  border-bottom: 1px solid color-mix(in srgb, #e4dcd2 70%, transparent);
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-meta > div {
+  border-bottom-color: color-mix(in srgb, #e7e5e4 16%, transparent);
+}
+
+.sign-pdf-premium .sign-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  border-bottom: 1px solid color-mix(in srgb, #e4dcd2 80%, transparent);
+}
+
+.sign-pdf-premium .sign-step {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.15rem;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+html[data-theme="bright"] .sign-pdf-premium .sign-step {
+  color: #44403c;
+}
+
+html[data-theme="bright"] .sign-pdf-premium .sign-step[aria-selected="true"] {
+  color: var(--scanonix-orange);
+  border-bottom-color: var(--scanonix-orange);
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-steps {
+  border-bottom-color: color-mix(in srgb, #e7e5e4 18%, transparent);
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-step {
+  color: #d6d3d1;
+  background: transparent;
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-step[aria-selected="true"] {
+  color: var(--scanonix-orange);
+  border-bottom-color: var(--scanonix-orange);
+  background: transparent;
+}
+
+html[data-theme="dark"] .sign-pdf-premium [data-sign-pdf-header] button:not(:disabled):not(.bg-brand),
+html[data-theme="dark"] .sign-pdf-premium [data-sign-page-nav] button:not(:disabled):not(.bg-brand),
+html[data-theme="dark"] .sign-pdf-premium [data-tool-control-panel] button:not(:disabled):not(.bg-brand):not(.sign-step):not([aria-pressed="true"]),
+html[data-theme="dark"] .sign-pdf-premium [data-sticky-action-bar] button:not(:disabled):not(.bg-brand) {
+  color: #fafaf9;
+  border-color: color-mix(in srgb, #f5f5f4 62%, transparent);
+  background: #292524;
+}
+
+html[data-theme="dark"] .sign-pdf-premium .sign-asset-thumb {
+  background-color: #ffffff;
+  background-image: none;
+  border-color: #d6d3d1;
+}
+
+html[data-theme="dark"] .sign-pdf-premium [data-tool-control-panel] button[aria-pressed="true"]:not(:disabled) {
+  color: var(--scanonix-orange);
+  border-color: var(--scanonix-orange);
+  background: color-mix(in srgb, var(--scanonix-orange) 18%, #141210);
+}
+
+html[data-theme="dark"] .sign-pdf-premium [data-sign-page-nav] button:disabled,
+html[data-theme="dark"] .sign-pdf-premium [data-tool-control-panel] button:disabled:not(.bg-brand) {
+  color: #78716c;
+  border-color: color-mix(in srgb, #78716c 40%, transparent);
+  background: #141210;
+  opacity: 0.72;
+}
+
+html[data-theme="dark"] .sign-pdf-premium [data-sign-page-nav] select {
+  color: #fafaf9;
+  background: #292524;
+  border-color: color-mix(in srgb, #f5f5f4 62%, transparent);
+}
+
+html[data-theme="bright"] .sign-draw-surface {
+  background: #ffffff;
+  border-color: #e7e0d8;
+}
+
+html[data-theme="dark"] .sign-draw-surface {
+  background: #1c1917;
+  border-color: #44403c;
+}
+
+.sign-pdf-premium .sign-delete {
+  background: #ffffff;
+  color: #b91c1c;
+  border-color: #fecaca;
+  top: -0.95rem;
+  right: -0.95rem;
+}
+
+.sign-pdf-premium .sign-resize {
+  background: #ffffff;
+  color: #c2410c;
+  right: -1.15rem;
+  bottom: -1.15rem;
+}
+
+.sign-pdf-premium button:focus-visible,
+.sign-pdf-premium input:focus-visible,
+.sign-pdf-premium select:focus-visible,
+.sign-creator button:focus-visible,
+.sign-creator input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--scanonix-orange) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.sign-pdf-premium .sign-step-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sign-pdf-premium .sign-step-nav > button:not(.sign-step-export):not(.sign-step-next) {
+  flex: 0 1 32%;
+  min-width: 4.75rem;
+  white-space: nowrap;
+}
+
+.sign-pdf-premium .sign-step-nav > .sign-step-next,
+.sign-pdf-premium .sign-step-nav > .sign-step-export {
+  flex: 1 1 68%;
+  min-width: 0;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  white-space: nowrap;
+}
+
+.sign-pdf-premium .sign-step-export {
+  white-space: nowrap;
+}
+
+.sign-pdf-premium .sign-step-nav > button:only-child {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .sign-pdf-premium .sign-desktop-only {
+    display: none !important;
+  }
+
+  .sign-pdf-premium [data-sign-page-nav] button,
+  .sign-pdf-premium [data-sign-pdf-header] button {
+    min-height: 2.5rem;
+  }
+
+  .sign-pdf-premium [data-sticky-action-bar] button {
+    min-height: 2.75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .sign-pdf-premium .sign-page-nav button {
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+  }
+
+  .sign-pdf-premium .sign-page-select {
+    width: 5.25rem;
+    flex-basis: 5.25rem;
+  }
+
+  .sign-pdf-premium .sign-step-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sign-pdf-premium .sign-step-nav > button,
+  .sign-pdf-premium .sign-step-export,
+  .sign-pdf-premium .sign-step-next {
+    flex: none;
+    width: 100%;
+    white-space: nowrap;
+  }
+}

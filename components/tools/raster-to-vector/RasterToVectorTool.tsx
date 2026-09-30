@@ -8,8 +8,8 @@ import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/image-conversion-premium.css";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
@@ -335,29 +335,23 @@ export function RasterToVectorTool() {
   );
 
   return (
-    <div
-      className={`space-y-5 overflow-x-hidden md:pb-0 ${
-        file ? (hasResult ? "pb-8" : "pb-4") : ""
-      }`}
-    >
+    <div className="image-conversion-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner status={status} message={message} />
-
       <ToolWorkspaceShell
         isEmpty={!file}
         empty={
           <>
             <FileDropZone
+              className="image-conv-drop"
               accept={ACCEPT_IMAGES}
               multiple={false}
               label="Drop a raster image to vectorize"
-              hint={`PNG, JPG or WebP — up to ${MAX_MB}MB · Adjust colors, detail, smoothing and background`}
+              hint={`PNG, JPG or WebP \u2014 up to ${MAX_MB}MB \u00B7 Adjust colors, detail, smoothing and background`}
               disabled={isBusy}
               validateFile={isSupportedRaster}
               icon={<ConvertDropIcon />}
               onInvalidFiles={() => {
-                setMessage(
-                  `Please choose a PNG, JPG or WebP image up to ${MAX_MB}MB.`,
-                );
+                setMessage(`Please choose a PNG, JPG or WebP image up to ${MAX_MB}MB.`);
                 setStatus("error");
               }}
               onFilesSelected={(files) => {
@@ -376,312 +370,155 @@ export function RasterToVectorTool() {
                 }
               }}
             />
-            <div className="pr-32 sm:pr-40 lg:pr-0">
+            <div className="image-conv-privacy">
               <PrivacyNotice message={PRIVACY_MESSAGE} />
             </div>
           </>
         }
         workArea={
           file ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5 pr-28 sm:pr-0 lg:pr-0">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <ConvertDropIcon className="h-4 w-4" />
+            <div className="image-conv-split">
+              <div className="min-w-0">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
+                      <ConvertDropIcon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-foreground">{file.name}</p>
+                      <p className="truncate text-xs text-scanonix-muted">
+                        {formatFileSize(file.size)}
+                        {naturalSize ? ` \u00B7 ${naturalSize.width} \u00D7 ${naturalSize.height}px` : ""}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(file.size)}
-                      {naturalSize
-                        ? ` · ${naturalSize.width} × ${naturalSize.height}px`
-                        : ""}
-                    </p>
+                  <div className={hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
+                    <ActionButton variant="outline" size="sm" className="rounded-lg" disabled={isBusy} onClick={resetTool}>
+                      {hasResult ? "Convert another" : "Replace image"}
+                    </ActionButton>
                   </div>
                 </div>
-                <div
-                  className={
-                    hasResult
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
-                  }
-                >
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={resetTool}
-                  >
-                    {hasResult ? "Convert another" : "Replace image"}
-                  </ActionButton>
-                </div>
-              </div>
-
-              <div className="bg-surface-muted/30 pb-3 pl-3 pr-32 pt-3 sm:pb-4 sm:pl-4 sm:pr-40 sm:pt-4 lg:pr-4">
                 {hasResult && resultPreviewUrl ? (
-                  <div className="space-y-3">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {previewUrl ? (
-                        <div className="space-y-1.5">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-scanonix-muted">
-                            Original
-                          </p>
-                          <div className="overflow-hidden rounded-xl border border-scanonix-border bg-[var(--surface-muted)]">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={previewUrl}
-                              alt="Original image"
-                              className="max-h-52 w-full object-contain sm:max-h-60"
-                            />
-                          </div>
-                        </div>
-                      ) : null}
-                      <div className="space-y-1.5">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-scanonix-muted">
-                          Vector Preview
-                        </p>
-                        <div className="overflow-hidden rounded-xl border border-scanonix-border bg-[var(--surface-muted)]">
+                  <div className="image-conv-compare">
+                    {previewUrl ? (
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">Original</p>
+                        <div className="image-conv-preview">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={resultPreviewUrl}
-                            alt="Converted vector preview"
-                            className="max-h-52 w-full object-contain sm:max-h-60"
-                          />
+                          <img src={previewUrl} alt="Original image" />
                         </div>
+                      </div>
+                    ) : null}
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">Vector preview</p>
+                      <div className="image-conv-preview">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={resultPreviewUrl} alt="Converted vector preview" />
                       </div>
                     </div>
                   </div>
                 ) : previewUrl ? (
-                  <div className="space-y-2">
-                    <div className="overflow-hidden rounded-xl border border-scanonix-border bg-[var(--surface-muted)]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={previewUrl}
-                        alt="Image preview"
-                        className="max-h-80 w-full object-contain"
-                      />
-                    </div>
-                    <p className="text-sm text-scanonix-muted">
-                      Tune colors, detail, smoothing and background, then convert to
-                      vector.
-                    </p>
+                  <div className="image-conv-preview">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={previewUrl} alt="Image preview" />
                   </div>
                 ) : null}
+              </div>
+              <div className="min-w-0">
+                {hasResult && resultBlob && stats ? (
+                  <div className="space-y-4">
+                    <dl className="image-conv-stats text-sm">
+                      {naturalSize ? (
+                        <div>
+                          <dt className="text-scanonix-muted">Source</dt>
+                          <dd className="font-semibold text-foreground">{naturalSize.width} {"\u00D7"} {naturalSize.height}px</dd>
+                        </div>
+                      ) : null}
+                      {stats.width && stats.height ? (
+                        <div>
+                          <dt className="text-scanonix-muted">SVG size</dt>
+                          <dd className="font-semibold text-foreground">{stats.width} {"\u00D7"} {stats.height}px</dd>
+                        </div>
+                      ) : null}
+                      <div>
+                        <dt className="text-scanonix-muted">Original file</dt>
+                        <dd className="font-semibold text-foreground">{formatFileSize(stats.originalSize)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-scanonix-muted">SVG file</dt>
+                        <dd className="font-semibold text-foreground">{formatFileSize(stats.outputSize)}</dd>
+                      </div>
+                      {resultFileName ? (
+                        <div>
+                          <dt className="shrink-0 text-scanonix-muted">Filename</dt>
+                          <dd className="min-w-0 truncate font-semibold text-foreground">{resultFileName}</dd>
+                        </div>
+                      ) : null}
+                      {appliedSettings ? (
+                        <>
+                          <div>
+                            <dt className="text-scanonix-muted">Colors</dt>
+                            <dd className="font-semibold text-foreground">{appliedSettings.colorCount}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-scanonix-muted">Detail</dt>
+                            <dd className="font-semibold text-foreground">{appliedSettings.detail}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-scanonix-muted">Smoothing</dt>
+                            <dd className="font-semibold text-foreground">{appliedSettings.smoothing}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-scanonix-muted">Background</dt>
+                            <dd className="font-semibold text-foreground">
+                              {appliedSettings.ignoreBackground ? "Ignore" : "Keep"}
+                            </dd>
+                          </div>
+                        </>
+                      ) : null}
+                    </dl>
+                    <div className="hidden lg:block">
+                      <ActionButton size="lg" className="h-12 w-full shadow-[var(--shadow-orange-sm)]" onClick={handleDownload}>
+                        Download SVG
+                      </ActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {settingsControls}
+                    <div className="hidden lg:block">
+                      <ActionButton
+                        size="lg"
+                        className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
+                        loading={isBusy}
+                        disabled={!file || isBusy}
+                        onClick={() => { void handleConvert(); }}
+                      >
+                        {isBusy ? "Converting\u2026" : "Convert to Vector"}
+                      </ActionButton>
+                    </div>
+                  </div>
+                )}
+                <div className="image-conv-privacy mt-4">
+                  <PrivacyNotice message={PRIVACY_MESSAGE} />
+                </div>
               </div>
             </div>
           ) : null
         }
-        controlPanel={
-          file ? (
-            hasResult && resultBlob && stats ? (
-              <aside
-                aria-label="Raster to Vector result"
-                className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)] max-md:mb-10 lg:sticky lg:top-20 lg:max-h-[calc(100vh-5.5rem)] lg:mb-0 lg:w-[320px] lg:shrink-0"
-                data-tool-control-panel=""
-              >
-                {/* Mobile FAB clearance: use pl/pr (not px+pr) so axis padding cannot clobber pr-*. */}
-                <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain py-3 pl-3.5 pr-32 sm:py-3 sm:pl-4 sm:pr-40 lg:pl-4 lg:pr-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-green-700">
-                      ✓ Vector ready
-                    </p>
-                  </div>
-
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-lg border border-border bg-surface-muted/60 text-sm">
-                    {naturalSize ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Source</dt>
-                        <dd className="font-semibold text-foreground">
-                          {naturalSize.width} × {naturalSize.height}px
-                        </dd>
-                      </div>
-                    ) : null}
-                    {stats.width && stats.height ? (
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">SVG size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {stats.width} × {stats.height}px
-                        </dd>
-                      </div>
-                    ) : null}
-                    <div className="flex justify-between gap-3 px-3 py-1.5">
-                      <dt className="text-scanonix-muted">Original file</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(stats.originalSize)}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-1.5">
-                      <dt className="text-scanonix-muted">SVG file</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(stats.outputSize)}
-                      </dd>
-                    </div>
-                    {resultFileName ? (
-                      <div className="flex min-w-0 items-baseline justify-between gap-3 px-3 py-1.5">
-                        <dt className="shrink-0 text-scanonix-muted">Filename</dt>
-                        <dd className="truncate font-semibold text-foreground">
-                          {resultFileName}
-                        </dd>
-                      </div>
-                    ) : null}
-                  </dl>
-
-                  {appliedSettings ? (
-                    <dl className="divide-y divide-border/70 overflow-hidden rounded-lg border border-border bg-surface-muted/60 text-sm">
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Colors</dt>
-                        <dd className="font-semibold text-foreground">
-                          {appliedSettings.colorCount}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Detail</dt>
-                        <dd className="font-semibold text-foreground">
-                          {appliedSettings.detail}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Smoothing</dt>
-                        <dd className="font-semibold text-foreground">
-                          {appliedSettings.smoothing}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-1.5">
-                        <dt className="text-scanonix-muted">Background</dt>
-                        <dd className="font-semibold text-foreground">
-                          {appliedSettings.ignoreBackground ? "Ignore" : "Keep"}
-                        </dd>
-                      </div>
-                    </dl>
-                  ) : null}
-                </div>
-
-                <div className="hidden shrink-0 space-y-2 border-t border-border bg-surface-muted/50 px-3.5 py-3 sm:block sm:px-4">
-                  <ActionButton
-                    variant="primary"
-                    size="md"
-                    className="w-full rounded-xl"
-                    onClick={handleDownload}
-                  >
-                    Download SVG
-                  </ActionButton>
-                  <ActionButton
-                    variant="outline"
-                    size="md"
-                    className="w-full rounded-xl"
-                    onClick={resetTool}
-                  >
-                    Convert another
-                  </ActionButton>
-                </div>
-              </aside>
-            ) : (
-              <ToolControlPanel
-                aria-label="Raster to Vector controls"
-                footer={
-                  <div className="flex flex-col gap-2 pr-32 sm:pr-40 lg:pr-0">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      Advanced tracing controls for illustrations and graphics that need
-                      more than one-click conversion.
-                    </p>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)]"
-                        loading={isBusy}
-                        disabled={!file || isBusy}
-                        onClick={() => {
-                          void handleConvert();
-                        }}
-                      >
-                        {isBusy ? "Converting…" : "Convert to Vector"}
-                      </ActionButton>
-                    </div>
-                  </div>
-                }
-              >
-                <div className="space-y-4">
-                  <div className="pr-32 sm:pr-40 lg:pr-0">
-                    <div className="flex items-center gap-2">
-                      <PenTool
-                        className="h-4 w-4 text-scanonix-orange"
-                        aria-hidden="true"
-                        strokeWidth={1.75}
-                      />
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Raster to Vector
-                      </p>
-                    </div>
-                    <p className="mt-3 text-sm text-scanonix-muted">
-                      Convert rasters to SVG with control over colors, detail, smoothing
-                      and background.
-                    </p>
-                  </div>
-
-                  {/*
-                    Stronger local FAB clearance than Image/Logo pr-24:
-                    mobile Tools pill + right-4 needs ~pr-32; sm Find a Tool needs ~pr-40.
-                    Use explicit pl/pr nesting only — never px-* + pr-* on the same node.
-                  */}
-                  <div className="border-t border-border/80 pt-3 pr-32 sm:pr-40 lg:pr-0">
-                    <div className="mb-3 flex items-center justify-between gap-2 md:hidden">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Advanced settings
-                      </p>
-                      <button
-                        type="button"
-                        className="text-xs font-semibold text-scanonix-orange"
-                        onClick={() => setSettingsOpen((open) => !open)}
-                      >
-                        {settingsOpen ? "Hide" : "Show"}
-                      </button>
-                    </div>
-                    <p className="mb-3 hidden text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted md:block">
-                      Tracing settings
-                    </p>
-                    <div className={settingsOpen ? "block" : "hidden md:block"}>
-                      {settingsControls}
-                    </div>
-                  </div>
-
-                  <div className="border-t border-border/80 pt-3 pr-32 sm:pr-40 lg:pr-0">
-                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Privacy
-                    </p>
-                    <PrivacyNotice message={PRIVACY_MESSAGE} />
-                  </div>
-                </div>
-              </ToolControlPanel>
-            )
-          ) : null
-        }
       />
-
       <ToolStickyMobileActionBar
         visible={Boolean(file)}
+        stickyUntil="lg"
         phase={resultActionPhase}
         primaryLabel={hasResult ? "Download SVG" : "Convert to Vector"}
         primaryLoading={!hasResult && isBusy}
         primaryDisabled={hasResult ? isBusy || !resultBlob : !file || isBusy}
         showPrimaryOnError
-        onPrimaryClick={() => {
-          if (hasResult) {
-            handleDownload();
-          } else {
-            void handleConvert();
-          }
-        }}
+        onPrimaryClick={() => { if (hasResult) handleDownload(); else void handleConvert(); }}
         onStartOver={hasResult ? resetTool : undefined}
         startOverLabel="Convert another"
         startOverDisabled={isBusy}
-        secondaryLabel={!hasResult && file ? "Replace image" : undefined}
-        onSecondaryClick={!hasResult && file ? resetTool : undefined}
       />
     </div>
   );

@@ -9,7 +9,9 @@ export default function SignPdfPage() {
   return (
     <ToolRoute
       toolId="sign-pdf"
-      icon={<ToolIcon type="sign-pdf" className="h-7 w-7" />}
+      icon={<ToolIcon type="sign-pdf" className="h-5 w-5" />}
+      headerCompact
+      usageTone="quiet"
     >
       <LazySignPdfTool />
     </ToolRoute>

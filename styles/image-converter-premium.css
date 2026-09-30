@@ -1,0 +1,75 @@
+/*
+ * Local image converter family only.
+ * Scoped to .image-converter-premium, which exists only inside ImageFormatConverterTool.
+ */
+
+.image-converter-premium .converter-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .image-converter-premium .converter-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.image-converter-premium .converter-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .image-converter-premium .converter-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .image-converter-premium .converter-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.image-converter-premium .converter-drop:hover {
+  box-shadow: none;
+}
+
+.image-converter-premium [data-tool-workspace="active"] {
+  display: block;
+}
+
+.image-converter-premium .converter-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
+html[data-theme="bright"] .image-converter-premium .converter-options {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 18%, #e4dcd2);
+}
+
+html[data-theme="dark"] .image-converter-premium .converter-options {
+  background: #161412;
+  border-color: color-mix(in srgb, #fff 8%, #24201d);
+}
+
+.image-converter-premium .converter-quality {
+  accent-color: var(--scanonix-orange);
+}
+
+/* Desktop queue items only. ImagePreviewGrid stays unchanged for other tools. */
+@media (min-width: 1024px) {
+  .image-converter-premium .converter-queue article > .aspect-\[4\/3\] {
+    aspect-ratio: auto;
+    height: 12.5rem;
+  }
+
+  .image-converter-premium .converter-queue article img {
+    object-fit: contain;
+    object-position: center;
+  }
+}

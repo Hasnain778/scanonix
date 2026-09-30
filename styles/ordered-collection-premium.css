@@ -1,0 +1,98 @@
+/*
+ * Ordered-collection tools only.
+ * Scoped to .ordered-collection-premium inside Organize PDF and Image to PDF.
+ */
+
+.ordered-collection-premium .ordered-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .ordered-collection-premium .ordered-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.ordered-collection-premium .ordered-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .ordered-collection-premium .ordered-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .ordered-collection-premium .ordered-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.ordered-collection-premium .ordered-drop:hover {
+  box-shadow: none;
+}
+
+.ordered-collection-premium.ordered-collection-full [data-tool-workspace="active"] {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .ordered-collection-premium.ordered-collection-split [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .ordered-collection-premium.ordered-collection-split .ordered-stage-grid .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ordered-collection-premium .ordered-stage {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  overflow: visible;
+}
+
+.ordered-collection-premium .ordered-stage-bar,
+.ordered-collection-premium .ordered-stage-note,
+.ordered-collection-premium .ordered-stage-grid {
+  border: none;
+  background: transparent;
+}
+
+.ordered-collection-premium .ordered-actions {
+  margin-top: 1.25rem;
+  max-width: 22rem;
+}
+
+.ordered-collection-premium [data-tool-control-panel] {
+  width: 100%;
+  max-height: none;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  position: static;
+}
+
+.ordered-collection-premium [data-tool-control-panel-body],
+.ordered-collection-premium [data-tool-control-panel-footer] {
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.ordered-collection-premium [data-tool-control-panel] dl,
+.ordered-collection-premium .ordered-actions dl {
+  border: none;
+  background: transparent;
+}

@@ -156,7 +156,7 @@ export function QrCameraScanner({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-2xl border border-scanonix-border bg-black">
+      <div className="qr-view overflow-hidden rounded-xl bg-black">
         <div className="relative aspect-[4/3] w-full bg-black">
           <video
             ref={videoRef}

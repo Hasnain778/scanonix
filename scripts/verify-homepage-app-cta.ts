@@ -2,8 +2,7 @@
  * Homepage Android app CTA verification (Phase 128E-FIX3 / 130J-2B).
  * Run: npx tsx scripts/verify-homepage-app-cta.ts
  *
- * Approved architecture (130J tool-first homepage):
- * - Android CTA lives in HomeAndroidPromo secondary content, not HomeHero.
+ * Play Store access lives in the footer, not the header, mobile menu, or homepage promo.
  */
 
 import { readFileSync } from "node:fs";
@@ -38,28 +37,28 @@ function run() {
   const footerSource = readFileSync(join(root, "components", "layout", "Footer.tsx"), "utf8");
 
   assert(
-    "1 homepage body renders HomeAndroidPromo as secondary content",
-    homepageSource.includes("<HomeAndroidPromo") &&
-      homepageSource.includes('from "@/components/sections/HomeAndroidPromo"'),
+    "1 homepage body does not render the Android promo section",
+    !homepageSource.includes("<HomeAndroidPromo") &&
+      !homepageSource.includes('from "@/components/sections/HomeAndroidPromo"'),
   );
 
   assert(
-    "2 desktop header does not contain Get Android App CTA",
+    "2 desktop header has no Google Play CTA",
     !navbarSource.includes('location="navbar"') &&
-      !navbarSource.match(/Get Android App[\s\S]*location="navbar"/) &&
-      !navbarSource.includes("NAVBAR_APP_CTA_CLASS"),
+      !navbarSource.includes("PlayStoreLink") &&
+      !navbarSource.includes("nav-play-badge"),
   );
 
   assert(
-    "3 mobile header does not contain compact App CTA",
+    "3 mobile header bar has no Google Play CTA",
     !navbarSource.includes('location="navbar-mobile"') &&
-      !navbarSource.includes("MOBILE_HEADER_APP_CTA_CLASS"),
+      !navbarSource.includes("PlayStoreLink"),
   );
 
   assert(
-    "4 mobile nav does not contain prominent Get Android App CTA",
+    "4 mobile menu has no Google Play CTA",
     !navbarSource.includes('location="mobile-nav"') &&
-      !navbarSource.includes("MOBILE_NAV_APP_CTA_CLASS"),
+      !navbarSource.includes("PlayStoreLink"),
   );
 
   assert(
@@ -77,15 +76,16 @@ function run() {
   );
 
   assert(
-    "7 footer Android link preserved as secondary",
-    footerSource.includes("PLAY_STORE_URL") &&
-      footerSource.includes("Get the Android app"),
+    "7 footer uses the official Play badge",
+    footerSource.includes("PlayStoreLink") &&
+      footerSource.includes('location="footer"') &&
+      footerSource.includes('variant="badge"'),
   );
 
   assert(
-    "8 mobile drawer footer retains subtle Android App link",
-    navbarSource.includes('label: "Android App"') &&
-      navbarSource.includes("MOBILE_FOOTER_LINKS"),
+    "8 navigation does not advertise an Android app button",
+    !navbarSource.includes('label: "Android App"') &&
+      !navbarSource.includes("PlayStoreLink"),
   );
 
   console.log(`\n${passed} passed, ${failed} failed\n`);

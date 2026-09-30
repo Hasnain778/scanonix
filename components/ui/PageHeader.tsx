@@ -16,7 +16,7 @@ export function PageHeader({
   className = "",
 }: PageHeaderProps) {
   return (
-    <header className={`mb-8 sm:mb-10 ${className}`}>
+    <header className={`mb-6 sm:mb-8 ${className}`}>
       {eyebrow ? <p className="text-eyebrow mb-3">{eyebrow}</p> : null}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0 flex-1">

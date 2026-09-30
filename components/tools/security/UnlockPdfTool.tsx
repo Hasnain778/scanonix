@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { KeyRound, Shield } from "lucide-react";
+import Link from "next/link";
+import { KeyRound } from "lucide-react";
+import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
@@ -9,7 +11,6 @@ import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { SecurityToolWorkspace } from "@/components/tools/security/SecurityToolWorkspace";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import {
   UNLOCK_PDF_PRIVACY_COPY,
@@ -30,12 +31,76 @@ import {
   httpStatusToErrorCode,
 } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
+import { trackEvent } from "@/lib/analytics/ga4";
 
-const GATE_DESCRIPTION =
-  "Remove password protection using its current password. Upgrade to Pro to unlock.";
+function UnlockAccessNote({ isAuthenticated }: { isAuthenticated: boolean }) {
+  return (
+    <div className="max-w-[36rem]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
+        Pro required
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-foreground">
+        Unlocking protected PDFs is available with Scanonix Pro.
+      </p>
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        {isAuthenticated ? (
+          <CheckoutButton
+            plan="pro"
+            interval="monthly"
+            label="Upgrade to Pro"
+            sourceSurface={ANALYTICS_SURFACES.SECURITY_GATE}
+          />
+        ) : (
+          <Link
+            href="/login"
+            className="inline-flex items-center rounded-lg border border-border px-3 py-1.5 text-sm font-semibold text-foreground transition hover:border-scanonix-orange/45"
+          >
+            Sign in
+          </Link>
+        )}
+        <Link
+          href="/pricing"
+          onClick={() => {
+            trackEvent("upgrade_click", {
+              source_surface: ANALYTICS_SURFACES.SECURITY_GATE,
+              tier: "pro",
+              tool_slug: "unlock-pdf",
+            });
+          }}
+          className="text-sm font-medium text-foreground-secondary transition hover:text-foreground"
+        >
+          View Pro
+        </Link>
+      </div>
+    </div>
+  );
+}
 
-function UnlockDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return <KeyRound className={className} aria-hidden="true" strokeWidth={1.75} />;
+function PasswordField({
+  value,
+  onChange,
+  visible,
+  disabled,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  visible: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <label className="block space-y-2">
+      <span className="text-sm font-medium text-foreground">PDF password</span>
+      <input
+        type={visible ? "text" : "password"}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="input-field"
+        autoComplete="current-password"
+        disabled={disabled}
+      />
+    </label>
+  );
 }
 
 function unlockErrorMessage(code: UnlockPdfErrorCode | undefined, fallback: string): string {
@@ -55,45 +120,8 @@ function unlockErrorMessage(code: UnlockPdfErrorCode | undefined, fallback: stri
   }
 }
 
-function PasswordField({
-  label,
-  value,
-  onChange,
-  visible,
-  onToggleVisible,
-  disabled,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  visible: boolean;
-  onToggleVisible: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <label className="block space-y-2">
-      <span className="text-sm font-medium text-foreground">{label}</span>
-      <div className="relative">
-        <input
-          type={visible ? "text" : "password"}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="input-field pr-12"
-          autoComplete="current-password"
-          disabled={disabled}
-        />
-        <button
-          type="button"
-          onClick={onToggleVisible}
-          disabled={disabled}
-          className="absolute inset-y-0 right-0 flex items-center px-3 text-scanonix-muted transition-colors hover:text-foreground disabled:opacity-50"
-          aria-label={visible ? "Hide password" : "Show password"}
-        >
-          {visible ? "Hide" : "Show"}
-        </button>
-      </div>
-    </label>
-  );
+function UnlockDropIcon({ className = "h-7 w-7" }: { className?: string }) {
+  return <KeyRound className={className} aria-hidden="true" strokeWidth={1.75} />;
 }
 
 export function UnlockPdfTool() {
@@ -184,11 +212,8 @@ export function UnlockPdfTool() {
   }, [status, hasResult, file]);
 
   return (
-    <SecurityToolWorkspace
-      toolName="Unlock PDF"
-      gateDescription={GATE_DESCRIPTION}
-    >
-      {({ isPro, showGate }) => {
+    <SecurityToolWorkspace toolName="Unlock PDF" gate="none">
+      {({ isPro, showGate, isAuthenticated }) => {
         const stickyVisible = Boolean(file) && isPro;
         const canUnlock = Boolean(file) && isPro && !showGate && !isBusy;
         const primaryLabel = showGate
@@ -205,7 +230,7 @@ export function UnlockPdfTool() {
             : "Remove password protection using its current password. Scanonix does not attempt password cracking.";
 
         return (
-          <div className="space-y-5 overflow-x-hidden">
+          <div className="unlock-pdf-prototype space-y-5 overflow-x-hidden">
             <ToolStatusBanner status={status} message={message} />
 
             <ToolWorkspaceShell
@@ -225,16 +250,22 @@ export function UnlockPdfTool() {
                     hint="Drop a PDF file or click to browse"
                     icon={<UnlockDropIcon />}
                     validateFile={isAcceptedPdfFile}
+                    className="unlock-drop"
                   />
-                  <PrivacyNotice message={UNLOCK_PDF_PRIVACY_COPY} />
+                  <div className="unlock-privacy">
+                    <PrivacyNotice message={UNLOCK_PDF_PRIVACY_COPY} />
+                  </div>
+                  {showGate ? (
+                    <UnlockAccessNote isAuthenticated={isAuthenticated} />
+                  ) : null}
                 </>
               }
               workArea={
                 file ? (
-                  <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-                    <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                  <div className="w-full lg:max-w-[36rem]">
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-scanonix-orange/10 text-scanonix-orange">
                           <UnlockDropIcon className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
@@ -246,13 +277,7 @@ export function UnlockPdfTool() {
                           </p>
                         </div>
                       </div>
-                      <div
-                        className={
-                          stickyVisible
-                            ? "hidden w-full sm:w-auto md:block"
-                            : "w-full sm:w-auto"
-                        }
-                      >
+                      <div className={stickyVisible ? "hidden lg:block" : undefined}>
                         <ActionButton
                           variant="outline"
                           size="sm"
@@ -266,7 +291,7 @@ export function UnlockPdfTool() {
                     </div>
 
                     {hasExistingSignatures ? (
-                      <div className="border-b border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 sm:px-4">
+                      <div className="mt-3 rounded-lg bg-amber-500/10 px-3.5 py-2.5">
                         <p className="text-sm text-foreground">
                           {DIGITAL_SIGNATURE_WARNING}
                         </p>
@@ -277,120 +302,70 @@ export function UnlockPdfTool() {
                       </div>
                     ) : null}
 
-                    <div className="space-y-3 bg-surface-muted/30 p-3 sm:p-4">
-                      <div className="rounded-xl border border-border bg-surface px-3.5 py-3">
-                        <p className="text-sm font-semibold text-foreground">
-                          {hasResult
-                            ? "Unlocked PDF downloaded"
-                            : "Ready to unlock PDF"}
+                    <div className="mt-3 space-y-3 rounded-xl bg-surface-strong p-3.5 sm:p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-foreground">
+                          Document password
                         </p>
-                        <p className="mt-1 text-xs leading-snug text-scanonix-muted">
-                          {hasResult
-                            ? "Your download should have started. Unlock again with the same password or start over."
-                            : "Enter the current PDF password in the control panel. Passwords are never stored or logged."}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : null
-              }
-              controlPanel={
-                file ? (
-                  <ToolControlPanel
-                    aria-label="Unlock PDF controls"
-                    footer={
-                      <div className="flex flex-col gap-2">
-                        <p className="text-[11px] leading-snug text-scanonix-muted">
-                          {unlockHint}
-                        </p>
-                        <div
-                          className={
-                            stickyVisible ? "hidden md:block" : undefined
-                          }
+                        <button
+                          type="button"
+                          className="unlock-visibility shrink-0 rounded-lg px-2.5 py-1 text-sm font-medium text-foreground-secondary transition-colors hover:text-foreground disabled:opacity-50"
+                          aria-pressed={showPassword}
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                          disabled={isBusy}
+                          onClick={() => setShowPassword((current) => !current)}
                         >
-                          <ActionButton
-                            size="lg"
-                            className="w-full shadow-[var(--shadow-orange-sm)]"
-                            onClick={() => {
-                              void handleUnlock();
-                            }}
-                            disabled={showGate || !canUnlock}
-                            loading={isBusy}
-                          >
-                            {primaryLabel}
-                          </ActionButton>
-                        </div>
-                        {stickyVisible ? (
-                          <div className="hidden md:block">
-                            <ActionButton
-                              variant="outline"
-                              size="lg"
-                              className="w-full"
-                              disabled={isBusy}
-                              onClick={resetTool}
-                            >
-                              {hasResult ? "Start over" : "Choose another PDF"}
-                            </ActionButton>
-                          </div>
-                        ) : null}
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
                       </div>
-                    }
-                  >
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Shield
-                            className="h-4 w-4 text-scanonix-orange"
-                            aria-hidden="true"
-                            strokeWidth={1.75}
-                          />
-                          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                            Unlock PDF
-                          </p>
-                        </div>
-                        <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
-                          Remove password protection using the current PDF
-                          password.
-                        </p>
-                      </div>
-
-                      <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                        <div className="min-w-0 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Selected file</dt>
-                          <dd className="mt-0.5 truncate font-semibold text-foreground">
-                            {file.name}
-                          </dd>
-                        </div>
-                        <div className="flex justify-between gap-3 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Size</dt>
-                          <dd className="font-semibold text-foreground">
-                            {formatFileSize(file.size)}
-                          </dd>
-                        </div>
-                      </dl>
-
                       <PasswordField
-                        label="PDF password"
                         value={password}
                         onChange={setPassword}
                         visible={showPassword}
-                        onToggleVisible={() =>
-                          setShowPassword((current) => !current)
-                        }
                         disabled={isBusy}
                       />
-
-                      <div className="border-t border-border/80 pt-3">
+                      {hasResult ? (
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">
+                            Unlocked PDF downloaded
+                          </p>
+                          <p className="mt-1 text-xs leading-snug text-scanonix-muted">
+                            Your download should have started. Unlock again with
+                            the same password or start over.
+                          </p>
+                        </div>
+                      ) : null}
+                      <div className="unlock-privacy">
                         <PrivacyNotice message={UNLOCK_PDF_PRIVACY_COPY} />
                       </div>
                     </div>
-                  </ToolControlPanel>
+
+                    <div className="mt-3 flex flex-col gap-2">
+                      <p className="text-[11px] leading-snug text-scanonix-muted">
+                        {unlockHint}
+                      </p>
+                      <div className={stickyVisible ? "hidden lg:block" : undefined}>
+                        <ActionButton
+                          size="lg"
+                          className="w-full shadow-[var(--shadow-orange-sm)]"
+                          onClick={() => {
+                            void handleUnlock();
+                          }}
+                          disabled={showGate || !canUnlock}
+                          loading={isBusy}
+                        >
+                          {primaryLabel}
+                        </ActionButton>
+                      </div>
+                    </div>
+                  </div>
                 ) : null
               }
             />
 
             <ToolStickyMobileActionBar
               visible={stickyVisible}
+              stickyUntil="lg"
               phase={resultActionPhase}
               primaryLabel={
                 isBusy

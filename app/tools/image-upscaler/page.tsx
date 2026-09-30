@@ -9,7 +9,9 @@ export default function ImageUpscalerPage() {
   return (
     <ToolRoute
       toolId="image-upscaler"
-      icon={<ToolIcon type="convert" className="h-7 w-7" />}
+      icon={<ToolIcon type="image-upscale" className="h-5 w-5" />}
+      headerCompact
+      usageTone="quiet"
     >
       <LazyImageUpscalerTool />
     </ToolRoute>

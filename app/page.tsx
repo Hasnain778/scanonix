@@ -4,7 +4,6 @@ import { HomeQuickSuggestions } from "@/components/home/HomeQuickSuggestions";
 import { HomeToolDiscovery } from "@/components/home/HomeToolDiscovery";
 import { ToolCategoriesSection } from "@/components/home/PopularToolsSection";
 import { ScanonixProPromo } from "@/components/home/ScanonixProPromo";
-import { HomeAndroidPromo } from "@/components/sections/HomeAndroidPromo";
 import { HomeHero } from "@/components/sections/HomeHero";
 import { getPopularTools } from "@/constants/homepage-tools";
 import {
@@ -56,7 +55,6 @@ export default function Home() {
         <HomeToolDiscovery tools={popularTools} />
         <ToolCategoriesSection />
         <HomeQuickSuggestions />
-        <HomeAndroidPromo />
         <ScanonixProPromo />
       </main>
       <Footer />

@@ -1,10 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
 import Link from "next/link";
-import { Check, Crown, Shield, Sparkles } from "lucide-react";
+import { Crown, Gauge, ImageUp, PenLine, Shield, type LucideIcon } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { ToolVisual } from "@/components/tools/ToolVisual";
 import { useProAccess } from "@/hooks/useProAccess";
 import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { trackEvent } from "@/lib/analytics/ga4";
@@ -17,57 +15,129 @@ const PRO_BENEFITS = [
   "Expanded usage — 500 ops/month and 50MB uploads",
 ] as const;
 
-const PRO_VISUAL_TOOLS = [
-  { slug: "protect-pdf", label: "Protect PDF" },
-  { slug: "redact-pdf", label: "Redact PDF" },
-  { slug: "unlock-pdf", label: "Unlock PDF" },
-  { slug: "image-upscaler", label: "Image Upscaler" },
-] as const;
+const CAPABILITIES: readonly {
+  title: string;
+  detail: string;
+  entitlement: (typeof PRO_BENEFITS)[number];
+  icon: LucideIcon;
+}[] = [
+  {
+    title: "Secure PDFs",
+    detail: "Protect · Unlock · Redact",
+    entitlement: PRO_BENEFITS[0],
+    icon: Shield,
+  },
+  {
+    title: "4K upscaling",
+    detail: "Higher-resolution image processing",
+    entitlement: PRO_BENEFITS[1],
+    icon: ImageUp,
+  },
+  {
+    title: "Premium AI",
+    detail: "Rewrite · Translate · Summary",
+    entitlement: PRO_BENEFITS[2],
+    icon: PenLine,
+  },
+  {
+    title: "Expanded limits",
+    detail: "500 operations · 50 MB uploads",
+    entitlement: PRO_BENEFITS[3],
+    icon: Gauge,
+  },
+];
 
-function ProBenefitCheck({ children }: { children: ReactNode }) {
+const TOOLKIT_ITEMS: readonly { label: string; value: string; icon: LucideIcon }[] = [
+  { label: "Security", value: "Protect · Unlock · Redact", icon: Shield },
+  { label: "AI", value: "Rewrite · Translate · Summary", icon: PenLine },
+  { label: "Image", value: "4K upscaling", icon: ImageUp },
+];
+
+function CapabilityIcon({ icon: Icon }: { icon: LucideIcon }) {
   return (
-    <li className="scanonix-pro-promo__benefit">
-      <span className="scanonix-pro-promo__benefit-check" aria-hidden="true">
-        <Check className="h-3.5 w-3.5" strokeWidth={3} />
+    <span className="scanonix-pro-promo__capability-icon" aria-hidden="true">
+      <Icon className="h-4 w-4" strokeWidth={1.75} />
+    </span>
+  );
+}
+
+function ProCapability({
+  title,
+  detail,
+  entitlement,
+  icon,
+}: (typeof CAPABILITIES)[number]) {
+  return (
+    <li className="scanonix-pro-promo__benefit" aria-label={entitlement}>
+      <CapabilityIcon icon={icon} />
+      <span className="scanonix-pro-promo__capability-copy">
+        <span className="scanonix-pro-promo__capability-title">{title}</span>
+        <span className="scanonix-pro-promo__capability-detail">{detail}</span>
       </span>
-      <span>{children}</span>
     </li>
   );
 }
 
-function ProPromoVisual() {
+function ProHeadline({ member }: { member: boolean }) {
+  if (member) {
+    return (
+      <h2
+        id="scanonix-pro-promo-heading"
+        className="scanonix-pro-promo__headline"
+        aria-label="You're on Scanonix Pro"
+      >
+        <span className="scanonix-pro-promo__headline-line">You&apos;re on</span>
+        <span className="scanonix-pro-promo__headline-line">
+          Scanonix <span className="scanonix-pro-promo__accent">Pro</span>
+        </span>
+      </h2>
+    );
+  }
+
   return (
-    <div className="scanonix-pro-promo__visual" data-pro-promo-visual="tool-visuals">
-      <div className="scanonix-pro-promo__visual-glow scanonix-pro-promo__visual-glow--orange" aria-hidden="true" />
-      <div className="scanonix-pro-promo__visual-glow scanonix-pro-promo__visual-glow--violet" aria-hidden="true" />
+    <h2
+      id="scanonix-pro-promo-heading"
+      className="scanonix-pro-promo__headline"
+      aria-label="Unlock more with Scanonix Pro"
+    >
+      <span className="scanonix-pro-promo__headline-line">Unlock more with</span>
+      <span className="scanonix-pro-promo__headline-line">
+        Scanonix <span className="scanonix-pro-promo__accent">Pro</span>
+      </span>
+    </h2>
+  );
+}
 
-      <div className="scanonix-pro-promo__doc-panel" aria-hidden="true">
-        <span className="scanonix-pro-promo__doc-shield">
-          <Shield className="h-5 w-5" />
-        </span>
-        <span className="scanonix-pro-promo__doc-spark">
-          <Sparkles className="h-4 w-4" />
-        </span>
-        <div className="scanonix-pro-promo__doc-lines">
-          <span />
-          <span />
-          <span className="scanonix-pro-promo__doc-lines--short" />
-        </div>
-      </div>
-
-      <ul className="scanonix-pro-promo__float-cards" aria-hidden="true">
-        {PRO_VISUAL_TOOLS.map((tool, index) => (
-          <li
-            key={tool.slug}
-            className={`scanonix-pro-promo__float-card scanonix-pro-promo__float-card--${index + 1}`}
-            data-tool-slug={tool.slug}
-          >
-            <ToolVisual slug={tool.slug} size="sm" />
-            <span className="scanonix-pro-promo__float-card-label">{tool.label}</span>
+function ProToolkit() {
+  return (
+    <aside className="scanonix-pro-promo__toolkit" aria-label="Your Pro toolkit">
+      <p className="scanonix-pro-promo__toolkit-kicker">Included with Pro</p>
+      <h3 className="scanonix-pro-promo__toolkit-title">Your Pro toolkit</h3>
+      <ul className="scanonix-pro-promo__toolkit-list">
+        {TOOLKIT_ITEMS.map((item) => (
+          <li key={item.label} className="scanonix-pro-promo__toolkit-item">
+            <CapabilityIcon icon={item.icon} />
+            <span className="scanonix-pro-promo__capability-copy">
+              <span className="scanonix-pro-promo__toolkit-label">{item.label}</span>
+              <span className="scanonix-pro-promo__toolkit-value">{item.value}</span>
+            </span>
           </li>
         ))}
       </ul>
-    </div>
+      <div
+        className="scanonix-pro-promo__limits"
+        aria-label="500 operations / month · 50 MB uploads"
+      >
+        <div>
+          <p className="scanonix-pro-promo__limit-kicker">Monthly capacity</p>
+          <p className="scanonix-pro-promo__limit-value">500 operations</p>
+        </div>
+        <div>
+          <p className="scanonix-pro-promo__limit-kicker">Upload limit</p>
+          <p className="scanonix-pro-promo__limit-value">50 MB</p>
+        </div>
+      </div>
+    </aside>
   );
 }
 
@@ -83,40 +153,34 @@ export function ScanonixProPromo() {
     >
       <div className="page-container">
         <div className="scanonix-pro-promo__panel">
+          <svg
+            className="scanonix-pro-promo__mark"
+            viewBox="0 0 280 460"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M210 36c-96 8-168 78-142 162 28 90 150 96 122 184-22 70-112 98-186 72"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="54"
+              strokeLinecap="round"
+            />
+          </svg>
           <div className="scanonix-pro-promo__grid">
             <div className="scanonix-pro-promo__copy">
               <div className="scanonix-pro-promo__badge" aria-label="Scanonix Pro">
-                <Crown className="h-3 w-3" aria-hidden="true" />
+                <Crown className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Scanonix Pro</span>
               </div>
 
-              {isPro && !loading ? (
-                <>
-                  <h2 id="scanonix-pro-promo-heading" className="scanonix-pro-promo__headline">
-                    You&apos;re on Scanonix Pro
-                  </h2>
-                  <p className="scanonix-pro-promo__support">
-                    Your subscription unlocks advanced security tools, premium AI, and expanded
-                    processing limits across Scanonix.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h2 id="scanonix-pro-promo-heading" className="scanonix-pro-promo__headline">
-                    Unlock more with Scanonix Pro
-                  </h2>
-                  <p className="scanonix-pro-promo__support">
-                    Go beyond free tools with advanced PDF security, 4K upscaling, and premium AI
-                    processing.
-                  </p>
-                </>
-              )}
+              <ProHeadline member={isPro && !loading} />
 
-              <ul className="scanonix-pro-promo__benefits">
-                {PRO_BENEFITS.map((benefit) => (
-                  <ProBenefitCheck key={benefit}>{benefit}</ProBenefitCheck>
-                ))}
-              </ul>
+              <p className="scanonix-pro-promo__support">
+                {isPro && !loading
+                  ? "Your subscription unlocks advanced security tools, premium AI, and expanded processing limits across Scanonix."
+                  : "Go beyond free tools with advanced PDF security, 4K upscaling, and premium AI processing."}
+              </p>
 
               <div className="scanonix-pro-promo__cta">
                 {loading ? (
@@ -127,8 +191,9 @@ export function ScanonixProPromo() {
                   />
                 ) : isPro ? (
                   <>
-                    <ActionButton href="/dashboard" variant="outline" size="lg">
+                    <ActionButton href="/dashboard" variant="primary" size="lg">
                       Go to dashboard
+                      <span aria-hidden="true"> →</span>
                     </ActionButton>
                     <Link href="/account/billing" className="scanonix-pro-promo__secondary-link">
                       Manage plan
@@ -137,6 +202,7 @@ export function ScanonixProPromo() {
                 ) : (
                   <ActionButton
                     href="/pricing"
+                    variant="primary"
                     size="lg"
                     className="scanonix-pro-promo__cta-button"
                     data-pro-promo-cta="upgrade"
@@ -153,7 +219,13 @@ export function ScanonixProPromo() {
               </div>
             </div>
 
-            <ProPromoVisual />
+            <ul className="scanonix-pro-promo__benefits">
+              {CAPABILITIES.map((capability) => (
+                <ProCapability key={capability.entitlement} {...capability} />
+              ))}
+            </ul>
+
+            <ProToolkit />
           </div>
         </div>
       </div>

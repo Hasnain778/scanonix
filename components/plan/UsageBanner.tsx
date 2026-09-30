@@ -9,6 +9,8 @@ interface UsageBannerProps {
   summary: UsageSummaryResponse | null;
   loading?: boolean;
   className?: string;
+  /** Opt-in. Default keeps the current raised banner on every other tool. */
+  tone?: "default" | "quiet";
 }
 
 function formatResetDate(value: string): string {
@@ -18,8 +20,20 @@ function formatResetDate(value: string): string {
   }).format(new Date(value));
 }
 
-export function UsageBanner({ summary, loading = false, className = "" }: UsageBannerProps) {
+export function UsageBanner({
+  summary,
+  loading = false,
+  className = "",
+  tone = "default",
+}: UsageBannerProps) {
   if (loading) {
+    if (tone === "quiet") {
+      return (
+        <div className={`px-0.5 py-1 text-xs text-foreground-muted ${className}`}>
+          Loading usage…
+        </div>
+      );
+    }
     return (
       <div
         className={`rounded-xl border border-border bg-surface-raised px-4 py-3 text-sm text-foreground-muted shadow-[var(--shadow-soft)] ${className}`}
@@ -34,6 +48,43 @@ export function UsageBanner({ summary, loading = false, className = "" }: UsageB
   }
 
   const exhausted = summary.remaining <= 0;
+
+  if (tone === "quiet") {
+    return (
+      <div className={`text-xs leading-relaxed text-foreground-muted ${className}`}>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <p>
+            <span className="font-semibold capitalize text-foreground">{summary.plan}</span>
+            {" · "}
+            <span className={exhausted ? "text-foreground" : "text-foreground-secondary"}>
+              {summary.usageCount} / {summary.limit} operations used
+            </span>
+            {" · "}
+            {summary.remaining} remaining
+          </p>
+          <p>Resets {formatResetDate(summary.resetAt)}</p>
+        </div>
+        {exhausted ? (
+          <p className="mt-1.5">
+            Limit reached.{" "}
+            <Link
+              href="/pricing"
+              onClick={() => {
+                trackEvent("upgrade_click", {
+                  source_surface: ANALYTICS_SURFACES.USAGE_BANNER,
+                  tier: "pro",
+                });
+              }}
+              className="font-semibold text-scanonix-orange hover:underline"
+            >
+              Upgrade your plan
+            </Link>{" "}
+            for more operations.
+          </p>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div

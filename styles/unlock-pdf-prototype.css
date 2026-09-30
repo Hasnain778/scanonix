@@ -1,0 +1,53 @@
+/*
+ * Unlock PDF prototype only.
+ * Every rule is scoped to .unlock-pdf-prototype, which exists only inside UnlockPdfTool.
+ */
+
+.unlock-pdf-prototype .unlock-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .unlock-pdf-prototype .unlock-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.unlock-pdf-prototype .unlock-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .unlock-pdf-prototype .unlock-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .unlock-pdf-prototype .unlock-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.unlock-pdf-prototype .unlock-drop:hover {
+  box-shadow: none;
+}
+
+.unlock-pdf-prototype [data-tool-workspace="active"] {
+  display: block;
+}
+
+.unlock-pdf-prototype .unlock-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
+.unlock-pdf-prototype .unlock-visibility:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--scanonix-orange) 70%, transparent);
+  outline-offset: 2px;
+}

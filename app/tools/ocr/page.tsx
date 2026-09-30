@@ -9,7 +9,9 @@ export default function OcrPage() {
   return (
     <ToolRoute
       toolId="ocr"
-      icon={<ToolIcon type="ocr" className="h-7 w-7" />}
+      icon={<ToolIcon type="ocr" className="h-5 w-5" />}
+      headerCompact
+      usageTone="quiet"
     >
       <LazyOcrTool />
     </ToolRoute>

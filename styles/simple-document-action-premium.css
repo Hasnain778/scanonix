@@ -1,0 +1,49 @@
+/*
+ * Simple document-action family only.
+ * Scoped to .simple-document-action-premium inside Metadata Cleaner,
+ * Word to PDF, and PDF to Word.
+ */
+
+.simple-document-action-premium .simple-doc-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .simple-document-action-premium .simple-doc-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.simple-document-action-premium .simple-doc-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .simple-document-action-premium .simple-doc-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .simple-document-action-premium .simple-doc-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.simple-document-action-premium .simple-doc-drop:hover {
+  box-shadow: none;
+}
+
+.simple-document-action-premium [data-tool-workspace="active"] {
+  display: block;
+}
+
+.simple-document-action-premium .simple-doc-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 36rem;
+}

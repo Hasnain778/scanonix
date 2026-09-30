@@ -26,6 +26,7 @@ import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import { formatPlanError } from "@/lib/plan/tool-gate";
 import { downloadBlob } from "@/lib/tools/download";
 import type { ToolStatus } from "@/lib/tools/types";
+import "@/styles/ai-text-premium.css";
 
 const PRIVACY_MESSAGE =
   "Text is sent to cloud AI for rewriting and is not stored after processing.";
@@ -228,7 +229,7 @@ export function AiRewriteTool() {
       description="Sign in and upgrade to Scanonix Pro to use AI Rewrite. Free tools stay available without an account."
     >
       <div
-        className={`space-y-5 overflow-x-hidden md:pb-0 ${
+        className={`ai-text-premium space-y-5 overflow-x-hidden md:pb-0 ${
           hasResult ? "pb-40" : "pb-28"
         }`}
       >
@@ -268,7 +269,7 @@ export function AiRewriteTool() {
           </div>
         ) : null}
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+        <div className="ai-text-shell overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
           {/*
             Desktop: grid row stretches both panes to equal height.
             Each pane is flex-col so the editor/result surface flex-1 fills
@@ -311,7 +312,7 @@ export function AiRewriteTool() {
                   <span className="text-xs text-scanonix-orange">Complete</span>
                 ) : null}
               </div>
-              <div className="min-h-[16rem] flex-1 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground lg:min-h-[22rem]">
+              <div className="ai-text-result min-h-[16rem] flex-1 overflow-y-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground lg:min-h-[22rem]">
                 {outputText ? (
                   outputText
                 ) : (

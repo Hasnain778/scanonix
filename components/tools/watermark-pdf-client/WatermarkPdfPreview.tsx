@@ -309,7 +309,7 @@ export function WatermarkPdfPreview({
     !previewSelection.isWatermarked && !previewSelection.selectionError;
 
   return (
-    <div ref={measureRef} className="w-full overflow-x-hidden">
+    <div ref={measureRef} className="wm-preview-host w-full overflow-x-hidden">
       <div className="mx-auto max-w-full">
         <div
           data-watermark-pdf-preview-canvas

@@ -66,6 +66,7 @@ import type { ToolStatus } from "@/lib/tools/types";
 import { PositionPicker } from "./PositionPicker";
 import { WatermarkPdfPreview } from "./WatermarkPdfPreview";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
+import "@/styles/watermark-pdf-premium.css";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
 interface UploadedPdfState {
@@ -76,6 +77,15 @@ interface UploadedPdfState {
 
 const WATERMARK_SOURCE_PDF_ACCEPT = "application/pdf";
 const WATERMARK_IMAGE_ACCEPT = "image/png,image/jpeg,.png,.jpg,.jpeg";
+
+const WATERMARK_EDITOR_TABS = [
+  { id: "watermark", label: "Watermark" },
+  { id: "style", label: "Style" },
+  { id: "placement", label: "Placement" },
+  { id: "pages", label: "Pages" },
+] as const;
+
+type WatermarkEditorTab = (typeof WATERMARK_EDITOR_TABS)[number]["id"];
 
 function WatermarkDropIcon({ className = "h-7 w-7" }: { className?: string }) {
   return <Stamp className={className} aria-hidden="true" strokeWidth={1.75} />;
@@ -112,6 +122,7 @@ export function WatermarkPdfClientTool() {
   const [imageAsset, setImageAsset] = useState<ImageWorkspaceAsset | null>(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [customRotation, setCustomRotation] = useState("");
+  const [editorTab, setEditorTab] = useState<WatermarkEditorTab>("watermark");
 
   const [isReadingPdf, setIsReadingPdf] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -256,6 +267,7 @@ export function WatermarkPdfClientTool() {
     setStatus("idle");
     setStatusMessage(undefined);
     setIsExporting(false);
+    setEditorTab("watermark");
     resetSettingsState();
   }, [resetSettingsState, revokeImageAsset]);
 
@@ -503,10 +515,6 @@ export function WatermarkPdfClientTool() {
     return "idle";
   }, [isExporting, isReadingPdf, hasResult, status, uploadedPdf, canExport]);
 
-  const stickyVisible = Boolean(
-    uploadedPdf && (canExport || isExporting || hasResult),
-  );
-
   const exportHint = canExport
     ? "Ready to add your watermark and download."
     : selection.error
@@ -525,20 +533,39 @@ export function WatermarkPdfClientTool() {
             className="h-4 w-4 text-scanonix-orange"
             aria-hidden="true"
           />
-          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-            Watermark PDF
-          </p>
+          <p className="wm-title text-foreground">Watermark</p>
         </div>
-        <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
-          Choose the watermark content, style, and placement. Preview updates
-          live on the left.
+        <p className="wm-lead mt-1.5 text-scanonix-muted">
+          Preview updates on the page.
         </p>
       </div>
 
-      <section className="space-y-2.5">
-        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-          Watermark
-        </p>
+      <div className="wm-tabs" role="tablist" aria-label="Watermark steps">
+        {WATERMARK_EDITOR_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            id={`wm-tab-${tab.id}`}
+            className="wm-tab"
+            aria-selected={editorTab === tab.id}
+            aria-controls={`wm-panel-${tab.id}`}
+            data-watermark-editor-tab={tab.id}
+            onClick={() => setEditorTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {editorTab === "watermark" && (
+      <section
+        className="space-y-2.5"
+        role="tabpanel"
+        id="wm-panel-watermark"
+        aria-labelledby="wm-tab-watermark"
+      >
+        <p className="wm-section text-foreground">Type</p>
         <div
           data-watermark-mode-selector
           className="inline-flex w-full rounded-lg border border-border bg-surface-muted p-1"
@@ -561,7 +588,7 @@ export function WatermarkPdfClientTool() {
                     : "text-scanonix-muted hover:text-foreground"
                 }`}
               >
-                {mode === "text" ? "TEXT" : "IMAGE"}
+                {mode === "text" ? "Text" : "Image"}
               </button>
             );
           })}
@@ -684,11 +711,15 @@ export function WatermarkPdfClientTool() {
           </div>
         )}
       </section>
+      )}
 
-      <section className="space-y-3 border-t border-border/80 pt-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-          Style
-        </p>
+      {editorTab === "style" && (
+      <section
+        className="space-y-3"
+        role="tabpanel"
+        id="wm-panel-style"
+        aria-labelledby="wm-tab-style"
+      >
 
         {settings.mode === "text" && (
           <>
@@ -817,12 +848,70 @@ export function WatermarkPdfClientTool() {
             {opacityPercentToEngine(settings.opacityPercent).toFixed(1)})
           </span>
         </label>
-      </section>
 
-      <section className="space-y-3 border-t border-border/80 pt-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-          Placement
-        </p>
+        <fieldset className="space-y-2.5" data-watermark-rotation-control>
+          <legend className="wm-section text-foreground">Rotation</legend>
+          <div className="flex flex-wrap gap-1.5">
+            {ROTATION_PRESET_OPTIONS.map((preset) => {
+              const selected = settings.rotationDegrees === preset.value;
+              return (
+                <button
+                  key={preset.label}
+                  type="button"
+                  data-watermark-rotation={preset.value}
+                  disabled={isBusy}
+                  aria-pressed={selected}
+                  onClick={() =>
+                    updateSettings({ rotationDegrees: preset.value })
+                  }
+                  className={`rounded-md border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
+                    selected
+                      ? "border-scanonix-orange bg-scanonix-orange/10 text-foreground"
+                      : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/50"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex gap-2">
+            <label className="sr-only" htmlFor="watermark-custom-rotation">
+              Custom rotation degrees
+            </label>
+            <input
+              id="watermark-custom-rotation"
+              type="number"
+              data-watermark-rotation-custom
+              min={-360}
+              max={360}
+              step={1}
+              value={customRotation}
+              disabled={isBusy}
+              placeholder="Custom °"
+              onChange={(event) => setCustomRotation(event.target.value)}
+              className="input-field min-w-0 flex-1"
+            />
+            <ActionButton
+              variant="outline"
+              size="sm"
+              disabled={isBusy || !customRotation.trim()}
+              onClick={handleCustomRotationApply}
+            >
+              Apply
+            </ActionButton>
+          </div>
+        </fieldset>
+      </section>
+      )}
+
+      {editorTab === "placement" && (
+      <section
+        className="space-y-3"
+        role="tabpanel"
+        id="wm-panel-placement"
+        aria-labelledby="wm-tab-placement"
+      >
 
         <fieldset className="space-y-2" data-watermark-placement-mode>
           <legend className="text-xs font-medium text-scanonix-muted">
@@ -913,7 +1002,7 @@ export function WatermarkPdfClientTool() {
             </p>
             {showRepeatOverlapWarning && (
               <p
-                className="text-xs text-amber-700 dark:text-amber-400"
+                className="text-xs text-amber-700 [[data-theme=dark]_&]:text-amber-400"
                 data-watermark-repeat-overlap-warning
                 role="status"
               >
@@ -923,62 +1012,6 @@ export function WatermarkPdfClientTool() {
             )}
           </fieldset>
         )}
-
-        <fieldset className="space-y-2.5" data-watermark-rotation-control>
-          <legend className="text-xs font-medium text-scanonix-muted">
-            Rotation
-          </legend>
-          <div className="flex flex-wrap gap-1.5">
-            {ROTATION_PRESET_OPTIONS.map((preset) => {
-              const selected = settings.rotationDegrees === preset.value;
-              return (
-                <button
-                  key={preset.label}
-                  type="button"
-                  data-watermark-rotation={preset.value}
-                  disabled={isBusy}
-                  aria-pressed={selected}
-                  onClick={() =>
-                    updateSettings({ rotationDegrees: preset.value })
-                  }
-                  className={`rounded-md border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-50 ${
-                    selected
-                      ? "border-scanonix-orange bg-scanonix-orange/10 text-foreground"
-                      : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/50"
-                  }`}
-                >
-                  {preset.label}
-                </button>
-              );
-            })}
-          </div>
-          <div className="flex gap-2">
-            <label className="sr-only" htmlFor="watermark-custom-rotation">
-              Custom rotation degrees
-            </label>
-            <input
-              id="watermark-custom-rotation"
-              type="number"
-              data-watermark-rotation-custom
-              min={-360}
-              max={360}
-              step={1}
-              value={customRotation}
-              disabled={isBusy}
-              placeholder="Custom °"
-              onChange={(event) => setCustomRotation(event.target.value)}
-              className="input-field min-w-0 flex-1"
-            />
-            <ActionButton
-              variant="outline"
-              size="sm"
-              disabled={isBusy || !customRotation.trim()}
-              onClick={handleCustomRotationApply}
-            >
-              Apply
-            </ActionButton>
-          </div>
-        </fieldset>
 
         <fieldset className="space-y-2.5">
           <legend className="text-xs font-medium text-scanonix-muted">
@@ -1007,12 +1040,17 @@ export function WatermarkPdfClientTool() {
           </div>
         </fieldset>
       </section>
+      )}
 
-      <section className="space-y-2.5 border-t border-border/80 pt-4">
+      {editorTab === "pages" && (
+      <section
+        className="space-y-2.5"
+        role="tabpanel"
+        id="wm-panel-pages"
+        aria-labelledby="wm-tab-pages"
+      >
         <fieldset className="space-y-2.5" data-watermark-page-range>
-          <legend className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-            Pages
-          </legend>
+          <legend className="wm-section text-foreground">Page range</legend>
           <label className="flex items-center gap-3 text-sm text-foreground">
             <input
               type="radio"
@@ -1066,21 +1104,57 @@ export function WatermarkPdfClientTool() {
             </div>
           )}
         </fieldset>
-      </section>
 
-      <div className="border-t border-border/80 pt-3 space-y-2">
-        <PrivacyNotice message={WATERMARK_UI_PRIVACY_COPY} />
-        <p className="text-xs text-scanonix-muted">{WATERMARK_SECURITY_COPY}</p>
-      </div>
+        <p className="wm-cue text-scanonix-muted">{exportHint}</p>
+        <div className="space-y-2 pt-1">
+          <PrivacyNotice message={WATERMARK_UI_PRIVACY_COPY} />
+          <p className="wm-cue text-scanonix-muted">{WATERMARK_SECURITY_COPY}</p>
+        </div>
+      </section>
+      )}
     </div>
   );
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="watermark-pdf-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
       />
+
+      {uploadedPdf && currentPageEntry ? (
+        <div
+          data-watermark-pdf-header
+          className="wm-file-header flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+              <WatermarkDropIcon className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {uploadedPdf.file.name}
+              </p>
+              <p className="truncate text-[11px] text-scanonix-muted">
+                {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
+                {pageCount === 1 ? "" : "s"}
+              </p>
+            </div>
+          </div>
+          <div className="w-full sm:w-auto">
+            <ActionButton
+              variant="outline"
+              size="sm"
+              data-watermark-choose-another
+              disabled={isBusy}
+              onClick={resetWorkspace}
+              className="w-full rounded-lg sm:w-auto"
+            >
+              {hasResult ? "Start over" : "Choose another PDF"}
+            </ActionButton>
+          </div>
+        </div>
+      ) : null}
 
       <ToolWorkspaceShell
         isEmpty={!uploadedPdf}
@@ -1094,6 +1168,7 @@ export function WatermarkPdfClientTool() {
               disabled={isBusy}
               inputId="watermark-source-pdf-input"
               inputDataAttributes={{ "data-watermark-source-pdf-input": "true" }}
+              className="watermark-pdf-drop"
               label="Drop a PDF file here to add a watermark"
               hint="or click to browse — up to 10 MB, processed locally in your browser"
               icon={<WatermarkDropIcon />}
@@ -1106,48 +1181,7 @@ export function WatermarkPdfClientTool() {
         }
         workArea={
           uploadedPdf && currentPageEntry ? (
-            <div
-              data-watermark-pdf-workspace
-              className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]"
-            >
-              <div
-                data-watermark-pdf-header
-                className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4"
-              >
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <WatermarkDropIcon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {uploadedPdf.file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
-                      {pageCount === 1 ? "" : "s"}
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={
-                    stickyVisible
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
-                  }
-                >
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    data-watermark-choose-another
-                    disabled={isBusy}
-                    onClick={resetWorkspace}
-                    className="w-full rounded-lg sm:w-auto"
-                  >
-                    {hasResult ? "Start over" : "Choose another PDF"}
-                  </ActionButton>
-                </div>
-              </div>
-
+            <div data-watermark-pdf-workspace>
               {uploadedPdf.document.hasExistingDigitalSignatures && (
                 <div className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-3">
                   <p className="text-sm text-foreground">
@@ -1237,55 +1271,55 @@ export function WatermarkPdfClientTool() {
                 footer={
                   hasResult ? (
                     <div className="flex flex-col gap-2">
-                      <div className="hidden md:block">
-                        <ActionButton
-                          size="lg"
-                          data-watermark-download-button
-                          className="w-full"
-                          loading={isExporting}
-                          disabled={!canExport}
-                          onClick={handleDownloadWatermarkedPdf}
-                        >
-                          {isExporting
-                            ? "Watermarking…"
-                            : "Download watermarked PDF"}
-                        </ActionButton>
-                      </div>
+                      <ActionButton
+                        size="lg"
+                        data-watermark-download-button
+                        className="w-full"
+                        loading={isExporting}
+                        disabled={!canExport}
+                        onClick={handleDownloadWatermarkedPdf}
+                      >
+                        {isExporting
+                          ? "Watermarking…"
+                          : "Download watermarked PDF"}
+                      </ActionButton>
                       <ActionButton
                         variant="outline"
                         size="lg"
                         className="w-full"
                         disabled={isBusy}
-                        onClick={handleSettingChange}
+                        onClick={() => {
+                          handleSettingChange();
+                          setEditorTab("watermark");
+                        }}
                       >
                         Change settings
                       </ActionButton>
-                      <div className="hidden md:block">
-                        <ActionButton
-                          variant="outline"
-                          size="lg"
-                          className="w-full"
-                          disabled={isBusy}
-                          onClick={resetWorkspace}
-                        >
-                          Start over
-                        </ActionButton>
-                      </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-2">
-                      <p className="text-[11px] leading-snug text-scanonix-muted">
-                        {exportHint}
-                      </p>
-                      <div
-                        className={
-                          stickyVisible ? "hidden md:block" : undefined
-                        }
-                      >
+                    <div className="wm-step-nav">
+                      {editorTab !== "watermark" && (
                         <ActionButton
-                          size="lg"
+                          variant="outline"
+                          size="md"
+                          data-watermark-step-back
+                          disabled={isBusy}
+                          onClick={() => {
+                            const index = WATERMARK_EDITOR_TABS.findIndex(
+                              (tab) => tab.id === editorTab,
+                            );
+                            const previous = WATERMARK_EDITOR_TABS[index - 1];
+                            if (previous) setEditorTab(previous.id);
+                          }}
+                        >
+                          Back
+                        </ActionButton>
+                      )}
+                      {editorTab === "pages" ? (
+                        <ActionButton
+                          size="md"
                           data-watermark-download-button
-                          className="w-full shadow-[var(--shadow-orange-sm)]"
+                          className="wm-step-download"
                           loading={isExporting}
                           disabled={!canExport}
                           onClick={handleDownloadWatermarkedPdf}
@@ -1294,7 +1328,23 @@ export function WatermarkPdfClientTool() {
                             ? "Watermarking…"
                             : "Download watermarked PDF"}
                         </ActionButton>
-                      </div>
+                      ) : (
+                        <ActionButton
+                          variant="secondary"
+                          size="md"
+                          data-watermark-step-next
+                          disabled={isBusy}
+                          onClick={() => {
+                            const index = WATERMARK_EDITOR_TABS.findIndex(
+                              (tab) => tab.id === editorTab,
+                            );
+                            const next = WATERMARK_EDITOR_TABS[index + 1];
+                            if (next) setEditorTab(next.id);
+                          }}
+                        >
+                          Next
+                        </ActionButton>
+                      )}
                     </div>
                   )
                 }
@@ -1302,37 +1352,15 @@ export function WatermarkPdfClientTool() {
                 {hasResult ? (
                   <div className="space-y-4">
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Result
-                      </p>
-                      <p className="mt-1.5 text-sm font-semibold text-green-700">
-                        ✓ Watermark added
-                      </p>
-                      <p className="mt-1 text-xs text-scanonix-muted">
-                        Your watermarked PDF was downloaded. You can download
-                        again or change settings.
+                      <p className="wm-section text-foreground">Result</p>
+                      <p className="wm-lead mt-1 text-foreground">Watermark added</p>
+                      <p className="wm-cue mt-1 text-scanonix-muted">
+                        {selection.pages.length || pageCount} page
+                        {(selection.pages.length || pageCount) === 1 ? "" : "s"}
+                        {" \u00B7 "}
+                        {settings.mode === "text" ? "Text" : "Image"}
                       </p>
                     </div>
-                    <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Pages</dt>
-                        <dd className="font-semibold text-foreground">
-                          {selection.pages.length || pageCount}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Type</dt>
-                        <dd className="font-semibold capitalize text-foreground">
-                          {settings.mode}
-                        </dd>
-                      </div>
-                      <div className="min-w-0 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Source</dt>
-                        <dd className="mt-0.5 truncate font-semibold text-foreground">
-                          {uploadedPdf.file.name}
-                        </dd>
-                      </div>
-                    </dl>
                   </div>
                 ) : (
                   settingsBody
@@ -1344,7 +1372,7 @@ export function WatermarkPdfClientTool() {
       />
 
       <ToolStickyMobileActionBar
-        visible={stickyVisible}
+        visible={false}
         phase={resultActionPhase}
         primaryLabel="Download watermarked PDF"
         primaryLoading={isExporting}

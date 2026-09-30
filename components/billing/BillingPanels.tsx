@@ -24,12 +24,41 @@ function formatDate(value: string | null | undefined): string | null {
   }).format(new Date(value));
 }
 
+/** Human label for a subscription that is no longer the current plan. */
+function previousSubscriptionLabel(status: string): string {
+  switch (status) {
+    case "canceled":
+      return "Canceled";
+    case "past_due":
+      return "Past due";
+    case "unpaid":
+      return "Unpaid";
+    case "incomplete":
+      return "Incomplete";
+    case "incomplete_expired":
+      return "Expired";
+    case "paused":
+      return "Paused";
+    default:
+      return status.replaceAll("_", " ");
+  }
+}
+
 export function BillingPanel() {
   const { profile, refresh } = useAuth();
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState<string | null>(null);
 
   const effectivePlan = getEffectivePlan(profile);
+  const currentPaidPlan = effectivePlan !== "free";
+  const subscriptionStatus = profile?.subscription_status ?? null;
+  const previousSubscription =
+    !currentPaidPlan &&
+    subscriptionStatus &&
+    subscriptionStatus !== "active" &&
+    subscriptionStatus !== "trialing"
+      ? subscriptionStatus
+      : null;
   const renewalDate = formatDate(profile?.subscription_current_period_end);
 
   async function handleManageSubscription() {
@@ -62,30 +91,40 @@ export function BillingPanel() {
         <dl className="mt-5 space-y-4 text-sm">
           <div className="flex items-start justify-between gap-4">
             <dt className="text-scanonix-muted">Current plan</dt>
-            <dd className="font-semibold capitalize text-white">{effectivePlan}</dd>
+            <dd className="font-semibold capitalize text-foreground">{effectivePlan}</dd>
           </div>
-          <div className="flex items-start justify-between gap-4">
-            <dt className="text-scanonix-muted">Subscription status</dt>
-            <dd className="font-semibold capitalize text-white">
-              {profile?.subscription_status ?? "none"}
-            </dd>
-          </div>
-          {renewalDate && (
+          {currentPaidPlan ? (
+            <div className="flex items-start justify-between gap-4">
+              <dt className="text-scanonix-muted">Subscription status</dt>
+              <dd className="font-semibold capitalize text-foreground">
+                {subscriptionStatus ?? "none"}
+              </dd>
+            </div>
+          ) : null}
+          {previousSubscription ? (
+            <div className="flex items-start justify-between gap-4">
+              <dt className="text-scanonix-muted">Previous subscription</dt>
+              <dd className="font-semibold text-foreground">
+                {previousSubscriptionLabel(previousSubscription)}
+              </dd>
+            </div>
+          ) : null}
+          {currentPaidPlan && renewalDate ? (
             <div className="flex items-start justify-between gap-4">
               <dt className="text-scanonix-muted">
                 {profile?.cancel_at_period_end ? "Access until" : "Renews on"}
               </dt>
-              <dd className="font-semibold text-white">{renewalDate}</dd>
+              <dd className="font-semibold text-foreground">{renewalDate}</dd>
             </div>
-          )}
+          ) : null}
         </dl>
 
-        {profile?.cancel_at_period_end && (
+        {currentPaidPlan && profile?.cancel_at_period_end ? (
           <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
             Your subscription is set to cancel at the end of the current billing
             period. You keep access until then.
           </p>
-        )}
+        ) : null}
 
         {profile?.stripe_customer_id ? (
           <div className="mt-6 flex flex-wrap gap-3">
@@ -94,7 +133,7 @@ export function BillingPanel() {
               disabled={portalLoading}
               onClick={handleManageSubscription}
             >
-              Manage subscription
+              {currentPaidPlan ? "Manage subscription" : "Manage billing"}
             </ActionButton>
             <ActionButton variant="outline" onClick={() => void refresh()}>
               Refresh status

@@ -1,0 +1,54 @@
+/*
+ * Protect PDF prototype only.
+ * Every rule is scoped to .protect-pdf-prototype, which exists only inside ProtectPdfTool.
+ * This file does not restyle other tools or the shared settings rail.
+ */
+
+.protect-pdf-prototype .protect-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .protect-pdf-prototype .protect-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.protect-pdf-prototype .protect-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .protect-pdf-prototype .protect-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .protect-pdf-prototype .protect-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.protect-pdf-prototype .protect-drop:hover {
+  box-shadow: none;
+}
+
+.protect-pdf-prototype [data-tool-workspace="active"] {
+  display: block;
+}
+
+.protect-pdf-prototype .protect-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
+.protect-pdf-prototype .protect-visibility:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--scanonix-orange) 70%, transparent);
+  outline-offset: 2px;
+}

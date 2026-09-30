@@ -65,26 +65,28 @@ function run() {
   );
 
   assert(
-    "5 Pro visual uses centralized ToolVisual imports",
-    promoSource.includes('from "@/components/tools/ToolVisual"') &&
-      promoSource.includes("<ToolVisual") &&
-      promoSource.includes('data-pro-promo-visual="tool-visuals"') &&
-      promoSource.includes('data-tool-slug='),
+    "5 Pro toolkit is one panel, not floating tool cards",
+    promoSource.includes("Your Pro toolkit") &&
+      promoSource.includes("scanonix-pro-promo__toolkit") &&
+      !promoSource.includes("ToolVisual") &&
+      !promoSource.includes("float-card") &&
+      !cssSource.includes("#9333ea"),
   );
 
   assert(
-    "6 mobile structure present (stacked grid + compact visual)",
+    "6 mobile structure present (stacked grid, three zones from desktop)",
     cssSource.includes(".scanonix-pro-promo__grid") &&
       cssSource.includes("grid-template-columns: 1fr") &&
-      cssSource.includes("@media (max-width: 639px)") &&
+      cssSource.includes("grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.12fr) minmax(0, 0.92fr)") &&
+      cssSource.includes("align-items: start") &&
       promoSource.includes("scanonix-pro-promo__copy"),
   );
 
   assert(
-    "7 reduced-motion supported",
-    cssSource.includes("@media (prefers-reduced-motion: reduce)") &&
-      cssSource.includes(".scanonix-pro-promo__float-card") &&
-      cssSource.includes("animation: none"),
+    "7 Pro toolkit has no motion",
+    !cssSource.includes("pro-promo-float") &&
+      !cssSource.includes("pro-promo-glow-breathe") &&
+      !promoSource.includes("animate-"),
   );
 
   assert(

@@ -115,7 +115,7 @@ export function SplitModePanel({
             className="input-field w-full"
           />
           {rangeError ? (
-            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+            <p className="text-sm text-red-600 [[data-theme=dark]_&]:text-red-400" role="alert">
               {rangeError}
             </p>
           ) : (

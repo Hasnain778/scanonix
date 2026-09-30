@@ -9,7 +9,9 @@ export default function CropPdfPage() {
   return (
     <ToolRoute
       toolId="crop-pdf"
-      icon={<ToolIcon type="crop-pdf" className="h-7 w-7" />}
+      icon={<ToolIcon type="crop-pdf" className="h-5 w-5" />}
+      headerCompact
+      usageTone="quiet"
     >
       <LazyCropPdfTool />
     </ToolRoute>

@@ -33,6 +33,7 @@ import {
 } from "@/lib/ai/translation-languages";
 import { formatPlanError } from "@/lib/plan/tool-gate";
 import type { ToolStatus } from "@/lib/tools/types";
+import "@/styles/ai-text-premium.css";
 
 const TARGET_LANGUAGE_OPTIONS = TRANSLATION_LANGUAGES.map((language) => language.label);
 const RECENT_STORAGE_KEY = "scanonix-translator-recent";
@@ -350,7 +351,7 @@ export function AiTranslateTool() {
 
   return (
     // pb/pr clear the global Find a Tool FAB on mobile/tablet (lg+ uses desktop FAB offset).
-    <div className="space-y-5 overflow-x-hidden pb-28 lg:pb-0">
+    <div className="ai-text-premium space-y-5 overflow-x-hidden pb-28 lg:pb-0">
       {!stateResolved ? (
         <div className="rounded-xl border border-border bg-surface-raised px-4 py-3 text-sm text-foreground-muted">
           Checking your account…
@@ -397,7 +398,7 @@ export function AiTranslateTool() {
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+      <div className="ai-text-shell overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
         {/* Desktop language bar — associated with both panes */}
         <div className="hidden border-b border-border px-4 py-4 sm:block sm:px-5">
           <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
@@ -524,7 +525,7 @@ export function AiTranslateTool() {
 
             <div
               dir={panelTextDirection(targetLanguage)}
-              className="min-h-[220px] w-full rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground"
+              className="ai-text-result min-h-[220px] w-full rounded-xl border border-border bg-surface-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground"
             >
               {isBusy ? (
                 <div className="flex h-full min-h-[188px] items-center justify-center text-foreground-muted">

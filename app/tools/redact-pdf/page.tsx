@@ -9,7 +9,9 @@ export default function RedactPdfPage() {
   return (
     <ToolRoute
       toolId="redact-pdf"
-      icon={<ToolIcon type="word" className="h-7 w-7" />}
+      icon={<ToolIcon type="redact-pdf" className="h-5 w-5" />}
+      headerCompact
+      usageTone="quiet"
     >
       <LazyRedactPdfProClientTool />
     </ToolRoute>

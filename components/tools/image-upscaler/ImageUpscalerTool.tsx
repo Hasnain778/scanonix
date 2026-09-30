@@ -39,6 +39,7 @@ import { formatFileSize } from "@/lib/tools/format-utils";
 import { FREE_IMAGE_MAX_BYTES } from "@/lib/tools/shared/image-validate";
 import type { ToolStatus } from "@/lib/tools/types";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
+import "@/styles/image-upscaler-premium.css";
 
 const ACCEPT_IMAGES = ".jpg,.jpeg,.png,.webp,.heic,.heif,image/*";
 const MAX_MB = Math.round(FREE_IMAGE_MAX_BYTES / (1024 * 1024));
@@ -101,26 +102,77 @@ export function ImageUpscalerTool() {
   /** Sticky off while processing; on for ready/error (with file) and result. */
   const stickyVisible = Boolean(file) && (hasResult || !isBusy);
 
+  useEffect(() => {
+    if (!stickyVisible) return;
+
+    const media = window.matchMedia("(max-width: 767px)");
+    let indicator: HTMLElement | null = null;
+
+    const findIndicator = () =>
+      document
+        .querySelector("nextjs-portal")
+        ?.shadowRoot?.querySelector<HTMLElement>("#devtools-indicator") ?? null;
+
+    const restore = () => {
+      indicator?.style.removeProperty("bottom");
+      indicator = null;
+    };
+
+    const place = () => {
+      const next = findIndicator();
+      const bar = document.querySelector<HTMLElement>("[data-sticky-action-bar]");
+      const barVisible =
+        Boolean(bar) && media.matches && getComputedStyle(bar as HTMLElement).display !== "none";
+
+      if (!next || !barVisible || !bar) {
+        restore();
+        return;
+      }
+
+      const gap = 12;
+      const bottom = Math.round(window.innerHeight - bar.getBoundingClientRect().top + gap);
+      if (next.style.getPropertyValue("bottom") !== `${bottom}px`) {
+        next.style.setProperty("bottom", `${bottom}px`, "important");
+      }
+      indicator = next;
+    };
+
+    place();
+    const bar = document.querySelector("[data-sticky-action-bar]");
+    const resizeObserver = new ResizeObserver(place);
+    if (bar) resizeObserver.observe(bar);
+    const portalObserver = new MutationObserver(place);
+    portalObserver.observe(document.body, { childList: true });
+    media.addEventListener("change", place);
+    window.addEventListener("resize", place);
+
+    return () => {
+      resizeObserver.disconnect();
+      portalObserver.disconnect();
+      media.removeEventListener("change", place);
+      window.removeEventListener("resize", place);
+      restore();
+    };
+  }, [stickyVisible]);
+
   const setFilePreview = useCallback((image: File | null) => {
-    setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current);
-      const next = image ? URL.createObjectURL(image) : undefined;
-      previewUrlRef.current = next;
-      return next;
-    });
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
 
     if (!image) {
+      previewUrlRef.current = undefined;
+      setPreviewUrl(undefined);
       setNaturalSize(undefined);
       return;
     }
 
-    const url = previewUrlRef.current;
-    if (!url) return;
+    const next = URL.createObjectURL(image);
+    previewUrlRef.current = next;
+    setPreviewUrl(next);
     const img = new Image();
     img.onload = () => {
       setNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
     };
-    img.src = url;
+    img.src = next;
   }, []);
 
   const setResultPreview = useCallback((blob: Blob | null) => {
@@ -333,7 +385,7 @@ export function ImageUpscalerTool() {
 
   return (
     <PremiumAiToolGate toolName="Image Upscaler">
-      <div className="space-y-5 overflow-x-hidden">
+      <div className="image-upscaler-premium space-y-5 overflow-x-hidden">
         {premiumLocked ? <UpgradeRequiredNotice feature="Image Upscaler" /> : null}
 
         {usageExhausted ? (
@@ -351,6 +403,32 @@ export function ImageUpscalerTool() {
 
         <ToolStatusBanner status={status} message={message} />
 
+        {file ? (
+          <div data-image-upscaler-header="" className="gap-3">
+            <div className="min-w-0">
+              <p className="truncate">{file.name}</p>
+              <p className="truncate">{formatFileSize(file.size)}</p>
+            </div>
+            {!isBusy ? (
+              <div
+                className={
+                  hasResult ? "hidden w-full shrink-0 sm:w-auto md:block" : "w-full shrink-0 sm:w-auto"
+                }
+              >
+                <ActionButton
+                  variant="outline"
+                  size="sm"
+                  className="w-full rounded-lg sm:w-auto"
+                  disabled={isBusy}
+                  onClick={resetTool}
+                >
+                  {hasResult ? "Start over" : "Upload another"}
+                </ActionButton>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
         <ToolWorkspaceShell
           isEmpty={!showWorkspace}
           empty={
@@ -364,6 +442,7 @@ export function ImageUpscalerTool() {
               <FileDropZone
                 accept={ACCEPT_IMAGES}
                 multiple={false}
+                className="image-upscaler-drop"
                 label="Drop an image to upscale"
                 hint={`JPG, PNG, WEBP or HEIC — up to ${MAX_MB}MB`}
                 disabled={isBusy || premiumLocked}
@@ -390,53 +469,14 @@ export function ImageUpscalerTool() {
                   }
                 }}
               />
-              <PrivacyNotice message={PRIVACY_MESSAGE} />
+              <div className="image-upscaler-privacy">
+                <PrivacyNotice message={PRIVACY_MESSAGE} />
+              </div>
             </>
           }
           workArea={
             showWorkspace ? (
-              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-                {file ? (
-                  <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                    <div className="flex min-w-0 items-center gap-2.5">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                        <UpscaleDropIcon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-foreground">
-                          {file.name}
-                        </p>
-                        <p className="truncate text-[11px] text-scanonix-muted">
-                          {formatFileSize(file.size)}
-                          {naturalSize
-                            ? ` · ${naturalSize.width} × ${naturalSize.height}px`
-                            : ""}
-                        </p>
-                      </div>
-                    </div>
-                    {!isBusy ? (
-                      <div
-                        className={
-                          hasResult
-                            ? "hidden w-full sm:w-auto md:block"
-                            : "w-full sm:w-auto"
-                        }
-                      >
-                        <ActionButton
-                          variant="outline"
-                          size="sm"
-                          className="w-full rounded-lg sm:w-auto"
-                          disabled={isBusy}
-                          onClick={resetTool}
-                        >
-                          {hasResult ? "Start over" : "Upload another"}
-                        </ActionButton>
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                <div className="bg-surface-muted/30 p-3 sm:p-4">
+              <div data-image-upscaler-stage="">
                   {isBusy && previewUrl ? (
                     <ImageUpscalerProcessingPanel
                       snapshot={jobProgress}
@@ -457,32 +497,24 @@ export function ImageUpscalerTool() {
                       </p>
                     </div>
                   ) : hasResult && previewUrl && resultPreviewUrl ? (
-                    <div className="space-y-4">
+                    <div className="image-upscaler-compare space-y-4">
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-scanonix-muted">
                             Original
                           </p>
-                          <div className="overflow-hidden rounded-xl border border-scanonix-border bg-black/30">
+                          <div className="image-upscaler-preview">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={previewUrl}
-                              alt="Original image"
-                              className="max-h-64 w-full object-contain"
-                            />
+                            <img src={previewUrl} alt="Original image" />
                           </div>
                         </div>
                         <div className="space-y-2">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-scanonix-muted">
                             Upscaled {factor}×
                           </p>
-                          <div className="overflow-hidden rounded-xl border border-scanonix-orange/30 bg-black/30">
+                          <div className="image-upscaler-preview">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={resultPreviewUrl}
-                              alt="Upscaled image"
-                              className="max-h-64 w-full object-contain"
-                            />
+                            <img src={resultPreviewUrl} alt="Upscaled image" />
                           </div>
                         </div>
                       </div>
@@ -499,13 +531,9 @@ export function ImageUpscalerTool() {
                       ) : null}
                     </div>
                   ) : previewUrl ? (
-                    <div className="overflow-hidden rounded-xl border border-scanonix-border bg-black/30">
+                    <div className="image-upscaler-preview">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="max-h-80 w-full object-contain"
-                      />
+                      <img src={previewUrl} alt="Preview" />
                     </div>
                   ) : null}
 
@@ -515,7 +543,6 @@ export function ImageUpscalerTool() {
                       {UPSCALE_JOB_POLL_INTERVAL_MS / 1000}s
                     </p>
                   ) : null}
-                </div>
               </div>
             ) : null
           }
@@ -524,7 +551,8 @@ export function ImageUpscalerTool() {
               hasResult && resultBlob ? (
                 <aside
                   aria-label="Image upscaler result"
-                  className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-5.5rem)] lg:w-[320px] lg:shrink-0"
+                  data-image-upscaler-result=""
+                  className="flex w-full min-w-0 flex-col"
                   data-tool-control-panel=""
                 >
                   <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-3.5 py-3 sm:px-4">
@@ -602,15 +630,6 @@ export function ImageUpscalerTool() {
                       >
                         Download image
                       </ActionButton>
-                      <ActionButton
-                        variant="outline"
-                        size="md"
-                        className="w-full whitespace-nowrap"
-                        disabled={isBusy}
-                        onClick={resetTool}
-                      >
-                        Start over
-                      </ActionButton>
                     </div>
                   </div>
                 </aside>
@@ -626,6 +645,7 @@ export function ImageUpscalerTool() {
                         <div className="hidden md:block">
                           <ActionButton
                             size="md"
+                            data-upscale-action=""
                             className="h-11 w-full whitespace-nowrap px-4 text-sm shadow-[var(--shadow-orange-sm)]"
                             disabled={!canRun}
                             onClick={() => void handleUpscale()}
@@ -644,58 +664,20 @@ export function ImageUpscalerTool() {
                   <div className="space-y-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <Sparkles
-                          className="h-4 w-4 text-scanonix-orange"
-                          aria-hidden="true"
-                          strokeWidth={1.75}
-                        />
                         <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                          Image Upscaler
+                          Upscale
                         </p>
                         <ProBadge />
                       </div>
-                      <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
-                        Upscale with Real-ESRGAN AI super-resolution.
-                      </p>
-                    </div>
-
-                    {file ? (
-                      <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                        <div className="min-w-0 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Selected file</dt>
-                          <dd className="mt-0.5 truncate font-semibold text-foreground">
-                            {file.name}
-                          </dd>
-                        </div>
-                        <div className="flex justify-between gap-3 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Size</dt>
-                          <dd className="font-semibold text-foreground">
-                            {formatFileSize(file.size)}
-                          </dd>
-                        </div>
-                        {naturalSize ? (
-                          <div className="flex justify-between gap-3 px-3 py-2.5">
-                            <dt className="text-scanonix-muted">Dimensions</dt>
-                            <dd className="font-semibold text-foreground">
-                              {naturalSize.width} × {naturalSize.height}px
-                            </dd>
-                          </div>
-                        ) : null}
-                      </dl>
-                    ) : null}
-
-                    <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Upscale
-                      </p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {[2, 4].map((value) => (
                           <button
                             key={value}
                             type="button"
+                            aria-pressed={factor === value}
                             disabled={isBusy || premiumLocked}
                             onClick={() => setFactor(value as 2 | 4)}
-                            className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
+                            className={`image-upscaler-scale rounded-xl border px-4 py-2.5 text-sm font-medium transition ${
                               factor === value
                                 ? "border-scanonix-orange bg-scanonix-orange/15 text-foreground"
                                 : "border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40"
@@ -706,6 +688,23 @@ export function ImageUpscalerTool() {
                         ))}
                       </div>
                     </div>
+
+                    {naturalSize ? (
+                      <dl className="image-upscaler-dims">
+                        <div>
+                          <dt>Original</dt>
+                          <dd>
+                            {naturalSize.width} × {naturalSize.height}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Output</dt>
+                          <dd>
+                            {naturalSize.width * factor} × {naturalSize.height * factor}
+                          </dd>
+                        </div>
+                      </dl>
+                    ) : null}
 
                     {isBusy ? (
                       <div className="rounded-xl border border-border bg-surface-muted/40 px-3 py-2.5">
@@ -721,7 +720,7 @@ export function ImageUpscalerTool() {
                       </div>
                     ) : null}
 
-                    <div className="border-t border-border/80 pt-3">
+                    <div className="image-upscaler-privacy border-t border-border/80 pt-3">
                       <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                         Privacy
                       </p>

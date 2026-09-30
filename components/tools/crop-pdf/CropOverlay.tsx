@@ -24,22 +24,22 @@ const CORNER_HANDLES: Array<{
 }> = [
   {
     handle: "nw",
-    className: "-left-3 -top-3 cursor-nwse-resize",
+    className: "-left-4 -top-4 cursor-nwse-resize",
     label: "Resize crop top-left",
   },
   {
     handle: "ne",
-    className: "-right-3 -top-3 cursor-nesw-resize",
+    className: "-right-4 -top-4 cursor-nesw-resize",
     label: "Resize crop top-right",
   },
   {
     handle: "sw",
-    className: "-bottom-3 -left-3 cursor-nesw-resize",
+    className: "-bottom-4 -left-4 cursor-nesw-resize",
     label: "Resize crop bottom-left",
   },
   {
     handle: "se",
-    className: "-right-3 -bottom-3 cursor-nwse-resize",
+    className: "-right-4 -bottom-4 cursor-nwse-resize",
     label: "Resize crop bottom-right",
   },
 ];
@@ -51,22 +51,22 @@ const EDGE_HANDLES: Array<{
 }> = [
   {
     handle: "n",
-    className: "-top-3 left-1/2 -translate-x-1/2 cursor-ns-resize",
+    className: "-top-4 left-1/2 -translate-x-1/2 cursor-ns-resize",
     label: "Resize crop top edge",
   },
   {
     handle: "s",
-    className: "-bottom-3 left-1/2 -translate-x-1/2 cursor-ns-resize",
+    className: "-bottom-4 left-1/2 -translate-x-1/2 cursor-ns-resize",
     label: "Resize crop bottom edge",
   },
   {
     handle: "w",
-    className: "-left-3 top-1/2 -translate-y-1/2 cursor-ew-resize",
+    className: "-left-4 top-1/2 -translate-y-1/2 cursor-ew-resize",
     label: "Resize crop left edge",
   },
   {
     handle: "e",
-    className: "-right-3 top-1/2 -translate-y-1/2 cursor-ew-resize",
+    className: "-right-4 top-1/2 -translate-y-1/2 cursor-ew-resize",
     label: "Resize crop right edge",
   },
 ];
@@ -216,12 +216,9 @@ export function CropOverlay({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className={`absolute flex h-11 w-11 items-center justify-center rounded-full border-2 border-scanonix-orange bg-scanonix-surface shadow-lg ${className}`}
+            className={`crop-handle absolute flex items-center justify-center bg-transparent ${className}`}
           >
-            <span
-              aria-hidden="true"
-              className="h-2.5 w-2.5 rounded-full bg-scanonix-orange"
-            />
+            <span aria-hidden="true" />
           </button>
         ))}
 
@@ -235,12 +232,9 @@ export function CropOverlay({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className={`absolute flex h-9 w-9 items-center justify-center rounded-full border border-scanonix-orange/80 bg-scanonix-surface/95 shadow ${className}`}
+            className={`crop-handle absolute flex items-center justify-center bg-transparent ${className}`}
           >
-            <span
-              aria-hidden="true"
-              className="h-1.5 w-1.5 rounded-full bg-scanonix-orange"
-            />
+            <span aria-hidden="true" />
           </button>
         ))}
       </div>

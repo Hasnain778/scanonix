@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Lock, Shield } from "lucide-react";
+import Link from "next/link";
+import { Lock } from "lucide-react";
+import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
@@ -9,7 +11,6 @@ import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { SecurityToolWorkspace } from "@/components/tools/security/SecurityToolWorkspace";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import {
   PROTECT_PDF_AES256_SUCCESS,
@@ -29,10 +30,52 @@ import {
   createProcessAttempt,
   planErrorMessageToCode,
 } from "@/lib/analytics/process-lifecycle";
+import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
+import { trackEvent } from "@/lib/analytics/ga4";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
-const GATE_DESCRIPTION =
-  "Add password protection to your PDF. Upgrade to Pro to encrypt and download.";
+function ProtectAccessNote({ isAuthenticated }: { isAuthenticated: boolean }) {
+  return (
+    <div className="max-w-[36rem]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
+        Pro required
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-foreground">
+        Password protection is available with Scanonix Pro.
+      </p>
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        {isAuthenticated ? (
+          <CheckoutButton
+            plan="pro"
+            interval="monthly"
+            label="Upgrade to Pro"
+            sourceSurface={ANALYTICS_SURFACES.SECURITY_GATE}
+          />
+        ) : (
+          <Link
+            href="/login"
+            className="inline-flex items-center rounded-lg border border-border px-3 py-1.5 text-sm font-semibold text-foreground transition hover:border-scanonix-orange/45"
+          >
+            Sign in
+          </Link>
+        )}
+        <Link
+          href="/pricing"
+          onClick={() => {
+            trackEvent("upgrade_click", {
+              source_surface: ANALYTICS_SURFACES.SECURITY_GATE,
+              tier: "pro",
+              tool_slug: "protect-pdf",
+            });
+          }}
+          className="text-sm font-medium text-foreground-secondary transition hover:text-foreground"
+        >
+          View Pro
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 function ProtectDropIcon({ className = "h-7 w-7" }: { className?: string }) {
   return <Lock className={className} aria-hidden="true" strokeWidth={1.75} />;
@@ -43,38 +86,25 @@ function PasswordField({
   value,
   onChange,
   visible,
-  onToggleVisible,
   disabled,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   visible: boolean;
-  onToggleVisible: () => void;
   disabled?: boolean;
 }) {
   return (
     <label className="block space-y-2">
       <span className="text-sm font-medium text-foreground">{label}</span>
-      <div className="relative">
-        <input
-          type={visible ? "text" : "password"}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="input-field pr-12"
-          autoComplete="new-password"
-          disabled={disabled}
-        />
-        <button
-          type="button"
-          onClick={onToggleVisible}
-          disabled={disabled}
-          className="absolute inset-y-0 right-0 flex items-center px-3 text-scanonix-muted transition-colors hover:text-foreground disabled:opacity-50"
-          aria-label={visible ? "Hide password" : "Show password"}
-        >
-          {visible ? "Hide" : "Show"}
-        </button>
-      </div>
+      <input
+        type={visible ? "text" : "password"}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="input-field"
+        autoComplete="new-password"
+        disabled={disabled}
+      />
     </label>
   );
 }
@@ -185,11 +215,8 @@ export function ProtectPdfTool() {
   }, [status, hasResult, file]);
 
   return (
-    <SecurityToolWorkspace
-      toolName="Protect PDF"
-      gateDescription={GATE_DESCRIPTION}
-    >
-      {({ isPro, showGate }) => {
+    <SecurityToolWorkspace toolName="Protect PDF" gate="none">
+      {({ isPro, showGate, isAuthenticated }) => {
         const stickyVisible = Boolean(file) && isPro;
         const canProtect =
           Boolean(file) &&
@@ -213,7 +240,7 @@ export function ProtectPdfTool() {
             : "Encrypts with AES-256 and downloads automatically.";
 
         return (
-          <div className="space-y-5 overflow-x-hidden">
+          <div className="protect-pdf-prototype space-y-5 overflow-x-hidden">
             <ToolStatusBanner status={status} message={message} />
 
             <ToolWorkspaceShell
@@ -233,16 +260,22 @@ export function ProtectPdfTool() {
                     hint="Drop a PDF file or click to browse"
                     icon={<ProtectDropIcon />}
                     validateFile={isAcceptedPdfFile}
+                    className="protect-drop"
                   />
-                  <PrivacyNotice message={PROTECT_PDF_PRIVACY_COPY} />
+                  <div className="protect-privacy">
+                    <PrivacyNotice message={PROTECT_PDF_PRIVACY_COPY} />
+                  </div>
+                  {showGate ? (
+                    <ProtectAccessNote isAuthenticated={isAuthenticated} />
+                  ) : null}
                 </>
               }
               workArea={
                 file ? (
-                  <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-                    <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                  <div className="w-full lg:max-w-[36rem]">
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-scanonix-orange/10 text-scanonix-orange">
                           <ProtectDropIcon className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
@@ -254,13 +287,7 @@ export function ProtectPdfTool() {
                           </p>
                         </div>
                       </div>
-                      <div
-                        className={
-                          stickyVisible
-                            ? "hidden w-full sm:w-auto md:block"
-                            : "w-full sm:w-auto"
-                        }
-                      >
+                      <div className={stickyVisible ? "hidden lg:block" : undefined}>
                         <ActionButton
                           variant="outline"
                           size="sm"
@@ -274,7 +301,7 @@ export function ProtectPdfTool() {
                     </div>
 
                     {hasExistingSignatures ? (
-                      <div className="border-b border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 sm:px-4">
+                      <div className="mt-3 rounded-lg bg-amber-500/10 px-3.5 py-2.5">
                         <p className="text-sm text-foreground">
                           {DIGITAL_SIGNATURE_WARNING}
                         </p>
@@ -285,140 +312,91 @@ export function ProtectPdfTool() {
                       </div>
                     ) : null}
 
-                    <div className="space-y-3 bg-surface-muted/30 p-3 sm:p-4">
-                      <div className="rounded-xl border border-border bg-surface px-3.5 py-3">
-                        <p className="text-sm font-semibold text-foreground">
-                          {hasResult
-                            ? "Protected PDF downloaded"
-                            : "Ready to protect PDF"}
+                    <div className="mt-3 space-y-3 rounded-xl bg-surface-strong p-3.5 sm:p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-foreground">
+                          Password protection
                         </p>
-                        <p className="mt-1 text-xs leading-snug text-scanonix-muted">
-                          {hasResult
-                            ? "Your download should have started. Protect again with the same passwords or start over."
-                            : "Set a password in the control panel. Scanonix encrypts with AES-256 and never stores passwords."}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : null
-              }
-              controlPanel={
-                file ? (
-                  <ToolControlPanel
-                    aria-label="Protect PDF controls"
-                    footer={
-                      <div className="flex flex-col gap-2">
-                        <p className="text-[11px] leading-snug text-scanonix-muted">
-                          {protectHint}
-                        </p>
-                        <div
-                          className={
-                            stickyVisible ? "hidden md:block" : undefined
+                        <button
+                          type="button"
+                          className="protect-visibility shrink-0 rounded-lg px-2.5 py-1 text-sm font-medium text-foreground-secondary transition-colors hover:text-foreground disabled:opacity-50"
+                          aria-pressed={showPassword}
+                          aria-label={
+                            showPassword ? "Hide passwords" : "Show passwords"
+                          }
+                          disabled={isBusy}
+                          onClick={() =>
+                            setShowPassword((current) => !current)
                           }
                         >
-                          <ActionButton
-                            size="lg"
-                            className="w-full shadow-[var(--shadow-orange-sm)]"
-                            onClick={() => {
-                              void handleProtect();
-                            }}
-                            disabled={showGate || !canProtect}
-                            loading={isBusy}
-                          >
-                            {primaryLabel}
-                          </ActionButton>
-                        </div>
-                        {stickyVisible ? (
-                          <div className="hidden md:block">
-                            <ActionButton
-                              variant="outline"
-                              size="lg"
-                              className="w-full"
-                              disabled={isBusy}
-                              onClick={resetTool}
-                            >
-                              {hasResult ? "Start over" : "Choose another PDF"}
-                            </ActionButton>
-                          </div>
-                        ) : null}
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
                       </div>
-                    }
-                  >
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Shield
-                            className="h-4 w-4 text-scanonix-orange"
-                            aria-hidden="true"
-                            strokeWidth={1.75}
-                          />
-                          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                            Protect PDF
-                          </p>
-                        </div>
-                        <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
-                          Add a password and encrypt with AES-256 before sharing.
+
+                      <PasswordField
+                        label="Password"
+                        value={password}
+                        onChange={setPassword}
+                        visible={showPassword}
+                        disabled={isBusy}
+                      />
+                      <PasswordField
+                        label="Confirm password"
+                        value={confirmPassword}
+                        onChange={setConfirmPassword}
+                        visible={showPassword}
+                        disabled={isBusy}
+                      />
+                      <p className="text-xs leading-relaxed text-scanonix-muted">
+                        At least 4 characters.
+                      </p>
+                      {!passwordsMatch ? (
+                        <p className="text-sm text-red-600 [[data-theme=dark]_&]:text-red-400">
+                          Passwords do not match.
                         </p>
-                      </div>
-
-                      <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                        <div className="min-w-0 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Selected file</dt>
-                          <dd className="mt-0.5 truncate font-semibold text-foreground">
-                            {file.name}
-                          </dd>
-                        </div>
-                        <div className="flex justify-between gap-3 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Size</dt>
-                          <dd className="font-semibold text-foreground">
-                            {formatFileSize(file.size)}
-                          </dd>
-                        </div>
-                        <div className="px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Encryption</dt>
-                          <dd className="mt-0.5 text-foreground">AES-256</dd>
-                        </div>
-                      </dl>
-
-                      <div className="space-y-3">
-                        <PasswordField
-                          label="Password"
-                          value={password}
-                          onChange={setPassword}
-                          visible={showPassword}
-                          onToggleVisible={() =>
-                            setShowPassword((current) => !current)
-                          }
-                          disabled={isBusy}
-                        />
-                        <PasswordField
-                          label="Confirm password"
-                          value={confirmPassword}
-                          onChange={setConfirmPassword}
-                          visible={showPassword}
-                          onToggleVisible={() =>
-                            setShowPassword((current) => !current)
-                          }
-                          disabled={isBusy}
-                        />
-                        {!passwordsMatch ? (
-                          <p className="text-sm text-red-600 dark:text-red-400">
-                            Passwords do not match.
+                      ) : null}
+                      {hasResult ? (
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">
+                            Protected PDF downloaded
                           </p>
-                        ) : null}
-                      </div>
-
-                      <div className="border-t border-border/80 pt-3">
+                          <p className="mt-1 text-xs leading-snug text-scanonix-muted">
+                            Your download should have started. Protect again with
+                            the same passwords or start over.
+                          </p>
+                        </div>
+                      ) : null}
+                      <div className="protect-privacy">
                         <PrivacyNotice message={PROTECT_PDF_PRIVACY_COPY} />
                       </div>
                     </div>
-                  </ToolControlPanel>
+
+                    <div className="mt-3 flex flex-col gap-2">
+                      <p className="text-[11px] leading-snug text-scanonix-muted">
+                        {protectHint}
+                      </p>
+                      <div className={stickyVisible ? "hidden lg:block" : undefined}>
+                        <ActionButton
+                          size="lg"
+                          className="w-full shadow-[var(--shadow-orange-sm)]"
+                          onClick={() => {
+                            void handleProtect();
+                          }}
+                          disabled={showGate || !canProtect}
+                          loading={isBusy}
+                        >
+                          {primaryLabel}
+                        </ActionButton>
+                      </div>
+                    </div>
+                  </div>
                 ) : null
               }
             />
 
             <ToolStickyMobileActionBar
               visible={stickyVisible}
+              stickyUntil="lg"
               phase={resultActionPhase}
               primaryLabel={
                 isBusy

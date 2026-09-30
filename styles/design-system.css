@@ -59,10 +59,10 @@
   --z-modal: 100;
 
   /* Controls */
-  --input-height: 2.75rem;
-  --button-height-sm: 2rem;
-  --button-height-md: 2.5rem;
-  --button-height-lg: 2.875rem;
+  --input-height: 3rem;
+  --button-height-sm: 2.25rem;
+  --button-height-md: 2.75rem;
+  --button-height-lg: 3rem;
 }
 
 @media (min-width: 640px) {
@@ -1389,7 +1389,7 @@ textarea.input-field {
 /* Navbar — theme-aware premium links */
 .nav-link-premium {
   border-radius: var(--radius-md);
-  padding: 0.375rem 0.5rem;
+  padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--foreground-secondary);
@@ -1401,7 +1401,7 @@ textarea.input-field {
 
 .nav-link-premium:hover {
   color: var(--foreground);
-  text-shadow: 0 0 12px color-mix(in srgb, var(--scanonix-orange) 25%, transparent);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .nav-link-premium--active {
@@ -1519,74 +1519,146 @@ html[data-theme="bright"] .tool-finder-launcher:hover {
   border-radius: var(--radius-md);
 }
 
-/* Homepage Pro promo — premium dark neon (Phase 128F-FIX4) */
+/* Homepage Pro membership — Option 4 composition, explicit bright and dark */
 .scanonix-pro-promo {
   position: relative;
-  border-top: 1px solid var(--border);
-  padding-block: 2.5rem 2.75rem;
+  padding-block: 2rem 2.25rem;
 }
 
 @media (min-width: 640px) {
   .scanonix-pro-promo {
-    padding-block: 3rem 3.25rem;
+    padding-block: 2.25rem 2.5rem;
   }
 }
 
 .scanonix-pro-promo__panel {
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius-2xl);
-  border: 1px solid color-mix(in srgb, var(--scanonix-orange) 22%, transparent);
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--surface) 96%, transparent) 0%,
-    color-mix(in srgb, var(--surface-muted) 98%, transparent) 55%,
-    color-mix(in srgb, var(--surface-raised) 94%, transparent) 100%
-  );
-  box-shadow: var(--shadow-raised),
-    0 0 48px color-mix(in srgb, var(--scanonix-orange) 8%, transparent);
+  border: 0;
+  border-radius: 1.75rem;
+  background: #14110e;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #ffb37a 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent),
+    0 16px 36px color-mix(in srgb, black 28%, transparent);
 }
 
 .scanonix-pro-promo__panel::before {
   content: "";
-  pointer-events: none;
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
+  top: -8rem;
+  left: -4rem;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
   background: radial-gradient(
-    ellipse 55% 45% at 88% 42%,
-    color-mix(in srgb, #9333ea 12%, transparent) 0%,
-    transparent 68%
+    circle,
+    color-mix(in srgb, #ff6400 14%, transparent) 0%,
+    color-mix(in srgb, #ff6400 4%, transparent) 35%,
+    transparent 70%
   );
+  pointer-events: none;
+}
+
+.scanonix-pro-promo__mark {
+  position: absolute;
+  top: -8%;
+  right: 18%;
+  width: min(28rem, 46%);
+  height: auto;
+  color: #ff6a00;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__panel {
+  background:
+    radial-gradient(circle at 8% 0%, color-mix(in srgb, #ffb37a 18%, transparent), transparent 34%),
+    radial-gradient(circle at 94% 88%, color-mix(in srgb, #e4c4a4 14%, transparent), transparent 40%),
+    #f4ebe1;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #8a5a32 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 78%, transparent),
+    0 18px 40px color-mix(in srgb, #3a2414 13%, transparent);
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__panel::before {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, #ff8a3d 18%, transparent) 0%,
+    color-mix(in srgb, #ffb37a 7%, transparent) 40%,
+    transparent 72%
+  );
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__mark {
+  color: #d4652a;
+  opacity: 0.16;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__panel {
+  background: #14110e;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #ffb37a 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent),
+    0 18px 40px color-mix(in srgb, black 36%, transparent);
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__panel::before {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, #ff6400 14%, transparent) 0%,
+    color-mix(in srgb, #ff6400 4%, transparent) 35%,
+    transparent 70%
+  );
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__mark {
+  color: #ff6a00;
+  opacity: 0.08;
 }
 
 .scanonix-pro-promo__grid {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
-  padding: 1.5rem;
+  gap: 1.25rem;
+  padding: 1.25rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 900px) {
   .scanonix-pro-promo__grid {
-    padding: 2rem;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 1rem 1.25rem;
+    padding: 1.5rem;
+  }
+
+  .scanonix-pro-promo__copy {
+    grid-column: 1 / -1;
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .scanonix-pro-promo__grid {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 2.5rem;
-    padding: 2.25rem 2.5rem;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.12fr) minmax(0, 0.92fr);
+    align-items: start;
+    gap: 1.25rem 1.5rem;
+    padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+  }
+
+  .scanonix-pro-promo__copy {
+    grid-column: auto;
   }
 }
 
 .scanonix-pro-promo__copy {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
 }
 
 .scanonix-pro-promo__badge {
@@ -1595,323 +1667,447 @@ html[data-theme="bright"] .tool-finder-launcher:hover {
   align-items: center;
   gap: 0.375rem;
   border-radius: var(--radius-full);
-  border: 1px solid color-mix(in srgb, var(--scanonix-orange) 35%, transparent);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--scanonix-orange) 18%, transparent) 0%,
-    color-mix(in srgb, #f59e0b 8%, transparent) 100%
-  );
-  padding: 0.3125rem 0.75rem;
+  border: 1px solid color-mix(in srgb, #ffb37a 28%, transparent);
+  background: color-mix(in srgb, #ff6a00 14%, #1c1612);
+  padding: 0.375rem 0.75rem;
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--scanonix-orange-light);
-  box-shadow: 0 0 20px color-mix(in srgb, var(--scanonix-orange) 16%, transparent);
+  color: #fdba74;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__badge {
+  border-color: color-mix(in srgb, #e07a2f 28%, transparent);
+  background: color-mix(in srgb, #ff8a3d 12%, #fff);
+  color: #c2410c;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__badge {
+  border-color: color-mix(in srgb, #ffb37a 32%, transparent);
+  background: color-mix(in srgb, #ff6a00 16%, #1c1612);
+  color: #fdba74;
 }
 
 .scanonix-pro-promo__headline {
-  font-size: 1.625rem;
+  margin: 0;
+  max-width: 12em;
+  font-size: 2.25rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  color: var(--scanonix-text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: #f7f4ef;
 }
 
-@media (min-width: 640px) {
+.scanonix-pro-promo__headline-line {
+  display: block;
+}
+
+.scanonix-pro-promo__accent {
+  color: var(--scanonix-orange);
+}
+
+@media (min-width: 1200px) {
   .scanonix-pro-promo__headline {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 }
 
+@media (min-width: 1440px) {
+  .scanonix-pro-promo__headline {
+    font-size: 2.75rem;
+  }
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__headline {
+  color: #1c1917;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__headline {
+  color: #f7f4ef;
+}
+
 .scanonix-pro-promo__support {
-  max-width: 36rem;
+  max-width: 28rem;
+  margin: 0;
   font-size: 0.9375rem;
-  line-height: 1.55;
-  color: var(--scanonix-muted);
+  line-height: 1.5;
+  color: #b7aea4;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__support {
+  color: #4f463f;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__support {
+  color: #b7aea4;
 }
 
 .scanonix-pro-promo__benefits {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  margin-top: 0.25rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .scanonix-pro-promo__benefits {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
 }
 
 .scanonix-pro-promo__benefit {
   display: flex;
   align-items: flex-start;
-  gap: 0.625rem;
-  font-size: 0.875rem;
-  line-height: 1.45;
-  color: var(--foreground-secondary);
+  gap: 0.75rem;
+  min-width: 0;
+  height: 100%;
+  border-radius: 0.875rem;
+  border: 1px solid color-mix(in srgb, white 8%, transparent);
+  background: color-mix(in srgb, white 4%, #1c1814);
+  padding: 0.875rem;
+  box-shadow: 0 8px 18px color-mix(in srgb, black 16%, transparent);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
-.scanonix-pro-promo__benefit-check {
+.scanonix-pro-promo__benefit:hover {
+  border-color: color-mix(in srgb, white 14%, transparent);
+  box-shadow: 0 10px 20px color-mix(in srgb, black 20%, transparent);
+  transform: translateY(-1px);
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__benefit {
+  border-color: color-mix(in srgb, #8a5a32 22%, transparent);
+  background: #fffdf9;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, white 90%, transparent),
+    0 1px 2px color-mix(in srgb, #3a2414 8%, transparent),
+    0 10px 22px color-mix(in srgb, #3a2414 12%, transparent);
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__benefit:hover {
+  border-color: color-mix(in srgb, #8a5a32 30%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, white 90%, transparent),
+    0 12px 24px color-mix(in srgb, #3a2414 16%, transparent);
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__benefit {
+  border-color: color-mix(in srgb, white 8%, transparent);
+  background: color-mix(in srgb, white 4%, #1c1814);
+  box-shadow: 0 8px 18px color-mix(in srgb, black 22%, transparent);
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__benefit:hover {
+  border-color: color-mix(in srgb, white 14%, transparent);
+  box-shadow: 0 10px 22px color-mix(in srgb, black 28%, transparent);
+}
+
+.scanonix-pro-promo__toolkit-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.scanonix-pro-promo__capability-icon {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.375rem;
-  height: 1.375rem;
-  margin-top: 0.0625rem;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--scanonix-orange) 40%, transparent);
-  background: color-mix(in srgb, var(--scanonix-orange) 14%, transparent);
-  color: var(--scanonix-orange-light);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--scanonix-orange) 22%, transparent);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, #ff6a00 16%, #1c1612);
+  color: #fdba74;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__capability-icon {
+  background: color-mix(in srgb, #ff8a3d 24%, #fff);
+  color: #c2410c;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #e07a2f 20%, transparent);
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__capability-icon {
+  background: color-mix(in srgb, #ff6a00 18%, #1c1612);
+  color: #fdba74;
+}
+
+.scanonix-pro-promo__capability-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.scanonix-pro-promo__capability-title,
+.scanonix-pro-promo__toolkit-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: #f7f4ef;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__capability-title,
+html[data-theme="bright"] .scanonix-pro-promo__toolkit-label {
+  color: #1c1917;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__capability-title,
+html[data-theme="dark"] .scanonix-pro-promo__toolkit-label {
+  color: #f7f4ef;
+}
+
+.scanonix-pro-promo__capability-detail,
+.scanonix-pro-promo__toolkit-value {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #b7aea4;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__capability-detail,
+html[data-theme="bright"] .scanonix-pro-promo__toolkit-value {
+  color: #4a433c;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__capability-detail,
+html[data-theme="dark"] .scanonix-pro-promo__toolkit-value {
+  color: #c4bbb2;
 }
 
 .scanonix-pro-promo__cta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.875rem;
-  margin-top: 0.5rem;
-}
-
-.scanonix-pro-promo__cta-button {
-  box-shadow:
-    0 4px 20px color-mix(in srgb, var(--scanonix-orange) 28%, transparent),
-    0 0 32px color-mix(in srgb, var(--scanonix-orange) 12%, transparent);
-}
-
-.scanonix-pro-promo__cta-button:hover {
-  box-shadow:
-    0 6px 28px color-mix(in srgb, var(--scanonix-orange) 36%, transparent),
-    0 0 40px color-mix(in srgb, var(--scanonix-orange) 18%, transparent);
+  gap: 0.75rem 1rem;
+  margin-top: 0.25rem;
 }
 
 .scanonix-pro-promo__secondary-link {
-  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--scanonix-orange);
-  transition: color var(--transition-fast);
+  color: #d6cfc6;
+  text-decoration: none;
+  transition: color 160ms ease;
 }
 
 .scanonix-pro-promo__secondary-link:hover {
-  color: var(--scanonix-orange-light);
+  color: #f7f4ef;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__secondary-link {
+  color: #4a433c;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__cta a[href="/dashboard"],
+html[data-theme="bright"] .scanonix-pro-promo__cta a[href="/pricing"] {
+  box-shadow: 0 8px 16px color-mix(in srgb, #ff6a00 18%, transparent);
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__secondary-link:hover {
+  color: #1c1917;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__secondary-link {
+  color: #d6cfc6;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__secondary-link:hover {
+  color: #f7f4ef;
+}
+
+.scanonix-pro-promo__secondary-link:focus-visible,
+.scanonix-pro-promo__benefit:focus-visible {
+  outline: 2px solid var(--scanonix-orange);
+  outline-offset: 3px;
 }
 
 .scanonix-pro-promo__cta-skeleton {
-  width: 10rem;
-  height: 2.875rem;
+  width: 10.5rem;
+  height: 3rem;
   border-radius: var(--radius-xl);
-  background: color-mix(in srgb, white 6%, transparent);
+  background: color-mix(in srgb, #ff6a00 18%, transparent);
 }
 
-.scanonix-pro-promo__visual {
-  position: relative;
-  min-height: 14rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (max-width: 639px) {
-  .scanonix-pro-promo__visual {
-    min-height: 11rem;
-    max-height: 13rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .scanonix-pro-promo__visual {
-    min-height: 18rem;
-  }
-}
-
-.scanonix-pro-promo__visual-glow {
-  pointer-events: none;
-  position: absolute;
-  border-radius: 50%;
-  animation: pro-promo-glow-breathe var(--transition-ambient) ease-in-out infinite alternate;
-}
-
-.scanonix-pro-promo__visual-glow--orange {
-  width: 72%;
-  height: 72%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--scanonix-orange) 22%, transparent) 0%,
-    transparent 70%
-  );
-  filter: blur(24px);
-}
-
-.scanonix-pro-promo__visual-glow--violet {
-  width: 48%;
-  height: 48%;
-  top: 8%;
-  right: 6%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, #9333ea 18%, transparent) 0%,
-    transparent 72%
-  );
-  filter: blur(20px);
-  animation-delay: -3s;
-}
-
-.scanonix-pro-promo__doc-panel {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 13.5rem);
-  aspect-ratio: 4 / 5;
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, white 12%, transparent);
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, white 8%, transparent) 0%,
-    color-mix(in srgb, #121110 96%, transparent) 100%
-  );
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 6%, transparent),
-    0 16px 40px color-mix(in srgb, black 45%, transparent);
-  padding: 1.125rem 1rem;
-}
-
-.scanonix-pro-promo__doc-shield {
-  position: absolute;
-  top: -0.625rem;
-  right: -0.625rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: var(--radius-md);
-  border: 1px solid color-mix(in srgb, #9333ea 35%, transparent);
-  background: color-mix(in srgb, #9333ea 16%, transparent);
-  color: #c4b5fd;
-  box-shadow: 0 0 18px color-mix(in srgb, #9333ea 28%, transparent);
-}
-
-.scanonix-pro-promo__doc-spark {
-  position: absolute;
-  bottom: -0.5rem;
-  left: -0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--scanonix-orange) 35%, transparent);
-  background: color-mix(in srgb, var(--scanonix-orange) 14%, transparent);
-  color: var(--scanonix-orange-light);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--scanonix-orange) 24%, transparent);
-}
-
-.scanonix-pro-promo__doc-lines {
+.scanonix-pro-promo__toolkit {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1.75rem;
+  align-self: start;
+  min-width: 0;
+  height: auto;
+  border-radius: 1.125rem;
+  border: 1px solid color-mix(in srgb, #ffb37a 28%, transparent);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, #ff6400 10%, transparent), transparent 46%),
+    #221c18;
+  color: #f7f4ef;
+  padding: 1.125rem 1.125rem 1rem;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent),
+    0 12px 24px color-mix(in srgb, black 24%, transparent);
 }
 
-.scanonix-pro-promo__doc-lines span {
-  display: block;
-  height: 0.375rem;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, white 10%, transparent);
+html[data-theme="bright"] .scanonix-pro-promo__toolkit {
+  border-color: color-mix(in srgb, #c47a3a 32%, transparent);
+  background: #e4d3bf;
+  color: #1c1917;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 48%, transparent),
+    0 14px 28px color-mix(in srgb, #3a2414 16%, transparent);
 }
 
-.scanonix-pro-promo__doc-lines span:nth-child(1) {
-  width: 88%;
+html[data-theme="dark"] .scanonix-pro-promo__toolkit {
+  border-color: color-mix(in srgb, #ffb37a 30%, transparent);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, #ff6400 12%, transparent), transparent 46%),
+    #221c18;
+  color: #f7f4ef;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent),
+    0 14px 28px color-mix(in srgb, black 32%, transparent);
 }
 
-.scanonix-pro-promo__doc-lines span:nth-child(2) {
-  width: 72%;
+.scanonix-pro-promo__toolkit-kicker {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fdba74;
 }
 
-.scanonix-pro-promo__doc-lines--short {
-  width: 48% !important;
+html[data-theme="bright"] .scanonix-pro-promo__toolkit-kicker {
+  color: #c2410c;
 }
 
-.scanonix-pro-promo__float-cards {
-  position: absolute;
-  inset: 0;
-  list-style: none;
+html[data-theme="dark"] .scanonix-pro-promo__toolkit-kicker {
+  color: #fdba74;
+}
+
+.scanonix-pro-promo__toolkit-title {
+  margin: 0.25rem 0 0.875rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f7f4ef;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__toolkit-title {
+  color: #1c1917;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__toolkit-title {
+  color: #f7f4ef;
+}
+
+.scanonix-pro-promo__toolkit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
-.scanonix-pro-promo__float-card {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 0.4375rem 0.625rem;
-  box-shadow: var(--shadow-soft);
-  animation: pro-promo-float var(--transition-ambient) ease-in-out infinite alternate;
+.scanonix-pro-promo__limits {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.625rem;
+  margin-top: 0.875rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, black 18%, transparent);
 }
 
-.scanonix-pro-promo__float-card-label {
+.scanonix-pro-promo__limits > div + div {
+  padding-top: 0.625rem;
+  border-top: 1px solid color-mix(in srgb, white 8%, transparent);
+}
+
+@media (min-width: 480px) {
+  .scanonix-pro-promo__limits {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scanonix-pro-promo__limits > div + div {
+    padding-top: 0;
+    padding-left: 0.75rem;
+    border-top: 0;
+    border-left: 1px solid color-mix(in srgb, white 8%, transparent);
+  }
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__limits {
+  background: #d4c0a6; /* one step deeper than the bright toolkit */
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__limits > div + div {
+  border-color: color-mix(in srgb, #6b4a30 28%, transparent);
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__limits {
+  background: color-mix(in srgb, black 22%, #1a1613);
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__limits > div + div {
+  border-color: color-mix(in srgb, white 8%, transparent);
+}
+
+.scanonix-pro-promo__limit-kicker {
+  margin: 0;
   font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--foreground-secondary);
-  white-space: nowrap;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c4bbb2;
 }
 
-@media (max-width: 639px) {
-  .scanonix-pro-promo__float-card-label {
-    display: none;
+html[data-theme="bright"] .scanonix-pro-promo__limit-kicker {
+  color: #5c5148;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__limit-kicker {
+  color: #c4bbb2;
+}
+
+.scanonix-pro-promo__limit-value {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #f7f4ef;
+}
+
+html[data-theme="bright"] .scanonix-pro-promo__limit-value {
+  color: #1c1917;
+}
+
+html[data-theme="dark"] .scanonix-pro-promo__limit-value {
+  color: #f7f4ef;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanonix-pro-promo__benefit,
+  .scanonix-pro-promo__secondary-link {
+    transition: none;
   }
 
-  .scanonix-pro-promo__float-card {
-    padding: 0.375rem;
-  }
-}
-
-.scanonix-pro-promo__float-card--1 {
-  top: 4%;
-  left: 0;
-  animation-delay: 0s;
-}
-
-.scanonix-pro-promo__float-card--2 {
-  top: 18%;
-  right: 0;
-  animation-delay: -1.5s;
-}
-
-.scanonix-pro-promo__float-card--3 {
-  bottom: 16%;
-  left: 4%;
-  animation-delay: -3s;
-}
-
-.scanonix-pro-promo__float-card--4 {
-  bottom: 2%;
-  right: 2%;
-  animation-delay: -4.5s;
-}
-
-@keyframes pro-promo-float {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-3px);
+  .scanonix-pro-promo__benefit:hover {
+    transform: none;
   }
 }
 
-@keyframes pro-promo-glow-breathe {
-  from {
-    opacity: 0.55;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 0.85;
-    transform: scale(1.04);
-  }
-}
 
 /* Page layout rhythm */
 .page-container {
@@ -2028,11 +2224,6 @@ html[data-theme="bright"] .tool-finder-launcher:hover {
     transform: none;
   }
 
-  .scanonix-pro-promo__visual-glow,
-  .scanonix-pro-promo__float-card {
-    animation: none !important;
-  }
-
   .search-focus-wrap:focus-within .search-focus-glow {
     opacity: 0.25;
   }
@@ -2140,10 +2331,6 @@ html[data-theme="bright"] .tools-hero-content-backplate {
   opacity: 0.2;
 }
 
-html[data-theme="bright"] .scanonix-pro-promo__panel::before {
-  opacity: 0.35;
-}
-
 /* 130L-5E — standalone S mark: crisp edges, restrained near-mark glow only */
 .brand-logo-mark {
   display: inline-flex;
@@ -2183,4 +2370,299 @@ html[data-theme="bright"] .brand-logo-tile {
 html[data-theme="bright"] .group:hover .brand-logo-tile {
   border-color: color-mix(in srgb, var(--scanonix-orange) 95%, transparent);
   box-shadow: 0 0 18px color-mix(in srgb, var(--scanonix-orange) 34%, transparent);
+}
+
+/* Premium workspace inspector — one rail width for shared and custom panels */
+.tool-inspector,
+[data-tool-control-panel] {
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+@media (min-width: 1024px) {
+  [data-tool-control-panel] {
+    width: 22rem;
+    top: 5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-tool-control-panel] {
+    width: 24rem;
+  }
+}
+
+/* Status announcements: compact, theme-owned color, not a second result page */
+.tool-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.875rem;
+  border: 1px solid transparent;
+  padding: 0.625rem 0.875rem;
+}
+
+.tool-status p {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.tool-status--loading {
+  border-color: color-mix(in srgb, var(--scanonix-orange) 35%, transparent);
+  background: color-mix(in srgb, var(--scanonix-orange) 10%, transparent);
+  color: var(--foreground);
+}
+
+.tool-status--success {
+  border-color: color-mix(in srgb, #16a34a 32%, transparent);
+  background: color-mix(in srgb, #16a34a 12%, transparent);
+  color: #bbf7d0;
+}
+
+.tool-status--error {
+  border-color: color-mix(in srgb, #ef4444 35%, transparent);
+  background: color-mix(in srgb, #ef4444 10%, transparent);
+  color: #fecdd3;
+}
+
+html[data-theme="bright"] .tool-status--success {
+  color: #166534;
+}
+
+html[data-theme="bright"] .tool-status--error {
+  color: #9f1239;
+}
+
+/* Homepage category bar — global navigation, not a local tool control */
+.home-category-nav__bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.375rem;
+  padding: 0.375rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--foreground) 4%, var(--surface));
+}
+
+.home-category-nav__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--foreground-muted);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.home-category-nav__item:hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.home-category-nav__item[aria-pressed="true"] {
+  background: var(--scanonix-orange);
+  color: #1c120c;
+}
+
+.home-category-nav__item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px color-mix(in srgb, var(--scanonix-orange) 55%, transparent);
+}
+
+@media (min-width: 640px) {
+  .home-category-nav__bar {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .home-category-nav__item {
+    min-height: 3rem;
+    padding: 0.625rem 1.35rem;
+    font-size: 1rem;
+  }
+}
+
+/* Shared public footer — dark ending in both site themes */
+.site-footer {
+  background: #141210;
+  color: #f7f4ef;
+}
+
+html[data-theme="bright"] .site-footer {
+  background: #141210;
+  color: #f7f4ef;
+}
+
+html[data-theme="dark"] .site-footer {
+  background: #1c1917;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+}
+
+.site-footer__inner {
+  padding-block: 2.25rem 1.15rem;
+}
+
+.site-footer__main {
+  display: grid;
+  gap: 1.75rem 2rem;
+}
+
+.site-footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 18rem;
+}
+
+.site-footer .text-foreground {
+  color: #f7f4ef;
+}
+
+.site-footer__statement {
+  margin: 0;
+  max-width: 18rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #b7b1a8;
+}
+
+.site-footer__heading {
+  margin: 0 0 0.55rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #f7f4ef;
+}
+
+.site-footer__links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: #d9d3cc;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.site-footer__link:hover {
+  color: var(--scanonix-orange);
+}
+
+.site-footer__store {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.site-footer__play {
+  display: inline-flex;
+  flex: 0 0 auto;
+  line-height: 0;
+  border-radius: 0.25rem;
+}
+
+.site-footer__play img {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: 68px;
+}
+
+.site-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1.5rem;
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, white 10%, transparent);
+}
+
+.site-footer__bottom-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.site-footer__legal {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #b7b1a8;
+}
+
+.site-footer__utility {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+
+.site-footer__social {
+  color: #d9d3cc;
+}
+
+.site-footer__social:hover {
+  color: var(--scanonix-orange);
+}
+
+.site-footer a:focus-visible,
+.site-footer button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #141210, 0 0 0 4px var(--scanonix-orange);
+  border-radius: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .site-footer__main {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-footer__brand,
+  .site-footer__store {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1100px) {
+  .site-footer__inner {
+    padding-block: 2.75rem 1.25rem;
+  }
+
+  .site-footer__main {
+    grid-template-columns:
+      minmax(13.5rem, 1.35fr)
+      minmax(7.5rem, 0.72fr)
+      minmax(8.5rem, 0.85fr)
+      minmax(8rem, 0.72fr)
+      minmax(12.5rem, 1fr);
+    column-gap: 2.75rem;
+    align-items: start;
+  }
+
+  .site-footer__brand,
+  .site-footer__store {
+    grid-column: auto;
+  }
 }

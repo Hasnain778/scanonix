@@ -961,9 +961,9 @@ export function ImageEditorWorkspace() {
       {/* Editor chrome — below global Navbar; no Scanonix logo duplication */}
       <header className="relative z-10 flex h-12 shrink-0 items-center gap-3 border-b border-[var(--ie-border-subtle)] bg-[var(--ie-chrome)] px-3 sm:px-4">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-semibold leading-tight tracking-tight text-[var(--ie-text)]">
+          <h1 className="truncate text-[15px] font-semibold leading-tight tracking-tight text-[var(--ie-text)]">
             Image Editor
-          </p>
+          </h1>
           <p className="truncate text-[11px] leading-tight text-[var(--ie-text-muted)]">
             {canvasLabel} · {formatCanvasSize(doc.canvas.width, doc.canvas.height)}
             {meta ? ` · ${meta.filename}` : ""}

@@ -1,0 +1,114 @@
+/*
+ * Image-processing family only.
+ * Scoped to .image-processing-premium inside Image Compressor and Image Resizer.
+ */
+
+.image-processing-premium .image-proc-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .image-processing-premium .image-proc-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.image-processing-premium .image-proc-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .image-processing-premium .image-proc-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .image-processing-premium .image-proc-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.image-processing-premium .image-proc-drop:hover {
+  box-shadow: none;
+}
+
+.image-processing-premium [data-tool-workspace="active"] {
+  display: block;
+}
+
+.image-processing-premium .image-proc-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
+.image-processing-premium .image-proc-layout {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .image-processing-premium .image-proc-layout {
+    grid-template-columns: minmax(0, 28rem) minmax(16rem, 18.75rem);
+    gap: 2rem;
+    justify-content: start;
+  }
+}
+
+.image-processing-premium .image-proc-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.85rem;
+  min-height: 8rem;
+  border-radius: 0.85rem;
+  padding: 0.85rem;
+}
+
+.image-processing-premium .image-proc-preview img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 14rem;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (min-width: 1024px) {
+  .image-processing-premium .image-proc-preview img {
+    max-height: 18rem;
+  }
+}
+
+html[data-theme="bright"] .image-processing-premium .image-proc-preview {
+  background: #f3eee8;
+}
+
+html[data-theme="dark"] .image-processing-premium .image-proc-preview {
+  background: #1c1916;
+}
+
+.image-processing-premium .image-proc-dimensions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.image-processing-premium .image-proc-stats {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.image-processing-premium .image-proc-stats > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}

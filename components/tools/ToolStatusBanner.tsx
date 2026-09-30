@@ -16,9 +16,9 @@ export function ToolStatusBanner({
   }
 
   const styles = {
-    loading: "glass border-scanonix-orange/40 bg-scanonix-orange/10 text-white",
-    success: "glass border-green-600/35 bg-green-500/10 text-green-700",
-    error: "glass border-red-500/40 bg-red-500/10 text-red-300",
+    loading: "tool-status tool-status--loading",
+    success: "tool-status tool-status--success",
+    error: "tool-status tool-status--error",
   };
 
   const icons = {
@@ -82,13 +82,13 @@ export function ToolStatusBanner({
         loading: progress
       ? `Processing… ${progress.current} of ${progress.total}`
       : "Processing…",
-    success: "PDF downloaded successfully!",
+    success: "Processing complete.",
     error: "Something went wrong. Please try again.",
   };
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${styles[status]}`}
+      className={styles[status]}
       role="status"
       aria-live="polite"
     >

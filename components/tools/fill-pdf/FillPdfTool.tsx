@@ -29,6 +29,7 @@ import {
   FillPdfError,
   FILL_PDF_UI_PRIVACY_COPY,
   formatFillPdfZoomPercent,
+  getFieldDisplayLabel,
   getFieldsNavigatorSummary,
   getSelectedFieldPageIndex,
   getSelectedTextFormatState,
@@ -39,6 +40,7 @@ import {
   needsDigitalSignatureAcknowledgment,
   resetWorkspaceFormValues,
   sanitizeUserFacingError,
+  clampFillPdfZoomFactor,
   stepFillPdfZoomFactor,
   updateSelectedTextFormatState,
   type FillPdfDocumentState,
@@ -53,6 +55,7 @@ import type { TextFormatState } from "@/lib/tools/fill-pdf/text-appearance";
 import type { ToolStatus } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { FieldsNavigator } from "./FieldsNavigator";
+import "@/styles/fill-pdf-premium.css";
 import { PdfFormPreview } from "./PdfFormPreview";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 
@@ -98,6 +101,19 @@ function ToolbarIconButton({
       {children}
     </button>
   );
+}
+
+/** Phone default is zoomed in so fields stay readable. Fit still returns to the column width. */
+function initialLoadedZoom(): { fit: boolean; zoom: number } {
+  if (typeof window === "undefined" || window.innerWidth >= 768) {
+    return { fit: true, zoom: 1 };
+  }
+
+  const available = Math.max(280, window.innerWidth - 48);
+  return {
+    fit: false,
+    zoom: clampFillPdfZoomFactor(580 / available),
+  };
 }
 
 function mapUploadError(error: unknown): string {
@@ -292,8 +308,9 @@ export function FillPdfTool() {
       );
       setCurrentPageIndex(0);
       setFieldsNavigatorOpen(false);
-      setZoomFactor(1);
-      setFitWidth(true);
+      const loadedZoom = initialLoadedZoom();
+      setZoomFactor(loadedZoom.zoom);
+      setFitWidth(loadedZoom.fit);
       setResultFilename(buildFilledPdfFilename(file.name));
     } catch (error) {
       setUploadedPdf(null);
@@ -507,10 +524,10 @@ export function FillPdfTool() {
   }, [status]);
 
   const exportHint = canExport
-    ? "Finish editing, then export your filled PDF."
+    ? "Ready to export"
     : needsSignatureAck && workspace && !workspace.digitalSignatureAcknowledged
-      ? "Acknowledge the signature warning to continue."
-      : "Fill form fields on the page, then export.";
+      ? "Confirm the signature notice to continue."
+      : "Fill the fields on the page.";
 
   const selectedField = useMemo(() => {
     if (!uploadedPdf || !workspace?.selectedFieldName) {
@@ -526,95 +543,52 @@ export function FillPdfTool() {
 
   const settingsBody =
     uploadedPdf && workspaceWithErrors ? (
-      <div className="space-y-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <FilePen
-              className="h-4 w-4 text-scanonix-orange"
-              aria-hidden="true"
-            />
-            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-              Fill PDF
-            </p>
-          </div>
-          <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
-            Edit form fields on the page. Use Fields to jump between inputs.
+      <div className="fill-inspector">
+        <div className="fill-inspector-intro">
+          <p className="fill-inspector-title">Fill form</p>
+          <p className="fill-inspector-lead">
+            Click a field on the page to edit it.
           </p>
         </div>
 
-        <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-          <div className="flex justify-between gap-3 px-3 py-2.5">
-            <dt className="text-scanonix-muted">Page</dt>
-            <dd className="font-semibold text-foreground">
-              {currentPageIndex + 1} / {pageCount}
-            </dd>
-          </div>
-          <div className="flex justify-between gap-3 px-3 py-2.5">
-            <dt className="text-scanonix-muted">Fields</dt>
-            <dd className="font-semibold text-foreground">{fieldCount}</dd>
-          </div>
-          {fieldsSummary && (
-            <div className="flex justify-between gap-3 px-3 py-2.5">
-              <dt className="text-scanonix-muted">Progress</dt>
-              <dd className="font-semibold text-foreground">
-                {fieldsSummary.completed}/{fieldsSummary.total}
-              </dd>
-            </div>
-          )}
-          {fieldsSummary && fieldsSummary.requiredRemaining > 0 && (
-            <div className="flex justify-between gap-3 px-3 py-2.5">
-              <dt className="text-scanonix-muted">Required left</dt>
-              <dd className="font-semibold text-foreground">
-                {fieldsSummary.requiredRemaining}
-              </dd>
-            </div>
-          )}
-          {selectedField && (
-            <div className="min-w-0 px-3 py-2.5">
-              <dt className="text-scanonix-muted">Selected</dt>
-              <dd className="mt-0.5 truncate font-semibold text-foreground">
-                {selectedField.name}
-              </dd>
-              <dd className="mt-0.5 text-[11px] uppercase tracking-wide text-scanonix-muted">
-                {selectedField.kind.toLowerCase()}
-                {selectedField.readOnly ? " · read-only" : ""}
-                {selectedField.required ? " · required" : ""}
-              </dd>
-            </div>
-          )}
-        </dl>
+        {fieldsSummary && (
+          <p className="fill-progress">
+            {fieldsSummary.completed} of {fieldsSummary.total} filled
+            {fieldsSummary.requiredRemaining > 0
+              ? ` \u00B7 ${fieldsSummary.requiredRemaining} required left`
+              : ""}
+          </p>
+        )}
 
-        <div className="flex flex-col gap-2">
-          <ActionButton
-            variant="outline"
-            size="lg"
-            className="w-full rounded-lg"
-            disabled={isBusy}
-            onClick={() => setFieldsNavigatorOpen(true)}
-          >
-            <List className="mr-2 h-4 w-4" aria-hidden="true" />
-            {fieldsSummary?.buttonLabel ?? "Open fields"}
-          </ActionButton>
-          <ActionButton
-            variant="outline"
-            size="lg"
-            className="w-full rounded-lg"
-            disabled={isBusy}
-            onClick={handleResetForm}
-          >
-            Reset fields
-          </ActionButton>
-        </div>
+        {selectedField && (
+          <p className="fill-selected">
+            <span className="fill-selected-label">Selected</span>
+            <span className="fill-selected-name">
+              {getFieldDisplayLabel(selectedField)}
+            </span>
+            <span className="fill-selected-meta">
+              {selectedField.kind.toLowerCase()}
+              {selectedField.readOnly ? " \u00B7 read-only" : ""}
+              {selectedField.required ? " \u00B7 required" : ""}
+            </span>
+          </p>
+        )}
+
+        <ActionButton
+          variant="ghost"
+          size="sm"
+          className="fill-reset"
+          disabled={isBusy}
+          onClick={handleResetForm}
+        >
+          Reset fields
+        </ActionButton>
 
         {needsSignatureAck && (
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-3">
-            <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-amber-700 dark:text-amber-400">
-              Signature notice
-            </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-foreground">
-              {DIGITAL_SIGNATURE_WARNING}
-            </p>
-            <label className="mt-2.5 flex items-start gap-3 text-sm text-foreground">
+          <div className="fill-signature">
+            <p className="fill-signature-title">Signature notice</p>
+            <p className="fill-signature-copy">{DIGITAL_SIGNATURE_WARNING}</p>
+            <label className="fill-signature-ack">
               <input
                 type="checkbox"
                 checked={workspaceWithErrors.digitalSignatureAcknowledged}
@@ -622,7 +596,6 @@ export function FillPdfTool() {
                 onChange={(event) =>
                   handleSignatureAckChange(event.target.checked)
                 }
-                className="mt-0.5 h-4 w-4 accent-scanonix-orange"
               />
               I understand that editing may invalidate existing digital
               signatures.
@@ -630,14 +603,12 @@ export function FillPdfTool() {
           </div>
         )}
 
-        <div className="border-t border-border/80 pt-3">
-          <PrivacyNotice message={FILL_PDF_UI_PRIVACY_COPY} />
-        </div>
+        <p className="fill-trust">Processed locally. Not uploaded.</p>
       </div>
     ) : null;
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="fill-pdf-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF form…" : statusMessage}
@@ -656,6 +627,7 @@ export function FillPdfTool() {
               label="Drop a PDF form here to fill fields"
               hint="or click to browse — processed locally in your browser"
               icon={<FillPdfDropIcon />}
+              className="fill-pdf-drop"
             />
             <PrivacyNotice message={FILL_PDF_UI_PRIVACY_COPY} />
           </>
@@ -664,9 +636,9 @@ export function FillPdfTool() {
           uploadedPdf && workspaceWithErrors ? (
             <div
               data-fill-pdf-workspace
-              className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]"
+              className="fill-stage overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]"
             >
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+              <div className="fill-stage-bar flex flex-col gap-1.5 border-b border-border/80 bg-surface-muted/40 px-0.5 py-1 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
                     <FillPdfDropIcon className="h-4 w-4" />
@@ -751,6 +723,7 @@ export function FillPdfTool() {
                     className="min-w-[3.25rem] rounded-md border border-border bg-surface-muted/80 px-2 py-1.5 text-xs font-medium text-scanonix-muted transition hover:border-scanonix-orange/40 hover:text-foreground"
                     onClick={handleFitWidth}
                     title="Fit width"
+                    aria-pressed={fitWidth}
                     disabled={isBusy}
                   >
                     {fitWidth ? "Fit" : formatFillPdfZoomPercent(zoomFactor)}
@@ -761,16 +734,6 @@ export function FillPdfTool() {
                     onClick={handleZoomIn}
                   >
                     <ZoomIn className="h-4 w-4" aria-hidden="true" />
-                  </ToolbarIconButton>
-                  <ToolbarIconButton
-                    label="Fit width"
-                    disabled={isBusy}
-                    active={fitWidth}
-                    onClick={handleFitWidth}
-                  >
-                    <span className="text-[10px] font-bold leading-none">
-                      Fit
-                    </span>
                   </ToolbarIconButton>
                 </div>
 
@@ -803,8 +766,8 @@ export function FillPdfTool() {
                 </div>
               </div>
 
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
-                <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+              <div className="fill-canvas pt-1.5">
+                <div className="fill-page-frame">
                   <PdfFormPreview
                     pdfBytes={uploadedPdf.bytes}
                     pageCount={pageCount}
@@ -861,23 +824,10 @@ export function FillPdfTool() {
                     >
                       Edit
                     </ActionButton>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={resetWorkspace}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      {exportHint}
-                    </p>
+                    <p className="fill-export-cue">{exportHint}</p>
                     <div
                       className={
                         stickyVisible ? "hidden md:block" : undefined

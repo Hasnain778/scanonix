@@ -14,7 +14,7 @@ export function ToolShell({ children }: ToolShellProps) {
     <>
       <PageBackground />
       <Navbar />
-      <main className="relative min-h-screen pt-24 pb-20 sm:pt-28 sm:pb-24">
+      <main className="relative min-h-screen pt-20 pb-16 sm:pt-[5.25rem] sm:pb-20">
         {children}
       </main>
       <Footer />
@@ -31,6 +31,8 @@ interface ToolPageHeaderProps {
     label: string;
     href: string;
   };
+  /** Opt-in. Default false keeps the current header spacing and icon size. */
+  compact?: boolean;
 }
 
 export function ToolPageHeader({
@@ -39,15 +41,16 @@ export function ToolPageHeader({
   icon,
   showBreadcrumbs = false,
   categoryBreadcrumb,
+  compact = false,
 }: ToolPageHeaderProps) {
   return (
-    <div className="mb-10 sm:mb-12">
+    <div className={compact ? "mb-4" : "mb-6 sm:mb-8"}>
       {showBreadcrumbs ? (
         <ToolBreadcrumbs title={title} category={categoryBreadcrumb} />
       ) : (
         <Link
           href="/tools"
-          className="home-btn-interactive mb-5 inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-muted transition-all hover:bg-surface-muted hover:text-scanonix-orange"
+          className="home-btn-interactive mb-3 inline-flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-medium text-foreground-muted transition-all hover:bg-surface-muted hover:text-scanonix-orange"
         >
           <svg
             className="h-4 w-4"
@@ -69,15 +72,19 @@ export function ToolPageHeader({
 
       <div className="flex items-start gap-5">
         {icon && (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-surface text-scanonix-orange shadow-[var(--shadow-soft)] glow-orange-sm">
+          <div
+            className={`flex shrink-0 items-center justify-center rounded-xl bg-brand-soft text-scanonix-orange ${
+              compact ? "h-10 w-10" : "h-12 w-12 sm:h-14 sm:w-14"
+            }`}
+          >
             {icon}
           </div>
         )}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl sm:leading-tight">
             {title}
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground-muted sm:text-lg">
+          <p className="mt-2 max-w-2xl text-base leading-relaxed text-foreground-muted sm:text-[1.0625rem]">
             {description}
           </p>
         </div>

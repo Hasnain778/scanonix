@@ -3,7 +3,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Shield } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { ProBadge } from "@/components/ui/ProBadge";
 import { ProSecurityGate } from "@/components/tools/security/ProSecurityGate";
@@ -14,6 +13,7 @@ import {
 import { useProAccess } from "@/hooks/useProAccess";
 import { createProcessAttempt, planErrorMessageToCode } from "@/lib/analytics/process-lifecycle";
 import { runSecurityScan } from "@/lib/scan-history/client";
+import "@/styles/security-scan-premium.css";
 
 type ScanPhase = "idle" | "running" | "complete" | "error" | "transitioning";
 
@@ -130,31 +130,16 @@ export function SecurityScanTool() {
   return (
     <motion.div
       layout
-      className="mx-auto max-w-3xl space-y-5 overflow-x-hidden pb-4"
+      className="security-scan-premium mx-auto max-w-3xl space-y-5 overflow-x-hidden pb-4"
       animate={phase === "transitioning" ? { opacity: 0, y: -12 } : { opacity: 1, y: 0 }}
       transition={{ duration: reduceMotion ? 0.1 : 0.45, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-          <Shield className="h-4 w-4" aria-hidden="true" strokeWidth={1.75} />
-        </div>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-              Security Scan
-            </p>
-            <ProBadge />
-          </div>
-          <p className="text-sm font-medium text-foreground">Website Scanner</p>
-        </div>
-      </div>
-
       {statusMessage && phase === "error" ? (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           role="alert"
-          className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400"
+          className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600 [[data-theme=dark]_&]:text-red-400"
         >
           {statusMessage}
         </motion.div>
@@ -195,26 +180,19 @@ export function SecurityScanTool() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.35 }}
-              className="space-y-6 p-6 sm:p-8"
+              className="space-y-5 p-4 sm:p-5"
             >
-              <div>
-                <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
-                  Start scan
-                </h2>
-                <p className="mt-1.5 text-sm leading-relaxed text-scanonix-muted sm:text-base">
-                  Enter a website URL to check for malware, phishing, and security
-                  issues.
-                </p>
-              </div>
-
-              <div className="space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <label
                   htmlFor="website-target"
                   className="text-sm font-medium text-foreground"
                 >
                   Website URL
                 </label>
-                <div className="scan-url-input flex min-h-[3.5rem] items-center gap-3 rounded-xl border border-border bg-surface-muted/40 px-4 transition-all focus-within:border-scanonix-orange/40 focus-within:ring-2 focus-within:ring-scanonix-orange/15 sm:min-h-[3.75rem] sm:px-5">
+                <ProBadge />
+              </div>
+
+              <div className="scan-url-input flex min-h-12 items-center gap-3 rounded-xl border border-border bg-surface px-3.5 transition-all focus-within:border-scanonix-orange/40 focus-within:ring-2 focus-within:ring-scanonix-orange/15 sm:px-4">
                   <svg
                     className="h-5 w-5 shrink-0 text-scanonix-muted"
                     fill="none"
@@ -244,11 +222,8 @@ export function SecurityScanTool() {
                     }}
                   />
                 </div>
-              </div>
 
-              <div className="rounded-xl border border-border bg-surface-muted/40 px-3.5 py-3">
-                <p className="text-xs leading-snug text-scanonix-muted">{PRIVACY_COPY}</p>
-              </div>
+              <p className="text-xs leading-relaxed text-scanonix-muted">{PRIVACY_COPY}</p>
 
               <div>
                 {showProGate ? (

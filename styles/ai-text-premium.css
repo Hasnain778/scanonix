@@ -1,0 +1,41 @@
+/*
+ * AI text tools only.
+ * Scoped to .ai-text-premium inside AI Rewrite, AI Summary, and AI Translate.
+ */
+
+.ai-text-premium .ai-text-shell {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+html[data-theme="bright"] .ai-text-premium textarea.input-field,
+html[data-theme="bright"] .ai-text-premium .ai-text-result {
+  background: #fffcfa;
+  border-color: #e4dcd2;
+  color: #1c1917;
+}
+
+html[data-theme="dark"] .ai-text-premium textarea.input-field,
+html[data-theme="dark"] .ai-text-premium .ai-text-result {
+  background: #141210;
+  border-color: color-mix(in srgb, #e7e5e4 18%, transparent);
+  color: #f5f5f4;
+}
+
+html[data-theme="bright"] .ai-text-premium textarea.input-field::placeholder {
+  color: #8a8178;
+}
+
+html[data-theme="dark"] .ai-text-premium textarea.input-field::placeholder {
+  color: #a8a29e;
+}
+
+.ai-text-premium textarea.input-field:focus-visible,
+.ai-text-premium select:focus-visible,
+.ai-text-premium button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--scanonix-orange) 55%, transparent);
+  outline-offset: 2px;
+}

@@ -16,6 +16,7 @@ import type {
   QrScannerMode,
   QrScannerState,
 } from "@/lib/tools/qr-scanner/types";
+import "@/styles/qr-scanner-premium.css";
 
 const MODE_OPTIONS: {
   mode: QrScannerMode;
@@ -77,21 +78,10 @@ export function QrScannerTool() {
 
   return (
     <div
-      className={`mx-auto w-full max-w-2xl space-y-6 overflow-x-hidden sm:space-y-8 md:pb-0 ${
+      className={`qr-scanner-premium mx-auto w-full max-w-2xl space-y-5 overflow-x-hidden md:pb-0 ${
         hasResult ? "pb-40" : "pb-8"
       }`}
     >
-      {!result && (
-        <header className="space-y-2 text-center sm:text-left">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            QR Scanner
-          </h2>
-          <p className="text-sm leading-relaxed text-foreground-muted sm:text-base">
-            Scan a QR code with your camera or upload an image.
-          </p>
-        </header>
-      )}
-
       <QrScannerStatusBanner
         scannerState={scannerState}
         message={statusMessage}
@@ -126,7 +116,7 @@ export function QrScannerTool() {
             })}
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface p-4 shadow-[var(--shadow-soft)] sm:p-6">
+          <div className="qr-panel rounded-2xl border border-border bg-surface p-4 shadow-[var(--shadow-soft)] sm:p-5">
             {mode === "camera" ? (
               <QrCameraScanner
                 scannerState={scannerState}

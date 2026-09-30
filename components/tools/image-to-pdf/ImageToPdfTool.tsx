@@ -21,6 +21,7 @@ import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/ordered-collection-premium.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
@@ -285,7 +286,7 @@ export function ImageToPdfTool() {
         : `Ready to create ${images.length}-page PDF.`;
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="ordered-collection-premium ordered-collection-split space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={status}
         message={statusMessage}
@@ -297,6 +298,7 @@ export function ImageToPdfTool() {
         empty={
           <>
             <FileDropZone
+              className="ordered-drop"
               onFilesSelected={addFiles}
               accept={ACCEPTED_IMAGE_EXTENSIONS}
               validateFile={isAcceptedImageFile}
@@ -310,8 +312,8 @@ export function ImageToPdfTool() {
         }
         workArea={
           images.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+            <div className="ordered-stage">
+              <div className="ordered-stage-bar flex flex-col gap-2.5 py-1 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
                     <ImageToPdfIcon className="h-4 w-4" />
@@ -345,13 +347,7 @@ export function ImageToPdfTool() {
                   >
                     Add more images
                   </ActionButton>
-                  <div
-                    className={
-                      hasResult
-                        ? "hidden w-full sm:w-auto md:block"
-                        : "w-full sm:w-auto"
-                    }
-                  >
+                  <div className="w-full sm:w-auto">
                     <ActionButton
                       variant="outline"
                       size="sm"
@@ -365,7 +361,7 @@ export function ImageToPdfTool() {
                 </div>
               </div>
 
-              <div className="border-b border-border/80 bg-surface px-3 py-2 sm:px-4">
+              <div className="ordered-stage-note py-2">
                 <p className="text-sm font-semibold text-foreground">
                   PDF page order
                 </p>
@@ -375,12 +371,13 @@ export function ImageToPdfTool() {
                 </p>
               </div>
 
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
+              <div className="ordered-stage-grid">
                 <ImagePreviewGrid
                   images={images}
                   onRemove={removeImage}
                   onRotate={rotateImage}
                   onReorder={reorderImages}
+                  showHeading={false}
                   disabled={isBusy}
                 />
               </div>
@@ -394,7 +391,7 @@ export function ImageToPdfTool() {
               footer={
                 showResultInspector && pdfBlob ? (
                   <div className="flex flex-col gap-2">
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full"
@@ -416,43 +413,33 @@ export function ImageToPdfTool() {
                     >
                       Change settings
                     </ActionButton>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={clearAll}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <p className="text-[11px] leading-snug text-scanonix-muted">
                       {generateHint}
                     </p>
-                    <ActionButton
-                      size="lg"
-                      className="w-full shadow-[var(--shadow-orange-sm)]"
-                      loading={status === "loading"}
-                      disabled={images.length === 0 || isBusy}
-                      onClick={() => {
-                        void handleGenerate();
-                      }}
+                    <div
+                      className={
+                        resultActionPhase === "ready" ||
+                        resultActionPhase === "processing" ||
+                        (hasResult && !showResultInspector)
+                          ? "hidden lg:block"
+                          : undefined
+                      }
                     >
-                      {status === "loading" ? "Generating PDF…" : "Generate PDF"}
-                    </ActionButton>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={clearAll}
-                    >
-                      Start over
-                    </ActionButton>
+                      <ActionButton
+                        size="lg"
+                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        loading={status === "loading"}
+                        disabled={images.length === 0 || isBusy}
+                        onClick={() => {
+                          void handleGenerate();
+                        }}
+                      >
+                        {status === "loading" ? "Generating PDF…" : "Generate PDF"}
+                      </ActionButton>
+                    </div>
                   </div>
                 )
               }
@@ -463,7 +450,7 @@ export function ImageToPdfTool() {
                     <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                       Result
                     </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700 dark:text-green-400">
+                    <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
                       ✓ PDF created
                     </p>
                     <p className="mt-1 text-xs text-scanonix-muted">
@@ -512,15 +499,6 @@ export function ImageToPdfTool() {
                 </div>
               ) : (
                 <div className="space-y-5">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Image to PDF
-                    </p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-scanonix-muted">
-                      Arrange images, choose page settings, and create one PDF.
-                    </p>
-                  </div>
-
                   <section className="space-y-2.5">
                     <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                       Page size
@@ -591,46 +569,6 @@ export function ImageToPdfTool() {
                     ) : null}
                   </section>
 
-                  <section className="space-y-2.5 border-t border-border/80 pt-4">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Summary
-                    </h2>
-                    <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Images</dt>
-                        <dd className="font-semibold text-foreground">
-                          {images.length}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">PDF pages</dt>
-                        <dd className="font-semibold text-foreground">
-                          {images.length}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Page size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {pageSizeLabel(pageSize)}
-                        </dd>
-                      </div>
-                      {pageSize !== "fit" ? (
-                        <div className="flex justify-between gap-3 px-3 py-2.5">
-                          <dt className="text-scanonix-muted">Orientation</dt>
-                          <dd className="font-semibold capitalize text-foreground">
-                            {orientation}
-                          </dd>
-                        </div>
-                      ) : null}
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Input size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {formatFileSize(totalInputBytes)}
-                        </dd>
-                      </div>
-                    </dl>
-                  </section>
-
                   <section className="space-y-2 border-t border-border/80 pt-4">
                     <PrivacyNotice message={PRIVACY_MESSAGE} />
                   </section>
@@ -642,17 +580,19 @@ export function ImageToPdfTool() {
       />
 
       <ToolStickyMobileActionBar
-        visible={hasResult}
-        phase={resultActionPhase}
-        primaryLabel="Download PDF"
-        primaryLoading={isDownloading}
-        primaryDisabled={isBusy}
+        visible={images.length > 0}
+        stickyUntil="lg"
+        phase={hasResult && !showResultInspector ? "ready" : resultActionPhase}
+        primaryLabel={showResultInspector ? "Download PDF" : "Generate PDF"}
+        primaryLoading={showResultInspector ? isDownloading : status === "loading"}
+        primaryDisabled={showResultInspector ? isBusy : images.length === 0 || isBusy}
         onPrimaryClick={() => {
-          void handleDownload();
+          if (showResultInspector) {
+            void handleDownload();
+          } else {
+            void handleGenerate();
+          }
         }}
-        onStartOver={clearAll}
-        startOverLabel="Start over"
-        startOverDisabled={isBusy}
       />
     </div>
   );

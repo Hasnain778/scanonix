@@ -4,8 +4,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUp,
-  ChevronsDown,
-  ChevronsUp,
   FileText,
   GripVertical,
   Trash2,
@@ -19,8 +17,6 @@ interface MergeDocumentGridProps {
   onRemove: (id: string) => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
   disabled?: boolean;
-  /** Compact control shown beside the Merge order heading (e.g. Add PDFs). */
-  headerAction?: ReactNode;
 }
 
 const MAX_THUMBS_PER_DOC = 3;
@@ -85,7 +81,7 @@ function DocumentPreview({
 
   if (loading) {
     return (
-      <div className="flex aspect-[3/4] w-full max-w-[7.5rem] items-center justify-center rounded-lg border border-border bg-white">
+      <div className="flex aspect-[3/4] w-[4.25rem] items-center justify-center rounded-md border border-border bg-white">
         <svg
           className="h-5 w-5 animate-spin text-scanonix-orange"
           viewBox="0 0 24 24"
@@ -112,18 +108,18 @@ function DocumentPreview({
 
   if (failed || previews.length === 0) {
     return (
-      <div className="flex aspect-[3/4] w-full max-w-[7.5rem] items-center justify-center rounded-lg border border-border bg-white px-2 text-center text-[11px] text-scanonix-muted">
+      <div className="flex aspect-[3/4] w-[4.25rem] items-center justify-center rounded-md border border-border bg-white px-1 text-center text-[10px] leading-tight text-scanonix-muted">
         Preview unavailable
       </div>
     );
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1.5">
       {previews.map((src, index) => (
         <div
           key={`${file.name}-${index}`}
-          className="aspect-[3/4] w-[5.5rem] overflow-hidden rounded-lg border border-border bg-white shadow-sm sm:w-[6.5rem]"
+          className="aspect-[3/4] w-[4.25rem] overflow-hidden rounded-md border border-border bg-white sm:w-[4.75rem]"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -135,7 +131,7 @@ function DocumentPreview({
         </div>
       ))}
       {pageCount != null && pageCount > previews.length && (
-        <div className="flex aspect-[3/4] w-[4.5rem] items-center justify-center rounded-lg border border-dashed border-border bg-surface-muted/60 text-center text-[10px] font-semibold text-scanonix-muted sm:w-[5rem]">
+        <div className="flex aspect-[3/4] w-[3.25rem] items-center justify-center rounded-md border border-dashed border-border bg-surface-muted/60 text-center text-[10px] font-semibold text-scanonix-muted">
           +{pageCount - previews.length} more
         </div>
       )}
@@ -161,7 +157,7 @@ function OrderButton({
       title={label}
       disabled={disabled}
       onClick={onClick}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface-muted text-foreground transition hover:border-scanonix-orange/40 hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-muted text-foreground transition hover:bg-surface-raised hover:text-scanonix-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/30 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {children}
     </button>
@@ -173,7 +169,6 @@ export function MergeDocumentGrid({
   onRemove,
   onReorder,
   disabled = false,
-  headerAction,
 }: MergeDocumentGridProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -181,11 +176,6 @@ export function MergeDocumentGrid({
   if (files.length === 0) {
     return null;
   }
-
-  const totalPages = files.reduce(
-    (sum, file) => sum + (file.pageCount ?? 0),
-    0,
-  );
 
   const handleDragStart = (index: number) => {
     if (disabled) return;
@@ -212,27 +202,7 @@ export function MergeDocumentGrid({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold tracking-tight text-foreground">
-            Merge order
-          </h2>
-          <p className="mt-0.5 text-xs text-scanonix-muted sm:text-sm">
-            Arrange your PDFs in the order they should appear in the final
-            document. Drag cards or use the arrows.
-          </p>
-        </div>
-        <div className="flex w-full shrink-0 flex-col items-stretch gap-2 sm:w-auto sm:items-end">
-          {headerAction}
-          <p className="text-xs font-medium text-scanonix-muted sm:text-right">
-            {files.length} PDF{files.length === 1 ? "" : "s"}
-            {totalPages > 0 ? ` · ${totalPages} pages` : ""}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-3">
+    <div className="grid gap-2.5">
         {files.map((pdfFile, index) => {
           const isFirst = index === 0;
           const isLast = index === files.length - 1;
@@ -245,36 +215,37 @@ export function MergeDocumentGrid({
               onDragOver={(event) => handleDragOver(event, index)}
               onDrop={() => handleDrop(index)}
               onDragEnd={handleDragEnd}
-              className={`overflow-hidden rounded-xl border bg-surface shadow-sm transition-all ${
+              className={`rounded-xl bg-surface-strong transition-all lg:w-[80%] lg:max-w-[42rem] ${
                 dragOverIndex === index
-                  ? "border-scanonix-orange shadow-[0_0_0_1px_color-mix(in_srgb,var(--scanonix-orange)_35%,transparent)]"
-                  : "border-border"
+                  ? "ring-2 ring-scanonix-orange"
+                  : ""
               } ${draggedIndex === index ? "opacity-55" : ""} ${
                 disabled ? "" : "cursor-grab active:cursor-grabbing"
               }`}
               aria-label={`Merge position ${index + 1}: ${pdfFile.file.name}`}
             >
-              <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-stretch sm:gap-4 sm:p-4">
-                <div className="flex items-start gap-3 sm:w-12 sm:flex-col sm:items-center">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-scanonix-orange/35 bg-scanonix-orange/10 text-sm font-bold text-scanonix-orange">
+              <div className="flex items-start gap-2.5 p-2.5 sm:gap-3 sm:p-3">
+                <div className="flex w-7 shrink-0 flex-col items-center gap-1.5 pt-0.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-scanonix-orange/10 text-xs font-bold text-scanonix-orange">
                     {index + 1}
                   </div>
                   <GripVertical
-                    className="mt-1 h-4 w-4 text-scanonix-muted sm:mt-0"
+                    className="h-4 w-4 text-scanonix-muted"
                     aria-hidden="true"
                   />
                 </div>
 
-                <div className="min-w-0 flex-1 space-y-3">
-                  <div className="flex min-w-0 items-start gap-2.5">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-muted text-scanonix-orange">
-                      <FileText className="h-4 w-4" aria-hidden="true" />
-                    </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 items-start gap-2">
+                    <FileText
+                      className="mt-0.5 h-4 w-4 shrink-0 text-scanonix-orange"
+                      aria-hidden="true"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-foreground">
                         {pdfFile.file.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-scanonix-muted">
+                      <p className="mt-0.5 truncate text-xs text-scanonix-muted">
                         {formatFileSize(pdfFile.file.size)}
                         {pdfFile.pageCountError
                           ? ` · ${pdfFile.pageCountError}`
@@ -287,49 +258,36 @@ export function MergeDocumentGrid({
                     </div>
                   </div>
 
-                  <DocumentPreview
-                    file={pdfFile.file}
-                    pageCount={pdfFile.pageCount}
-                  />
+                  <div className="mt-2">
+                    <DocumentPreview
+                      file={pdfFile.file}
+                      pageCount={pdfFile.pageCount}
+                    />
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-1.5 sm:w-[7.5rem] sm:flex-col sm:items-stretch">
-                  <div className="flex gap-1.5 sm:grid sm:grid-cols-2">
-                    <OrderButton
-                      label="Move to first"
-                      disabled={disabled || isFirst}
-                      onClick={() => onReorder(index, 0)}
-                    >
-                      <ChevronsUp className="h-4 w-4" aria-hidden="true" />
-                    </OrderButton>
-                    <OrderButton
-                      label="Move earlier"
-                      disabled={disabled || isFirst}
-                      onClick={() => onReorder(index, index - 1)}
-                    >
-                      <ArrowUp className="h-4 w-4" aria-hidden="true" />
-                    </OrderButton>
-                    <OrderButton
-                      label="Move later"
-                      disabled={disabled || isLast}
-                      onClick={() => onReorder(index, index + 1)}
-                    >
-                      <ArrowDown className="h-4 w-4" aria-hidden="true" />
-                    </OrderButton>
-                    <OrderButton
-                      label="Move to last"
-                      disabled={disabled || isLast}
-                      onClick={() => onReorder(index, files.length - 1)}
-                    >
-                      <ChevronsDown className="h-4 w-4" aria-hidden="true" />
-                    </OrderButton>
-                  </div>
+                <div className="flex shrink-0 flex-col items-center gap-1">
+                  <OrderButton
+                    label="Move up"
+                    disabled={disabled || isFirst}
+                    onClick={() => onReorder(index, index - 1)}
+                  >
+                    <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  </OrderButton>
+                  <OrderButton
+                    label="Move down"
+                    disabled={disabled || isLast}
+                    onClick={() => onReorder(index, index + 1)}
+                  >
+                    <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+                  </OrderButton>
                   <button
                     type="button"
                     disabled={disabled}
                     onClick={() => onRemove(pdfFile.id)}
                     aria-label={`Remove ${pdfFile.file.name}`}
-                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-red-500/25 bg-red-500/[0.06] px-2.5 text-xs font-semibold text-foreground transition hover:border-red-500/40 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/25 disabled:cursor-not-allowed disabled:opacity-40 sm:w-full"
+                    title={`Remove ${pdfFile.file.name}`}
+                    className="inline-flex h-8 items-center justify-center gap-1 rounded-md px-1.5 text-[11px] font-medium text-foreground-muted transition hover:bg-red-500/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/25 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                     Remove
@@ -339,7 +297,6 @@ export function MergeDocumentGrid({
             </article>
           );
         })}
-      </div>
     </div>
   );
 }

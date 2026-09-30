@@ -12,6 +12,7 @@ import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/pdf-page-tools-premium.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
 import { downloadBlob, packageOutputsForDownload } from "@/lib/tools/download";
@@ -329,7 +330,7 @@ export function SplitPdfTool() {
   })();
 
   return (
-    <div className="space-y-5 overflow-x-hidden">
+    <div className="pdf-page-tools-premium space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -341,6 +342,7 @@ export function SplitPdfTool() {
         empty={
           <>
             <FileDropZone
+              className="pdf-page-drop"
               onFilesSelected={handleUpload}
               accept={ACCEPTED_PDF_EXTENSIONS}
               validateFile={isAcceptedPdfFile}
@@ -355,7 +357,7 @@ export function SplitPdfTool() {
         }
         workArea={
           uploadedPdf ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+            <div className="pdf-page-stage overflow-hidden">
               <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
@@ -372,13 +374,7 @@ export function SplitPdfTool() {
                     </p>
                   </div>
                 </div>
-                <div
-                  className={
-                    hasResult
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
-                  }
-                >
+                <div className="w-full sm:w-auto">
                   <ActionButton
                     variant="outline"
                     size="sm"
@@ -428,7 +424,7 @@ export function SplitPdfTool() {
               footer={
                 hasResult && downloadState ? (
                   <div className="flex flex-col gap-2">
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                       <ActionButton
                         size="lg"
                         className="w-full"
@@ -452,43 +448,32 @@ export function SplitPdfTool() {
                     >
                       Change settings
                     </ActionButton>
-                    <div className="hidden md:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={clearPdf}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <p className="text-[11px] leading-snug text-scanonix-muted">
                       {splitHint}
                     </p>
-                    <ActionButton
-                      size="lg"
-                      className="w-full shadow-[var(--shadow-orange-sm)]"
-                      loading={status === "loading"}
-                      disabled={!canSplit}
-                      onClick={() => {
-                        void handleSplit();
-                      }}
+                    <div
+                      className={
+                        resultActionPhase === "ready" ||
+                        resultActionPhase === "processing"
+                          ? "hidden lg:block"
+                          : undefined
+                      }
                     >
-                      {status === "loading" ? "Splitting PDF…" : "Split PDF"}
-                    </ActionButton>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={clearPdf}
-                    >
-                      Start over
-                    </ActionButton>
+                      <ActionButton
+                        size="lg"
+                        className="w-full shadow-[var(--shadow-orange-sm)]"
+                        loading={status === "loading"}
+                        disabled={!canSplit}
+                        onClick={() => {
+                          void handleSplit();
+                        }}
+                      >
+                        {status === "loading" ? "Splitting PDF…" : "Split PDF"}
+                      </ActionButton>
+                    </div>
                   </div>
                 )
               }
@@ -499,7 +484,7 @@ export function SplitPdfTool() {
                     <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                       Result
                     </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700 dark:text-green-400">
+                    <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
                       ✓ PDF split
                     </p>
                     <p className="mt-1 text-xs text-scanonix-muted">
@@ -648,21 +633,25 @@ export function SplitPdfTool() {
       />
 
       <ToolStickyMobileActionBar
-        visible={hasResult}
+        visible={Boolean(uploadedPdf)}
+        stickyUntil="lg"
         phase={resultActionPhase}
         primaryLabel={
-          downloadState?.outputCount === 1
-            ? "Download split PDF"
-            : "Download split PDFs"
+          hasResult
+            ? downloadState?.outputCount === 1
+              ? "Download split PDF"
+              : "Download split PDFs"
+            : "Split PDF"
         }
-        primaryLoading={isDownloading}
-        primaryDisabled={isBusy}
+        primaryLoading={hasResult ? isDownloading : status === "loading"}
+        primaryDisabled={hasResult ? isBusy : !canSplit || isBusy}
         onPrimaryClick={() => {
-          void handleDownload();
+          if (hasResult) {
+            void handleDownload();
+          } else {
+            void handleSplit();
+          }
         }}
-        onStartOver={clearPdf}
-        startOverLabel="Start over"
-        startOverDisabled={isBusy}
       />
     </div>
   );

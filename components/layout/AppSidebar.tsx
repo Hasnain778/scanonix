@@ -124,7 +124,7 @@ export function AppSidebar({ mobileOpen = false, onNavigate }: AppSidebarProps) 
       </aside>
 
       <div
-        className={`fixed inset-0 z-50 lg:hidden ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        className={`fixed inset-0 z-50 lg:hidden ${mobileOpen ? "pointer-events-auto" : "pointer-events-none hidden"}`}
         aria-hidden={!mobileOpen}
       >
         <button

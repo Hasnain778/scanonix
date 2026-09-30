@@ -1,60 +1,53 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ConsentPreferencesLink } from "@/components/analytics/ConsentPreferencesLink";
 import { FooterSocialLinks } from "@/components/layout/FooterSocialLinks";
+import { PlayStoreLink } from "@/components/marketing/PlayStoreLink";
 import { BrandLockup } from "@/components/ui/BrandLockup";
-import { PLAY_STORE_URL } from "@/config/site";
 import { getToolsCategoryHref } from "@/lib/navigation/tool-category-urls";
 
 const PRODUCT_LINKS = [
+  { label: "Home", href: "/" },
   { label: "All Tools", href: getToolsCategoryHref("all") },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Dashboard", href: "/dashboard" },
+] as const;
+
+const DISCOVER_LINKS = [
   { label: "PDF Tools", href: getToolsCategoryHref("pdf") },
   { label: "Image Tools", href: getToolsCategoryHref("image") },
   { label: "AI Tools", href: getToolsCategoryHref("ai") },
   { label: "Security Tools", href: getToolsCategoryHref("security") },
-  { label: "Pricing", href: "/pricing" },
 ] as const;
 
-const COMPANY_LINKS = [
-  { label: "Contact", href: "/contact" },
+const LEGAL_LINKS = [
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
-] as const;
-
-const ACCOUNT_LINKS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Billing", href: "/account/billing" },
-  { label: "Settings", href: "/account/settings" },
-  { label: "Sign In", href: "/login" },
 ] as const;
 
 function FooterColumn({
   title,
   links,
+  children,
 }: {
   title: string;
   links: readonly { label: string; href: string }[];
+  children?: ReactNode;
 }) {
   return (
-    <div>
-      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-      <ul className="mt-4 space-y-3">
+    <nav aria-label={title}>
+      <h2 className="site-footer__heading">{title}</h2>
+      <ul className="site-footer__links">
         {links.map((link) => (
-          <li key={link.label}>
-            <Link
-              href={link.href}
-              className="text-sm text-foreground-muted transition-colors duration-200 hover:text-scanonix-orange"
-            >
+          <li key={link.href + link.label}>
+            <Link href={link.href} className="site-footer__link">
               {link.label}
             </Link>
           </li>
         ))}
-        {title === "Company" ? (
-          <li>
-            <ConsentPreferencesLink />
-          </li>
-        ) : null}
+        {children}
       </ul>
-    </div>
+    </nav>
   );
 }
 
@@ -62,49 +55,48 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-border bg-surface-muted">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-scanonix-orange/35 to-transparent" />
-
-      <div className="page-container py-16 sm:py-20">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-4">
-            <Link
-              href="/"
-              className="group inline-flex min-w-0 items-center"
-              aria-label="SCANONIX home"
-            >
+    <footer className="site-footer">
+      <div className="page-container site-footer__inner">
+        <div className="site-footer__main">
+          <div className="site-footer__brand">
+            <Link href="/" className="inline-flex" aria-label="SCANONIX home">
               <BrandLockup variant="footer" decorative />
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-foreground-muted">
+            <p className="site-footer__statement">
               Free online tools for PDFs, images, AI documents, and file protection.
             </p>
-            <FooterSocialLinks />
-            <a
-              href={PLAY_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="home-btn-interactive mt-5 inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-scanonix-orange/35 hover:bg-brand-soft"
-            >
-              <svg className="h-4 w-4 text-scanonix-orange" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M3.6 1.8A1.8 1.8 0 012 3.4v17.2a1.8 1.8 0 001.6 1.6l10.2-9.8L3.6 1.8zm11.8 8.4l2.8 2.7 2.8-1.6c.9-.5.9-1.7 0-2.2l-2.8-1.6-2.8 2.7zM15.4 12 5.2 21.8c.3.1.7 0 1-.2l10.2-5.9-1-3.7zM5.2 2.2l10.2 5.9 1-3.7L6.2 2c-.3-.2-.7-.3-1-.2z" />
-              </svg>
-              Get the Android app
-            </a>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-8">
-            <FooterColumn title="Product" links={PRODUCT_LINKS} />
-            <FooterColumn title="Company" links={COMPANY_LINKS} />
-            <FooterColumn title="Account" links={ACCOUNT_LINKS} />
+          <FooterColumn title="Product" links={PRODUCT_LINKS} />
+          <FooterColumn title="Discover" links={DISCOVER_LINKS} />
+          <FooterColumn title="Legal" links={LEGAL_LINKS}>
+            <li>
+              <ConsentPreferencesLink className="site-footer__link" />
+            </li>
+          </FooterColumn>
+
+          <div className="site-footer__store">
+            <h2 className="site-footer__heading">Get Scanonix</h2>
+            <p className="site-footer__statement">
+              Scan and work with documents on Android.
+            </p>
+            <PlayStoreLink
+              location="footer"
+              variant="badge"
+              badgeHeight={68}
+              className="site-footer__play"
+            />
           </div>
         </div>
 
-        <div className="mt-12 border-t border-border pt-8">
-          <p className="text-center text-sm text-foreground-muted">
-            © {currentYear} Scanonix. All rights reserved.{" "}
-            <span className="text-foreground-disabled">|</span> Privacy-first processing.{" "}
-            <span className="text-foreground-disabled">|</span> Secure payments by Stripe.
-          </p>
+        <div className="site-footer__bottom">
+          <p className="site-footer__legal">© {currentYear} Scanonix</p>
+          <div className="site-footer__bottom-end">
+            <Link href="/contact" className="site-footer__link">
+              Contact
+            </Link>
+            <FooterSocialLinks />
+          </div>
         </div>
       </div>
     </footer>

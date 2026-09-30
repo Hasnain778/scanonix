@@ -44,7 +44,7 @@ export function CompressionLevelPanel({
         </p>
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-1.5" role="radiogroup" aria-label="Compression level">
         {LEVEL_ORDER.map((option) => {
           const settings = COMPRESSION_LEVELS[option];
           const estimate = estimateCompressedSize(originalSize, option);
@@ -55,12 +55,12 @@ export function CompressionLevelPanel({
           return (
             <label
               key={option}
-              className={`relative block rounded-xl border p-3.5 transition-all duration-200 ${
+              className={`relative block rounded-lg px-3 py-2.5 transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-scanonix-orange/35 ${
                 locked
-                  ? "cursor-not-allowed border-border/70 bg-surface-muted/80"
+                  ? "cursor-not-allowed bg-surface-muted/50"
                   : selected
-                    ? "cursor-pointer border-scanonix-orange bg-scanonix-orange/15 text-foreground shadow-[0_0_0_1px_color-mix(in_srgb,var(--scanonix-orange)_35%,transparent)]"
-                    : "cursor-pointer border-border bg-surface-muted text-scanonix-muted hover:border-scanonix-orange/40 hover:text-foreground"
+                    ? "cursor-pointer bg-scanonix-orange/10 text-foreground ring-1 ring-scanonix-orange/45"
+                    : "cursor-pointer text-scanonix-muted hover:bg-surface-muted/80 hover:text-foreground"
               } ${disabled && !locked ? "cursor-not-allowed opacity-50" : ""}`}
             >
               <input
@@ -74,7 +74,7 @@ export function CompressionLevelPanel({
                 disabled={disabled || locked}
                 className="sr-only"
               />
-              <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                 <span
                   className={`text-sm font-semibold ${
                     locked
@@ -102,11 +102,11 @@ export function CompressionLevelPanel({
                   </span>
                 )}
               </span>
-              <span className="mt-1.5 block text-xs leading-snug text-scanonix-muted">
+              <span className="mt-1.5 block min-w-0 text-xs leading-relaxed text-scanonix-muted">
                 {settings.description}
               </span>
-              <span className="mt-2 block text-xs font-medium text-scanonix-orange">
-                Est. ~{formatFileSize(estimate)}
+              <span className="mt-2 block min-w-0 text-xs font-medium leading-relaxed text-scanonix-orange">
+                Rough guide ~{formatFileSize(estimate)} — not a guaranteed size
               </span>
             </label>
           );
@@ -124,8 +124,9 @@ export function CompressionLevelPanel({
       )}
 
       <p className="text-xs text-scanonix-muted">
-        Estimated output for selected level: ~{formatFileSize(estimatedSize)}{" "}
-        (actual size may vary).
+        Rough guide for the selected level: ~{formatFileSize(estimatedSize)}.
+        This is a fixed ratio, not a measurement of this PDF. Already-optimized
+        files may not get smaller.
       </p>
     </div>
   );

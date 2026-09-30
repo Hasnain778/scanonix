@@ -1,0 +1,92 @@
+/*
+ * Single-PDF page tools only.
+ * Scoped to .pdf-page-tools-premium inside Split, Rotate,
+ * Add Page Numbers, and PDF to Image.
+ */
+
+.pdf-page-tools-premium .pdf-page-drop {
+  border-width: 1.5px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 1.45rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .pdf-page-tools-premium .pdf-page-drop {
+    padding: 1.7rem 2rem;
+  }
+}
+
+.pdf-page-tools-premium .pdf-page-drop > div {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.6rem;
+}
+
+html[data-theme="bright"] .pdf-page-tools-premium .pdf-page-drop {
+  background: #fffcfa;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
+}
+
+html[data-theme="dark"] .pdf-page-tools-premium .pdf-page-drop {
+  background: #141210;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+}
+
+.pdf-page-tools-premium .pdf-page-drop:hover {
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  .pdf-page-tools-premium [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
+.pdf-page-tools-premium .pdf-page-stage {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  overflow: visible;
+}
+
+.pdf-page-tools-premium .pdf-page-stage > div:first-child,
+.pdf-page-tools-premium .pdf-page-stage > div:last-child {
+  border: none;
+  background: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.pdf-page-tools-premium [data-tool-control-panel] {
+  width: 100%;
+  max-height: none;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  position: static;
+}
+
+.pdf-page-tools-premium [data-tool-control-panel-body],
+.pdf-page-tools-premium [data-tool-control-panel-footer] {
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.pdf-page-tools-premium [data-tool-control-panel] dl {
+  border: none;
+  background: transparent;
+}
+
+.pdf-page-tools-premium .pdf-page-privacy p {
+  text-align: left;
+  line-height: 1.45;
+  max-width: 36rem;
+}

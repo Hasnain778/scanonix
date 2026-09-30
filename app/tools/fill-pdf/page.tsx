@@ -9,7 +9,9 @@ export default function FillPdfPage() {
   return (
     <ToolRoute
       toolId="fill-pdf"
-      icon={<ToolIcon type="fill-pdf" className="h-7 w-7" />}
+      icon={<ToolIcon type="fill-pdf" className="h-5 w-5" />}
+      headerCompact
+      usageTone="quiet"
     >
       <LazyFillPdfTool />
     </ToolRoute>

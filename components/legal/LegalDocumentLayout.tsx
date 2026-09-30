@@ -88,11 +88,11 @@ export function LegalDocumentLayout({
 }: LegalDocumentLayoutProps) {
   return (
     <article>
-      <header className="mb-10 max-w-3xl border-b border-border pb-8 sm:mb-12">
+      <header className="mb-8 max-w-3xl border-b border-border pb-6">
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-scanonix-orange">
           Legal
         </p>
-        <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+        <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {title}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-foreground-muted sm:text-lg">
@@ -110,7 +110,7 @@ export function LegalDocumentLayout({
 
       <div className="grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14 xl:grid-cols-[240px_minmax(0,1fr)]">
         <LegalTableOfContents sections={sections} />
-        <div className="glass-card rounded-2xl p-6 sm:p-8 lg:p-10">
+        <div className="min-w-0 max-w-3xl">
           <LegalDocumentBody sections={sections} />
         </div>
       </div>

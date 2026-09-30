@@ -8,14 +8,21 @@ import { useProAccess } from "@/hooks/useProAccess";
 
 interface SecurityToolWorkspaceProps {
   toolName: string;
-  children: (ctx: { isPro: boolean; showGate: boolean }) => ReactNode;
+  children: (ctx: {
+    isPro: boolean;
+    showGate: boolean;
+    isAuthenticated: boolean;
+  }) => ReactNode;
   gateDescription?: string;
+  /** Opt-in. Default still renders the shared promotional Pro gate. */
+  gate?: "default" | "none";
 }
 
 export function SecurityToolWorkspace({
   toolName,
   children,
   gateDescription,
+  gate = "default",
 }: SecurityToolWorkspaceProps) {
   const { loading, isAuthenticated, isPro } = useProAccess();
 
@@ -37,9 +44,9 @@ export function SecurityToolWorkspace({
         <ProBadge />
       </div>
 
-      {children({ isPro, showGate })}
+      {children({ isPro, showGate, isAuthenticated })}
 
-      {showGate ? (
+      {showGate && gate === "default" ? (
         <ProSecurityGate
           title={`Unlock ${toolName}`}
           description={

@@ -92,7 +92,7 @@ export function ScanReportPdfDownloadButton({
         </span>
       </ActionButton>
       {showError && error ? (
-        <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-700 [[data-theme=dark]_&]:text-red-400">{error}</p>
       ) : null}
     </div>
   );
@@ -248,9 +248,9 @@ export function ScanReportDownloads({
         </motion.div>
       </div>
 
-      {error ? <p className="mt-4 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <p className="mt-4 text-sm text-red-700 [[data-theme=dark]_&]:text-red-400">{error}</p> : null}
       {shareMessage ? (
-        <p className="mt-4 text-sm text-emerald-700 dark:text-emerald-300">{shareMessage}</p>
+        <p className="mt-4 text-sm text-emerald-700 [[data-theme=dark]_&]:text-emerald-300">{shareMessage}</p>
       ) : null}
 
       {!premiumUnlocked ? (

@@ -83,22 +83,22 @@ function run() {
   assert(
     "8 footer structurally valid at 390px (responsive grid + brand column)",
     footerSource.includes("page-container") &&
-      footerSource.includes("lg:col-span-4") &&
-      footerSource.includes("max-w-sm") &&
-      footerSource.includes("grid gap-10") &&
+      footerSource.includes("site-footer__main") &&
+      footerSource.includes("site-footer__brand") &&
       footerSocialSource.includes("flex flex-wrap"),
   );
 
   assert(
-    "9 footer integrates social row without new column",
+    "9 footer integrates social row in the utility bar",
     footerSource.includes("<FooterSocialLinks />") &&
-      !footerSource.includes("lg:col-span-5") &&
-      footerSource.includes("lg:col-span-4"),
+      footerSource.includes("site-footer__bottom"),
   );
 
   assert(
-    "10 Android app link preserved below social row",
-    footerSource.includes("PLAY_STORE_URL") && footerSource.includes("Get the Android app"),
+    "10 Android badge preserved via PlayStoreLink",
+    footerSource.includes('location="footer"') &&
+      footerSource.includes('variant="badge"') &&
+      footerSource.includes("PlayStoreLink"),
   );
 
   assert(
@@ -126,11 +126,9 @@ function run() {
   );
 
   assert(
-    "15 GitHub hover uses Scanonix orange glow (not permanent)",
-    footerSocialSource.includes("hover:border-scanonix-orange") &&
-      footerSocialSource.includes("hover:shadow-[0_0_18px_rgba(255,106,0,0.32)]") &&
-      !footerSocialSource.includes("border-scanonix-orange/55 border") &&
-      footerSocialSource.includes("GitHub:"),
+    "15 social icons have no permanent glow",
+    !footerSocialSource.includes("hover:shadow-[0_0_18px_rgba(255,106,0,0.32)]") &&
+      footerSocialSource.includes("GitHubIcon"),
   );
 
   assert(

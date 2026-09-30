@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileArchive } from "lucide-react";
 import {
-  calculateSavingsPercent,
   COMPRESSION_LEVELS,
   type CompressionLevel,
 } from "@/lib/tools/compress-pdf/compression-levels";
-import { formatFileSize } from "@/lib/tools/format-utils";
 import { renderPagePreviewDataUrl } from "@/lib/tools/pdf-to-image/pdf-render";
 
 const MAX_PREVIEW_PAGES = 8;
@@ -16,7 +13,6 @@ interface CompressDocumentOverviewProps {
   pdfBytes: ArrayBuffer;
   pageCount: number;
   fileName: string;
-  originalSize: number;
   level: CompressionLevel;
   isCompressing?: boolean;
   compressedSize?: number | null;
@@ -27,10 +23,8 @@ export function CompressDocumentOverview({
   pdfBytes,
   pageCount,
   fileName,
-  originalSize,
   level,
   isCompressing = false,
-  compressedSize = null,
   hasResult = false,
 }: CompressDocumentOverviewProps) {
   const [previews, setPreviews] = useState<Record<number, string>>({});
@@ -39,10 +33,6 @@ export function CompressDocumentOverview({
   const previewCount = Math.min(pageCount, MAX_PREVIEW_PAGES);
   const remainingPages = Math.max(0, pageCount - previewCount);
   const levelLabel = COMPRESSION_LEVELS[level].label;
-  const savings =
-    hasResult && compressedSize != null
-      ? calculateSavingsPercent(originalSize, compressedSize)
-      : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -81,84 +71,26 @@ export function CompressDocumentOverview({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold tracking-tight text-foreground">
-            {hasResult ? "Compression result" : "Document"}
-          </h2>
-          <p className="mt-0.5 text-xs text-scanonix-muted sm:text-sm">
-            {hasResult
-              ? "Your compressed PDF is ready to download."
-              : isCompressing
-                ? "Compressing on Scanonix servers…"
-                : `${pageCount} page${pageCount === 1 ? "" : "s"} · ${levelLabel}`}
-          </p>
-        </div>
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-          <FileArchive className="h-4 w-4" aria-hidden="true" />
-        </div>
+      <div>
+        <h2 className="text-sm font-semibold tracking-tight text-foreground" title={fileName}>
+          {hasResult ? "Preview" : "Pages"}
+        </h2>
+        <p className="mt-0.5 text-xs text-scanonix-muted">
+          {isCompressing
+            ? "Compressing on Scanonix servers…"
+            : `${pageCount} page${pageCount === 1 ? "" : "s"} · ${levelLabel}`}
+        </p>
       </div>
-
-      {hasResult && compressedSize != null && (
-        <div className="grid gap-2 sm:grid-cols-3">
-          <div className="rounded-xl border border-border bg-surface-muted/70 px-3 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-              Original
-            </p>
-            <p className="mt-1 text-lg font-bold text-foreground">
-              {formatFileSize(originalSize)}
-            </p>
-          </div>
-          <div className="rounded-xl border border-scanonix-orange/40 bg-scanonix-orange/10 px-3 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-scanonix-orange">
-              Compressed
-            </p>
-            <p className="mt-1 text-lg font-bold text-foreground">
-              {formatFileSize(compressedSize)}
-            </p>
-          </div>
-          <div
-            className={`rounded-xl border px-3 py-3 ${
-              savings != null && savings > 0
-                ? "border-green-500/30 bg-green-500/10"
-                : "border-border bg-surface-muted/70"
-            }`}
-          >
-            <p
-              className={`text-[10px] font-bold uppercase tracking-[0.08em] ${
-                savings != null && savings > 0
-                  ? "text-green-700 dark:text-green-400"
-                  : "text-scanonix-muted"
-              }`}
-            >
-              Saved
-            </p>
-            <p className="mt-1 text-lg font-bold text-foreground">
-              {savings != null && savings > 0 ? `${savings}%` : "No reduction"}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {!hasResult && (
-        <div className="rounded-xl border border-border bg-surface-muted/50 px-3 py-3 text-sm">
-          <p className="truncate font-semibold text-foreground" title={fileName}>
-            {fileName}
-          </p>
-          <p className="mt-1 text-xs text-scanonix-muted">
-            {formatFileSize(originalSize)} · Selected: {levelLabel}
-            {isCompressing ? " · In progress" : ""}
-          </p>
-        </div>
-      )}
 
       <div
         className={`grid gap-3 ${
-          previewCount <= 2
-            ? "grid-cols-1 sm:grid-cols-2"
-            : previewCount <= 4
-              ? "grid-cols-2 lg:grid-cols-4"
-              : "grid-cols-2 sm:grid-cols-3 xl:grid-cols-4"
+          previewCount <= 1
+            ? "w-[15rem] max-w-full grid-cols-1 lg:w-[26rem]"
+            : previewCount <= 2
+              ? "grid-cols-1 sm:grid-cols-2"
+              : previewCount <= 4
+                ? "grid-cols-2 lg:grid-cols-4"
+                : "grid-cols-2 sm:grid-cols-3 xl:grid-cols-4"
         } ${isCompressing ? "opacity-70" : ""}`}
       >
         {pages.map((page) => {
@@ -168,7 +100,7 @@ export function CompressDocumentOverview({
           return (
             <article
               key={page}
-              className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm"
+              className="overflow-hidden rounded-lg border border-border/80 bg-white [[data-theme=dark]_&]:border-white/10 [[data-theme=dark]_&]:bg-[#1c1917]"
               aria-label={`Page ${page} preview`}
             >
               <div className="relative aspect-[3/4] overflow-hidden bg-white">
@@ -213,9 +145,9 @@ export function CompressDocumentOverview({
                   )
                 )}
               </div>
-              <div className="border-t border-border bg-surface-muted/40 px-2.5 py-2 text-center">
-                <p className="text-xs font-semibold text-foreground">Page {page}</p>
-              </div>
+              <p className="px-2 py-1.5 text-center text-[11px] font-medium text-scanonix-muted">
+                Page {page}
+              </p>
             </article>
           );
         })}

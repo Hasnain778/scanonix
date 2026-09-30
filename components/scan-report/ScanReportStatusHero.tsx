@@ -27,25 +27,25 @@ const VERDICT_CONFIG: Record<
   safe: {
     label: "Safe",
     description: "No serious threats were found. Your target passed the main security checks.",
-    accent: "border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/5",
+    accent: "border-emerald-500/20 bg-emerald-50 [[data-theme=dark]_&]:bg-emerald-500/5",
     badge:
-      "border-emerald-700 bg-emerald-100 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200",
-    bar: "bg-emerald-600 dark:bg-emerald-500",
+      "border-emerald-700 bg-emerald-100 text-emerald-900 [[data-theme=dark]_&]:border-emerald-500/40 [[data-theme=dark]_&]:bg-emerald-500/15 [[data-theme=dark]_&]:text-emerald-200",
+    bar: "bg-emerald-600 [[data-theme=dark]_&]:bg-emerald-500",
     Icon: ShieldCheck,
   },
   warning: {
     label: "Warning",
     description: "Some issues need attention. Review the recommendations below.",
-    accent: "border-amber-500/20 bg-amber-50 dark:bg-amber-500/5",
+    accent: "border-amber-500/20 bg-amber-50 [[data-theme=dark]_&]:bg-amber-500/5",
     badge:
-      "border-amber-700 bg-amber-100 text-amber-950 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-100",
-    bar: "bg-amber-600 dark:bg-amber-500",
+      "border-amber-700 bg-amber-100 text-amber-950 [[data-theme=dark]_&]:border-amber-500/40 [[data-theme=dark]_&]:bg-amber-500/15 [[data-theme=dark]_&]:text-amber-100",
+    bar: "bg-amber-600 [[data-theme=dark]_&]:bg-amber-500",
     Icon: AlertTriangle,
   },
   dangerous: {
     label: "Dangerous",
     description: "Serious threats were detected. Address the findings as soon as possible.",
-    accent: "border-red-500/25 bg-red-50 dark:bg-red-500/5",
+    accent: "border-red-500/25 bg-red-50 [[data-theme=dark]_&]:bg-red-500/5",
     /* Colors via .report-verdict-badge--dangerous (data-theme), not Tailwind dark: */
     badge: "report-verdict-badge--dangerous rounded-md",
     bar: "bg-red-600",
@@ -107,20 +107,20 @@ export function ScanReportStatusHero({ report }: ScanReportStatusHeroProps) {
                 <SummaryPill
                   label="Critical"
                   value={report.summary.criticalIssues}
-                  tone="text-red-700 dark:text-red-300"
-                  edge="border-red-600/50 dark:border-red-500/40"
+                  tone="text-red-700 [[data-theme=dark]_&]:text-red-300"
+                  edge="border-red-600/50 [[data-theme=dark]_&]:border-red-500/40"
                 />
                 <SummaryPill
                   label="Warnings"
                   value={report.summary.warnings}
-                  tone="text-amber-800 dark:text-amber-200"
-                  edge="border-amber-600/50 dark:border-amber-500/40"
+                  tone="text-amber-800 [[data-theme=dark]_&]:text-amber-200"
+                  edge="border-amber-600/50 [[data-theme=dark]_&]:border-amber-500/40"
                 />
                 <SummaryPill
                   label="Passed"
                   value={report.summary.passedChecks}
-                  tone="text-emerald-800 dark:text-emerald-300"
-                  edge="border-emerald-600/50 dark:border-emerald-500/40"
+                  tone="text-emerald-800 [[data-theme=dark]_&]:text-emerald-300"
+                  edge="border-emerald-600/50 [[data-theme=dark]_&]:border-emerald-500/40"
                 />
               </div>
             ) : null}

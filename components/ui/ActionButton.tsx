@@ -26,7 +26,7 @@ type ActionButtonProps = ActionButtonBaseProps &
 
 const variantStyles: Record<ActionButtonVariant, string> = {
   primary:
-    "bg-brand text-on-brand hover:bg-brand-hover border border-scanonix-orange/25 shadow-md shadow-scanonix-orange/20 hover:shadow-scanonix-orange/30 disabled:opacity-50 disabled:shadow-none",
+    "bg-brand text-on-brand hover:bg-brand-hover border border-transparent shadow-[0_1px_2px_color-mix(in_srgb,var(--scanonix-orange)_35%,transparent)] disabled:opacity-50 disabled:shadow-none",
   secondary:
     "bg-surface-raised text-foreground border border-border hover:bg-surface-muted hover:border-border-strong disabled:opacity-50",
   outline:
@@ -40,9 +40,9 @@ const variantStyles: Record<ActionButtonVariant, string> = {
 };
 
 const sizeStyles: Record<ActionButtonSize, string> = {
-  sm: "min-h-8 px-3 text-xs rounded-lg gap-1.5",
-  md: "min-h-10 px-5 text-sm rounded-xl gap-2",
-  lg: "min-h-11 px-8 text-base rounded-xl gap-2",
+  sm: "min-h-9 px-3.5 text-sm rounded-lg gap-1.5",
+  md: "min-h-11 px-5 text-sm rounded-xl gap-2",
+  lg: "min-h-12 px-6 text-base rounded-xl gap-2",
 };
 
 function Spinner({ className = "h-4 w-4" }: { className?: string }) {

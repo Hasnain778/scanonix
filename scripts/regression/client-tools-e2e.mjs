@@ -75,6 +75,16 @@ function record(results, slug, ok, detail, meta = {}) {
   else fail(slug, detail, { slug, ...meta });
 }
 
+async function uploadHydratedFiles(page, ...files) {
+  await page.waitForFunction(() => {
+    const input = document.querySelector('input[type="file"]');
+    if (!(input instanceof HTMLInputElement)) return false;
+    const propsKey = Object.keys(input).find((key) => key.startsWith("__reactProps"));
+    return Boolean(propsKey && typeof input[propsKey].onChange === "function");
+  }, { timeout: 30000 });
+  await uploadFiles(page, ...files);
+}
+
 async function withPage(fn) {
   const browser = await launchBrowser(puppeteer);
   const page = await browser.newPage();
@@ -94,7 +104,7 @@ async function runMergePdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/merge-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("single-page-a.pdf"), fp("single-page-b.pdf"));
+    await uploadHydratedFiles(page, fp("single-page-a.pdf"), fp("single-page-b.pdf"));
     await waitForBodyText(page, "single-page-a.pdf", 30000);
     await clickButtonContaining(page, "Merge PDFs");
     await waitForBodyText(page, "ready to download", 90000);
@@ -116,8 +126,16 @@ async function runSplitPdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/split-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
-    await waitForBodyText(page, "2 page", 30000);
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
+    try {
+      await waitForBodyText(page, "2 page", 30000);
+    } catch (error) {
+      const body = await page
+        .evaluate(() => (document.body?.innerText || "").replace(/\s+/g, " ").trim().slice(0, 600))
+        .catch(() => "");
+      console.error(`split-pdf page-count wait failed. body=${JSON.stringify(body)}`);
+      throw error;
+    }
     await clickButtonContaining(page, "Select all");
     await clickButtonContaining(page, "Split PDF");
     await waitForBodyText(page, "ready to download", 90000);
@@ -138,7 +156,7 @@ async function runRotatePdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/rotate-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
     await waitForBodyText(page, "Ready to rotate", 30000);
     await clickButtonContaining(page, "Rotate PDF");
     await waitForBodyText(page, "ready to download", 90000);
@@ -159,8 +177,16 @@ async function runOrganizePdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/organize-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
-    await waitForBodyText(page, "two-page.pdf", 60000);
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
+    try {
+      await waitForBodyText(page, "two-page.pdf", 60000);
+    } catch (error) {
+      const body = await page
+        .evaluate(() => (document.body?.innerText || "").replace(/\s+/g, " ").trim().slice(0, 600))
+        .catch(() => "");
+      console.error(`organize-pdf filename wait failed. body=${JSON.stringify(body)}`);
+      throw error;
+    }
     await sleep(3000);
     await clickButtonContaining(page, "Export organized PDF");
     await waitForBodyText(page, "Organized PDF ready", 120000);
@@ -182,7 +208,7 @@ async function runCropPdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/crop-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
     await waitForBodyText(page, "two-page.pdf", 60000);
     (await clickButtonContaining(page, "Export cropped PDF")) ||
       (await clickButtonContaining(page, "Export"));
@@ -201,7 +227,7 @@ async function runFillPdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/fill-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("fillable-form.pdf"));
+    await uploadHydratedFiles(page, fp("fillable-form.pdf"));
     await waitForBodyText(page, "fillable-form.pdf", 60000);
     await sleep(2000);
     const hasFields = await page.evaluate(() => {
@@ -245,7 +271,7 @@ async function runSignPdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/sign-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
     await waitForBodyText(page, "two-page.pdf", 60000);
     await clickButtonContaining(page, "Create signature");
     await sleep(1200);
@@ -261,9 +287,22 @@ async function runSignPdf(results) {
       await clickButtonContaining(page, "Add signature");
     }
     await sleep(1500);
-    await clickButtonContaining(page, "Add to page");
+    const requireSignClick = async (label) => {
+      const clicked = await clickButtonContaining(page, label);
+      if (!clicked) {
+        record(results, slug, false, `required button not found or disabled: ${label}`, {
+          assertion: `enabled button containing ${label}`,
+        });
+        await captureFailureArtifacts(page, slug, SCREENSHOT_DIR);
+        return false;
+      }
+      return true;
+    };
+    if (!(await requireSignClick("Place"))) return;
+    if (!(await requireSignClick("Add to page"))) return;
     await sleep(800);
-    await clickButtonContaining(page, "Export signed PDF");
+    if (!(await requireSignClick("Finish"))) return;
+    if (!(await requireSignClick("Export signed PDF"))) return;
     await waitForBodyText(page, "ready to download", 120000);
     await clickButtonContaining(page, "Download signed PDF");
     await sleep(1500);
@@ -283,7 +322,7 @@ async function runAddPageNumbers(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/add-page-numbers`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
     await waitForBodyText(page, "two-page.pdf", 60000);
     (await clickButtonContaining(page, "Export numbered PDF")) ||
       (await clickButtonContaining(page, "Add page numbers"));
@@ -305,8 +344,16 @@ async function runWatermarkPdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/watermark-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
-    await waitForBodyText(page, "two-page.pdf", 60000);
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
+    try {
+      await waitForBodyText(page, "two-page.pdf", 60000);
+    } catch (error) {
+      const body = await page
+        .evaluate(() => (document.body?.innerText || "").replace(/\s+/g, " ").trim().slice(0, 600))
+        .catch(() => "");
+      console.error(`watermark-pdf filename wait failed. body=${JSON.stringify(body)}`);
+      throw error;
+    }
     const textInput = await page.waitForSelector(
       '[data-watermark-text-input]',
       { timeout: 30000 },
@@ -315,7 +362,19 @@ async function runWatermarkPdf(results) {
     await textInput.click({ clickCount: 3 });
     await page.keyboard.press("Backspace");
     await textInput.type("SCANONIX TEST");
-    await clickButtonContaining(page, "Download watermarked PDF");
+    const requireWatermarkClick = async (label) => {
+      const clicked = await clickButtonContaining(page, label);
+      if (!clicked) {
+        record(results, slug, false, `required button not found or disabled: ${label}`, {
+          assertion: `enabled button containing ${label}`,
+        });
+        await captureFailureArtifacts(page, slug, SCREENSHOT_DIR);
+        return false;
+      }
+      return true;
+    };
+    if (!(await requireWatermarkClick("Pages"))) return;
+    if (!(await requireWatermarkClick("Download watermarked PDF"))) return;
     await waitForBodyText(page, "Watermarked PDF downloaded.", 120000);
     await sleep(500);
     const blobs = await readAllBlobs(page);
@@ -340,7 +399,7 @@ async function runPdfToImage(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/pdf-to-image`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("two-page.pdf"));
+    await uploadHydratedFiles(page, fp("two-page.pdf"));
     await waitForBodyText(page, "2 page", 60000);
     await clickButtonContaining(page, "Convert to");
     await waitForBodyText(page, "ready to download", 180000);
@@ -363,7 +422,7 @@ async function runImageToPdf(results) {
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/image-to-pdf`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp("sample.jpg"));
+    await uploadHydratedFiles(page, fp("sample.jpg"));
     await waitForBodyText(page, "sample.jpg", 30000);
     await clickButtonContaining(page, "Generate PDF");
     await waitForBodyText(page, "ready to download", 120000);
@@ -380,13 +439,65 @@ async function runImageToPdf(results) {
 
 async function runImageConverter(results, slug, input, convertBtn, downloadBtn, validate) {
   await withPage(async (page) => {
+    const bodyExcerpt = () =>
+      page
+        .evaluate(() => (document.body?.innerText || "").replace(/\s+/g, " ").trim().slice(0, 600))
+        .catch(() => "");
+
     await page.goto(`${BASE}/tools/${slug}`, { waitUntil: "networkidle2" });
     await installDownloadHook(page);
-    await uploadFiles(page, fp(input));
-    await sleep(1500);
-    await clickButtonContaining(page, convertBtn);
+    await uploadHydratedFiles(page, fp(input));
+
+    try {
+      await page.waitForFunction(
+        (label) =>
+          [...document.querySelectorAll("button")].some(
+            (el) => el.textContent.includes(label) && !el.disabled,
+          ),
+        { timeout: 30000 },
+        convertBtn,
+      );
+    } catch {
+      const body = await bodyExcerpt();
+      console.error(
+        `image converter ${slug}: required enabled button not found: ${convertBtn}. body=${JSON.stringify(body)}`,
+      );
+      record(results, slug, false, `image converter ${slug}: required enabled button not found: ${convertBtn}`, {
+        assertion: `enabled button containing ${convertBtn}`,
+        output: { body },
+      });
+      await captureFailureArtifacts(page, slug, SCREENSHOT_DIR);
+      return;
+    }
+
+    if (!(await clickButtonContaining(page, convertBtn))) {
+      const body = await bodyExcerpt();
+      console.error(
+        `image converter ${slug}: convert click failed: ${convertBtn}. body=${JSON.stringify(body)}`,
+      );
+      record(results, slug, false, `image converter ${slug}: required enabled button not found: ${convertBtn}`, {
+        assertion: `enabled button containing ${convertBtn}`,
+        output: { body },
+      });
+      await captureFailureArtifacts(page, slug, SCREENSHOT_DIR);
+      return;
+    }
+
     await waitForBodyText(page, "ready to download", 120000);
-    await clickButtonContaining(page, downloadBtn);
+
+    if (!(await clickButtonContaining(page, downloadBtn))) {
+      const body = await bodyExcerpt();
+      console.error(
+        `image converter ${slug}: download click failed: ${downloadBtn}. body=${JSON.stringify(body)}`,
+      );
+      record(results, slug, false, `image converter ${slug}: required enabled button not found: ${downloadBtn}`, {
+        assertion: `enabled button containing ${downloadBtn}`,
+        output: { body },
+      });
+      await captureFailureArtifacts(page, slug, SCREENSHOT_DIR);
+      return;
+    }
+
     const blob = await readLastBlob(page);
     const ok = FORCE_FAIL === slug ? false : Boolean(blob && validate(blob.bytes));
     record(results, slug, ok, ok ? "valid output bytes" : "wrong format", {
@@ -411,7 +522,7 @@ async function runOcr(results) {
   const slug = "ocr";
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/ocr`, { waitUntil: "networkidle2" });
-    await uploadFiles(page, fp("ocr-test.png"));
+    await uploadHydratedFiles(page, fp("ocr-test.png"));
     await waitForBodyText(page, "ocr-test.png", 30000);
     await clickButtonContaining(page, "Extract text");
     // "Extracted text" heading appears during loading — wait for fixture result instead.
@@ -438,9 +549,40 @@ async function runQrScanner(results) {
   const slug = "qr-scanner";
   await withPage(async (page) => {
     await page.goto(`${BASE}/tools/qr-scanner`, { waitUntil: "networkidle2" });
-    await clickButtonContaining(page, "Upload image");
-    await sleep(600);
-    await uploadFiles(page, fp("qr-test.png"));
+    try {
+      await page.waitForFunction(() => {
+        const button = [...document.querySelectorAll("button")].find(
+          (element) => element.textContent.includes("Upload image") && !element.disabled,
+        );
+        if (!button) return false;
+        const propsKey = Object.keys(button).find((key) => key.startsWith("__reactProps"));
+        return Boolean(propsKey && typeof button[propsKey].onClick === "function");
+      }, { timeout: 30000 });
+    } catch {
+      const body = await page
+        .evaluate(() => (document.body?.innerText || "").replace(/\s+/g, " ").trim().slice(0, 600))
+        .catch(() => "");
+      console.error(`qr-scanner upload tab not ready. body=${JSON.stringify(body)}`);
+      record(results, slug, false, "qr-scanner: required enabled button not found: Upload image", {
+        assertion: "enabled button containing Upload image",
+        output: { body },
+      });
+      await captureFailureArtifacts(page, slug, SCREENSHOT_DIR);
+      return;
+    }
+    if (!(await clickButtonContaining(page, "Upload image"))) {
+      const body = await page
+        .evaluate(() => (document.body?.innerText || "").replace(/\s+/g, " ").trim().slice(0, 600))
+        .catch(() => "");
+      console.error(`qr-scanner upload click failed. body=${JSON.stringify(body)}`);
+      record(results, slug, false, "qr-scanner: required enabled button not found: Upload image", {
+        assertion: "enabled button containing Upload image",
+        output: { body },
+      });
+      await captureFailureArtifacts(page, slug, SCREENSHOT_DIR);
+      return;
+    }
+    await uploadHydratedFiles(page, fp("qr-test.png"));
     await waitForBodyText(page, "SCANONIX-QR-REGRESSION", 60000);
     const ok = FORCE_FAIL === slug ? false : true;
     record(results, slug, ok, "decoded SCANONIX-QR-REGRESSION", {

@@ -35,13 +35,23 @@ const EXAMPLE_PROMPTS = [
   "Translate to Spanish",
 ] as const;
 
+/** Individual tool workspaces only. `/tools` and the image hub stay eligible. */
+function isIndividualToolWorkspace(pathname: string): boolean {
+  const path =
+    pathname.length > 1 && pathname.endsWith("/")
+      ? pathname.slice(0, -1)
+      : pathname;
+
+  if (path.startsWith("/dev/image-editor")) return true;
+  if (!path.startsWith("/tools/")) return false;
+  if (path === "/tools/image") return false;
+  return true;
+}
+
 export function ToolFinderRoot() {
   const pathname = usePathname();
-  /** Narrow: hide FAB on Image Editor workspaces (public + dev). */
-  const hideForDevEditor =
-    typeof pathname === "string" &&
-    (pathname.startsWith("/dev/image-editor") ||
-      pathname.startsWith("/tools/image-editor"));
+  const hideOnToolWorkspace =
+    typeof pathname === "string" && isIndividualToolWorkspace(pathname);
   const reduceMotion = useReducedMotion();
   const mounted = useClientMounted();
   const consentDecision = useConsentDecision();
@@ -139,7 +149,14 @@ export function ToolFinderRoot() {
     return () => window.removeEventListener("mousedown", onPointerDown);
   }, [close, open]);
 
-  if (hideForDevEditor || consentPending) {
+  useEffect(() => {
+    if (!hideOnToolWorkspace) return;
+    setOpen(false);
+    setQuery("");
+    setSubmittedQuery("");
+  }, [hideOnToolWorkspace]);
+
+  if (hideOnToolWorkspace || consentPending) {
     return null;
   }
 

@@ -149,12 +149,11 @@ export function ToolFinderRoot() {
     return () => window.removeEventListener("mousedown", onPointerDown);
   }, [close, open]);
 
-  useEffect(() => {
-    if (!hideOnToolWorkspace) return;
+  if (hideOnToolWorkspace && (open || query !== "" || submittedQuery !== "")) {
     setOpen(false);
     setQuery("");
     setSubmittedQuery("");
-  }, [hideOnToolWorkspace]);
+  }
 
   if (hideOnToolWorkspace || consentPending) {
     return null;

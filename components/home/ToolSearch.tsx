@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { ToolVisual } from "@/components/tools/ToolVisual";
+import { CANONICAL_TOOL_IDS } from "@/constants/tool-categories";
 import {
   HOMEPAGE_CATEGORY_META,
-  HOMEPAGE_TOOLS,
   type HomepageTool,
 } from "@/constants/homepage-tools";
 import { highlightMatch, searchHomeTools } from "@/lib/tools/search-home-tools";
@@ -17,7 +17,7 @@ interface ToolSearchProps {
   showSuggestions?: boolean;
 }
 
-const TOOL_SEARCH_COUNT = HOMEPAGE_TOOLS.filter((tool) => tool.available).length;
+const TOOL_SEARCH_COUNT = CANONICAL_TOOL_IDS.length;
 
 const ROTATING_PLACEHOLDERS = [
   "What do you want to do?",

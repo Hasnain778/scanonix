@@ -6,6 +6,7 @@ import { useCallback, useId, useMemo, useState, type KeyboardEvent } from "react
 import { ToolCard } from "@/components/tools/directory/ToolCard";
 import { ToolsEmptyState } from "@/components/tools/directory/ToolsEmptyState";
 import {
+  CANONICAL_TOOL_IDS,
   getActiveSubcategoryFilter,
   getCategoryFilterLabel,
   getPrimaryAllFilter,
@@ -85,6 +86,7 @@ export function ToolsDirectory({ initialCategory }: ToolsDirectoryProps) {
   const gridTools = showFeatured
     ? filteredTools.filter((tool) => !tool.featured)
     : filteredTools;
+  const listedToolCount = showFeatured ? CANONICAL_TOOL_IDS.length : gridTools.length;
 
   const setCategory = useCallback(
     (next: ToolCategoryFilterId) => {
@@ -261,7 +263,7 @@ export function ToolsDirectory({ initialCategory }: ToolsDirectoryProps) {
             {showFeatured ? "All tools" : `${activeCategoryLabel} tools`}
           </h2>
           <p className="tools-v2-section-meta">
-            {gridTools.length} tool{gridTools.length === 1 ? "" : "s"} available
+            {listedToolCount} tool{listedToolCount === 1 ? "" : "s"} available
           </p>
         </div>
 

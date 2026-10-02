@@ -83,7 +83,7 @@ export function QrUploadScanner({
       <div className="space-y-1">
         <h3 className="text-base font-semibold text-foreground">Upload QR image</h3>
         <p className="text-sm text-scanonix-muted">
-          JPG, JPEG, PNG, or WEBP · single image · max 25 MB
+          JPG, JPEG, PNG, or WEBP · single image
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export function QrUploadScanner({
           multiple={false}
           disabled={disabled}
           label="Drop an image containing a QR code"
-          hint="JPG, JPEG, PNG, or WEBP · under 25 MB"
+          hint="JPG, JPEG, PNG, or WEBP"
           icon={<ImageDropIcon />}
           className="qr-drop"
         />

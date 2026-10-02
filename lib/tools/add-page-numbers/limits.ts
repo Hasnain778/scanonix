@@ -1,8 +1,5 @@
 /** Add Page Numbers PDF safety limits (Phase 122B). */
 
-/** Maximum source PDF size (bytes) — aligned with free-tier upload limit. */
-export const MAX_ADD_PAGE_NUMBERS_BYTES = 10 * 1024 * 1024;
-
 /** Maximum PDF pages processed in-browser — aligned with Sign/Organize/Crop. */
 export const MAX_ADD_PAGE_NUMBERS_PAGES = 200;
 

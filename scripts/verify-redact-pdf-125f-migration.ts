@@ -9,7 +9,8 @@ import { HOMEPAGE_CATEGORY_GRIDS, HOMEPAGE_TOOLS } from "../constants/homepage-t
 import { INDEXABLE_TOOL_PATHS, TOOL_SEO } from "../constants/tool-seo";
 import { getToolAccess, TOOL_ACCESS } from "../lib/plan/tool-access";
 import {
-  MAX_REDACT_PDF_BYTES,
+  MAX_REDACT_CANVAS_LONG_EDGE,
+  MAX_REDACT_PDF_PAGES,
   REDACT_PRIVACY_COPY,
   REDACT_RASTER_QUALITY_COPY,
   REDACT_SANITIZATION_LIMITATION_COPY,
@@ -255,14 +256,18 @@ function run() {
       clientPage.includes("RedactPdfProClientTool"),
   );
 
-  // T. 10 MB copy accurate
-  const maxMb = Math.round(MAX_REDACT_PDF_BYTES / (1024 * 1024));
-  assert("T MAX_REDACT_PDF_BYTES is 10 MB", maxMb === 10);
+  // T. primary PDF has no artificial byte cap; page and raster guards remain
+  assert("T page guard remains 200", MAX_REDACT_PDF_PAGES === 200);
+  assert("T raster edge guard remains 4000", MAX_REDACT_CANVAS_LONG_EDGE === 4000);
   assert(
-    "T UI communicates 10 MB limit",
-    clientTool.includes("10 MB") || clientTool.includes(`${maxMb}MB`),
+    "T UI does not advertise a 10 MB primary PDF cap",
+    !clientTool.includes("10 MB") && !clientTool.includes("MAX_REDACT_PDF_BYTES"),
   );
-  assert("T SEO documents 10 MB limit", seoSource.includes("10 MB"));
+  assert(
+    "T SEO does not advertise a 10 MB primary PDF cap",
+    !seoSource.includes("PDF uploads are limited to 10 MB.") &&
+      !seoSource.includes("up to 10 MB"),
+  );
 
   // U. no old 50 MB claim in canonical workflow
   assert(

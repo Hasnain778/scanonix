@@ -21,7 +21,6 @@ import {
 } from "./detect-form";
 import { buildFilledPdfFilename } from "./filename";
 import {
-  MAX_FILL_PDF_BYTES,
   MAX_FILL_PDF_FIELDS,
   MAX_FILL_PDF_PAGES,
 } from "./limits";
@@ -211,13 +210,6 @@ export async function fillPdfForm(
     throw new FillPdfError(
       "WRONG_FILE_TYPE",
       "Only PDF files are supported for form filling.",
-    );
-  }
-
-  if (originalBytes.byteLength > MAX_FILL_PDF_BYTES) {
-    throw new FillPdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_FILL_PDF_BYTES / (1024 * 1024))}MB size limit.`,
     );
   }
 

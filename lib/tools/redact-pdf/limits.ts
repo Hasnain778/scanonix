@@ -1,8 +1,5 @@
 /** Client-side Redact PDF safety limits (Phase 125B). */
 
-/** Maximum source PDF size (bytes) — aligned with Crop/Watermark/Fill. */
-export const MAX_REDACT_PDF_BYTES = 10 * 1024 * 1024;
-
 /** Maximum PDF pages processed in-browser. */
 export const MAX_REDACT_PDF_PAGES = 200;
 

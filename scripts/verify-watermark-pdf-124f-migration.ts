@@ -9,7 +9,8 @@ import { HOMEPAGE_CATEGORY_GRIDS, HOMEPAGE_TOOLS } from "../constants/homepage-t
 import { INDEXABLE_TOOL_PATHS, TOOL_SEO } from "../constants/tool-seo";
 import { getToolAccess, TOOL_ACCESS } from "../lib/plan/tool-access";
 import {
-  MAX_WATERMARK_PDF_BYTES,
+  MAX_WATERMARK_IMAGE_BYTES,
+  MAX_WATERMARK_PDF_PAGES,
   WATERMARK_PDF_PRIVACY_COPY,
 } from "../lib/tools/watermark-pdf";
 
@@ -202,16 +203,19 @@ function run() {
     !seoSource.match(/watermark-pdf[\s\S]{0,400}Pro-only/i),
   );
 
-  // N. 10 MB limit accurately represented
-  const maxMb = Math.round(MAX_WATERMARK_PDF_BYTES / (1024 * 1024));
-  assert("N MAX_WATERMARK_PDF_BYTES is 10 MB", maxMb === 10);
+  // N. primary PDF has no artificial byte cap; page and image guards remain
+  assert("N page guard remains 200", MAX_WATERMARK_PDF_PAGES === 200);
   assert(
-    "N UI communicates 10 MB limit",
-    clientTool.includes("10 MB") || clientTool.includes(`${maxMb}MB`),
+    "N secondary image cap remains 2 MB",
+    MAX_WATERMARK_IMAGE_BYTES === 2 * 1024 * 1024,
   );
   assert(
-    "N SEO documents 10 MB limit",
-    seoSource.includes("10 MB"),
+    "N UI does not advertise a 10 MB primary PDF cap",
+    !clientTool.includes("10 MB") && !clientTool.includes("MAX_WATERMARK_PDF_BYTES"),
+  );
+  assert(
+    "N SEO does not advertise a 10 MB primary PDF cap",
+    !seoSource.includes("PDF uploads are limited to 10 MB."),
   );
 
   // O. encrypted PDF handling accurate

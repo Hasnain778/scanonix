@@ -1,5 +1,4 @@
 export {
-  MAX_WATERMARK_PDF_BYTES,
   MAX_WATERMARK_PDF_PAGES,
   MAX_WATERMARK_TEXT_LENGTH,
   MIN_WATERMARK_FONT_SIZE,
@@ -33,10 +32,7 @@ export {
 
 export { buildWatermarkedPdfFilename } from "./filename";
 
-export {
-  loadWatermarkDocumentState,
-  type LoadWatermarkDocumentOptions,
-} from "./load-document";
+export { loadWatermarkDocumentState } from "./load-document";
 
 export {
   resolvePageSelection,

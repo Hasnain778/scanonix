@@ -1,13 +1,9 @@
 export {
-  MAX_CROP_PDF_BYTES,
   MAX_CROP_PDF_PAGES,
   MIN_NORMALIZED_CROP_SIZE,
 } from "./limits";
 
-export {
-  loadCropDocumentState,
-  type LoadCropDocumentOptions,
-} from "./load-document";
+export { loadCropDocumentState } from "./load-document";
 
 export {
   cropPdfDocument,

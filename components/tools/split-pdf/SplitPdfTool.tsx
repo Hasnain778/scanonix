@@ -188,7 +188,7 @@ export function SplitPdfTool() {
 
     const attempt = createProcessAttempt("split-pdf");
 
-    const gate = await gateToolOperation("split-pdf", uploadedPdf.file.size);
+    const gate = await gateToolOperation("split-pdf");
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);

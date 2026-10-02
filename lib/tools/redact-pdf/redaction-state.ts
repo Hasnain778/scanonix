@@ -7,7 +7,6 @@ import {
   validateNormalizedRedaction,
 } from "./coordinates";
 import {
-  MAX_REDACT_PDF_BYTES,
   MAX_REDACT_PDF_PAGES,
   MAX_REDACTIONS,
   MAX_REDACTED_PAGES_SOFT,
@@ -20,10 +19,6 @@ import type {
   RedactionRect,
 } from "./types";
 import { RedactPdfError } from "./types";
-
-export interface LoadRedactionDocumentOptions {
-  byteLength?: number;
-}
 
 function readPdfBox(box: {
   x: number;
@@ -41,25 +36,7 @@ function readPdfBox(box: {
 
 export async function loadRedactionDocumentState(
   pdfBytes: ArrayBuffer,
-  options: LoadRedactionDocumentOptions = {},
 ): Promise<RedactionDocumentState> {
-  if (
-    options.byteLength !== undefined &&
-    options.byteLength > MAX_REDACT_PDF_BYTES
-  ) {
-    throw new RedactPdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_REDACT_PDF_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
-  if (pdfBytes.byteLength > MAX_REDACT_PDF_BYTES) {
-    throw new RedactPdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_REDACT_PDF_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
   let pdf;
 
   try {

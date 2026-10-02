@@ -1,8 +1,5 @@
 /** Watermark PDF safety limits (Phase 124B). */
 
-/** Maximum source PDF size (bytes) — aligned with free-tier upload limit. */
-export const MAX_WATERMARK_PDF_BYTES = 10 * 1024 * 1024;
-
 /** Maximum PDF pages processed in-browser — aligned with Sign/Organize/Crop. */
 export const MAX_WATERMARK_PDF_PAGES = 200;
 

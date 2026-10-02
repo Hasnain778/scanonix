@@ -33,7 +33,6 @@ import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import { getRedactPdfErrorMessage } from "@/lib/tools/redact-pdf/errors";
-import { MAX_REDACT_PDF_BYTES } from "@/lib/tools/redact-pdf/limits";
 import { loadRedactionDocumentState } from "@/lib/tools/redact-pdf/redaction-state";
 import {
   addRedactionToState,
@@ -276,13 +275,6 @@ export function RedactPdfClientTool({
       return;
     }
 
-    if (file.size > MAX_REDACT_PDF_BYTES) {
-      const maxMb = Math.round(MAX_REDACT_PDF_BYTES / (1024 * 1024));
-      setStatus("error");
-      setStatusMessage(`File exceeds the ${maxMb}MB upload limit.`);
-      return;
-    }
-
     setIsReadingPdf(true);
     setStatus("idle");
     setStatusMessage(undefined);
@@ -290,9 +282,7 @@ export function RedactPdfClientTool({
 
     try {
       const bytes = await file.arrayBuffer();
-      const document = await loadRedactionDocumentState(bytes, {
-        byteLength: file.size,
-      });
+      const document = await loadRedactionDocumentState(bytes);
       const warnings = detectRedactPdfWarnings(bytes);
 
       setUploadedPdf({
@@ -438,7 +428,7 @@ export function RedactPdfClientTool({
 
     try {
       const { gateToolOperation } = await import("@/lib/plan/tool-gate");
-      const gate = await gateToolOperation(toolId, uploadedPdf.file.size);
+      const gate = await gateToolOperation(toolId);
       if (!gate.ok) {
         setStatus("error");
         setStatusMessage(gate.message);
@@ -751,7 +741,7 @@ export function RedactPdfClientTool({
               inputId="redact-pdf-client-input"
               inputDataAttributes={{ "data-redact-pdf-input": "true" }}
               label="Drop a PDF here to redact"
-              hint="or click to browse — up to 10 MB, processed locally in your browser"
+              hint="or click to browse — PDF, processed locally in your browser"
               icon={<PdfDropIcon />}
             />
             <PrivacyNotice message={REDACT_PRIVACY_COPY} />

@@ -11,7 +11,6 @@ import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileAc
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import "@/styles/ordered-collection-premium.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
-import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -141,13 +140,6 @@ export function OrganizePdfTool() {
       return;
     }
 
-    if (file.size > getAnonymousUploadLimit()) {
-      const maxMb = Math.round(getAnonymousUploadLimit() / (1024 * 1024));
-      setStatus("error");
-      setStatusMessage(`File exceeds the ${maxMb}MB upload limit.`);
-      return;
-    }
-
     setIsReadingPdf(true);
     setStatus("idle");
     setStatusMessage(undefined);
@@ -156,9 +148,7 @@ export function OrganizePdfTool() {
 
     try {
       const bytes = await file.arrayBuffer();
-      const document = await loadOrganizeDocumentState(bytes, {
-        byteLength: file.size,
-      });
+      const document = await loadOrganizeDocumentState(bytes);
 
       setUploadedPdf({
         file,

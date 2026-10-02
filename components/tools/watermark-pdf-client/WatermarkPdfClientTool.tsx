@@ -33,7 +33,6 @@ import {
   MAX_WATERMARK_FONT_SIZE,
   MAX_WATERMARK_IMAGE_BYTES,
   MAX_WATERMARK_IMAGE_LONG_EDGE,
-  MAX_WATERMARK_PDF_BYTES,
   measurePreviewTextWidth,
   MIN_RELATIVE_WIDTH_PERCENT,
   MIN_WATERMARK_FONT_SIZE,
@@ -294,22 +293,13 @@ export function WatermarkPdfClientTool() {
       return;
     }
 
-    if (file.size > MAX_WATERMARK_PDF_BYTES) {
-      const maxMb = Math.round(MAX_WATERMARK_PDF_BYTES / (1024 * 1024));
-      setStatus("error");
-      setStatusMessage(`File exceeds the ${maxMb}MB upload limit.`);
-      return;
-    }
-
     setIsReadingPdf(true);
     setStatus("idle");
     setStatusMessage(undefined);
 
     try {
       const bytes = await file.arrayBuffer();
-      const document = await loadWatermarkDocumentState(bytes, {
-        byteLength: file.size,
-      });
+      const document = await loadWatermarkDocumentState(bytes);
 
       revokeImageAsset(imageAssetRef.current);
       setImageAsset(null);
@@ -1170,7 +1160,7 @@ export function WatermarkPdfClientTool() {
               inputDataAttributes={{ "data-watermark-source-pdf-input": "true" }}
               className="watermark-pdf-drop"
               label="Drop a PDF file here to add a watermark"
-              hint="or click to browse — up to 10 MB, processed locally in your browser"
+              hint="or click to browse — PDF, processed locally in your browser"
               icon={<WatermarkDropIcon />}
             />
             <PrivacyNotice message={WATERMARK_UI_PRIVACY_COPY} />

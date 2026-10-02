@@ -9,7 +9,6 @@ import {
   buildOrganizedPdfFilename,
   deletePageById,
   loadOrganizeDocumentState,
-  MAX_ORGANIZE_PDF_BYTES,
   MAX_ORGANIZE_PDF_PAGES,
   movePageLeft,
   movePageRight,
@@ -371,17 +370,11 @@ async function run() {
   }
   assert("invalid reorder indices rejected", invalidReorder);
 
-  // File size limit
-  let tooLarge = false;
-  try {
-    await loadOrganizeDocumentState(bytesToArrayBuffer(abcBytes), {
-      byteLength: MAX_ORGANIZE_PDF_BYTES + 1,
-    });
-  } catch (error) {
-    tooLarge =
-      error instanceof OrganizePdfError && error.code === "FILE_TOO_LARGE";
-  }
-  assert("file size limit enforced", tooLarge);
+  const state = await loadOrganizeDocumentState(bytesToArrayBuffer(abcBytes));
+  assert(
+    "document loads without a byte-size argument",
+    state.pages.length > 0,
+  );
 
   // Page limit
   const manyPagePdf = await PDFDocument.create();

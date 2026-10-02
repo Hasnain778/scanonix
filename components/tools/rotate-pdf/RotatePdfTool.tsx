@@ -181,7 +181,7 @@ export function RotatePdfTool() {
 
     const attempt = createProcessAttempt("rotate-pdf");
 
-    const gate = await gateToolOperation("rotate-pdf", uploadedPdf.file.size);
+    const gate = await gateToolOperation("rotate-pdf");
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);

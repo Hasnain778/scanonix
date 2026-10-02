@@ -1,13 +1,9 @@
 import { computeVisibleBox, normalizePageRotation } from "@/lib/tools/crop-pdf/coordinates";
 import type { PdfBox } from "@/lib/tools/crop-pdf/types";
 import { loadPdfDocument, PdfLoadError } from "@/lib/pdf/core";
-import { MAX_ADD_PAGE_NUMBERS_BYTES, MAX_ADD_PAGE_NUMBERS_PAGES } from "./limits";
+import { MAX_ADD_PAGE_NUMBERS_PAGES } from "./limits";
 import type { PageNumberDocumentState, PageNumberPageEntry } from "./types";
 import { AddPageNumbersError } from "./types";
-
-export interface LoadPageNumberDocumentOptions {
-  byteLength?: number;
-}
 
 function readPdfBox(box: {
   x: number;
@@ -25,17 +21,7 @@ function readPdfBox(box: {
 
 export async function loadPageNumberDocumentState(
   pdfBytes: ArrayBuffer,
-  options: LoadPageNumberDocumentOptions = {},
 ): Promise<PageNumberDocumentState> {
-  const byteLength = options.byteLength ?? pdfBytes.byteLength;
-
-  if (byteLength > MAX_ADD_PAGE_NUMBERS_BYTES) {
-    throw new AddPageNumbersError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_ADD_PAGE_NUMBERS_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
   let pdf;
 
   try {

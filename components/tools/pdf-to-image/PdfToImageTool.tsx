@@ -226,7 +226,7 @@ export function PdfToImageTool() {
 
     const attempt = createProcessAttempt("pdf-to-image");
 
-    const gate = await gateToolOperation("pdf-to-image", uploadedPdf.file.size);
+    const gate = await gateToolOperation("pdf-to-image");
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);

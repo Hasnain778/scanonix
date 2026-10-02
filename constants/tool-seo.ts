@@ -1091,7 +1091,6 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "Local browser processing",
     ],
     limitations: [
-      "PDF uploads are limited to 10 MB.",
       "Password-protected PDFs must be unlocked before watermarking.",
       "Apply one text watermark or one image watermark per export — not both at once.",
       "Very large page counts may be limited by browser memory.",
@@ -1138,7 +1137,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     pageDescription:
       "Redact sensitive PDF content online by drawing areas over names, account numbers, or other sensitive regions. Upload a PDF, mark areas to redact on each page, then download — redaction processing happens locally in your browser.",
     howToSteps: [
-      "Upload the PDF containing sensitive information (up to 10 MB).",
+      "Upload the PDF containing sensitive information.",
       "Draw redaction rectangles over sensitive areas on each page.",
       "Apply redactions and download the redacted PDF.",
     ],
@@ -1156,7 +1155,6 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "Pro security tool",
     ],
     limitations: [
-      "PDF uploads are limited to 10 MB.",
       "Draw redaction areas manually — text search redaction is not available.",
       "Pages containing redactions are rebuilt as images; text on those pages may no longer be selectable.",
       "Page-region redaction does not remove document metadata, attachments, or hidden data outside selected areas.",

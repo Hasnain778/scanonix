@@ -1,14 +1,10 @@
 export {
-  MAX_FILL_PDF_BYTES,
   MAX_FILL_PDF_FIELDS,
   MAX_FILL_PDF_PAGES,
   MAX_FILL_PDF_TEXT_LENGTH_FALLBACK,
 } from "./limits";
 
-export {
-  loadFillPdfDocumentState,
-  type LoadFillPdfDocumentOptions,
-} from "./load-document";
+export { loadFillPdfDocumentState } from "./load-document";
 
 export { fillPdfForm } from "./fill-pdf";
 

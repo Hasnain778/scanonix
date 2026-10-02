@@ -1,36 +1,13 @@
 import { loadPdfDocument, PdfLoadError } from "@/lib/pdf/core";
 import { createFileId } from "@/lib/utils/format";
-import { MAX_ORGANIZE_PDF_BYTES, MAX_ORGANIZE_PDF_PAGES } from "./limits";
+import { MAX_ORGANIZE_PDF_PAGES } from "./limits";
 import { normalizePageRotation } from "./rotation";
 import type { OrganizeDocumentState, OrganizePageEntry } from "./types";
 import { OrganizePdfError } from "./types";
 
-export interface LoadOrganizeDocumentOptions {
-  /** When provided, reject PDFs larger than MAX_ORGANIZE_PDF_BYTES. */
-  byteLength?: number;
-}
-
 export async function loadOrganizeDocumentState(
   pdfBytes: ArrayBuffer,
-  options: LoadOrganizeDocumentOptions = {},
 ): Promise<OrganizeDocumentState> {
-  if (
-    options.byteLength !== undefined &&
-    options.byteLength > MAX_ORGANIZE_PDF_BYTES
-  ) {
-    throw new OrganizePdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_ORGANIZE_PDF_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
-  if (pdfBytes.byteLength > MAX_ORGANIZE_PDF_BYTES) {
-    throw new OrganizePdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_ORGANIZE_PDF_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
   let pdf;
 
   try {

@@ -1,12 +1,6 @@
-export {
-  MAX_ORGANIZE_PDF_BYTES,
-  MAX_ORGANIZE_PDF_PAGES,
-} from "./limits";
+export { MAX_ORGANIZE_PDF_PAGES } from "./limits";
 
-export {
-  loadOrganizeDocumentState,
-  type LoadOrganizeDocumentOptions,
-} from "./load-document";
+export { loadOrganizeDocumentState } from "./load-document";
 
 export {
   organizePdfDocument,

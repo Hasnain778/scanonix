@@ -6,14 +6,9 @@ import {
   normalizePageRotation,
   pdfCropBoxToNormalized,
 } from "./coordinates";
-import { MAX_CROP_PDF_BYTES, MAX_CROP_PDF_PAGES } from "./limits";
+import { MAX_CROP_PDF_PAGES } from "./limits";
 import type { CropDocumentState, CropPageEntry, PdfBox } from "./types";
 import { CropPdfError } from "./types";
-
-export interface LoadCropDocumentOptions {
-  /** When provided, reject PDFs larger than MAX_CROP_PDF_BYTES. */
-  byteLength?: number;
-}
 
 function readPdfBox(box: {
   x: number;
@@ -31,25 +26,7 @@ function readPdfBox(box: {
 
 export async function loadCropDocumentState(
   pdfBytes: ArrayBuffer,
-  options: LoadCropDocumentOptions = {},
 ): Promise<CropDocumentState> {
-  if (
-    options.byteLength !== undefined &&
-    options.byteLength > MAX_CROP_PDF_BYTES
-  ) {
-    throw new CropPdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_CROP_PDF_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
-  if (pdfBytes.byteLength > MAX_CROP_PDF_BYTES) {
-    throw new CropPdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_CROP_PDF_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
   let pdf;
 
   try {

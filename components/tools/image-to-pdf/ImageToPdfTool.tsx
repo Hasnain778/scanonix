@@ -210,8 +210,7 @@ export function ImageToPdfTool() {
 
     const attempt = createProcessAttempt("image-to-pdf");
 
-    const totalBytes = images.reduce((sum, item) => sum + item.file.size, 0);
-    const gate = await gateToolOperation("image-to-pdf", totalBytes);
+    const gate = await gateToolOperation("image-to-pdf");
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);

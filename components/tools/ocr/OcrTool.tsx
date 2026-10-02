@@ -184,7 +184,7 @@ export function OcrTool() {
 
     const attempt = createProcessAttempt("ocr");
 
-    const gate = await gateToolOperation("ocr", uploadedFile.file.size);
+    const gate = await gateToolOperation("ocr");
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);

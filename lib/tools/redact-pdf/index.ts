@@ -3,7 +3,6 @@ export {
   MAX_REDACT_CANVAS_PIXELS,
   MAX_REDACTED_PAGES_SOFT,
   MAX_REDACTIONS,
-  MAX_REDACT_PDF_BYTES,
   MAX_REDACT_PDF_PAGES,
   MIN_NORMALIZED_REDACTION_SIZE,
   REDACT_RASTER_MIME,
@@ -53,7 +52,6 @@ export {
   updateRedaction,
   validateExportRedactionState,
   validateRedactionRect,
-  type LoadRedactionDocumentOptions,
 } from "./redaction-state";
 
 export {

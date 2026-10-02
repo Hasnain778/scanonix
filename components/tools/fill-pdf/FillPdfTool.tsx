@@ -19,7 +19,6 @@ import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
-import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import {
   buildFilledPdfFilename,
   canExportFillPdfWorkspace,
@@ -284,13 +283,6 @@ export function FillPdfTool() {
       return;
     }
 
-    if (file.size > getAnonymousUploadLimit()) {
-      const maxMb = Math.round(getAnonymousUploadLimit() / (1024 * 1024));
-      setStatus("error");
-      setStatusMessage(`File exceeds the ${maxMb}MB upload limit.`);
-      return;
-    }
-
     setIsReadingPdf(true);
     setStatus("idle");
     setStatusMessage(undefined);
@@ -298,9 +290,7 @@ export function FillPdfTool() {
 
     try {
       const bytes = await file.arrayBuffer();
-      const document = await loadFillPdfDocumentState(bytes, {
-        byteLength: file.size,
-      });
+      const document = await loadFillPdfDocumentState(bytes);
 
       setUploadedPdf({ file, bytes, document });
       setWorkspace(

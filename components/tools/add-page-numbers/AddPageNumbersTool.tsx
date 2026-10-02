@@ -12,7 +12,6 @@ import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import "@/styles/pdf-page-tools-premium.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
-import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import {
   addPageNumbersToPdf,
   AddPageNumbersError,
@@ -192,13 +191,6 @@ export function AddPageNumbersTool() {
       return;
     }
 
-    if (file.size > getAnonymousUploadLimit()) {
-      const maxMb = Math.round(getAnonymousUploadLimit() / (1024 * 1024));
-      setStatus("error");
-      setStatusMessage(`File exceeds the ${maxMb}MB upload limit.`);
-      return;
-    }
-
     setIsReadingPdf(true);
     setStatus("idle");
     setStatusMessage(undefined);
@@ -206,9 +198,7 @@ export function AddPageNumbersTool() {
 
     try {
       const bytes = await file.arrayBuffer();
-      const document = await loadPageNumberDocumentState(bytes, {
-        byteLength: file.size,
-      });
+      const document = await loadPageNumberDocumentState(bytes);
 
       setUploadedPdf({ file, bytes, document });
       setResultFilename(buildNumberedPdfFilename(file.name));

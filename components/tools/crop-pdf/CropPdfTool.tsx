@@ -11,7 +11,6 @@ import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileAc
 import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
-import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -144,13 +143,6 @@ export function CropPdfTool() {
       return;
     }
 
-    if (file.size > getAnonymousUploadLimit()) {
-      const maxMb = Math.round(getAnonymousUploadLimit() / (1024 * 1024));
-      setStatus("error");
-      setStatusMessage(`File exceeds the ${maxMb}MB upload limit.`);
-      return;
-    }
-
     setIsReadingPdf(true);
     setStatus("idle");
     setStatusMessage(undefined);
@@ -158,9 +150,7 @@ export function CropPdfTool() {
 
     try {
       const bytes = await file.arrayBuffer();
-      const document = await loadCropDocumentState(bytes, {
-        byteLength: file.size,
-      });
+      const document = await loadCropDocumentState(bytes);
 
       setUploadedPdf({ file, bytes, document });
       setCurrentPageIndex(0);

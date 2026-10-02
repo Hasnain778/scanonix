@@ -1,5 +1,4 @@
 export {
-  MAX_ADD_PAGE_NUMBERS_BYTES,
   MAX_ADD_PAGE_NUMBERS_PAGES,
   MIN_PAGE_NUMBER_FONT_SIZE,
   MAX_PAGE_NUMBER_FONT_SIZE,
@@ -22,7 +21,7 @@ export {
 
 export { buildNumberedPdfFilename } from "./filename";
 
-export { loadPageNumberDocumentState, type LoadPageNumberDocumentOptions } from "./load-document";
+export { loadPageNumberDocumentState } from "./load-document";
 
 export {
   resolvePageSelection,

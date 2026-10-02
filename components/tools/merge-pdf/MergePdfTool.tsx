@@ -17,7 +17,6 @@ import {
 } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
-import { validateAnonymousUploadSize } from "@/lib/plan/tool-access";
 import { downloadBlob } from "@/lib/tools/download";
 import { createFileId, formatFileSize } from "@/lib/tools/format-utils";
 import { mergePdfs } from "@/lib/tools/merge-pdf/merge-pdfs";
@@ -153,16 +152,6 @@ export function MergePdfTool() {
   const handleMerge = async () => {
     if (!canMerge || isBusy) return;
 
-    const totalBytes = files.reduce((sum, item) => sum + item.file.size, 0);
-
-    // Non-consuming plan size check first (same helper gateToolOperation uses for free tools).
-    const sizeError = validateAnonymousUploadSize("merge-pdf", totalBytes);
-    if (sizeError) {
-      setStatus("error");
-      setStatusMessage(sizeError);
-      return;
-    }
-
     const attempt = createProcessAttempt("merge-pdf");
     if (!attempt?.markStarted()) return;
 
@@ -178,7 +167,7 @@ export function MergePdfTool() {
       );
 
       // Consume only after a successful client merge.
-      const gate = await gateToolOperation("merge-pdf", totalBytes);
+      const gate = await gateToolOperation("merge-pdf");
       if (!gate.ok) {
         attempt.error(planErrorMessageToCode(gate.message));
         setStatus("error");

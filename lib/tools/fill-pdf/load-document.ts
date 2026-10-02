@@ -7,33 +7,19 @@ import {
   isPdfBytes,
 } from "./detect-form";
 import {
-  MAX_FILL_PDF_BYTES,
   MAX_FILL_PDF_FIELDS,
   MAX_FILL_PDF_PAGES,
 } from "./limits";
 import type { FillPdfDocumentState } from "./types";
 import { FillPdfError } from "./types";
 
-export interface LoadFillPdfDocumentOptions {
-  byteLength?: number;
-}
-
 export async function loadFillPdfDocumentState(
   pdfBytes: ArrayBuffer,
-  options: LoadFillPdfDocumentOptions = {},
 ): Promise<FillPdfDocumentState> {
   if (!isPdfBytes(pdfBytes)) {
     throw new FillPdfError(
       "WRONG_FILE_TYPE",
       "Only PDF files are supported for form filling.",
-    );
-  }
-
-  const byteLength = options.byteLength ?? pdfBytes.byteLength;
-  if (byteLength > MAX_FILL_PDF_BYTES || pdfBytes.byteLength > MAX_FILL_PDF_BYTES) {
-    throw new FillPdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_FILL_PDF_BYTES / (1024 * 1024))}MB size limit.`,
     );
   }
 

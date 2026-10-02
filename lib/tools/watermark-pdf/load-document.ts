@@ -2,13 +2,9 @@ import { computeVisibleBox, normalizePageRotation } from "@/lib/tools/crop-pdf/c
 import type { PdfBox } from "@/lib/tools/crop-pdf/types";
 import { loadPdfDocument, PdfLoadError } from "@/lib/pdf/core";
 import { detectExistingDigitalSignatures } from "./detect-signatures";
-import { MAX_WATERMARK_PDF_BYTES, MAX_WATERMARK_PDF_PAGES } from "./limits";
+import { MAX_WATERMARK_PDF_PAGES } from "./limits";
 import type { WatermarkDocumentState, WatermarkPageEntry } from "./types";
 import { WatermarkPdfError } from "./types";
-
-export interface LoadWatermarkDocumentOptions {
-  byteLength?: number;
-}
 
 function readPdfBox(box: {
   x: number;
@@ -26,17 +22,7 @@ function readPdfBox(box: {
 
 export async function loadWatermarkDocumentState(
   pdfBytes: ArrayBuffer,
-  options: LoadWatermarkDocumentOptions = {},
 ): Promise<WatermarkDocumentState> {
-  const byteLength = options.byteLength ?? pdfBytes.byteLength;
-
-  if (byteLength > MAX_WATERMARK_PDF_BYTES) {
-    throw new WatermarkPdfError(
-      "FILE_TOO_LARGE",
-      `This PDF exceeds the ${Math.round(MAX_WATERMARK_PDF_BYTES / (1024 * 1024))}MB size limit.`,
-    );
-  }
-
   let pdf;
 
   try {

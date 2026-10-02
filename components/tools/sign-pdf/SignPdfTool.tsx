@@ -12,7 +12,6 @@ import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
-import { getAnonymousUploadLimit } from "@/lib/plan/tool-access";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -190,13 +189,6 @@ export function SignPdfTool() {
     async (files: File[]) => {
       const file = files[0];
       if (!file) return;
-
-      if (file.size > getAnonymousUploadLimit()) {
-        const maxMb = Math.round(getAnonymousUploadLimit() / (1024 * 1024));
-        setStatus("error");
-        setStatusMessage(`File exceeds the ${maxMb}MB upload limit.`);
-        return;
-      }
 
       setIsReadingPdf(true);
       setStatus("idle");

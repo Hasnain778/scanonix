@@ -221,8 +221,7 @@ export function ImageFormatConverterTool({
 
     const attempt = createProcessAttempt(config.slug);
 
-    const totalBytes = images.reduce((sum, item) => sum + item.file.size, 0);
-    const gate = await gateToolOperation(config.slug, totalBytes);
+    const gate = await gateToolOperation(config.slug);
     if (!gate.ok) {
       setStatus("error");
       setStatusMessage(gate.message);

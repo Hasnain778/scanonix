@@ -51,11 +51,11 @@ function FooterColumn({
   );
 }
 
-export function Footer() {
+export function Footer({ finderClearance = false }: { finderClearance?: boolean }) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="site-footer">
+    <footer className={finderClearance ? "site-footer tool-finder-page-end" : "site-footer"}>
       <div className="page-container site-footer__inner">
         <div className="site-footer__main">
           <div className="site-footer__brand">

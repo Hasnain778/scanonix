@@ -878,3 +878,24 @@ html[data-theme="bright"] .tools-directory-shell.tools-v2 .tools-v2-subnav {
     font-size: 0.875rem;
   }
 }
+
+/* Mobile Tool Finder clearance. Card frames stay full width; text, badges,
+   and the Open tool control sit left of the fixed launcher. The icon occupies
+   that right rail. Single-column directory only (two columns begin at 560px). */
+@media (max-width: 559px) {
+  .tool-finder-page .tool-card-v2 {
+    padding-right: calc(var(--tool-finder-safe-inline, 8.25rem) - 1rem);
+  }
+
+  .tool-finder-page .tool-card-v2__icon-tile {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 1.35rem;
+    margin-block: auto;
+  }
+
+  .tool-finder-page .tool-card-v2__meta {
+    justify-content: flex-start;
+  }
+}

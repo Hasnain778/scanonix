@@ -50,14 +50,14 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd) }}
       />
       <Navbar />
-      <main className="relative z-10 overflow-x-hidden bg-background">
+      <main className="tool-finder-page relative z-10 overflow-x-hidden bg-background">
         <HomeHero />
         <HomeToolDiscovery tools={popularTools} />
         <ToolCategoriesSection />
         <HomeQuickSuggestions />
         <ScanonixProPromo />
       </main>
-      <Footer />
+      <Footer finderClearance />
     </>
   );
 }

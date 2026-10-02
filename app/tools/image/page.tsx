@@ -27,7 +27,7 @@ export default function ImageToolsPage() {
   const faqJsonLd = createFaqJsonLd(tool.faqs);
 
   return (
-    <ToolShell>
+    <ToolShell finderClearance>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

@@ -50,7 +50,7 @@ export function HomeToolDiscovery({ tools }: HomeToolDiscoveryProps) {
           onCategoryChange={setActiveCategory}
         />
 
-        <div className="mt-3 flex items-center justify-between gap-3 sm:mt-6 sm:items-end">
+        <div className="tool-finder-inline-safe mt-3 flex items-center justify-between gap-3 sm:mt-6 sm:items-end">
           <h2 className="text-section-title min-w-0 text-lg sm:text-2xl">
             {activeCategory === "all" ? "Popular tools" : `${categoryMeta?.label} tools`}
           </h2>

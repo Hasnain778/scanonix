@@ -2666,3 +2666,62 @@ html[data-theme="dark"] .site-footer {
     grid-column: auto;
   }
 }
+
+/* Mobile Tool Finder clearance for the three surfaces that show the launcher.
+   8.25rem is the viewport-right inset that clears a ~97px pill sitting 16px
+   from the right, plus a small gap. Desktop and tool workspaces do not opt in. */
+@media (max-width: 639px) {
+  .tool-finder-page,
+  .tool-finder-page-end {
+    --tool-finder-safe-inline: 8.25rem;
+  }
+
+  .tool-finder-page-end {
+    padding-bottom: calc(5rem + 3.5rem + 0.75rem);
+  }
+
+  .tool-finder-page-end .page-container {
+    padding-right: var(--tool-finder-safe-inline);
+  }
+
+  .tool-finder-page #quick-suggestions .mt-3 {
+    padding-right: calc(var(--tool-finder-safe-inline) - var(--space-page-x));
+  }
+
+  .tool-finder-page .tool-finder-inline-safe,
+  .tool-finder-page .scanonix-pro-promo__grid,
+  .tool-finder-page .tool-card-neon,
+  .tool-finder-page .category-discovery-card {
+    padding-right: calc(var(--tool-finder-safe-inline) - var(--space-page-x));
+  }
+
+  .tool-finder-page .tool-card-neon > .tool-visual,
+  .tool-finder-page .category-discovery-card__icon {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 1.35rem;
+    z-index: 2;
+    margin-block: auto;
+  }
+
+  .tool-finder-page .image-medium-card,
+  .tool-finder-page .image-converter-row {
+    position: relative;
+    padding-right: calc(var(--tool-finder-safe-inline) - 1rem);
+  }
+
+  .tool-finder-page .image-medium-card .image-tool-icon-box,
+  .tool-finder-page .image-converter-row .image-tool-icon-box {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 1.35rem;
+    margin-block: auto;
+  }
+
+  .tool-finder-page .space-y-16 > section > .mb-6,
+  .tool-finder-page aside:not(.scanonix-pro-promo__toolkit) {
+    padding-right: calc(var(--tool-finder-safe-inline) - 1rem);
+  }
+}

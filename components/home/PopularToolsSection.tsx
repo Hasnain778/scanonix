@@ -98,7 +98,7 @@ export function ToolCategoriesSection() {
   return (
     <section id="browse-categories" className="border-t border-border bg-surface-muted/40 py-12 sm:py-14">
       <div className="page-container">
-        <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+        <div className="tool-finder-inline-safe mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-section-title text-2xl sm:text-3xl">Browse by category</h2>
             <p className="mt-2 max-w-2xl text-sm text-body-bright sm:text-base">

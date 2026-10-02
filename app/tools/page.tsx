@@ -32,7 +32,7 @@ export default async function ToolsPage({
   const initialCategory = parseToolsCategoryParam(params.category ?? null);
 
   return (
-    <ToolShell>
+    <ToolShell finderClearance>
       <div className="tools-directory-shell tools-v2">
         <ToolLayout maxWidth="tools">
           <div className="tools-directory-page">

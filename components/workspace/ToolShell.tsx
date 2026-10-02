@@ -7,17 +7,26 @@ import { ToolBreadcrumbs } from "@/components/ui/ToolBreadcrumbs";
 
 interface ToolShellProps {
   children: ReactNode;
+  /**
+   * Static mobile clearance for the fixed Tool Finder launcher.
+   * Opt in only on surfaces where the launcher is visible.
+   */
+  finderClearance?: boolean;
 }
 
-export function ToolShell({ children }: ToolShellProps) {
+export function ToolShell({ children, finderClearance = false }: ToolShellProps) {
   return (
     <>
       <PageBackground />
       <Navbar />
-      <main className="relative min-h-screen pt-20 pb-16 sm:pt-[5.25rem] sm:pb-20">
+      <main
+        className={`relative min-h-screen pt-20 pb-16 sm:pt-[5.25rem] sm:pb-20${
+          finderClearance ? " tool-finder-page" : ""
+        }`}
+      >
         {children}
       </main>
-      <Footer />
+      <Footer finderClearance={finderClearance} />
     </>
   );
 }

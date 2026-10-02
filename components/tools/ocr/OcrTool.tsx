@@ -36,7 +36,7 @@ import { getPdfPageCountFromBytes } from "@/lib/tools/pdf-utils";
 import type { ToolStatus } from "@/lib/tools/types";
 
 const PRIVACY_MESSAGE =
-  "Your file is processed locally in your browser. OCR language and worker assets may still be loaded by the browser from the OCR engine’s distribution.";
+  "Your file is processed locally in your browser.";
 
 interface UploadedOcrFile {
   file: File;
@@ -266,7 +266,7 @@ export function OcrTool() {
       : "Ready to extract text from this document.";
 
   return (
-    <div className="ocr-premium space-y-5 overflow-x-hidden">
+    <div className="ocr-premium space-y-5">
       <OcrProgressBanner
         status={isPreparing ? "loading" : status}
         phase={ocrPhase}

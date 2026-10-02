@@ -1,0 +1,24 @@
+Scanonix OCR runtime assets. Served from this origin so recognition does not
+fetch a third-party CDN.
+
+tesseract.js 7.0.0
+  public/ocr-runtime/worker.min.js
+  License: Apache-2.0 (see licenses/tesseract.js.LICENSE.md)
+  Bundled notices: licenses/tesseract.js-worker.LICENSE.txt
+
+tesseract.js-core 7.0.0
+  public/ocr-runtime/core/
+  LSTM builds selected by the installed browser loader:
+    tesseract-core-relaxedsimd-lstm
+    tesseract-core-simd-lstm
+    tesseract-core-lstm
+  Each build is the .wasm.js loader plus its sibling .wasm file.
+  License: Apache-2.0 (see licenses/tesseract.js-core.LICENSE)
+
+@tesseract.js-data/* 1.0.0
+  public/ocr-runtime/lang/<code>.traineddata.gz
+  Directory 4.0.0_best_int (LSTM integer model). This is the file
+  tesseract.js 7 requests when gzip is enabled, which is its default.
+  Languages shipped match the OCR language control:
+    eng, spa, fra, deu, por, ita, ara, urd
+  License: MIT (https://github.com/naptha/tessdata)

@@ -12,6 +12,12 @@ import {
 } from "./languages";
 import { assertSupportedOcrFile, isOcrPdfFile } from "./file-validation";
 import { getOcrWorkerParameters, preprocessCanvasForOcr } from "./preprocess";
+import {
+  getOcrWorkerOptions,
+  OCR_INIT_TIMEOUT_MS,
+  OCR_RECOGNIZE_TIMEOUT_MS,
+  withOcrDeadline,
+} from "./runtime";
 
 const PDF_OCR_SCALE = 2.5;
 
@@ -53,9 +59,32 @@ async function validateImageFile(file: File): Promise<void> {
 }
 
 async function createOcrWorker(language: OcrLanguageCode): Promise<Worker> {
-  const worker = await createWorker(language);
-  await worker.setParameters(getOcrWorkerParameters());
-  return worker;
+  let created: Worker | undefined;
+  const pending = (async () => {
+    created = await createWorker(language, undefined, getOcrWorkerOptions());
+    await created.setParameters(getOcrWorkerParameters());
+    return created;
+  })();
+
+  try {
+    return await withOcrDeadline(pending, OCR_INIT_TIMEOUT_MS, "init", (worker) => {
+      void worker.terminate();
+    });
+  } catch (error) {
+    if (created) {
+      void created.terminate().catch((terminateError: unknown) => {
+        console.error("[ocr] failed to terminate a worker", terminateError);
+      });
+    }
+    if (error instanceof OcrExtractionError) {
+      throw error;
+    }
+    console.error("[ocr] worker initialization failed", error);
+    throw new OcrExtractionError(
+      "OCR_FAILURE",
+      "OCR couldn't start. Please try again.",
+    );
+  }
 }
 
 async function recognizeCanvas(
@@ -63,7 +92,11 @@ async function recognizeCanvas(
   canvas: HTMLCanvasElement,
 ): Promise<string> {
   const prepared = preprocessCanvasForOcr(canvas);
-  const result = await worker.recognize(prepared);
+  const result = await withOcrDeadline(
+    worker.recognize(prepared),
+    OCR_RECOGNIZE_TIMEOUT_MS,
+    "recognize",
+  );
   return result.data.text.trim();
 }
 
@@ -78,7 +111,11 @@ async function recognizeWithWorker(
 
   try {
     await validateImageFile(file);
-    const canvas = await normalizeUploadedFileToCanvas(file);
+    const canvas = await withOcrDeadline(
+      normalizeUploadedFileToCanvas(file),
+      OCR_RECOGNIZE_TIMEOUT_MS,
+      "recognize",
+    );
     worker = await createOcrWorker(language);
     const text = await recognizeCanvas(worker, canvas);
 
@@ -162,10 +199,10 @@ async function extractTextFromPdf(
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
       onProgress?.("processing", { current: pageNumber, total: totalPages });
 
-      const canvas = await renderPdfPageToCanvasFromDoc(
-        pdf,
-        pageNumber,
-        PDF_OCR_SCALE,
+      const canvas = await withOcrDeadline(
+        renderPdfPageToCanvasFromDoc(pdf, pageNumber, PDF_OCR_SCALE),
+        OCR_RECOGNIZE_TIMEOUT_MS,
+        "recognize",
       );
 
       const pageText = await recognizeCanvas(worker, canvas);

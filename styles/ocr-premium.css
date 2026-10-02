@@ -180,3 +180,30 @@ html[data-theme="dark"] .ocr-premium select.select-field {
 .ocr-premium [data-tool-control-panel] button.bg-brand {
   white-space: nowrap;
 }
+
+/*
+ * The shared shell track is 320px. The design-system inspector is 22rem
+ * from 1024px and 24rem from 1280px. Match the track to that inspector
+ * so the rail is not clipped.
+ */
+@media (min-width: 1024px) {
+  .ocr-premium [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    align-items: start;
+  }
+
+  .ocr-premium [data-tool-control-panel] {
+    width: 100%;
+    max-width: 22rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ocr-premium [data-tool-workspace="active"] {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+  }
+
+  .ocr-premium [data-tool-control-panel] {
+    max-width: 24rem;
+  }
+}

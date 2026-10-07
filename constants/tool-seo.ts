@@ -1193,35 +1193,55 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "Remove hidden EXIF and PDF metadata online. Strip author, location, and camera data before sharing images and documents.",
     h1: "Metadata Cleaner",
     pageDescription:
-      "Strip EXIF and PDF metadata while preserving visible content — useful before sharing files publicly.",
+      "Remove supported hidden metadata from a JPG, PNG, or PDF while leaving the visible file unchanged. Cleaning runs on Scanonix servers and requires Pro.",
     howToSteps: [
-      "Upload an image or PDF file.",
-      "Scanonix removes hidden metadata fields.",
-      "Download the cleaned file.",
+      "Upload one JPG, PNG, or PDF.",
+      "Run the cleaner with a Scanonix Pro plan. The file is processed on Scanonix servers and then deleted.",
+      "Download the file. The picture or the PDF pages stay as they were.",
     ],
     whyUse: [
-      "Avoid leaking location, author, or camera details from photos.",
-      "Share documents without embedded creation history.",
-      "Reduce privacy risk before publishing files online.",
+      "Remove camera and location details stored in JPG or PNG metadata before you share a photo.",
+      "Clear PDF document-info fields such as author, title, and creator.",
+      "Keep the visible file intact. Use Redact PDF when text on the PDF pages has to be removed.",
+    ],
+    useCases: [
+      "Share a photo without the camera or location details stored in the file.",
+      "Send a PDF without author or creator fields in the document info.",
+    ],
+    limitations: [
+      "WEBP, HEIC, and TIFF can be chosen in the file picker. This cleaner does not remove their metadata and returns those files unchanged.",
+      "JPG and PNG are not re-encoded, so the pixels stay the same. PDF pages stay the same. The supported hidden fields are what change.",
+      "This is not a full wipe of every embedded object. It covers JPG and PNG metadata chunks and the PDF document-info fields listed on this page.",
+      "If several files are selected, only the first file is cleaned.",
     ],
     keyFeatures: [
-      "Removes EXIF from images",
-      "Strips PDF document properties",
-      "Preserves visible content",
-      "Quick privacy cleanup",
+      "JPG and PNG metadata removed without re-encoding",
+      "PDF title, author, subject, keywords, producer, creator, and dates cleared",
+      "Visible content left in place",
+      "One file, processed on Scanonix servers",
     ],
     faqs: [
       {
-        question: "What metadata does this remove?",
+        question: "Which file types does Metadata Cleaner actually clean?",
         answer:
-          "Common EXIF fields from images and document properties such as author and creation tool from PDFs.",
+          "JPG and PNG metadata is removed. Supported PDF document-info fields are cleared. WEBP, HEIC, and TIFF may show in the picker, but those files are returned unchanged.",
       },
       {
-        question: "Will image quality change?",
-        answer: "No. Only hidden metadata is removed; pixels stay the same.",
+        question: "What metadata is removed from a PDF?",
+        answer:
+          "Title, author, subject, keywords, producer, creator, and the creation and modification dates. The pages themselves are not edited.",
+      },
+      {
+        question: "Does cleaning metadata change the visible file?",
+        answer:
+          "No. JPG and PNG are not re-encoded, so the pixels stay the same. PDF pages stay as they are. To remove visible text from PDF pages, use Redact PDF.",
+      },
+      {
+        question: "Do I need Pro?",
+        answer: "Yes. Metadata Cleaner requires a Scanonix Pro plan.",
       },
     ],
-    relatedToolIds: ["redact-pdf", "protect-pdf", "image-compressor", "compress-pdf"],
+    relatedToolIds: ["redact-pdf", "protect-pdf"],
     keywords: ["remove metadata", "exif remover", "pdf metadata cleaner"],
   },
   "image-compressor": {
@@ -2517,42 +2537,54 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/ai-summary",
     seoTitle: toolTitle("AI Document Summary Online", "Summarise Long Text"),
     metaDescription:
-      "Summarise long documents online with Scanonix AI. Turn lengthy reports, articles, and OCR text into concise summaries — Pro feature with usage limits.",
+      "Summarise long text, PDF, DOCX and TXT content online with Scanonix AI. Generate concise summaries from readable text — Pro feature with usage limits.",
     h1: "AI Document Summary",
     pageDescription:
-      "Summarise long documents and OCR text with cloud AI to capture key points in seconds.",
+      "Summarise pasted text, or text read from one PDF, DOCX, or TXT file. Extraction happens in your browser, and that text is sent to the AI provider when you press Generate summary.",
     howToSteps: [
-      "Paste text or provide document content.",
-      "Choose summary length if available.",
-      "Review the generated summary and copy or export it.",
+      "Paste text, or upload one PDF, DOCX, or TXT file.",
+      "Scanonix reads the text in your browser. Press Generate summary to send it to the AI provider.",
+      "Review the summary, then copy it.",
     ],
     whyUse: [
-      "Grasp long reports without reading every page.",
-      "Create meeting notes from dense documents.",
-      "Summarise OCR output from scanned files.",
+      "Pull the main points out of a long article, report, or note.",
+      "Summarise a PDF, DOCX, or TXT file that already contains text.",
+      "Start from text you pasted, including text extracted in a separate OCR step.",
+    ],
+    limitations: [
+      "A scanned PDF is summarised only when it already contains text. This tool does not run OCR. Use the OCR tool first, then paste or upload the extracted text.",
+      "There is no setting for summary length or depth. You get one summary.",
+      "The summary is not a fact check. Review it before you depend on it.",
+      "Up to 100,000 characters can be submitted. Longer text has to be shortened first.",
     ],
     keyFeatures: [
-      "Handles long-form text",
-      "Works with OCR output",
-      "Adjustable summary depth",
-      "Fast AI processing",
+      "Paste text or upload one PDF, DOCX, or TXT",
+      "Text is read in the browser, then summarised on request",
+      "Input limit of 100,000 characters",
+      "Requires a Scanonix Pro plan",
     ],
     faqs: [
       {
-        question: "What documents can be summarised?",
-        answer: "Text content, including OCR output from scans, can be summarised.",
-      },
-      {
-        question: "Should I verify AI summaries?",
-        answer: "Yes. Review summaries before using them for decisions or publication.",
-      },
-      {
-        question: "Is AI Document Summary free?",
+        question: "Can I summarise a scanned PDF?",
         answer:
-          "No. AI Document Summary is a Pro feature. Sign in with a Pro plan to summarise documents within your usage limits.",
+          "Only when the PDF already has a text layer. AI Document Summary reads that text in your browser and does not run OCR. If the scan has no text, use the OCR tool first, then summarise the result.",
+      },
+      {
+        question: "Can I choose how long the summary is?",
+        answer:
+          "No. There is no length or depth control. The tool writes one summary of the text you provide.",
+      },
+      {
+        question: "Do I need Pro, or is AI Document Summary free?",
+        answer: "You need Pro. AI Document Summary is a Pro feature.",
+      },
+      {
+        question: "Should I treat the summary as fact?",
+        answer:
+          "No. Review it before you use it for a decision or publication. The tool does not check that the source is correct.",
       },
     ],
-    relatedToolIds: ["ocr", "ai-translate", "ai-rewrite", "pdf-to-word"],
+    relatedToolIds: ["ocr", "ai-rewrite", "ai-translate"],
     keywords: ["ai summary", "summarize document online", "document summary tool"],
   },
   "ai-rewrite": {
@@ -2643,35 +2675,52 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/security-scan",
     seoTitle: toolTitle("Website Security Scan Online", "Check URLs for Threats"),
     metaDescription:
-      "Check websites for malware, phishing, and security risks online. Scan URLs and review saved reports in your Scanonix account.",
+      "Check a public URL for HTTPS, security headers, redirects and threat signals. Review the findings in a saved Scanonix security report.",
     h1: "Website Security Scan",
     pageDescription:
-      "Check any URL for malware, phishing, and common security risks. Results can be saved to your scan history.",
+      "Scan one public website URL and review a saved report of the findings. The scan looks at HTTPS, headers, cookies, redirects, page signals, and reputation sources when those sources are available.",
     howToSteps: [
-      "Sign in or create a free Scanonix account if prompted.",
-      "Enter the website URL you want to check.",
-      "Review the scan report and save it to history if needed.",
+      "Enter one public website URL. Private, local, and internal addresses are blocked.",
+      "Run the scan with a Scanonix Pro plan.",
+      "Open the saved report and read the findings.",
     ],
     whyUse: [
-      "Verify unfamiliar links before clicking or sharing.",
-      "Review website risk signals in one workspace.",
-      "Keep scan history for recurring checks.",
+      "Check a site you manage after changing HTTPS, headers, or redirects.",
+      "See transport, header, cookie, and reputation signals in one report.",
+      "Return to the saved report later from your scan history.",
+    ],
+    useCases: [
+      "Review a site you manage after a configuration change.",
+      "Check HTTPS, header, and cookie signals before you publish a change.",
+      "Look up a suspicious public URL before you decide what to do next.",
+    ],
+    limitations: [
+      "Only public URLs can be scanned. Local, private, and internal addresses are blocked.",
+      "Findings are signals from this scan. They do not prove a website is safe, and they do not cover every possible threat or vulnerability.",
+      "Reputation checks run only when an external source is configured and available. Those sources can include Google Safe Browsing, URLhaus, and PhishTank.",
+      "This page scans a website URL. It does not scan uploaded files, and it does not keep watching the site afterward.",
     ],
     keyFeatures: [
-      "URL threat checks",
-      "Risk scoring and report details",
-      "Saved scan history",
-      "Part of Scanonix Security tools",
+      "One public URL per scan",
+      "HTTPS and TLS certificate checks",
+      "Security headers, cookies, and redirects",
+      "Page, script, and reputation signals when sources are available",
     ],
     faqs: [
       {
-        question: "Is this the main purpose of Scanonix?",
+        question: "What does the website security scan check?",
         answer:
-          "No. Scanonix is primarily a free online toolkit for PDF, image, and AI document tools. Website scanning is one optional security tool.",
+          "It checks HTTPS and the TLS certificate, security headers, cookies, redirects, and risk signals in the page and its scripts. When a source is configured, it can also ask Google Safe Browsing, URLhaus, or PhishTank about the URL.",
       },
       {
-        question: "Do I need an account to scan a website?",
-        answer: "An account helps save reports and history; follow the on-page prompts for access.",
+        question: "Does a clear report mean a website is completely safe?",
+        answer:
+          "No. A clear report means this scan did not raise findings in the checks it ran. It does not prove the site is safe, and it does not rule out every threat.",
+      },
+      {
+        question: "Do I need Pro to run a scan?",
+        answer:
+          "Yes. Website Security Scan requires a Scanonix Pro plan. The report is saved, and Scanonix opens it when the scan finishes.",
       },
     ],
     relatedToolIds: ["metadata-cleaner", "protect-pdf", "redact-pdf", "qr-scanner"],

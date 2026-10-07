@@ -2,7 +2,6 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { HomeQuickSuggestions } from "@/components/home/HomeQuickSuggestions";
 import { HomeToolDiscovery } from "@/components/home/HomeToolDiscovery";
-import { ToolCategoriesSection } from "@/components/home/PopularToolsSection";
 import { ScanonixProPromo } from "@/components/home/ScanonixProPromo";
 import { HomeHero } from "@/components/sections/HomeHero";
 import { getPopularTools } from "@/constants/homepage-tools";
@@ -53,7 +52,6 @@ export default function Home() {
       <main className="tool-finder-page relative z-10 overflow-x-hidden bg-background">
         <HomeHero />
         <HomeToolDiscovery tools={popularTools} />
-        <ToolCategoriesSection />
         <HomeQuickSuggestions />
         <ScanonixProPromo />
       </main>

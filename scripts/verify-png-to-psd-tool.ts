@@ -195,15 +195,15 @@ function run() {
   assert(
     "28 catalog discovery",
     directory.length === 1 &&
-      SCANONIX_TOOLS.length === 41 &&
+      SCANONIX_TOOLS.length === 43 &&
       HOMEPAGE_TOOLS.filter((t) => t.category === "image" && t.available).length ===
-        16,
+        19,
   );
   assert(
     "29 image nav/hub discovery",
     (IMAGE_TOOL_IDS as readonly string[]).includes("png-to-psd") &&
       IMAGE_HUB_EDIT_TOOLS.some((t) => t.id === "png-to-psd") &&
-      IMAGE_TOOL_IDS.length === 16,
+      IMAGE_TOOL_IDS.length === 19,
   );
   assert(
     "30 not in POPULAR_TOOL_IDS",

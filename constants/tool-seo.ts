@@ -2250,6 +2250,116 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     relatedToolIds: ["heic-to-jpg", "jpg-to-png", "png-to-jpg", "image-compressor"],
     keywords: ["heic to png", "convert heic online", "iphone heic to png"],
   },
+  "tiff-to-jpg": {
+    id: "tiff-to-jpg",
+    path: "/tools/tiff-to-jpg",
+    seoTitle: toolTitle("TIFF to JPG Converter Online Free"),
+    metaDescription:
+      "Convert TIFF to JPG in your browser. .tif and .tiff files are processed locally. Multipage TIFFs convert the first page.",
+    h1: "Convert TIFF to JPG",
+    headerDescription:
+      "Convert a classic TIFF or TIF scan to JPG on your device. Orientation is corrected, and only the first page of a multipage file is converted.",
+    pageDescription:
+      "Turn .tif and .tiff images into JPG without uploading them. Scanonix reads the first page locally, corrects TIFF orientation, and flattens transparency onto a background colour. The default background is white.",
+    howToSteps: [
+      "Upload a .tif or .tiff file.",
+      "Choose JPG quality and a background colour when the image has transparency.",
+      "Download the JPG. Multipage files convert the first page only.",
+    ],
+    whyUse: [
+      "Open scanner TIFF files in apps that expect JPG.",
+      "Keep the conversion on your device.",
+      "Correct common TIFF orientation before download.",
+    ],
+    keyFeatures: [
+      "Local browser conversion",
+      ".tif and .tiff input",
+      "First page of a multipage TIFF",
+      "JPG quality and background controls",
+    ],
+    limitations: [
+      "BigTIFF, CMYK, palette, and JPEG-compressed TIFF files are not converted.",
+      "16-bit samples are normalized to 8-bit and are not preserved.",
+      "Only the first page is converted.",
+    ],
+    faqs: [
+      {
+        question: "How do I convert TIFF to JPG?",
+        answer:
+          "Upload a .tif or .tiff file, adjust quality or the background colour if needed, and download the JPG.",
+      },
+      {
+        question: "Is TIFF to JPG processed locally?",
+        answer: "Yes. The file is converted in your browser and is not uploaded for this tool.",
+      },
+      {
+        question: "What if my TIFF has more than one page?",
+        answer:
+          "The first page is converted. The page tells you when the file contained more pages.",
+      },
+      {
+        question: "Will CMYK or 16-bit TIFF data be preserved?",
+        answer:
+          "No. CMYK TIFF is not supported. Supported images are saved as an 8-bit JPG.",
+      },
+    ],
+    relatedToolIds: ["tiff-to-png", "png-to-jpg", "heic-to-jpg", "image-compressor"],
+    keywords: ["tiff to jpg", "tif to jpg", "tiff to jpeg", "convert tiff online"],
+  },
+  "tiff-to-png": {
+    id: "tiff-to-png",
+    path: "/tools/tiff-to-png",
+    seoTitle: toolTitle("TIFF to PNG Converter Online Free"),
+    metaDescription:
+      "Convert TIFF to PNG in your browser. .tif and .tiff files stay on your device, and decoded transparency is kept on the first page.",
+    h1: "Convert TIFF to PNG",
+    headerDescription:
+      "Convert a classic TIFF or TIF scan to PNG on your device. Decoded transparency is kept, and only the first page of a multipage file is converted.",
+    pageDescription:
+      "Turn .tif and .tiff images into PNG without uploading them. Scanonix reads the first page locally, corrects TIFF orientation, and keeps decoded alpha in the PNG.",
+    howToSteps: [
+      "Upload a .tif or .tiff file.",
+      "Convert the first page to PNG in your browser.",
+      "Download the PNG. Grayscale and black-and-white pages are saved as opaque PNG.",
+    ],
+    whyUse: [
+      "Keep decoded TIFF transparency in a widely supported PNG.",
+      "Prepare a scanner TIFF for editing tools that open PNG.",
+      "Convert locally without sending the file to a server.",
+    ],
+    keyFeatures: [
+      "Local browser conversion",
+      ".tif and .tiff input",
+      "First page of a multipage TIFF",
+      "Decoded alpha preserved",
+    ],
+    limitations: [
+      "BigTIFF, CMYK, palette, and JPEG-compressed TIFF files are not converted.",
+      "16-bit samples are normalized to 8-bit and are not preserved.",
+      "Only the first page is converted.",
+    ],
+    faqs: [
+      {
+        question: "How do I convert TIFF to PNG?",
+        answer: "Upload a .tif or .tiff file and download the PNG created in your browser.",
+      },
+      {
+        question: "Does TIFF to PNG keep transparency?",
+        answer: "Decoded alpha is kept. Grayscale and black-and-white images become opaque PNG files.",
+      },
+      {
+        question: "Is the whole multipage TIFF converted?",
+        answer: "No. Only the first page is converted, and the page says so when more pages were present.",
+      },
+      {
+        question: "Are all TIFF variants supported?",
+        answer:
+          "No. Common classic TIFF pages are supported. BigTIFF, CMYK, and JPEG-compressed TIFF files are rejected.",
+      },
+    ],
+    relatedToolIds: ["tiff-to-jpg", "png-to-jpg", "heic-to-png", "image-compressor"],
+    keywords: ["tiff to png", "tif to png", "convert tiff to png"],
+  },
   ocr: {
     id: "ocr",
     path: "/tools/ocr",
@@ -2572,10 +2682,10 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/image",
     seoTitle: toolTitle("Image Tools Online", "Convert, Compress & Edit Images"),
     metaDescription:
-      "Browse Scanonix image tools online — convert PNG, JPG, WEBP, and HEIC, compress, resize, and upscale images.",
+      "Browse Scanonix image tools online — convert PNG, JPG, WEBP, HEIC, and TIFF, compress, resize, and upscale images.",
     h1: "Image Tools",
     pageDescription:
-      "Convert PNG, JPG, WEBP, and HEIC images, compress and resize files, and prepare images for the web in one place.",
+      "Convert PNG, JPG, WEBP, HEIC, and TIFF images, compress and resize files, and prepare images for the web in one place.",
     howToSteps: [
       "Browse the image tool you need.",
       "Open the tool and upload your file.",
@@ -2587,7 +2697,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "Jump between compression, conversion, and upscaling quickly.",
     ],
     keyFeatures: [
-      "Format converters for PNG, JPG, WEBP, and HEIC",
+      "Format converters for PNG, JPG, WEBP, HEIC, and TIFF",
       "Compress, resize, and upscale utilities",
       "HEIC conversion for iPhone photos",
       "All tools linked from one hub",

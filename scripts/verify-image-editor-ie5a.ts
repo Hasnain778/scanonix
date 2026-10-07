@@ -110,14 +110,14 @@ function run() {
       IMAGE_HUB_EDIT_TOOLS[0]?.href === "/tools/image-editor",
   );
 
-  assert("25 public inventory is 41", SCANONIX_TOOLS.length === 41);
+  assert("25 public inventory is 43", SCANONIX_TOOLS.length === 43);
   assert(
     "26 Background Remover absent",
     !SCANONIX_TOOLS.some((t) => t.id === "background-remover"),
   );
   assert(
-    "27 image filter count 17",
-    SCANONIX_TOOLS.filter((t) => toolMatchesCategoryFilter(t.id, "image")).length === 17,
+    "27 image filter count 19",
+    SCANONIX_TOOLS.filter((t) => toolMatchesCategoryFilter(t.id, "image")).length === 19,
   );
 
   const fontSample = join(root, "public", "fonts", "editor", "inter", "400.woff2");

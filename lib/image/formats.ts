@@ -5,6 +5,7 @@ export const FORMAT_LABELS: Record<ImageFormatId, string> = {
   jpg: "JPG",
   webp: "WEBP",
   heic: "HEIC",
+  tiff: "TIFF",
 };
 
 export const FORMAT_MIME: Partial<Record<ImageFormatId, string>> = {
@@ -12,6 +13,7 @@ export const FORMAT_MIME: Partial<Record<ImageFormatId, string>> = {
   jpg: "image/jpeg",
   webp: "image/webp",
   heic: "image/heic",
+  tiff: "image/tiff",
 };
 
 export function getFileExtension(name: string): string {
@@ -38,6 +40,13 @@ export function validateFormatFile(file: File, format: ImageFormatId): boolean {
       return extension === "webp" || type === "image/webp";
     case "heic":
       return isHeicFile(file);
+    case "tiff":
+      return (
+        extension === "tif" ||
+        extension === "tiff" ||
+        type === "image/tiff" ||
+        type === "image/tif"
+      );
     default:
       return false;
   }
@@ -53,6 +62,8 @@ export function formatAcceptAttribute(format: ImageFormatId): string {
       return ".webp,image/webp";
     case "heic":
       return ".heic,.heif,image/heic,image/heif";
+    case "tiff":
+      return ".tif,.tiff,image/tiff";
   }
 }
 
@@ -61,7 +72,7 @@ export function outputExtension(format: ImageFormatId): string {
 }
 
 export function formatHasPotentialTransparency(format: ImageFormatId): boolean {
-  return format === "png" || format === "webp";
+  return format === "png" || format === "webp" || format === "tiff";
 }
 
 export function outputSupportsTransparency(format: ImageFormatId): boolean {

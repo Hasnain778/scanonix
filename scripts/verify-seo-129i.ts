@@ -223,8 +223,10 @@ function run() {
   const toolRoute = readSource("components/workspace/ToolRoute.tsx");
   assert("8 ToolRoute image breadcrumb uses hub href", toolRoute.includes("getCategoryBreadcrumbHref"));
   assert(
-    "8 PopularToolsSection links image category to hub",
-    readSource("components/home/PopularToolsSection.tsx").includes("getImageToolsHubHref()"),
+    "8 homepage category cards are removed and the image hub link stays on the directory",
+    !readSource("app/page.tsx").includes("ToolCategoriesSection") &&
+      !readSource("components/home/PopularToolsSection.tsx").includes("getImageToolsHubHref()") &&
+      readSource("components/tools/directory/ToolsDirectory.tsx").includes("getImageToolsHubHref()"),
   );
 
   // 9. Canonical / schema surfaces unchanged

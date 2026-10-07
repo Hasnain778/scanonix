@@ -77,7 +77,7 @@ export interface ToolCategoryMeta {
  * Do NOT expose /dev/image-editor in discovery until that release phase.
  */
 
-/** All 41 canonical workspace tools with primary + discovery subcategory. */
+/** All 43 canonical workspace tools with primary + discovery subcategory. */
 export const TOOL_CATEGORY_MATRIX: ToolCategoryMeta[] = [
   // PDF — Organize
   { toolId: "merge-pdf", primaryCategory: "pdf", pdfSubcategory: "organize", displayOrder: 10 },
@@ -230,6 +230,18 @@ export const TOOL_CATEGORY_MATRIX: ToolCategoryMeta[] = [
     primaryCategory: "image",
     imageSubcategory: "convert",
     displayOrder: 310,
+  },
+  {
+    toolId: "tiff-to-jpg",
+    primaryCategory: "image",
+    imageSubcategory: "convert",
+    displayOrder: 320,
+  },
+  {
+    toolId: "tiff-to-png",
+    primaryCategory: "image",
+    imageSubcategory: "convert",
+    displayOrder: 330,
   },
   // AI
   { toolId: "ocr", primaryCategory: "ai", aiSubcategory: "extract", displayOrder: 400 },

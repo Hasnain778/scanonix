@@ -247,6 +247,8 @@ const imageConverterSlugs = [
   "webp-to-png",
   "heic-to-jpg",
   "heic-to-png",
+  "tiff-to-jpg",
+  "tiff-to-png",
 ];
 const missingAfterConverterCheck = missingCanonical.filter(
   (id) => !imageConverterSlugs.includes(id) || !attemptSourceCombined.includes("createProcessAttempt(config.slug)"),

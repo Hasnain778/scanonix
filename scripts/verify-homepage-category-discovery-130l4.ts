@@ -91,10 +91,10 @@ function main(): void {
   const security = canonicalIds("security");
 
   assert("7 PDF canonical count is 18", pdf.length === 18, `got ${pdf.length}`);
-  assert("8 Image canonical count is 16", image.length === 16, `got ${image.length}`);
+  assert("8 Image canonical count is 19", image.length === 19, `got ${image.length}`);
   assert("9 AI canonical count is 5", ai.length === 5, `got ${ai.length}`);
   assert("10 Security canonical count is 5", security.length === 5, `got ${security.length}`);
-  assert("11 directory total remains 41", SCANONIX_TOOLS.length === 41);
+  assert("11 directory total remains 43", SCANONIX_TOOLS.length === 43);
 
   for (const [label, ids] of [
     ["PDF", pdf],

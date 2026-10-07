@@ -239,13 +239,13 @@ function run() {
     homepage.length === 1 &&
       directory.length === 1 &&
       homepage[0]?.available === true &&
-      SCANONIX_TOOLS.length === 41,
+      SCANONIX_TOOLS.length === 43,
   );
   assert(
     "28 image nav/hub discovery",
     (IMAGE_TOOL_IDS as readonly string[]).includes("jpg-to-psd") &&
       IMAGE_HUB_EDIT_TOOLS.some((t) => t.id === "jpg-to-psd") &&
-      HOMEPAGE_TOOLS.filter((t) => t.category === "image").length === 16,
+      HOMEPAGE_TOOLS.filter((t) => t.category === "image").length === 19,
   );
   assert(
     "29 not in POPULAR_TOOL_IDS",

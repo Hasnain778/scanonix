@@ -927,77 +927,6 @@ html[data-theme="dark"] .tool-card-neon:focus-within {
   }
 }
 
-/* Category discovery card — theme-aware */
-.category-discovery-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  padding: var(--space-card);
-  box-shadow: var(--shadow-soft);
-  transition:
-    border-color var(--transition-base),
-    box-shadow var(--transition-base),
-    transform var(--transition-base);
-}
-
-.category-discovery-card::before {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  opacity: 0;
-  background: radial-gradient(
-    ellipse 70% 55% at 20% 15%,
-    color-mix(in srgb, var(--scanonix-orange) 10%, transparent) 0%,
-    transparent 72%
-  );
-  transition: opacity var(--transition-base);
-}
-
-.category-discovery-card:hover {
-  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
-  box-shadow: var(--shadow-raised),
-    0 0 24px color-mix(in srgb, var(--scanonix-orange) 10%, transparent);
-  transform: translateY(-3px);
-}
-
-.category-discovery-card:hover::before {
-  opacity: 1;
-}
-
-.category-discovery-card__icon {
-  display: flex;
-  height: 2.75rem;
-  width: 2.75rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  border: 1px solid color-mix(in srgb, var(--scanonix-orange) 28%, transparent);
-  background: color-mix(in srgb, var(--scanonix-orange) 12%, transparent);
-  color: var(--scanonix-orange-light);
-  box-shadow:
-    0 0 20px color-mix(in srgb, var(--scanonix-orange) 18%, transparent),
-    inset 0 0 12px color-mix(in srgb, var(--scanonix-orange) 8%, transparent);
-  transition:
-    border-color var(--transition-base),
-    box-shadow var(--transition-base),
-    transform var(--transition-base);
-}
-
-.category-discovery-card:hover .category-discovery-card__icon {
-  border-color: color-mix(in srgb, var(--scanonix-orange) 45%, transparent);
-  box-shadow:
-    0 0 28px color-mix(in srgb, var(--scanonix-orange) 28%, transparent),
-    inset 0 0 16px color-mix(in srgb, var(--scanonix-orange) 12%, transparent);
-  transform: scale(1.04);
-}
-
 /* Search focus glow + tools search bar — flex layout (Phase 128F-FIX3) */
 .search-focus-wrap {
   position: relative;
@@ -2140,8 +2069,7 @@ html[data-theme="dark"] .scanonix-pro-promo__limit-value {
   .glass-card-interactive:hover,
   .tool-card-compact:hover,
   .tool-card-neon:hover,
-  .tool-card-neon:focus-within,
-  .category-discovery-card:hover {
+  .tool-card-neon:focus-within {
     transform: none;
   }
 
@@ -2219,7 +2147,6 @@ html[data-theme="dark"] .scanonix-pro-promo__limit-value {
     transform: none;
   }
 
-  .category-discovery-card:hover,
   .dashboard-quick-action:hover {
     transform: none;
   }
@@ -2690,13 +2617,11 @@ html[data-theme="dark"] .site-footer {
 
   .tool-finder-page .tool-finder-inline-safe,
   .tool-finder-page .scanonix-pro-promo__grid,
-  .tool-finder-page .tool-card-neon,
-  .tool-finder-page .category-discovery-card {
+  .tool-finder-page .tool-card-neon {
     padding-right: calc(var(--tool-finder-safe-inline) - var(--space-page-x));
   }
 
-  .tool-finder-page .tool-card-neon > .tool-visual,
-  .tool-finder-page .category-discovery-card__icon {
+  .tool-finder-page .tool-card-neon > .tool-visual {
     position: absolute;
     top: 0;
     bottom: 0;

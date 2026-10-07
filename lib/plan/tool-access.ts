@@ -69,6 +69,8 @@ export const TOOL_ACCESS: Record<string, ToolAccessConfig> = {
   "webp-to-png": { ...FREE_CLIENT, route: "webp-to-png" },
   "heic-to-jpg": { ...FREE_CLIENT, route: "heic-to-jpg" },
   "heic-to-png": { ...FREE_CLIENT, route: "heic-to-png" },
+  "tiff-to-jpg": { ...FREE_CLIENT, route: "tiff-to-jpg" },
+  "tiff-to-png": { ...FREE_CLIENT, route: "tiff-to-png" },
   "image-upscaler": {
     ...PREMIUM_AI,
     processing: "server",

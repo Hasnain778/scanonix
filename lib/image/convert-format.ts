@@ -6,6 +6,7 @@ import {
   outputSupportsTransparency,
 } from "@/lib/image/formats";
 import { decodeHeicFile } from "@/lib/image/heic-decode";
+import { decodeTiffToCanvas, TiffDecodeError, TIFF_MULTIPAGE_NOTICE } from "@/lib/image/tiff-decode";
 import {
   canvasToBlob,
   ImageNormalizationError,
@@ -56,22 +57,21 @@ function sampleTransparency(canvas: HTMLCanvasElement): boolean {
   return false;
 }
 
-export async function convertImageFile(
-  file: File,
+export interface ConvertImageFileResult {
+  blob: Blob;
+  hadTransparency: boolean;
+  notice?: string;
+}
+
+export interface ConvertImageFilesResult {
+  outputs: ImageOutput[];
+  notice?: string;
+}
+
+async function encodeCanvas(
+  canvas: HTMLCanvasElement,
   options: ConvertImageOptions,
 ): Promise<{ blob: Blob; hadTransparency: boolean }> {
-  const drawableBlob = await fileToDrawableBlob(file, options.from, options.to);
-  let normalized;
-
-  try {
-    normalized = await normalizeImageToCanvas(drawableBlob);
-  } catch (error) {
-    throw error instanceof ImageNormalizationError
-      ? error
-      : new ImageNormalizationError("Could not decode the source image.");
-  }
-
-  const { canvas } = normalized;
   const hadTransparency =
     formatHasPotentialTransparency(options.from) && sampleTransparency(canvas);
 
@@ -131,24 +131,63 @@ export async function convertImageFile(
   return { blob, hadTransparency };
 }
 
+export async function convertImageFile(
+  file: File,
+  options: ConvertImageOptions,
+): Promise<ConvertImageFileResult> {
+  if (options.from === "tiff") {
+    try {
+      const decoded = await decodeTiffToCanvas(file);
+      const encoded = await encodeCanvas(decoded.canvas, options);
+      return {
+        ...encoded,
+        notice: decoded.extraPages ? TIFF_MULTIPAGE_NOTICE : undefined,
+      };
+    } catch (error) {
+      if (error instanceof ImageBinaryValidationError || error instanceof ImageNormalizationError) {
+        throw error;
+      }
+      if (error instanceof TiffDecodeError) {
+        throw new ImageNormalizationError(error.message);
+      }
+      throw new ImageNormalizationError("Could not decode this TIFF image.");
+    }
+  }
+
+  const drawableBlob = await fileToDrawableBlob(file, options.from, options.to);
+  let normalized;
+
+  try {
+    normalized = await normalizeImageToCanvas(drawableBlob);
+  } catch (error) {
+    throw error instanceof ImageNormalizationError
+      ? error
+      : new ImageNormalizationError("Could not decode the source image.");
+  }
+
+  return encodeCanvas(normalized.canvas, options);
+}
+
 export async function convertImageFiles(
   files: File[],
   options: ConvertImageOptions,
   onProgress?: (current: number, total: number) => void,
-): Promise<ImageOutput[]> {
+): Promise<ConvertImageFilesResult> {
   const outputs: ImageOutput[] = [];
+  let notice: string | undefined;
 
   for (let index = 0; index < files.length; index++) {
     onProgress?.(index + 1, files.length);
-    const { blob } = await convertImageFile(files[index], options);
+    const result = await convertImageFile(files[index], options);
+    if (result.notice) notice = result.notice;
     const baseName = files[index].name.replace(/\.[^.]+$/, "");
     outputs.push({
       filename: `${baseName}.${outputExtension(options.to)}`,
-      blob,
+      blob: result.blob,
     });
   }
 
-  return outputs;
+  return { outputs, notice };
 }
 
 export async function detectTransparencyForFiles(
@@ -158,8 +197,13 @@ export async function detectTransparencyForFiles(
   if (!formatHasPotentialTransparency(from)) return false;
 
   for (const file of files) {
-    const drawableBlob = await fileToDrawableBlob(file, from, from);
     try {
+      if (from === "tiff") {
+        const decoded = await decodeTiffToCanvas(file);
+        if (sampleTransparency(decoded.canvas)) return true;
+        continue;
+      }
+      const drawableBlob = await fileToDrawableBlob(file, from, from);
       const normalized = await normalizeImageToCanvas(drawableBlob);
       if (sampleTransparency(normalized.canvas)) return true;
     } catch {

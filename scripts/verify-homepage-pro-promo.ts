@@ -106,7 +106,9 @@ function run() {
 
   assert(
     "10 section placed before footer (inside main)",
-    homepageSource.indexOf("<ScanonixProPromo") > homepageSource.indexOf("<ToolCategoriesSection") &&
+    homepageSource.indexOf("<ScanonixProPromo") > homepageSource.indexOf("<HomeQuickSuggestions") &&
+      !homepageSource.includes("ToolCategoriesSection") &&
+      !homepageSource.includes("Browse by category") &&
       homepageSource.indexOf("<ScanonixProPromo") < homepageSource.indexOf("</main>") &&
       homepageSource.indexOf("<Footer") > homepageSource.indexOf("</main>"),
   );

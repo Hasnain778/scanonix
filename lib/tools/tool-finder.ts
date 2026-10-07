@@ -187,6 +187,8 @@ const TOOL_INTENT_PHRASES: Record<string, string[]> = {
   "webp-to-png": ["webp to png", "convert webp to png", "webp png", "webp image converter"],
   "heic-to-jpg": ["heic to jpg", "iphone photo to jpg", "heic converter"],
   "heic-to-png": ["heic to png"],
+  "tiff-to-jpg": ["tiff to jpg", "tiff to jpeg", "tif to jpg", "convert tiff to jpg"],
+  "tiff-to-png": ["tiff to png", "tif to png", "convert tiff to png"],
   "ai-translate": [
     "translate document",
     "translate text",

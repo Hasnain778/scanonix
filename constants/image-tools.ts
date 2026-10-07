@@ -1,4 +1,4 @@
-export type ImageFormatId = "png" | "jpg" | "webp" | "heic";
+export type ImageFormatId = "png" | "jpg" | "webp" | "heic" | "tiff";
 
 export type ImageToolBadge = "Popular" | "Fast" | "Best for web" | "Premium";
 
@@ -223,6 +223,62 @@ export const IMAGE_CONVERTERS: ImageConverterDefinition[] = [
     outputLabel: "PNG",
     relatedSlugs: ["heic-to-jpg", "jpg-to-png", "png-to-jpg"],
     faq: [BASE_FAQ_PRIVACY],
+  }),
+  converter({
+    id: "tiff-to-jpg",
+    slug: "tiff-to-jpg",
+    from: "tiff",
+    to: "jpg",
+    title: "TIFF to JPG",
+    description:
+      "Convert TIFF and TIF images to JPG in your browser. Orientation is corrected and the first page of a multipage TIFF is converted.",
+    shortDescription: "Convert TIFF scans to JPG",
+    metaDescription:
+      "Convert TIFF to JPG in your browser. .tif and .tiff files stay on your device. Multipage TIFFs convert the first page.",
+    acceptExtensions: ".tif,.tiff",
+    outputLabel: "JPG",
+    relatedSlugs: ["tiff-to-png", "png-to-jpg", "heic-to-jpg"],
+    faq: [
+      BASE_FAQ_PRIVACY,
+      {
+        question: "Which TIFF files can I convert?",
+        answer:
+          "Classic .tif and .tiff files in RGB, RGBA, grayscale, or black-and-white are supported for common uncompressed, PackBits, LZW, Deflate, and Group 4 compression. BigTIFF, CMYK, and JPEG-compressed TIFF are not converted.",
+      },
+      {
+        question: "What happens with a multipage TIFF?",
+        answer:
+          "The first page is converted. If the file contains more pages, the page tells you that only the first page was converted.",
+      },
+    ],
+  }),
+  converter({
+    id: "tiff-to-png",
+    slug: "tiff-to-png",
+    from: "tiff",
+    to: "png",
+    title: "TIFF to PNG",
+    description:
+      "Convert TIFF and TIF images to PNG in your browser. Decoded transparency is kept and the first page of a multipage TIFF is converted.",
+    shortDescription: "Convert TIFF scans to PNG",
+    metaDescription:
+      "Convert TIFF to PNG in your browser. .tif and .tiff files stay on your device, and decoded transparency is preserved on the first page.",
+    acceptExtensions: ".tif,.tiff",
+    outputLabel: "PNG",
+    relatedSlugs: ["tiff-to-jpg", "png-to-jpg", "heic-to-png"],
+    faq: [
+      BASE_FAQ_PRIVACY,
+      {
+        question: "Does TIFF to PNG keep transparency?",
+        answer:
+          "Yes. Decoded alpha is kept in the PNG. Grayscale and black-and-white images are saved as opaque PNG.",
+      },
+      {
+        question: "Are all TIFF variants preserved?",
+        answer:
+          "No. The converter reads common classic TIFF pages into an 8-bit image. It does not keep BigTIFF, CMYK, or 16-bit precision.",
+      },
+    ],
   }),
 ];
 

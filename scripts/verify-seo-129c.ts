@@ -260,7 +260,7 @@ async function run() {
   }
 
   // 7. Tool schema coverage (40 directory tools)
-  assert("7 tools directory count is 41", SCANONIX_TOOLS.length === 41);
+  assert("7 tools directory count is 43", SCANONIX_TOOLS.length === 43);
 
   for (const tool of SCANONIX_TOOLS) {
     const seoId = tool.id;

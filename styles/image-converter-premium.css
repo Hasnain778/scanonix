@@ -73,3 +73,172 @@ html[data-theme="dark"] .image-converter-premium .converter-options {
     object-position: center;
   }
 }
+
+/* TIFF loaded workspace only. Other converters keep the single-column queue. */
+.image-converter-premium .tiff-stage {
+  display: grid;
+  gap: 1.35rem;
+  align-items: start;
+  width: min(100%, 62rem);
+  max-width: 62rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+  .image-converter-premium .tiff-stage {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    column-gap: 2.5rem;
+  }
+
+  .image-converter-premium .tiff-inspector {
+    width: 340px;
+    max-width: 340px;
+    justify-self: start;
+  }
+}
+
+.image-converter-premium .tiff-privacy {
+  width: min(100%, 62rem);
+  margin-inline: auto;
+}
+
+.image-converter-premium .tiff-file,
+.image-converter-premium .tiff-file-row {
+  display: grid;
+  align-items: center;
+  min-width: 0;
+}
+
+.image-converter-premium .tiff-file {
+  grid-template-columns: 140px minmax(0, 1fr) auto;
+  gap: 0.85rem 1rem;
+}
+
+.image-converter-premium .tiff-file-row {
+  grid-template-columns: auto 3rem minmax(0, 1fr) auto;
+  gap: 0.7rem 0.85rem;
+  padding: 0.35rem 0;
+}
+
+.image-converter-premium .tiff-file-row.is-over .tiff-row-thumb {
+  outline: 2px solid var(--scanonix-orange);
+  outline-offset: 2px;
+}
+
+.image-converter-premium .tiff-file-row.is-dragging {
+  opacity: 0.55;
+}
+
+.image-converter-premium .tiff-thumb,
+.image-converter-premium .tiff-row-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.65rem;
+}
+
+.image-converter-premium .tiff-thumb {
+  box-sizing: border-box;
+  width: 140px;
+  height: 90px;
+  min-width: 0;
+  max-width: 140px;
+  max-height: 90px;
+  flex: 0 0 140px;
+}
+
+.image-converter-premium .tiff-row-thumb {
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  min-width: 0;
+  max-width: 48px;
+  max-height: 48px;
+  flex: 0 0 48px;
+  border-radius: 0.45rem;
+}
+
+.image-converter-premium .tiff-thumb img,
+.image-converter-premium .tiff-row-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.image-converter-premium .tiff-thumb.is-fallback,
+.image-converter-premium .tiff-row-thumb.is-fallback {
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
+  color: var(--scanonix-orange);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.image-converter-premium .tiff-checker {
+  background-color: #ece7e1;
+  background-image:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.06) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0, 0, 0, 0.06) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.06) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.06) 75%);
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  background-size: 12px 12px;
+}
+
+.image-converter-premium .tiff-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 82%, transparent);
+  color: var(--background);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.image-converter-premium .tiff-inspector {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.image-converter-premium .tiff-inspector-action {
+  margin-top: 0.35rem;
+}
+
+.image-converter-premium .tiff-color {
+  box-sizing: border-box;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0.12rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent);
+  background: transparent;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+html[data-theme="bright"] .image-converter-premium .tiff-thumb.is-fallback,
+html[data-theme="bright"] .image-converter-premium .tiff-row-thumb.is-fallback {
+  background: #f3eee8;
+}
+
+html[data-theme="dark"] .image-converter-premium .tiff-thumb.is-fallback,
+html[data-theme="dark"] .image-converter-premium .tiff-row-thumb.is-fallback {
+  background: #1c1916;
+}
+
+html[data-theme="dark"] .image-converter-premium .tiff-checker {
+  background-color: #221f1c;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+}

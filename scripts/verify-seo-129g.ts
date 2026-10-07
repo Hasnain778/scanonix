@@ -88,8 +88,8 @@ function run() {
 
   // 2. Image tool inventory (matrix + converters)
   assert(
-    "2 image category matrix lists 17 workspace tools",
-    IMAGE_TOOL_IDS.length === 17,
+    "2 image category matrix lists 19 workspace tools",
+    IMAGE_TOOL_IDS.length === 19,
     IMAGE_TOOL_IDS.join(", "),
   );
 
@@ -127,11 +127,11 @@ function run() {
   );
 
   // 4. New crawl paths to hub
-  const homepageSource = readSource("components/home/PopularToolsSection.tsx");
+  const homepageSource = readSource("app/page.tsx");
   assert(
-    "4 homepage image category card links to image hub",
-    homepageSource.includes("getImageToolsHubHref()") &&
-      homepageSource.includes('category === "image"'),
+    "4 homepage no longer renders the browse-by-category cards",
+    !homepageSource.includes("ToolCategoriesSection") &&
+      !homepageSource.includes("Browse by category"),
   );
 
   const directorySource = readSource("components/tools/directory/ToolsDirectory.tsx");

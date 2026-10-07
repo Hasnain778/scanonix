@@ -80,10 +80,10 @@ function run() {
 
   console.log("");
 
-  // 1. Matrix covers all 41 canonical tools
+  // 1. Matrix covers all 43 canonical tools
   assert(
-    "1 matrix contains 41 canonical tools",
-    TOOL_CATEGORY_MATRIX.length === 41,
+    "1 matrix contains 43 canonical tools",
+    TOOL_CATEGORY_MATRIX.length === 43,
     `got ${TOOL_CATEGORY_MATRIX.length}`,
   );
 
@@ -116,7 +116,7 @@ function run() {
   // 4. Tools not in wrong top-level categories
   const categoryChecks: Array<{ filter: ToolCategoryFilterId; expectedCount: number }> = [
     { filter: "pdf", expectedCount: 18 },
-    { filter: "image", expectedCount: 17 },
+    { filter: "image", expectedCount: 19 },
     { filter: "ai", expectedCount: 5 },
     { filter: "security", expectedCount: 5 },
   ];
@@ -219,7 +219,7 @@ function run() {
 
   // 12. SV2-1.1 Image / AI / Security subcategory coverage
   const imageSubs: Record<string, number> = {
-    "convert-image": 8,
+    "convert-image": 10,
     "compress-image": 3,
     "vector-image": 3,
     "edit-image": 3,

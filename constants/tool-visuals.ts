@@ -336,6 +336,22 @@ export const TOOL_VISUALS: Record<string, ToolVisualMeta> = {
     glowColor: "rgba(253, 230, 138, 0.2)",
     motion: "convert",
   },
+  "tiff-to-jpg": {
+    slug: "tiff-to-jpg",
+    icon: "convert",
+    iconFamily: "image-convert",
+    accentColor: "#86efac",
+    glowColor: "rgba(134, 239, 172, 0.2)",
+    motion: "convert",
+  },
+  "tiff-to-png": {
+    slug: "tiff-to-png",
+    icon: "convert",
+    iconFamily: "image-convert",
+    accentColor: "#6ee7b7",
+    glowColor: "rgba(110, 231, 183, 0.2)",
+    motion: "convert",
+  },
   // AI
   ocr: {
     slug: "ocr",

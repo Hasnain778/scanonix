@@ -6,6 +6,7 @@ import {
   type DispatchLogEvent,
   type DispatchOutcome,
 } from "./dispatch-claim";
+import { failUpscaleJob } from "./credits";
 import { getJobById, updateJob } from "./repository";
 import { triggerRunPodPollOnce, type RunPodTriggerResult } from "./runpod-trigger";
 import type { UpscaleJobRecord } from "./types";
@@ -17,6 +18,7 @@ export interface DispatchDependencies {
   triggerRunPod: typeof triggerRunPodPollOnce;
   getJob: (jobId: string) => Promise<UpscaleJobRecord | null>;
   updateJob: typeof updateJob;
+  failChargedJob: (jobId: string, errorCode: string, errorMessage: string) => Promise<string>;
   sleep: (ms: number) => Promise<void>;
   logEvent: (event: DispatchLogEvent) => void;
 }
@@ -42,6 +44,7 @@ function defaultDependencies(): DispatchDependencies {
     triggerRunPod: triggerRunPodPollOnce,
     getJob: getJobById,
     updateJob,
+    failChargedJob: failUpscaleJob,
     sleep: defaultSleep,
     logEvent: defaultLogEvent,
   };
@@ -78,13 +81,7 @@ async function markDispatchFailure(
   errorMessage: string,
 ): Promise<void> {
   try {
-    await deps.updateJob(jobId, {
-      status: "failed",
-      stage: "queued",
-      errorCode: "worker_trigger_failed",
-      errorMessage,
-      completedAt: new Date().toISOString(),
-    });
+    await deps.failChargedJob(jobId, "worker_trigger_failed", errorMessage);
   } catch (updateError) {
     console.error(
       "[upscale-jobs] Failed to mark job %s failed after dispatch error worker_trigger_failed: %s",

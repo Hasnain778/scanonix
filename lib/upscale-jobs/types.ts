@@ -33,6 +33,8 @@ export interface UpscaleJobRecord {
   error_code: string | null;
   error_message: string | null;
   usage_charged: boolean;
+  usage_period_start?: string | null;
+  usage_refunded?: boolean;
   attempts: number;
   max_attempts: number;
   worker_id: string | null;

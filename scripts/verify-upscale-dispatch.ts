@@ -234,14 +234,11 @@ async function main(): Promise<void> {
       sleep: async () => {},
       logEvent: () => {},
       getJob: async () => job,
-      updateJob: async (_jobId, patch) => {
-        failedErrorCode = patch.errorCode ?? null;
-        job = {
-          ...job,
-          status: patch.status ?? job.status,
-          error_code: patch.errorCode ?? job.error_code,
-        };
-        return job;
+      updateJob: async () => job,
+      failChargedJob: async (_jobId, errorCode) => {
+        failedErrorCode = errorCode;
+        job = { ...job, status: "failed", error_code: errorCode };
+        return "refunded";
       },
       triggerRunPod: async () => {
         triggerCount += 1;
@@ -266,6 +263,10 @@ async function main(): Promise<void> {
       join(process.cwd(), "app/api/tools/image/upscale/jobs/route.ts"),
       "utf8",
     );
+    const submitSource = readFileSync(
+      join(process.cwd(), "lib/upscale-jobs/submit-job.ts"),
+      "utf8",
+    );
 
     assert.doesNotMatch(triggerSource, /visibilitychange/);
     assert.doesNotMatch(triggerSource, /UPSCALE_JOB_POLL_INTERVAL/);
@@ -276,7 +277,8 @@ async function main(): Promise<void> {
     assert.doesNotMatch(claimSource, /CLAIM_VERIFY_POLLS/);
     assert.match(terminalSource, /resolveUpscaleJobStatus/);
     assert.match(pollingSource, /getUpscaleJobPollAction/);
-    assert.match(routeSource, /await triggerUpscaleWorkerAfterJobCreated\(jobId\)/);
+    assert.match(routeSource, /dispatchJob: triggerUpscaleWorkerAfterJobCreated/);
+    assert.match(submitSource, /await deps\.dispatchJob\(jobId\)/);
     assert.match(triggerSource, /dispatchUpscaleWorkerWithClaimVerification/);
     assert.match(triggerSource, /RunPod trigger accepted/);
   });
@@ -286,8 +288,14 @@ async function main(): Promise<void> {
       join(process.cwd(), "app/api/tools/image/upscale/jobs/route.ts"),
       "utf8",
     );
-    assert.match(routeSource, /await triggerUpscaleWorkerAfterJobCreated\(jobId\)/);
+    const submitSource = readFileSync(
+      join(process.cwd(), "lib/upscale-jobs/submit-job.ts"),
+      "utf8",
+    );
+    assert.match(routeSource, /dispatchJob: triggerUpscaleWorkerAfterJobCreated/);
+    assert.match(submitSource, /await deps\.dispatchJob\(jobId\)/);
     assert.doesNotMatch(routeSource, /void triggerUpscaleWorkerAfterJobCreated/);
+    assert.doesNotMatch(submitSource, /void deps\.dispatchJob/);
   });
 
   await test("I. retries stop immediately after first successful trigger", async () => {

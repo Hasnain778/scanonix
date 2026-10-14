@@ -40,6 +40,25 @@ interface RpcConsumeResult {
   remaining: number;
 }
 
+interface RpcReserveResult extends RpcConsumeResult {
+  reservation_id: string | null;
+}
+
+export type ReservationOutcome =
+  | "released"
+  | "already_released"
+  | "already_committed"
+  | "committed"
+  | "not_found";
+
+interface RpcReservationOutcome {
+  outcome?: ReservationOutcome;
+}
+
+export interface ReserveUsageResult extends ConsumeUsageResult {
+  reservationId: string | null;
+}
+
 function getLimitsForPlan(plan: UserPlan): PlanLimits {
   return getPlanLimits(plan);
 }
@@ -119,4 +138,107 @@ export async function consumeUsage(
     periodEnd: periodEnd.toISOString(),
     resetAt: periodEnd.toISOString(),
   };
+}
+
+function toUsageResult(
+  result: RpcConsumeResult,
+  limit: number,
+  periodStart: string,
+  periodEnd: string,
+): ConsumeUsageResult {
+  return {
+    allowed: Boolean(result.allowed),
+    usageCount: result.usage_count ?? 0,
+    limit: result.limit ?? limit,
+    remaining: result.remaining ?? 0,
+    periodStart,
+    periodEnd,
+    resetAt: periodEnd,
+  };
+}
+
+/** Reserve one shared tool_operation credit before a premium AI provider call. */
+export async function reserveUsage(
+  userId: string,
+  plan: UserPlan,
+  action: string = TOOL_OPERATION_ACTION,
+): Promise<ReserveUsageResult> {
+  if (action !== TOOL_OPERATION_ACTION) {
+    throw new Error("Usage reservation action is not permitted.");
+  }
+
+  const limits = getLimitsForPlan(plan);
+  const { periodStart, periodEnd } = getUsagePeriodWindow(limits.usagePeriod);
+  const limit = limits.toolOperationsPerPeriod;
+  const periodStartIso = periodStart.toISOString();
+  const periodEndIso = periodEnd.toISOString();
+
+  const admin = createAdminClient();
+  const { data, error } = await admin.rpc("reserve_tool_operation", {
+    p_user_id: userId,
+    p_action: action,
+    p_period_start: periodStartIso,
+    p_period_end: periodEndIso,
+    p_limit: limit,
+  });
+
+  if (error) {
+    logPlanEnforcement({
+      event: "usage_increment_failure",
+      action,
+      reason: "reservation_failed",
+    });
+    throw new Error("Usage reservation failed.");
+  }
+
+  const result = data as RpcReserveResult;
+  const usage = toUsageResult(result, limit, periodStartIso, periodEndIso);
+
+  if (usage.allowed && !result.reservation_id) {
+    throw new Error("Usage reservation was not created.");
+  }
+
+  return {
+    ...usage,
+    reservationId: result.reservation_id ?? null,
+  };
+}
+
+async function finishReservation(
+  functionName: "release_tool_reservation" | "commit_tool_reservation",
+  reservationId: string,
+): Promise<ReservationOutcome> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.rpc(functionName, {
+    p_reservation_id: reservationId,
+  });
+
+  if (error) {
+    throw new Error("Usage reservation update failed.");
+  }
+
+  const outcome = (data as RpcReservationOutcome | null)?.outcome;
+  if (
+    outcome === "released" ||
+    outcome === "already_released" ||
+    outcome === "already_committed" ||
+    outcome === "committed" ||
+    outcome === "not_found"
+  ) {
+    return outcome;
+  }
+
+  throw new Error("Usage reservation update failed.");
+}
+
+export async function releaseUsageReservation(
+  reservationId: string,
+): Promise<ReservationOutcome> {
+  return finishReservation("release_tool_reservation", reservationId);
+}
+
+export async function commitUsageReservation(
+  reservationId: string,
+): Promise<ReservationOutcome> {
+  return finishReservation("commit_tool_reservation", reservationId);
 }

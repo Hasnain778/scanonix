@@ -235,7 +235,7 @@ async function main(): Promise<void> {
       logEvent: () => {},
       getJob: async () => job,
       updateJob: async () => job,
-      failChargedJob: async (_jobId, errorCode) => {
+      abortUnclaimedJob: async (_jobId, errorCode) => {
         failedErrorCode = errorCode;
         job = { ...job, status: "failed", error_code: errorCode };
         return "refunded";
@@ -319,6 +319,40 @@ async function main(): Promise<void> {
 
     assert.equal(outcome.ok, true);
     assert.equal(triggerCount, 2);
+  });
+
+  await test("J. abort in_progress after HTTP failures keeps the claimed job", async () => {
+    let triggerCount = 0;
+    let job = baseJob();
+    let abortCalls = 0;
+
+    const outcome = await dispatchUpscaleWorkerWithClaimVerification(JOB_ID, {
+      sleep: async () => {},
+      logEvent: () => {},
+      getJob: async () => job,
+      updateJob: async () => job,
+      abortUnclaimedJob: async () => {
+        abortCalls += 1;
+        job = {
+          ...job,
+          status: "processing",
+          worker_id: "runpod-realesrgan:token",
+          started_at: "2026-08-10T02:52:00.000Z",
+          attempts: 1,
+        };
+        return "in_progress";
+      },
+      triggerRunPod: async () => {
+        triggerCount += 1;
+        return { ok: false as const, message: "RunPod trigger failed with status 502.", status: 502 };
+      },
+    });
+
+    assert.equal(outcome.ok, true);
+    assert.equal(triggerCount, MAX_DISPATCH_ATTEMPTS);
+    assert.equal(abortCalls, 1);
+    assert.equal(job.status, "processing");
+    assert.equal(job.worker_id, "runpod-realesrgan:token");
   });
 
   console.log(`\n${passed}/${passed} upscale dispatch checks passed.`);

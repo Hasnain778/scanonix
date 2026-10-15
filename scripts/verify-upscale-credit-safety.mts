@@ -17,6 +17,10 @@ const migration = readFileSync(
   new URL("../supabase/migrations/018_upscale_job_credits.sql", import.meta.url),
   "utf8",
 );
+const migration019 = readFileSync(
+  new URL("../supabase/migrations/019_upscale_worker_safety.sql", import.meta.url),
+  "utf8",
+);
 
 function imageFile(bytes: Buffer, type = "image/png"): ImageToolFileInput {
   const file = new File([new Uint8Array(bytes)], "sample.png", { type });
@@ -264,10 +268,28 @@ function ledger() {
       return lock(() => {
         const job = jobs.get(id);
         if (!job || job.status !== "queued" || !job.charged || job.refunded) return false;
+        if (job.attempts >= job.maxAttempts) return false;
         job.status = "processing";
         job.startedAt = now;
         job.attempts += 1;
         return true;
+      });
+    },
+    abort(id: string) {
+      return lock(() => {
+        const job = jobs.get(id);
+        if (!job) return "not_found";
+        if (job.status === "completed") return "completed";
+        if (job.refunded) return "already_refunded";
+        if (job.status === "queued" && job.startedAt === null && job.charged) {
+          job.status = "failed";
+          if (usage > 0) usage -= 1;
+          job.charged = false;
+          job.refunded = true;
+          return "refunded";
+        }
+        if (job.status === "processing") return "in_progress";
+        return "unchanged";
       });
     },
     job: (id: string) => jobs.get(id),
@@ -349,6 +371,49 @@ test("a completed job is not refunded", async () => {
   assert.equal(book.usage(), 1);
 });
 
+test("claim refuses a queued job that is already at max attempts", async () => {
+  const book = ledger();
+  book.add("job", 0);
+  await book.charge("job", 500);
+  const job = book.job("job");
+  if (!job) throw new Error("missing job");
+  job.attempts = job.maxAttempts;
+  assert.equal(await book.claim("job", 1_000), false);
+  assert.equal(book.job("job")?.status, "queued");
+  assert.equal(book.job("job")?.attempts, 3);
+  assert.equal(book.usage(), 1);
+});
+
+test("abort refunds an unclaimed job and leaves a claimed job charged", async () => {
+  const book = ledger();
+  book.add("fresh", 0);
+  book.add("claimed", 0);
+  await book.charge("fresh", 500);
+  await book.charge("claimed", 500);
+  await book.claim("claimed", 1_000);
+  assert.equal(await book.abort("claimed"), "in_progress");
+  assert.equal(book.job("claimed")?.status, "processing");
+  assert.equal(await book.abort("fresh"), "refunded");
+  assert.equal(book.usage(), 1);
+  assert.equal(await book.abort("fresh"), "already_refunded");
+  assert.equal(book.usage(), 1);
+});
+
+test("dispatch failure that finds the job in progress keeps it", async () => {
+  const harness = deps({
+    dispatchJob: async () => {
+      throw new Error("Could not start upscaling worker. Please try again.");
+    },
+    failChargedJob: async () => "in_progress",
+  });
+  const result = await submitPreparedUpscaleJob(
+    { userId: "user-1", scale: 2, file: imageFile(Buffer.from("x")), width: 8, height: 8 },
+    harness,
+  );
+  assert.deepEqual(result, { status: "created", jobId: "job-1" });
+  assert.deepEqual(harness.calls, ["upload", "create", "charge", "dispatch", "fail"]);
+});
+
 test("migration 018 keeps the shared counter and the credit guards", () => {
   assert.match(migration, /action = 'tool_operation'/);
   assert.match(migration, /usage_count > 0/);
@@ -360,4 +425,15 @@ test("migration 018 keeps the shared counter and the credit guards", () => {
   assert.match(migration, /completed upscale job cannot change status/);
   assert.match(migration, /new upscale jobs must start uncharged/);
   assert.doesNotMatch(migration, /create or replace function public\.consume_tool_usage/);
+});
+
+test("migration 019 guards claim attempts and clears the write flag", () => {
+  assert.match(migration019, /attempts < max_attempts/);
+  assert.match(migration019, /abort_unclaimed_upscale_job/);
+  assert.match(migration019, /fail_owned_upscale_job/);
+  assert.match(migration019, /complete_owned_upscale_job/);
+  assert.match(migration019, /scanonix\.upscale_job_write', '', true/);
+  assert.match(migration019, /must change through an upscale job function/);
+  assert.doesNotMatch(migration019, /create or replace function public\.charge_upscale_job/);
+  assert.doesNotMatch(migration019, /create or replace function public\.refund_upscale_job/);
 });

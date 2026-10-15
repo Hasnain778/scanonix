@@ -114,9 +114,11 @@ BEGIN
   );
   PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
 
+  PERFORM set_config('scanonix.upscale_job_write', 'write', true);
   UPDATE public.upscale_jobs
   SET status = 'failed', error_code = 'processing_failed', completed_at = timezone('utc', now())
   WHERE id = v_job;
+  PERFORM set_config('scanonix.upscale_job_write', '', true);
 
   v_result := public.refund_upscale_job(v_job);
   SELECT usage_count INTO v_count
@@ -279,12 +281,14 @@ BEGIN
   );
   PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
 
+  PERFORM set_config('scanonix.upscale_job_write', 'write', true);
   UPDATE public.upscale_jobs
   SET status = 'processing',
       started_at = timezone('utc', now()) - interval '30 minutes',
       attempts = 1,
       max_attempts = 3
   WHERE id = v_job;
+  PERFORM set_config('scanonix.upscale_job_write', '', true);
 
   PERFORM public.recover_stale_upscale_jobs(600);
 
@@ -325,12 +329,14 @@ BEGIN
   );
   PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
 
+  PERFORM set_config('scanonix.upscale_job_write', 'write', true);
   UPDATE public.upscale_jobs
   SET status = 'processing',
       started_at = timezone('utc', now()) - interval '30 minutes',
       attempts = 3,
       max_attempts = 3
   WHERE id = v_job;
+  PERFORM set_config('scanonix.upscale_job_write', '', true);
 
   PERFORM public.recover_stale_upscale_jobs(600);
 
@@ -534,15 +540,395 @@ BEGIN
 END $$;
 ROLLBACK;
 
+-- 14. The credit flag does not authorize a later status change.
+BEGIN;
+DO $$
+DECLARE
+  v_user uuid := '01900000-0000-4000-8000-000000000014';
+  v_job uuid := '01900000-0000-4000-8000-000000000015';
+  v_start timestamptz := '2026-10-01 00:00:00+00';
+  v_end timestamptz := '2026-11-01 00:00:00+00';
+  v_status text;
+BEGIN
+  INSERT INTO auth.users (id, email) VALUES (v_user, 'fix04-credit-14@localhost');
+  INSERT INTO public.upscale_jobs (
+    id, user_id, scale, input_storage_path, input_mime_type,
+    input_width, input_height, input_size_bytes
+  ) VALUES (
+    v_job, v_user, 2, 'fix04-local/a.png', 'image/png', 8, 8, 32
+  );
+  PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
+
+  BEGIN
+    UPDATE public.upscale_jobs SET status = 'failed' WHERE id = v_job;
+    RAISE EXCEPTION 'FAIL 14 charge flag authorized a status change';
+  EXCEPTION
+    WHEN OTHERS THEN
+      IF SQLERRM NOT LIKE '%must change through an upscale job function%' THEN
+        RAISE;
+      END IF;
+  END;
+
+  UPDATE public.upscale_jobs SET stage = 'upscaling', progress = 40 WHERE id = v_job;
+  SELECT status INTO v_status FROM public.upscale_jobs WHERE id = v_job;
+  IF v_status IS DISTINCT FROM 'queued' THEN
+    RAISE EXCEPTION 'FAIL 14 status changed to %', v_status;
+  END IF;
+
+  RAISE NOTICE 'PASS 14 credit flag does not authorize status changes';
+END $$;
+ROLLBACK;
+
+-- 15. Claim stops at the attempt cap and ignores a blank worker id.
+BEGIN;
+DO $$
+DECLARE
+  v_user uuid := '01900000-0000-4000-8000-000000000016';
+  v_job uuid := '01900000-0000-4000-8000-000000000017';
+  v_start timestamptz := '2026-10-01 00:00:00+00';
+  v_end timestamptz := '2026-11-01 00:00:00+00';
+  v_count integer;
+  v_attempts integer;
+  v_status text;
+BEGIN
+  INSERT INTO auth.users (id, email) VALUES (v_user, 'fix04-credit-15@localhost');
+  INSERT INTO public.upscale_jobs (
+    id, user_id, scale, input_storage_path, input_mime_type,
+    input_width, input_height, input_size_bytes
+  ) VALUES (
+    v_job, v_user, 2, 'fix04-local/cap.png', 'image/png', 8, 8, 32
+  );
+  PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
+
+  PERFORM set_config('scanonix.upscale_job_write', 'write', true);
+  UPDATE public.upscale_jobs SET attempts = 3 WHERE id = v_job;
+  PERFORM set_config('scanonix.upscale_job_write', '', true);
+
+  SELECT count(*) INTO v_count FROM public.claim_upscale_job('worker-a');
+  SELECT attempts, status INTO v_attempts, v_status FROM public.upscale_jobs WHERE id = v_job;
+  IF v_count <> 0 OR v_attempts IS DISTINCT FROM 3 OR v_status IS DISTINCT FROM 'queued' THEN
+    RAISE EXCEPTION 'FAIL 15 capped claim count=% attempts=% status=%', v_count, v_attempts, v_status;
+  END IF;
+
+  PERFORM set_config('scanonix.upscale_job_write', 'write', true);
+  UPDATE public.upscale_jobs SET attempts = 2 WHERE id = v_job;
+  PERFORM set_config('scanonix.upscale_job_write', '', true);
+  SELECT count(*) INTO v_count FROM public.claim_upscale_job('   ');
+  SELECT attempts, status INTO v_attempts, v_status FROM public.upscale_jobs WHERE id = v_job;
+  IF v_count <> 0 OR v_attempts IS DISTINCT FROM 2 OR v_status IS DISTINCT FROM 'queued' THEN
+    RAISE EXCEPTION 'FAIL 15 blank worker count=% attempts=% status=%', v_count, v_attempts, v_status;
+  END IF;
+
+  SELECT count(*) INTO v_count FROM public.claim_upscale_job('worker-a');
+  SELECT attempts, status INTO v_attempts, v_status FROM public.upscale_jobs WHERE id = v_job;
+  IF v_count <> 1 OR v_attempts IS DISTINCT FROM 3 OR v_status IS DISTINCT FROM 'processing' THEN
+    RAISE EXCEPTION 'FAIL 15 last attempt count=% attempts=% status=%', v_count, v_attempts, v_status;
+  END IF;
+
+  BEGIN
+    UPDATE public.upscale_jobs SET status = 'failed' WHERE id = v_job;
+    RAISE EXCEPTION 'FAIL 15 claim left the write flag set';
+  EXCEPTION
+    WHEN OTHERS THEN
+      IF SQLERRM NOT LIKE '%must change through an upscale job function%' THEN
+        RAISE;
+      END IF;
+  END;
+
+  RAISE NOTICE 'PASS 15 claim cap, blank worker, and cleared write flag';
+END $$;
+ROLLBACK;
+
+-- 16. Abort refunds only an unclaimed queued job.
+BEGIN;
+DO $$
+DECLARE
+  v_user uuid := '01900000-0000-4000-8000-000000000019';
+  v_job uuid := '01900000-0000-4000-8000-00000000001a';
+  v_claimed uuid := '01900000-0000-4000-8000-00000000001b';
+  v_start timestamptz := '2026-10-01 00:00:00+00';
+  v_end timestamptz := '2026-11-01 00:00:00+00';
+  v_result jsonb;
+  v_count integer;
+  v_status text;
+BEGIN
+  INSERT INTO auth.users (id, email) VALUES (v_user, 'fix04-credit-16@localhost');
+  INSERT INTO public.upscale_jobs (
+    id, user_id, scale, input_storage_path, input_mime_type,
+    input_width, input_height, input_size_bytes
+  ) VALUES
+    (v_job, v_user, 2, 'fix04-local/abort.png', 'image/png', 8, 8, 32),
+    (v_claimed, v_user, 2, 'fix04-local/claimed.png', 'image/png', 8, 8, 32);
+  PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
+  PERFORM public.charge_upscale_job(v_claimed, v_user, v_start, v_end, 500);
+
+  v_result := public.abort_unclaimed_upscale_job(v_job, 'worker_trigger_failed', 'failed');
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_result->>'outcome' IS DISTINCT FROM 'refunded' OR v_count IS DISTINCT FROM 1 THEN
+    RAISE EXCEPTION 'FAIL 16 abort outcome=% count=%', v_result, v_count;
+  END IF;
+
+  v_result := public.abort_unclaimed_upscale_job(v_job, 'worker_trigger_failed', 'failed');
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_result->>'outcome' IS DISTINCT FROM 'already_refunded' OR v_count IS DISTINCT FROM 1 THEN
+    RAISE EXCEPTION 'FAIL 16 second abort outcome=% count=%', v_result, v_count;
+  END IF;
+
+  IF (SELECT count(*) FROM public.claim_upscale_job('worker-a')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 16 claim did not take the remaining job';
+  END IF;
+  v_result := public.abort_unclaimed_upscale_job(v_claimed, 'worker_trigger_failed', 'failed');
+  SELECT status INTO v_status FROM public.upscale_jobs WHERE id = v_claimed;
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_result->>'outcome' IS DISTINCT FROM 'in_progress' OR v_status IS DISTINCT FROM 'processing' OR v_count IS DISTINCT FROM 1 THEN
+    RAISE EXCEPTION 'FAIL 16 claimed abort outcome=% status=% count=%', v_result, v_status, v_count;
+  END IF;
+
+  RAISE NOTICE 'PASS 16 abort refunds only an unclaimed job';
+END $$;
+ROLLBACK;
+
+-- 17. Owned complete and fail require the claiming token.
+BEGIN;
+DO $$
+DECLARE
+  v_user uuid := '01900000-0000-4000-8000-00000000001c';
+  v_job uuid := '01900000-0000-4000-8000-00000000001d';
+  v_fail uuid := '01900000-0000-4000-8000-00000000001e';
+  v_start timestamptz := '2026-10-01 00:00:00+00';
+  v_end timestamptz := '2026-11-01 00:00:00+00';
+  v_result jsonb;
+  v_count integer;
+  v_status text;
+  v_path text;
+  v_worker text;
+BEGIN
+  INSERT INTO auth.users (id, email) VALUES (v_user, 'fix04-credit-17@localhost');
+  INSERT INTO public.upscale_jobs (
+    id, user_id, scale, input_storage_path, input_mime_type,
+    input_width, input_height, input_size_bytes, created_at
+  ) VALUES
+    (v_job, v_user, 2, 'fix04-local/own.png', 'image/png', 8, 8, 32, timezone('utc', now()) - interval '2 minutes'),
+    (v_fail, v_user, 2, 'fix04-local/own-fail.png', 'image/png', 8, 8, 32, timezone('utc', now()) - interval '1 minute');
+  PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
+  PERFORM public.charge_upscale_job(v_fail, v_user, v_start, v_end, 500);
+  IF (SELECT count(*) FROM public.claim_upscale_job('token-a')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 17 first claim missed';
+  END IF;
+  IF (SELECT count(*) FROM public.claim_upscale_job('token-b')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 17 second claim missed';
+  END IF;
+
+  v_result := public.complete_owned_upscale_job(v_job, 'token-b', 'fix04-local/out.png', 16, 16, 'png', 64);
+  SELECT status, output_storage_path INTO v_status, v_path FROM public.upscale_jobs WHERE id = v_job;
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' OR v_status IS DISTINCT FROM 'processing' OR v_path IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL 17 wrong complete outcome=% status=% path=%', v_result, v_status, v_path;
+  END IF;
+
+  v_result := public.complete_owned_upscale_job(v_job, 'token-a', 'fix04-local/out.png', 16, 16, 'png', 64);
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_result->>'outcome' IS DISTINCT FROM 'completed' OR v_count IS DISTINCT FROM 2 THEN
+    RAISE EXCEPTION 'FAIL 17 owned complete outcome=% count=%', v_result, v_count;
+  END IF;
+
+  v_result := public.fail_owned_upscale_job(v_fail, 'token-a', 'processing_failed', 'failed');
+  SELECT status, worker_id INTO v_status, v_worker FROM public.upscale_jobs WHERE id = v_fail;
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' OR v_status IS DISTINCT FROM 'processing' OR v_worker IS DISTINCT FROM 'token-b' THEN
+    RAISE EXCEPTION 'FAIL 17 wrong fail outcome=% status=% worker=%', v_result, v_status, v_worker;
+  END IF;
+
+  v_result := public.fail_owned_upscale_job(v_fail, 'token-b', 'processing_failed', 'failed');
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_result->>'outcome' IS DISTINCT FROM 'refunded' OR v_count IS DISTINCT FROM 1 THEN
+    RAISE EXCEPTION 'FAIL 17 owned fail outcome=% count=%', v_result, v_count;
+  END IF;
+
+  RAISE NOTICE 'PASS 17 owned complete and fail';
+END $$;
+ROLLBACK;
+
+-- 18. A stale token cannot finish a job reclaimed by another token.
+BEGIN;
+DO $$
+DECLARE
+  v_user uuid := '01900000-0000-4000-8000-00000000001f';
+  v_job uuid := '01900000-0000-4000-8000-000000000020';
+  v_start timestamptz := '2026-10-01 00:00:00+00';
+  v_end timestamptz := '2026-11-01 00:00:00+00';
+  v_result jsonb;
+  v_count integer;
+  v_status text;
+  v_worker text;
+BEGIN
+  INSERT INTO auth.users (id, email) VALUES (v_user, 'fix04-credit-18@localhost');
+  INSERT INTO public.upscale_jobs (
+    id, user_id, scale, input_storage_path, input_mime_type,
+    input_width, input_height, input_size_bytes
+  ) VALUES (
+    v_job, v_user, 2, 'fix04-local/reclaim.png', 'image/png', 8, 8, 32
+  );
+  PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
+  IF (SELECT count(*) FROM public.claim_upscale_job('token-a')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 18 initial claim missed';
+  END IF;
+
+  UPDATE public.upscale_jobs
+  SET started_at = timezone('utc', now()) - interval '30 minutes'
+  WHERE id = v_job;
+  PERFORM public.recover_stale_upscale_jobs(600);
+  IF (SELECT count(*) FROM public.claim_upscale_job('token-b')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 18 reclaim missed';
+  END IF;
+
+  v_result := public.complete_owned_upscale_job(v_job, 'token-a', 'fix04-local/out.png', 16, 16, 'png', 64);
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' THEN
+    RAISE EXCEPTION 'FAIL 18 stale complete outcome=%', v_result;
+  END IF;
+  v_result := public.fail_owned_upscale_job(v_job, 'token-a', 'processing_failed', 'failed');
+  SELECT status, worker_id INTO v_status, v_worker FROM public.upscale_jobs WHERE id = v_job;
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' OR v_status IS DISTINCT FROM 'processing' OR v_worker IS DISTINCT FROM 'token-b' THEN
+    RAISE EXCEPTION 'FAIL 18 stale token outcome=% status=% worker=%', v_result, v_status, v_worker;
+  END IF;
+
+  v_result := public.complete_owned_upscale_job(v_job, 'token-b', 'fix04-local/out.png', 16, 16, 'png', 64);
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_result->>'outcome' IS DISTINCT FROM 'completed' OR v_count IS DISTINCT FROM 1 THEN
+    RAISE EXCEPTION 'FAIL 18 new owner outcome=% count=%', v_result, v_count;
+  END IF;
+
+  RAISE NOTICE 'PASS 18 stale token cannot finish a reclaimed job';
+END $$;
+ROLLBACK;
+
+-- 19. Recovery refunds only jobs this call marks failed.
+BEGIN;
+DO $$
+DECLARE
+  v_timeout_user uuid := '01900000-0000-4000-8000-000000000021';
+  v_timeout_job uuid := '01900000-0000-4000-8000-000000000022';
+  v_failed_user uuid := '01900000-0000-4000-8000-000000000023';
+  v_failed_job uuid := '01900000-0000-4000-8000-000000000024';
+  v_cancelled_user uuid := '01900000-0000-4000-8000-000000000025';
+  v_cancelled_job uuid := '01900000-0000-4000-8000-000000000026';
+  v_start timestamptz := '2026-10-01 00:00:00+00';
+  v_end timestamptz := '2026-11-01 00:00:00+00';
+  v_count integer;
+  v_status text;
+  v_charged boolean;
+  v_refunded boolean;
+  v_code text;
+BEGIN
+  INSERT INTO auth.users (id, email) VALUES
+    (v_timeout_user, 'fix04-credit-19-timeout@localhost'),
+    (v_failed_user, 'fix04-credit-19-failed@localhost'),
+    (v_cancelled_user, 'fix04-credit-19-cancelled@localhost');
+
+  INSERT INTO public.upscale_jobs (
+    id, user_id, scale, input_storage_path, input_mime_type,
+    input_width, input_height, input_size_bytes
+  ) VALUES
+    (v_timeout_job, v_timeout_user, 2, 'fix04-local/recover-timeout.png', 'image/png', 8, 8, 32),
+    (v_failed_job, v_failed_user, 2, 'fix04-local/recover-historical-failed.png', 'image/png', 8, 8, 32),
+    (v_cancelled_job, v_cancelled_user, 2, 'fix04-local/recover-historical-cancelled.png', 'image/png', 8, 8, 32);
+
+  PERFORM public.charge_upscale_job(v_timeout_job, v_timeout_user, v_start, v_end, 500);
+  PERFORM public.charge_upscale_job(v_failed_job, v_failed_user, v_start, v_end, 500);
+  PERFORM public.charge_upscale_job(v_cancelled_job, v_cancelled_user, v_start, v_end, 500);
+
+  PERFORM set_config('scanonix.upscale_job_write', 'write', true);
+  UPDATE public.upscale_jobs
+  SET status = 'processing',
+      started_at = timezone('utc', now()) - interval '30 minutes',
+      attempts = 3,
+      max_attempts = 3
+  WHERE id = v_timeout_job;
+  UPDATE public.upscale_jobs
+  SET status = 'failed',
+      error_code = 'processing_failed',
+      completed_at = timezone('utc', now()) - interval '1 day'
+  WHERE id = v_failed_job;
+  UPDATE public.upscale_jobs
+  SET status = 'cancelled',
+      error_code = 'already_cancelled',
+      completed_at = timezone('utc', now()) - interval '1 day'
+  WHERE id = v_cancelled_job;
+  PERFORM set_config('scanonix.upscale_job_write', '', true);
+
+  PERFORM public.recover_stale_upscale_jobs(600);
+
+  SELECT status, usage_refunded, error_code
+  INTO v_status, v_refunded, v_code
+  FROM public.upscale_jobs WHERE id = v_timeout_job;
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_timeout_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_status IS DISTINCT FROM 'failed' OR NOT v_refunded OR v_count IS DISTINCT FROM 0 OR v_code IS DISTINCT FROM 'processing_timeout' THEN
+    RAISE EXCEPTION 'FAIL 19 timeout status=% refunded=% count=% code=%', v_status, v_refunded, v_count, v_code;
+  END IF;
+
+  SELECT status, usage_charged, usage_refunded, error_code
+  INTO v_status, v_charged, v_refunded, v_code
+  FROM public.upscale_jobs WHERE id = v_failed_job;
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_failed_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_status IS DISTINCT FROM 'failed' OR NOT v_charged OR v_refunded OR v_count IS DISTINCT FROM 1 OR v_code IS DISTINCT FROM 'processing_failed' THEN
+    RAISE EXCEPTION 'FAIL 19 historical failed status=% charged=% refunded=% count=% code=%', v_status, v_charged, v_refunded, v_count, v_code;
+  END IF;
+
+  SELECT status, usage_charged, usage_refunded, error_code
+  INTO v_status, v_charged, v_refunded, v_code
+  FROM public.upscale_jobs WHERE id = v_cancelled_job;
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_cancelled_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_status IS DISTINCT FROM 'cancelled' OR NOT v_charged OR v_refunded OR v_count IS DISTINCT FROM 1 OR v_code IS DISTINCT FROM 'already_cancelled' THEN
+    RAISE EXCEPTION 'FAIL 19 historical cancelled status=% charged=% refunded=% count=% code=%', v_status, v_charged, v_refunded, v_count, v_code;
+  END IF;
+
+  RAISE NOTICE 'PASS 19 recovery does not refund historical terminal jobs';
+END $$;
+ROLLBACK;
+
 DO $$
 DECLARE
   v_users integer;
   v_jobs integer;
   v_counters integer;
 BEGIN
-  SELECT count(*) INTO v_users FROM auth.users WHERE id = '01800000-0000-4000-8000-0000000000a1';
-  SELECT count(*) INTO v_jobs FROM public.upscale_jobs WHERE user_id = '01800000-0000-4000-8000-0000000000a1';
-  SELECT count(*) INTO v_counters FROM public.usage_counters WHERE user_id = '01800000-0000-4000-8000-0000000000a1';
+  SELECT count(*) INTO v_users FROM auth.users
+  WHERE id IN (
+    '01800000-0000-4000-8000-0000000000a1',
+    '01900000-0000-4000-8000-000000000021',
+    '01900000-0000-4000-8000-000000000023',
+    '01900000-0000-4000-8000-000000000025'
+  );
+  SELECT count(*) INTO v_jobs FROM public.upscale_jobs
+  WHERE user_id IN (
+    '01800000-0000-4000-8000-0000000000a1',
+    '01900000-0000-4000-8000-000000000021',
+    '01900000-0000-4000-8000-000000000023',
+    '01900000-0000-4000-8000-000000000025'
+  );
+  SELECT count(*) INTO v_counters FROM public.usage_counters
+  WHERE user_id IN (
+    '01800000-0000-4000-8000-0000000000a1',
+    '01900000-0000-4000-8000-000000000021',
+    '01900000-0000-4000-8000-000000000023',
+    '01900000-0000-4000-8000-000000000025'
+  );
   IF v_users <> 0 OR v_jobs <> 0 OR v_counters <> 0 THEN
     RAISE EXCEPTION 'FAIL cleanup rollback users=% jobs=% counters=%', v_users, v_jobs, v_counters;
   END IF;

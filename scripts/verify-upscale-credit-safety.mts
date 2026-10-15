@@ -6,12 +6,12 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import sharp from "sharp";
-import { inspectUpscaleInput } from "../lib/upscale-jobs/inspect-input.ts";
+import { inspectUpscaleInput } from "../lib/upscale-jobs/inspect-input";
 import {
   submitPreparedUpscaleJob,
   type UpscaleSubmitDeps,
-} from "../lib/upscale-jobs/submit-job.ts";
-import type { ImageToolFileInput } from "../lib/tools/shared/api-handler.ts";
+} from "../lib/upscale-jobs/submit-job";
+import type { ImageToolFileInput } from "../lib/tools/shared/api-handler";
 
 const migration = readFileSync(
   new URL("../supabase/migrations/018_upscale_job_credits.sql", import.meta.url),

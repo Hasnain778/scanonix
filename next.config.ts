@@ -27,6 +27,13 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/tools/image/compress": [...sharpLinuxNativeTraceIncludes],
     "/api/tools/image/resize": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/image/upscale": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/image/upscale/jobs": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/jpg-to-psd": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/png-to-psd": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/image-to-svg": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/logo-vectorizer": [...sharpLinuxNativeTraceIncludes],
+    "/api/tools/raster-to-vector": [...sharpLinuxNativeTraceIncludes],
   },
   images: {
     formats: ["image/avif", "image/webp"],

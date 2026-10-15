@@ -8,9 +8,9 @@ import {
 } from "@/lib/plan/access";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
 import {
+  abortUnclaimedUpscaleJob,
   chargeUpscaleJob,
   closeUnchargedUpscaleJob,
-  failUpscaleJob,
 } from "@/lib/upscale-jobs/credits";
 import { inspectUpscaleInput } from "@/lib/upscale-jobs/inspect-input";
 import { createJob } from "@/lib/upscale-jobs/repository";
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       chargeJob: (jobId) => chargeUpscaleJob(access.user.id, access.plan, jobId),
       closeUnchargedJob: closeUnchargedUpscaleJob,
       dispatchJob: triggerUpscaleWorkerAfterJobCreated,
-      failChargedJob: failUpscaleJob,
+      failChargedJob: abortUnclaimedUpscaleJob,
     },
   );
 

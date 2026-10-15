@@ -113,7 +113,14 @@ export async function submitPreparedUpscaleJob(
     await deps.dispatchJob(jobId);
   } catch (error) {
     try {
-      await deps.failChargedJob(jobId, "worker_trigger_failed", DISPATCH_FAILURE);
+      const outcome = await deps.failChargedJob(jobId, "worker_trigger_failed", DISPATCH_FAILURE);
+      if (
+        outcome === "in_progress" ||
+        outcome === "completed" ||
+        outcome === "already_completed"
+      ) {
+        return { status: "created", jobId };
+      }
     } catch {
       // Recovery refunds a charged job once it is permanently failed.
     }

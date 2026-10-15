@@ -102,12 +102,16 @@ async function creditRpc(functionName: string, args: Record<string, string>): Pr
   return outcome;
 }
 
-export async function failUpscaleJob(
+export function dispatchAbortKeepsJob(outcome: string): boolean {
+  return outcome === "in_progress" || outcome === "completed" || outcome === "already_completed";
+}
+
+export async function abortUnclaimedUpscaleJob(
   jobId: string,
   errorCode: string,
   errorMessage: string,
 ): Promise<string> {
-  return creditRpc("fail_upscale_job", {
+  return creditRpc("abort_unclaimed_upscale_job", {
     p_job_id: jobId,
     p_error_code: errorCode,
     p_error_message: errorMessage,

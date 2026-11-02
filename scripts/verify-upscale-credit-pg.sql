@@ -181,7 +181,10 @@ BEGIN
     v_job, v_user, 2, 'fix03-local/a.png', 'image/png', 8, 8, 32
   );
   PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
-  v_result := public.complete_upscale_job(v_job, 'fix03-local/out.png', 16, 16, 'png', 64);
+  IF (SELECT count(*) FROM public.claim_upscale_job('token-complete')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 5 claim missed';
+  END IF;
+  v_result := public.complete_owned_upscale_job(v_job, 'token-complete', 'fix03-local/out.png', 16, 16, 'png', 64);
   IF v_result->>'outcome' IS DISTINCT FROM 'completed' THEN
     RAISE EXCEPTION 'FAIL 5 complete: %', v_result;
   END IF;
@@ -191,7 +194,7 @@ BEGIN
     RAISE EXCEPTION 'FAIL 5 refund completed: %', v_result;
   END IF;
 
-  v_result := public.fail_upscale_job(v_job, 'late_failure', 'should not refund');
+  v_result := public.fail_owned_upscale_job(v_job, 'token-complete', 'late_failure', 'should not refund');
   SELECT usage_count INTO v_count
   FROM public.usage_counters
   WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
@@ -199,6 +202,19 @@ BEGIN
 
   IF v_result->>'outcome' IS DISTINCT FROM 'completed' OR v_count IS DISTINCT FROM 1 OR v_status IS DISTINCT FROM 'completed' THEN
     RAISE EXCEPTION 'FAIL 5 fail after complete: % count=% status=%', v_result, v_count, v_status;
+  END IF;
+
+  v_result := public.fail_upscale_job(v_job, 'late_failure', 'should not refund');
+  IF v_result->>'outcome' IS DISTINCT FROM 'rejected' THEN
+    RAISE EXCEPTION 'FAIL 5 legacy fail after complete: %', v_result;
+  END IF;
+  v_result := public.complete_upscale_job(v_job, 'fix03-local/out.png', 16, 16, 'png', 64);
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  SELECT status INTO v_status FROM public.upscale_jobs WHERE id = v_job;
+  IF v_result->>'outcome' IS DISTINCT FROM 'rejected' OR v_count IS DISTINCT FROM 1 OR v_status IS DISTINCT FROM 'completed' THEN
+    RAISE EXCEPTION 'FAIL 5 legacy complete after complete: % count=% status=%', v_result, v_count, v_status;
   END IF;
 
   RAISE NOTICE 'PASS 5 completed job not refunded';
@@ -225,14 +241,30 @@ BEGIN
     v_job, v_user, 2, 'fix03-local/a.png', 'image/png', 8, 8, 32
   );
   PERFORM public.charge_upscale_job(v_job, v_user, v_start, v_end, 500);
-  v_result := public.fail_upscale_job(v_job, 'processing_failed', 'failed');
+  IF (SELECT count(*) FROM public.claim_upscale_job('token-fail')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 6 claim missed';
+  END IF;
+  v_result := public.fail_owned_upscale_job(v_job, 'token-fail', 'processing_failed', 'failed');
   IF v_result->>'outcome' IS DISTINCT FROM 'refunded' THEN
     RAISE EXCEPTION 'FAIL 6 initial fail: %', v_result;
   END IF;
 
+  v_result := public.fail_owned_upscale_job(v_job, 'token-fail', 'processing_failed', 'failed');
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' OR v_count IS DISTINCT FROM 0 THEN
+    RAISE EXCEPTION 'FAIL 6 second owned fail: % count=%', v_result, v_count;
+  END IF;
+
+  v_result := public.complete_owned_upscale_job(v_job, 'token-fail', 'fix03-local/out.png', 16, 16, 'png', 64);
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' THEN
+    RAISE EXCEPTION 'FAIL 6 owned complete after refund: %', v_result;
+  END IF;
+
   v_result := public.complete_upscale_job(v_job, 'fix03-local/out.png', 16, 16, 'png', 64);
   IF v_result->>'outcome' IS DISTINCT FROM 'rejected' THEN
-    RAISE EXCEPTION 'FAIL 6 complete function: %', v_result;
+    RAISE EXCEPTION 'FAIL 6 legacy complete: %', v_result;
   END IF;
 
   BEGIN
@@ -445,6 +477,8 @@ DECLARE
   v_ignored integer;
   v_role text;
   v_call text;
+  v_status text;
+  v_count integer;
 BEGIN
   FOREACH v_role IN ARRAY ARRAY['anon', 'authenticated']
   LOOP
@@ -488,6 +522,30 @@ BEGIN
 
   IF v_result->>'outcome' IS DISTINCT FROM 'charged' THEN
     RAISE EXCEPTION 'FAIL 12 service_role result: %', v_result;
+  END IF;
+
+  FOREACH v_call IN ARRAY ARRAY[
+    format('SELECT public.fail_upscale_job(%L::uuid, %L, %L)', v_job, 'worker_trigger_failed', 'failed'),
+    format('SELECT public.complete_upscale_job(%L::uuid, %L, %s, %s, %L, %s)', v_job, 'fix03-local/out.png', 16, 16, 'png', 64)
+  ]
+  LOOP
+    BEGIN
+      EXECUTE 'SET LOCAL ROLE service_role';
+      EXECUTE 'SELECT 1 FROM (' || v_call || ') AS denied(result)' INTO v_ignored;
+      RAISE EXCEPTION 'FAIL 12 service_role executed %', v_call;
+    EXCEPTION
+      WHEN insufficient_privilege THEN
+        NULL;
+    END;
+    RESET ROLE;
+  END LOOP;
+
+  SELECT status INTO v_status FROM public.upscale_jobs WHERE id = v_job;
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_status IS DISTINCT FROM 'queued' OR v_count IS DISTINCT FROM 1 THEN
+    RAISE EXCEPTION 'FAIL 12 legacy call changed state status=% count=%', v_status, v_count;
   END IF;
 
   RAISE NOTICE 'PASS 12 role privileges';
@@ -725,6 +783,24 @@ BEGIN
     RAISE EXCEPTION 'FAIL 17 second claim missed';
   END IF;
 
+  v_result := public.complete_owned_upscale_job(v_job, '', 'fix04-local/out.png', 16, 16, 'png', 64);
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' THEN
+    RAISE EXCEPTION 'FAIL 17 blank complete outcome=%', v_result;
+  END IF;
+  v_result := public.complete_owned_upscale_job(v_job, NULL, 'fix04-local/out.png', 16, 16, 'png', 64);
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' THEN
+    RAISE EXCEPTION 'FAIL 17 null complete outcome=%', v_result;
+  END IF;
+  v_result := public.fail_owned_upscale_job(v_fail, '   ', 'processing_failed', 'failed');
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' THEN
+    RAISE EXCEPTION 'FAIL 17 blank fail outcome=%', v_result;
+  END IF;
+  v_result := public.fail_owned_upscale_job(v_fail, NULL, 'processing_failed', 'failed');
+  SELECT status, worker_id INTO v_status, v_worker FROM public.upscale_jobs WHERE id = v_fail;
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' OR v_status IS DISTINCT FROM 'processing' OR v_worker IS DISTINCT FROM 'token-b' THEN
+    RAISE EXCEPTION 'FAIL 17 null fail outcome=% status=% worker=%', v_result, v_status, v_worker;
+  END IF;
+
   v_result := public.complete_owned_upscale_job(v_job, 'token-b', 'fix04-local/out.png', 16, 16, 'png', 64);
   SELECT status, output_storage_path INTO v_status, v_path FROM public.upscale_jobs WHERE id = v_job;
   IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' OR v_status IS DISTINCT FROM 'processing' OR v_path IS NOT NULL THEN
@@ -751,6 +827,15 @@ BEGIN
   WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
   IF v_result->>'outcome' IS DISTINCT FROM 'refunded' OR v_count IS DISTINCT FROM 1 THEN
     RAISE EXCEPTION 'FAIL 17 owned fail outcome=% count=%', v_result, v_count;
+  END IF;
+
+  v_result := public.fail_owned_upscale_job(v_fail, 'token-b', 'processing_failed', 'failed');
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  SELECT status INTO v_status FROM public.upscale_jobs WHERE id = v_fail;
+  IF v_result->>'outcome' IS DISTINCT FROM 'not_owner' OR v_count IS DISTINCT FROM 1 OR v_status IS DISTINCT FROM 'failed' THEN
+    RAISE EXCEPTION 'FAIL 17 second owned fail outcome=% count=% status=%', v_result, v_count, v_status;
   END IF;
 
   RAISE NOTICE 'PASS 17 owned complete and fail';
@@ -902,6 +987,68 @@ BEGIN
 END $$;
 ROLLBACK;
 
+-- 20. Legacy completion and failure reject without changing queued or processing jobs.
+BEGIN;
+DO $$
+DECLARE
+  v_user uuid := '01900000-0000-4000-8000-000000000027';
+  v_queued uuid := '01900000-0000-4000-8000-000000000028';
+  v_processing uuid := '01900000-0000-4000-8000-000000000029';
+  v_start timestamptz := '2026-10-01 00:00:00+00';
+  v_end timestamptz := '2026-11-01 00:00:00+00';
+  v_result jsonb;
+  v_count integer;
+  v_status text;
+  v_worker text;
+  v_charged boolean;
+BEGIN
+  INSERT INTO auth.users (id, email) VALUES (v_user, 'fix04-credit-20@localhost');
+  INSERT INTO public.upscale_jobs (
+    id, user_id, scale, input_storage_path, input_mime_type,
+    input_width, input_height, input_size_bytes, created_at
+  ) VALUES
+    (v_queued, v_user, 2, 'fix04-local/legacy-queued.png', 'image/png', 8, 8, 32, timezone('utc', now())),
+    (v_processing, v_user, 2, 'fix04-local/legacy-processing.png', 'image/png', 8, 8, 32, timezone('utc', now()) - interval '1 minute');
+  PERFORM public.charge_upscale_job(v_queued, v_user, v_start, v_end, 500);
+  PERFORM public.charge_upscale_job(v_processing, v_user, v_start, v_end, 500);
+  IF (SELECT count(*) FROM public.claim_upscale_job('token-processing')) <> 1 THEN
+    RAISE EXCEPTION 'FAIL 20 processing claim missed';
+  END IF;
+
+  v_result := public.fail_upscale_job(v_queued, 'processing_failed', 'failed');
+  IF v_result->>'outcome' IS DISTINCT FROM 'rejected' THEN
+    RAISE EXCEPTION 'FAIL 20 owner fail queued: %', v_result;
+  END IF;
+  v_result := public.complete_upscale_job(v_queued, 'fix04-local/out.png', 16, 16, 'png', 64);
+  IF v_result->>'outcome' IS DISTINCT FROM 'rejected' THEN
+    RAISE EXCEPTION 'FAIL 20 owner complete queued: %', v_result;
+  END IF;
+  v_result := public.fail_upscale_job(v_processing, 'processing_failed', 'failed');
+  IF v_result->>'outcome' IS DISTINCT FROM 'rejected' THEN
+    RAISE EXCEPTION 'FAIL 20 owner fail processing: %', v_result;
+  END IF;
+  v_result := public.complete_upscale_job(v_processing, 'fix04-local/out.png', 16, 16, 'png', 64);
+  IF v_result->>'outcome' IS DISTINCT FROM 'rejected' THEN
+    RAISE EXCEPTION 'FAIL 20 owner complete processing: %', v_result;
+  END IF;
+
+  SELECT status, usage_charged INTO v_status, v_charged FROM public.upscale_jobs WHERE id = v_queued;
+  IF v_status IS DISTINCT FROM 'queued' OR NOT v_charged OR (SELECT worker_id FROM public.upscale_jobs WHERE id = v_queued) IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL 20 queued state status=% charged=%', v_status, v_charged;
+  END IF;
+  SELECT status, worker_id, usage_charged INTO v_status, v_worker, v_charged
+  FROM public.upscale_jobs WHERE id = v_processing;
+  SELECT usage_count INTO v_count
+  FROM public.usage_counters
+  WHERE user_id = v_user AND action = 'tool_operation' AND period_start = v_start;
+  IF v_status IS DISTINCT FROM 'processing' OR v_worker IS DISTINCT FROM 'token-processing' OR NOT v_charged OR v_count IS DISTINCT FROM 2 THEN
+    RAISE EXCEPTION 'FAIL 20 processing state status=% worker=% charged=% count=%', v_status, v_worker, v_charged, v_count;
+  END IF;
+
+  RAISE NOTICE 'PASS 20 legacy outcomes reject without mutation';
+END $$;
+ROLLBACK;
+
 DO $$
 DECLARE
   v_users integer;
@@ -913,21 +1060,24 @@ BEGIN
     '01800000-0000-4000-8000-0000000000a1',
     '01900000-0000-4000-8000-000000000021',
     '01900000-0000-4000-8000-000000000023',
-    '01900000-0000-4000-8000-000000000025'
+    '01900000-0000-4000-8000-000000000025',
+    '01900000-0000-4000-8000-000000000027'
   );
   SELECT count(*) INTO v_jobs FROM public.upscale_jobs
   WHERE user_id IN (
     '01800000-0000-4000-8000-0000000000a1',
     '01900000-0000-4000-8000-000000000021',
     '01900000-0000-4000-8000-000000000023',
-    '01900000-0000-4000-8000-000000000025'
+    '01900000-0000-4000-8000-000000000025',
+    '01900000-0000-4000-8000-000000000027'
   );
   SELECT count(*) INTO v_counters FROM public.usage_counters
   WHERE user_id IN (
     '01800000-0000-4000-8000-0000000000a1',
     '01900000-0000-4000-8000-000000000021',
     '01900000-0000-4000-8000-000000000023',
-    '01900000-0000-4000-8000-000000000025'
+    '01900000-0000-4000-8000-000000000025',
+    '01900000-0000-4000-8000-000000000027'
   );
   IF v_users <> 0 OR v_jobs <> 0 OR v_counters <> 0 THEN
     RAISE EXCEPTION 'FAIL cleanup rollback users=% jobs=% counters=%', v_users, v_jobs, v_counters;

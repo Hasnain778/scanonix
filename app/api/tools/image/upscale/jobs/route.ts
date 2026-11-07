@@ -14,6 +14,7 @@ import {
 } from "@/lib/upscale-jobs/credits";
 import { inspectUpscaleInput } from "@/lib/upscale-jobs/inspect-input";
 import { createJob } from "@/lib/upscale-jobs/repository";
+import { authorizeUpscaleSubmission } from "@/lib/upscale-jobs/rollout-gate";
 import { isRunPodUpscaleTriggerConfigured } from "@/lib/upscale-jobs/runpod-trigger";
 import { uploadInput } from "@/lib/upscale-jobs/storage";
 import { submitPreparedUpscaleJob } from "@/lib/upscale-jobs/submit-job";
@@ -63,16 +64,24 @@ export async function POST(request: Request) {
   });
   if (rateLimited) return rateLimited;
 
+  const access = await requirePremiumAiPlan(ROUTE);
+  if (access instanceof NextResponse) {
+    return access;
+  }
+
+  const rollout = authorizeUpscaleSubmission({
+    sessionUserId: access.user.id,
+    premiumEntitled: access.limits.allowPremiumAi,
+  });
+  if (!rollout.allowed) {
+    return rollout.response;
+  }
+
   let formData: FormData;
   try {
     formData = await request.formData();
   } catch {
     return NextResponse.json({ error: "Invalid multipart request." }, { status: 400 });
-  }
-
-  const access = await requirePremiumAiPlan(ROUTE);
-  if (access instanceof NextResponse) {
-    return access;
   }
 
   const maxBytes = Math.min(FREE_IMAGE_MAX_BYTES, access.limits.maxUploadBytes);

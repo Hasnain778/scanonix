@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { env, isRealEsrganConfigured } from "@/config/env";
+import { requirePremiumAiPlan } from "@/lib/plan/access";
 import {
   RealEsrganNotConfiguredError,
   realEsrganProvider,
@@ -11,6 +12,7 @@ import {
   imageDownloadResponse,
 } from "@/lib/tools/shared/api-handler";
 import { FREE_IMAGE_MAX_BYTES } from "@/lib/tools/shared/image-validate";
+import { authorizeUpscaleSubmission } from "@/lib/upscale-jobs/rollout-gate";
 import sharp from "sharp";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +31,19 @@ function outputMime(format: string): string {
 
 export async function POST(request: Request) {
   const route = "/api/tools/image/upscale";
+
+  const access = await requirePremiumAiPlan(route);
+  if (access instanceof NextResponse) {
+    return access;
+  }
+
+  const rollout = authorizeUpscaleSubmission({
+    sessionUserId: access.user.id,
+    premiumEntitled: access.limits.allowPremiumAi,
+  });
+  if (!rollout.allowed) {
+    return rollout.response;
+  }
 
   if (env.realesrganServiceUrl.trim()) {
     return NextResponse.json(

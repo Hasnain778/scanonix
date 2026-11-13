@@ -1,0 +1,110 @@
+/*
+ * Wave 4B only. Scoped to .ux-wave4b on Merge PDF, JPG to PSD, and PNG to PSD.
+ * Does not restyle Wave 1, Wave 2, or Wave 3.
+ */
+
+.ux-wave4b [data-tool-workspace="empty"] {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.85rem;
+  /* Header margin is 8px. 24px here makes the subtitle-to-card gap 32px. */
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .ux-wave4b [data-tool-workspace="empty"] {
+    /* Header margin is 16px. 32px here makes the subtitle-to-card gap 48px. */
+    min-height: calc(100svh - 14rem);
+    padding-top: 2rem;
+  }
+}
+
+.ux-wave4b [data-tool-workspace="empty"] > p {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.ux-wave4b-note,
+.ux-wave4b-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--foreground-muted, #8a8178);
+}
+
+.ux-wave4b-note {
+  max-width: 36rem;
+  text-align: center;
+}
+
+.ux-wave4b-hint {
+  padding-inline: 0.35rem;
+}
+
+.ux-wave4b-banner {
+  width: min(100%, 68rem);
+  margin-inline: auto;
+}
+
+.ux-wave4b-banner:not(:empty) {
+  margin-bottom: 0.75rem;
+}
+
+.ux-wave4b .ux-stage .ux-psd-preview {
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  padding: 0.75rem;
+  border-radius: 0.9rem;
+  background-color: #efeae4;
+  background-image:
+    linear-gradient(45deg, rgba(20, 16, 12, 0.08) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(20, 16, 12, 0.08) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(20, 16, 12, 0.08) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(20, 16, 12, 0.08) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+}
+
+html[data-theme="dark"] .ux-wave4b .ux-stage .ux-psd-preview {
+  background-color: #2a2623;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.07) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.07) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.07) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.07) 75%);
+}
+
+.ux-wave4b .ux-stage .ux-psd-preview img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: min(22rem, 70svh);
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.ux-wave4b .ux-wave4b-stats {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ux-wave4b .ux-wave4b-stats > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .ux-wave4b ~ aside[aria-label^="About"] {
+    margin-top: 4.5rem;
+  }
+}

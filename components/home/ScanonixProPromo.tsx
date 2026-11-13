@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Crown, Gauge, ImageUp, PenLine, Shield, type LucideIcon } from "lucide-react";
+import { Crown, Gauge, PenLine, Shield, type LucideIcon } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { useProAccess } from "@/hooks/useProAccess";
 import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
@@ -10,8 +10,7 @@ import { trackEvent } from "@/lib/analytics/ga4";
 /** Verified Pro benefits — sourced from TOOL_ACCESS, PLAN_LIMITS, and pricing copy. */
 const PRO_BENEFITS = [
   "Advanced PDF security — Protect, Unlock, and Redact PDF",
-  "4K image upscaling",
-  "Premium AI tools — rewrite, translate, summary, and upscaling",
+  "Premium AI tools — rewrite, translate, and summary",
   "Expanded usage — 500 ops/month and 50MB uploads",
 ] as const;
 
@@ -28,21 +27,15 @@ const CAPABILITIES: readonly {
     icon: Shield,
   },
   {
-    title: "4K upscaling",
-    detail: "Higher-resolution image processing",
-    entitlement: PRO_BENEFITS[1],
-    icon: ImageUp,
-  },
-  {
     title: "Premium AI",
     detail: "Rewrite · Translate · Summary",
-    entitlement: PRO_BENEFITS[2],
+    entitlement: PRO_BENEFITS[1],
     icon: PenLine,
   },
   {
     title: "Expanded limits",
     detail: "500 operations · 50 MB uploads",
-    entitlement: PRO_BENEFITS[3],
+    entitlement: PRO_BENEFITS[2],
     icon: Gauge,
   },
 ];
@@ -50,7 +43,6 @@ const CAPABILITIES: readonly {
 const TOOLKIT_ITEMS: readonly { label: string; value: string; icon: LucideIcon }[] = [
   { label: "Security", value: "Protect · Unlock · Redact", icon: Shield },
   { label: "AI", value: "Rewrite · Translate · Summary", icon: PenLine },
-  { label: "Image", value: "4K upscaling", icon: ImageUp },
 ];
 
 function CapabilityIcon({ icon: Icon }: { icon: LucideIcon }) {
@@ -179,7 +171,7 @@ export function ScanonixProPromo() {
               <p className="scanonix-pro-promo__support">
                 {isPro && !loading
                   ? "Your subscription unlocks advanced security tools, premium AI, and expanded processing limits across Scanonix."
-                  : "Go beyond free tools with advanced PDF security, 4K upscaling, and premium AI processing."}
+                  : "Go beyond free tools with advanced PDF security, premium AI, and higher processing limits."}
               </p>
 
               <div className="scanonix-pro-promo__cta">

@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Clipboard, ClipboardPaste, Eraser, FileText, Upload } from "lucide-react";
+import { Clipboard, ClipboardPaste, Eraser, FileText } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { PremiumAiToolGate } from "@/components/plan/PremiumAiToolGate";
 import { UpgradeRequiredNotice } from "@/components/plan/UsageBanner";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -71,10 +73,6 @@ function formatSummaryError(
   }
 
   return data.error ?? AI_SUMMARY_UNAVAILABLE;
-}
-
-function DocumentDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return <Upload className={className} aria-hidden="true" strokeWidth={1.75} />;
 }
 
 export function AiSummaryTool() {
@@ -421,24 +419,22 @@ export function AiSummaryTool() {
               {inputSource === "upload" ? (
                 <div className="space-y-4">
                   {!uploaded ? (
-                    <div className="space-y-2">
-                      <FileDropZone
-                        multiple={false}
+                    <div className="ux-fix01 ux-fix01-inline" data-tool-workspace="empty">
+                      <PremiumFileSelect
+                        fromLabel="Doc"
+                        toLabel="Text"
+                        buttonLabel="Upload a document"
+                        prompt="Upload or drag a document here."
+                        formats="PDF, DOCX, or TXT"
                         accept={SUMMARY_UPLOAD_ACCEPT}
-                        label="Upload a document"
-                        hint="Drop PDF, DOCX or TXT here — or browse"
+                        multiple={false}
                         disabled={isBusy || isExtracting}
-                        onFilesSelected={handleFilesSelected}
-                        onInvalidFiles={handleInvalidFiles}
                         validateFile={(file) =>
                           validateSummaryUploadFile(file, maxUploadBytes) === null
                         }
-                        icon={<DocumentDropIcon />}
-                        className="!p-8 sm:!p-10"
+                        onFilesSelected={handleFilesSelected}
+                        onInvalidFiles={handleInvalidFiles}
                       />
-                      <p className="text-center text-xs text-foreground-muted">
-                        PDF · DOCX · TXT
-                      </p>
                     </div>
                   ) : (
                     <div className="rounded-xl border border-border bg-surface-muted/40 px-4 py-3">

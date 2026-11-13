@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { ChevronLeft, ChevronRight, Stamp } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
@@ -1106,7 +1108,7 @@ export function WatermarkPdfClientTool() {
   );
 
   return (
-    <div className="watermark-pdf-premium space-y-5 overflow-x-hidden">
+    <div className="watermark-pdf-premium ux-fix01 space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -1150,23 +1152,23 @@ export function WatermarkPdfClientTool() {
         isEmpty={!uploadedPdf}
         empty={
           <>
-            <FileDropZone
-              onFilesSelected={handleSourcePdfUpload}
+            <PremiumFileSelect
+              fromLabel="PDF"
+              toLabel="Mark"
+              buttonLabel="Upload a PDF"
+              prompt="Upload or drag a PDF here."
+              formats="PDF"
               accept={WATERMARK_SOURCE_PDF_ACCEPT}
-              validateFile={isAcceptedWatermarkPdfFile}
               multiple={false}
               disabled={isBusy}
+              validateFile={isAcceptedWatermarkPdfFile}
               inputId="watermark-source-pdf-input"
               inputDataAttributes={{ "data-watermark-source-pdf-input": "true" }}
-              className="watermark-pdf-drop"
-              label="Drop a PDF file here to add a watermark"
-              hint="or click to browse — PDF, processed locally in your browser"
-              icon={<WatermarkDropIcon />}
+              onFilesSelected={(files) => {
+                void handleSourcePdfUpload(files);
+              }}
             />
             <PrivacyNotice message={WATERMARK_UI_PRIVACY_COPY} />
-            <p className="text-sm text-scanonix-muted">
-              {WATERMARK_SECURITY_COPY}
-            </p>
           </>
         }
         workArea={

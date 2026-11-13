@@ -6,12 +6,22 @@ interface ToolBreadcrumbsProps {
     label: string;
     href: string;
   };
+  /** Opt-in. Default keeps the current breadcrumb size. */
+  size?: "default" | "fine";
 }
 
-export function ToolBreadcrumbs({ title, category }: ToolBreadcrumbsProps) {
+export function ToolBreadcrumbs({
+  title,
+  category,
+  size = "default",
+}: ToolBreadcrumbsProps) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-5">
-      <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-foreground-muted">
+    <nav aria-label="Breadcrumb" className={size === "fine" ? "mb-2" : "mb-5"}>
+      <ol
+        className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-foreground-muted ${
+          size === "fine" ? "text-xs" : "text-sm"
+        }`}
+      >
         <li>
           <Link href="/" className="transition-colors hover:text-foreground">
             Home

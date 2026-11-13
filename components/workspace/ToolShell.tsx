@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageBackground } from "@/components/ui/PageBackground";
 import { ToolBreadcrumbs } from "@/components/ui/ToolBreadcrumbs";
+import "@/styles/ux-fix02.css";
 
 interface ToolShellProps {
   children: ReactNode;
@@ -20,7 +21,7 @@ export function ToolShell({ children, finderClearance = false }: ToolShellProps)
       <PageBackground />
       <Navbar />
       <main
-        className={`relative min-h-screen pt-20 pb-16 sm:pt-[5.25rem] sm:pb-20${
+        className={`tool-shell relative min-h-screen pt-20 pb-16 sm:pt-[5.25rem] sm:pb-20${
           finderClearance ? " tool-finder-page" : ""
         }`}
       >
@@ -42,6 +43,8 @@ interface ToolPageHeaderProps {
   };
   /** Opt-in. Default false keeps the current header spacing and icon size. */
   compact?: boolean;
+  /** Opt-in app header. Default keeps the current header, including `compact`. */
+  density?: "default" | "app";
 }
 
 export function ToolPageHeader({
@@ -51,7 +54,37 @@ export function ToolPageHeader({
   showBreadcrumbs = false,
   categoryBreadcrumb,
   compact = false,
+  density = "default",
 }: ToolPageHeaderProps) {
+  if (density === "app") {
+    return (
+      <div className="tool-app-header mb-2 sm:mb-4">
+        {showBreadcrumbs ? (
+          <ToolBreadcrumbs
+            title={title}
+            category={categoryBreadcrumb}
+            size="fine"
+          />
+        ) : (
+          <Link
+            href="/tools"
+            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-foreground-muted hover:text-foreground"
+          >
+            Back to all tools
+          </Link>
+        )}
+        <div className="mx-auto max-w-2xl text-center">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            {title}
+          </h1>
+          <p className="mx-auto mt-2 max-w-md text-base leading-snug text-foreground-muted">
+            {description}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={compact ? "mb-4" : "mb-6 sm:mb-8"}>
       {showBreadcrumbs ? (

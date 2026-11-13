@@ -1,15 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FileText, LayoutGrid } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
-import "@/styles/ordered-collection-premium.css";
+import "@/styles/ux-pdf-pages.css";
+import "@/styles/ux-reset-file-pair.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { isAcceptedPdfFile } from "@/lib/pdf/core";
 import { downloadBlob } from "@/lib/tools/download";
@@ -48,12 +45,6 @@ interface UploadedPdfState {
 const PRIVACY_MESSAGE =
   "Your PDF is organized locally in your browser and is not uploaded to Scanonix servers.";
 
-function OrganizeDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return (
-    <LayoutGrid className={className} aria-hidden="true" strokeWidth={1.75} />
-  );
-}
-
 export function OrganizePdfTool() {
   const [uploadedPdf, setUploadedPdf] = useState<UploadedPdfState | null>(null);
   const [isReadingPdf, setIsReadingPdf] = useState(false);
@@ -73,18 +64,6 @@ export function OrganizePdfTool() {
   const canExport =
     uploadedPdf !== null &&
     canExportOrganizeWorkspace(pages.length, isExporting);
-
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (isExporting || status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (uploadedPdf !== null && pages.length > 0) return "ready";
-    return "idle";
-  }, [isExporting, status, hasResult, uploadedPdf, pages.length]);
-
-  const stickyVisible = Boolean(
-    uploadedPdf && (hasResult || canExport || isExporting),
-  );
 
   const summary = uploadedPdf
     ? getWorkspaceSummary(pages, uploadedPdf.initialPageCount)
@@ -316,198 +295,141 @@ export function OrganizePdfTool() {
       ? "At least one page is required to export."
       : "Organize pages, then export.";
 
+  const primaryLabel = hasResult
+    ? "Download PDF"
+    : isExporting
+      ? "Organizing…"
+      : "Export organized PDF";
+
   return (
-    <div className="ordered-collection-premium ordered-collection-full space-y-5 overflow-x-hidden">
+    <div className="ux-pdf-pages overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
         progress={progress}
       />
 
-      <ToolWorkspaceShell
-        isEmpty={!uploadedPdf}
-        empty={
-          <>
-            <FileDropZone
-              className="ordered-drop"
-              onFilesSelected={handleUpload}
-              accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPdfFile}
-              multiple={false}
-              disabled={isBusy}
-              icon={<OrganizeDropIcon />}
-              label="Drop a PDF file here to organize"
-              hint="or click to browse — processed locally in your browser"
-            />
-            <PrivacyNotice message={PRIVACY_MESSAGE} />
-          </>
-        }
-        workArea={
-          uploadedPdf ? (
-            <div className="ordered-stage">
-              <div className="ordered-stage-bar flex flex-col gap-2.5 py-1 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <FileText className="h-4 w-4" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {uploadedPdf.file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(uploadedPdf.file.size)} · {pages.length}{" "}
-                      page{pages.length === 1 ? "" : "s"}
-                      {summary && summary.deletedCount > 0
-                        ? ` · ${summary.deletedCount} deleted`
-                        : ""}
-                      {summary && summary.rotatedCount > 0
-                        ? ` · ${summary.rotatedCount} rotated`
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-                  {hasResult && resultBlob ? (
-                    <div className={resultActionPhase === "success" ? "hidden lg:block" : undefined}>
-                      <ActionButton
-                        size="lg"
-                        className="w-full sm:w-auto"
-                        loading={isDownloading}
-                        disabled={isDownloading}
-                        onClick={() => {
-                          void handleDownload();
-                        }}
-                      >
-                        Download PDF
-                      </ActionButton>
-                    </div>
-                  ) : (
-                    <div
-                      className={
-                        resultActionPhase === "ready" ||
-                        resultActionPhase === "processing"
-                          ? "hidden lg:block"
-                          : undefined
-                      }
-                    >
-                      <ActionButton
-                        size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)] sm:w-auto"
-                        loading={isExporting}
-                        disabled={!canExport}
-                        onClick={handleExport}
-                      >
-                        {isExporting ? "Organizing…" : "Export organized PDF"}
-                      </ActionButton>
-                    </div>
-                  )}
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={resetWorkspace}
-                  >
-                    {hasResult ? "Start over" : "Choose another PDF"}
-                  </ActionButton>
-                </div>
+      {!uploadedPdf ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            fromLabel="PDF"
+            toLabel="ORDER"
+            buttonLabel="Upload a PDF"
+            prompt="Upload or drag a PDF here."
+            formats="PDF"
+            accept={ACCEPTED_PDF_EXTENSIONS}
+            validateFile={isAcceptedPdfFile}
+            multiple={false}
+            disabled={isBusy}
+            onFilesSelected={handleUpload}
+          />
+          <PrivacyNotice message={PRIVACY_MESSAGE} />
+        </div>
+      ) : (
+        <div className="ux-workspace" data-tool-workspace="active">
+          <div className="ux-stage">
+            <div className="ux-command">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {uploadedPdf.file.name}
+                </p>
+                <p className="mt-0.5 text-xs text-scanonix-muted">
+                  {formatFileSize(uploadedPdf.file.size)} · {pages.length} page
+                  {pages.length === 1 ? "" : "s"}
+                  {summary && summary.deletedCount > 0
+                    ? ` · ${summary.deletedCount} deleted`
+                    : ""}
+                  {summary && summary.rotatedCount > 0
+                    ? ` · ${summary.rotatedCount} rotated`
+                    : ""}
+                </p>
               </div>
-
-              <div className="ordered-stage-grid">
-                <OrganizePageGrid
-                  pdfBytes={uploadedPdf.bytes}
-                  pages={pages}
+              <div className="ux-command-actions">
+                <ActionButton
+                  variant="ghost"
+                  size="sm"
                   disabled={isBusy}
-                  onReorder={handleReorder}
-                  onMoveFirst={handleMoveFirst}
-                  onMoveEarlier={handleMoveEarlier}
-                  onMoveLater={handleMoveLater}
-                  onMoveLast={handleMoveLast}
-                  onRotate={handleRotate}
-                  onDelete={handleDelete}
-                />
-              </div>
-              <div className="ordered-actions">
-                {hasResult && resultBlob ? (
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Result
-                      </p>
-                      <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
-                        ✓ Organize complete
-                      </p>
-                      <p className="mt-1 text-xs text-scanonix-muted">
-                        Your reorganized PDF is ready to download.
-                      </p>
-                    </div>
-                    <dl className="space-y-2 text-sm">
-                      <div className="flex justify-between gap-3">
-                        <dt className="text-scanonix-muted">Pages</dt>
-                        <dd className="font-semibold text-foreground">
-                          {pages.length}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <dt className="text-scanonix-muted">File size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {formatFileSize(resultBlob.size)}
-                        </dd>
-                      </div>
-                      <div className="min-w-0">
-                        <dt className="text-scanonix-muted">Filename</dt>
-                        <dd className="mt-0.5 truncate font-semibold text-foreground">
-                          {resultFilename}
-                        </dd>
-                      </div>
-                    </dl>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={handleChangeSettings}
-                    >
-                      Change settings
-                    </ActionButton>
-                  </div>
-                ) : (
-                  <p className="text-[11px] leading-snug text-scanonix-muted">
-                    {exportHint}
-                  </p>
-                )}
-                <div className="pt-3">
-                  <PrivacyNotice message={PRIVACY_MESSAGE} />
-                </div>
+                  onClick={resetWorkspace}
+                >
+                  {hasResult ? "Start over" : "Choose another PDF"}
+                </ActionButton>
+                {hasResult ? (
+                  <ActionButton
+                    variant="ghost"
+                    size="sm"
+                    disabled={isBusy}
+                    onClick={handleChangeSettings}
+                  >
+                    Change settings
+                  </ActionButton>
+                ) : null}
+                <ActionButton
+                  size="lg"
+                  className="ux-command-primary"
+                  loading={hasResult ? isDownloading : isExporting}
+                  disabled={hasResult ? isDownloading : !canExport}
+                  onClick={() => {
+                    if (hasResult) {
+                      void handleDownload();
+                    } else {
+                      void handleExport();
+                    }
+                  }}
+                >
+                  {primaryLabel}
+                </ActionButton>
               </div>
             </div>
-          ) : null
-        }
-      />
 
-      <ToolStickyMobileActionBar
-        visible={stickyVisible}
-        stickyUntil="lg"
-        phase={resultActionPhase}
-        primaryLabel={
-          hasResult
-            ? isDownloading
-              ? "Downloading…"
-              : "Download PDF"
-            : isExporting
-              ? "Organizing…"
-              : "Export PDF"
-        }
-        primaryLoading={hasResult ? isDownloading : isExporting}
-        primaryDisabled={hasResult ? isDownloading : !canExport}
-        onPrimaryClick={() => {
-          if (hasResult) {
-            void handleDownload();
-          } else {
-            void handleExport();
-          }
-        }}
-      />
+            <OrganizePageGrid
+              pdfBytes={uploadedPdf.bytes}
+              pages={pages}
+              disabled={isBusy}
+              onReorder={handleReorder}
+              onMoveFirst={handleMoveFirst}
+              onMoveEarlier={handleMoveEarlier}
+              onMoveLater={handleMoveLater}
+              onMoveLast={handleMoveLast}
+              onRotate={handleRotate}
+              onDelete={handleDelete}
+            />
+
+            <div className="space-y-3">
+              {hasResult && resultBlob ? (
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
+                    ✓ Organize complete
+                  </p>
+                  <p className="text-xs text-scanonix-muted">
+                    Your reorganized PDF is ready to download.
+                  </p>
+                  <dl className="space-y-2 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-scanonix-muted">Pages</dt>
+                      <dd className="font-semibold text-foreground">{pages.length}</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-scanonix-muted">File size</dt>
+                      <dd className="font-semibold text-foreground">
+                        {formatFileSize(resultBlob.size)}
+                      </dd>
+                    </div>
+                    <div className="min-w-0">
+                      <dt className="text-scanonix-muted">Filename</dt>
+                      <dd className="mt-0.5 truncate font-semibold text-foreground">
+                        {resultFilename}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : (
+                <p className="ux-pdf-note">{exportHint}</p>
+              )}
+              <PrivacyNotice message={PRIVACY_MESSAGE} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

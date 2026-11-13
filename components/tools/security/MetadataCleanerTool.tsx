@@ -1,20 +1,18 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
-import { Eraser } from "lucide-react";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { ProBadge } from "@/components/ui/ProBadge";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { SecurityToolWorkspace } from "@/components/tools/security/SecurityToolWorkspace";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import { useProAccess } from "@/hooks/useProAccess";
 import { ANALYTICS_SURFACES } from "@/lib/analytics/surfaces";
 import { trackEvent } from "@/lib/analytics/ga4";
-import "@/styles/simple-document-action-premium.css";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-wave4d.css";
 import { submitSecurityToolForm } from "@/lib/security-tools/client";
 import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
@@ -40,18 +38,12 @@ const ACCEPTED = [
 const PRIVACY_MESSAGE =
   "Files are uploaded to Scanonix for metadata cleaning and deleted after processing. File content is preserved.";
 
-const GATE_DESCRIPTION =
-  "Remove hidden EXIF and PDF metadata from files. Upgrade to Pro to clean and download.";
-
-function MetadataDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return <Eraser className={className} aria-hidden="true" strokeWidth={1.75} />;
-}
-
 function MetadataAccessNote({ isAuthenticated }: { isAuthenticated: boolean }) {
   return (
     <div className="max-w-[36rem]">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
+      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
         Pro required
+        <ProBadge />
       </p>
       <p className="mt-1 text-sm leading-relaxed text-foreground">
         Metadata cleaning is available with Scanonix Pro.
@@ -138,99 +130,72 @@ export function MetadataCleanerTool() {
     setMessage("Metadata removed. File content preserved.");
   }, [file]);
 
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (file) return "ready";
-    return "idle";
-  }, [status, hasResult, file]);
+  const { loading, isAuthenticated, isPro } = useProAccess();
+  const showGate = !isPro;
 
-  return (
-    <SecurityToolWorkspace
-      toolName="Metadata Cleaner"
-      gateDescription={GATE_DESCRIPTION}
-      gate="none"
-    >
-      {({ isPro, showGate, isAuthenticated }) => {
-        const stickyVisible = Boolean(file) && isPro;
-        const primaryLabel = showGate
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-border bg-surface p-8 text-center text-foreground-muted">
+        Loading security workspace…
+      </div>
+    );
+  }
+
+  const primaryLabel = showGate
           ? "Upgrade to Pro to clean metadata"
           : isBusy
-            ? "Removing metadata\u2026"
+            ? "Removing metadata…"
             : hasResult
               ? "Clean again"
               : "Remove metadata";
 
         return (
-          <div className="simple-document-action-premium space-y-5 overflow-x-hidden">
-            <ToolStatusBanner status={status} message={message} />
+          <div className="ux-wave4d overflow-x-hidden">
+            <div className="ux-wave4d-banner">
+              <ToolStatusBanner status={status} message={message} />
+            </div>
 
-            <ToolWorkspaceShell
-              isEmpty={!file}
-              empty={
-                <>
-                  <FileDropZone
-                    className="simple-doc-drop"
-                    accept={ACCEPTED.join(",")}
-                    onFilesSelected={(files) => {
-                      if (files[0]) {
-                        setFile(files[0]);
-                        setStatus("idle");
-                        setMessage(undefined);
-                      }
-                    }}
-                    disabled={false}
-                    label="Drop a PDF or image to clean"
-                    hint="PDF, JPG, PNG, WEBP, HEIC, or TIFF"
-                    icon={<MetadataDropIcon />}
-                  />
-                  <div className="simple-doc-privacy">
-                    <PrivacyNotice message={PRIVACY_MESSAGE} />
-                  </div>
-                  {showGate ? (
+            {!file ? (
+              <div data-tool-workspace="empty">
+                <PremiumFileSelect
+                  fromLabel="File"
+                  toLabel="Clean"
+                  buttonLabel="Upload a file"
+                  prompt="Upload or drag a PDF or image here."
+                  formats="PDF, JPG, PNG, WEBP, HEIC, TIFF"
+                  accept={ACCEPTED.join(",")}
+                  multiple={false}
+                  onFilesSelected={(files) => {
+                    if (files[0]) {
+                      setFile(files[0]);
+                      setStatus("idle");
+                      setMessage(undefined);
+                    }
+                  }}
+                />
+                <p className="ux-wave4d-note">PDF, JPG, PNG, WEBP, HEIC, or TIFF</p>
+                <PrivacyNotice message={PRIVACY_MESSAGE} />
+                {showGate ? (
+                  <div className="ux-wave4d-gate">
                     <MetadataAccessNote isAuthenticated={isAuthenticated} />
-                  ) : null}
-                </>
-              }
-              workArea={
-                file ? (
-                  <div className="simple-doc-block w-full lg:max-w-[36rem]">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
-                          <MetadataDropIcon className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-foreground">
-                            {file.name}
-                          </p>
-                          <p className="truncate text-xs text-scanonix-muted">
-                            {formatFileSize(file.size)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className={stickyVisible && hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
-                        <ActionButton
-                          variant="outline"
-                          size="sm"
-                          className="rounded-lg"
-                          disabled={isBusy}
-                          onClick={resetTool}
-                        >
-                          {hasResult ? "Start over" : "Choose another file"}
-                        </ActionButton>
-                      </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="ux-workspace" data-tool-workspace="active">
+                <div className="ux-stage">
+                  <div className="ux-command">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-foreground">{file.name}</p>
+                      <p className="mt-0.5 truncate text-xs text-scanonix-muted">{formatFileSize(file.size)}</p>
                     </div>
-
-                    <p className="mt-4 text-sm leading-relaxed text-foreground">
-                      Removes hidden EXIF and PDF metadata. File content is preserved.
-                    </p>
-
-                    <div className={stickyVisible ? "mt-5 hidden lg:block" : "mt-5"}>
+                    <div className="ux-command-actions">
+                      <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={resetTool}>
+                        {hasResult ? "Start over" : "Choose another file"}
+                      </ActionButton>
                       <ActionButton
                         size="lg"
-                        className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
+                        className="ux-command-primary"
                         onClick={() => {
                           void handleClean();
                         }}
@@ -240,41 +205,18 @@ export function MetadataCleanerTool() {
                         {primaryLabel}
                       </ActionButton>
                     </div>
-
-                    {showGate ? (
-                      <div className="mt-5">
-                        <MetadataAccessNote isAuthenticated={isAuthenticated} />
-                      </div>
-                    ) : null}
-
-                    <div className="simple-doc-privacy mt-4">
-                      <PrivacyNotice message={PRIVACY_MESSAGE} />
-                    </div>
                   </div>
-                ) : null
-              }
-            />
 
-            <ToolStickyMobileActionBar
-              visible={stickyVisible}
-              stickyUntil="lg"
-              phase={resultActionPhase}
-              primaryLabel={
-                isBusy ? "Removing metadata\u2026" : hasResult ? "Clean again" : "Remove metadata"
-              }
-              primaryLoading={isBusy}
-              primaryDisabled={!file || showGate || !isPro || isBusy}
-              showPrimaryOnError
-              onPrimaryClick={() => {
-                void handleClean();
-              }}
-              onStartOver={hasResult ? resetTool : undefined}
-              startOverLabel="Start over"
-              startOverDisabled={isBusy}
-            />
+                  <div className="ux-4d-settings">
+                    <p className="text-sm leading-relaxed text-foreground">
+                      Removes hidden EXIF and PDF metadata. File content is preserved.
+                    </p>
+                    {showGate ? <MetadataAccessNote isAuthenticated={isAuthenticated} /> : null}
+                    <PrivacyNotice message={PRIVACY_MESSAGE} />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        );
-      }}
-    </SecurityToolWorkspace>
   );
 }

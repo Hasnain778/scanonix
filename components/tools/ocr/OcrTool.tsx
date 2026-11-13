@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScanText } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { OcrFilePreview } from "@/components/tools/ocr/OcrFilePreview";
 import { OcrLanguageSelect } from "@/components/tools/ocr/OcrLanguageSelect";
 import { OcrProgressBanner } from "@/components/tools/ocr/OcrProgressBanner";
@@ -12,6 +12,8 @@ import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
 import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
@@ -19,9 +21,11 @@ import { downloadBlob } from "@/lib/tools/download";
 import { formatFileSize } from "@/lib/tools/format-utils";
 import {
   assertSupportedOcrFile,
+  getOcrFileSizeError,
   isAcceptedOcrFile,
   isOcrPdfFile,
   OCR_ACCEPTED_EXTENSIONS,
+  OCR_UNSUPPORTED_FILE_MESSAGE,
 } from "@/lib/tools/ocr/file-validation";
 import { extractTextFromFile } from "@/lib/tools/ocr/extract-text";
 import {
@@ -59,6 +63,38 @@ function languageLabel(code: OcrLanguageCode): string {
   return OCR_LANGUAGES.find((entry) => entry.code === code)?.label ?? code.toUpperCase();
 }
 
+type OcrResultTone = "ready" | "limited" | "empty";
+
+const LIMITED_OCR_LETTER_COUNT = 12;
+
+function recognizedLetterCount(text: string): number {
+  const body = text.replace(/^--- Page \d+ ---$/gm, " ");
+  return body.match(/\p{L}/gu)?.length ?? 0;
+}
+
+function describeOcrResult(text: string): { tone: OcrResultTone; message: string } {
+  const letters = recognizedLetterCount(text);
+
+  if (letters === 0) {
+    return {
+      tone: "empty",
+      message: "No text was recognized. Try a clearer scan or another language.",
+    };
+  }
+
+  if (letters < LIMITED_OCR_LETTER_COUNT) {
+    return {
+      tone: "limited",
+      message: "Very little text was recognized. Check it before you copy or download.",
+    };
+  }
+
+  return {
+    tone: "ready",
+    message: "Text extracted. Check it for accuracy before you copy or download.",
+  };
+}
+
 export function OcrTool() {
   const [uploadedFile, setUploadedFile] = useState<UploadedOcrFile | null>(null);
   const [language, setLanguage] = useState<OcrLanguageCode>("eng");
@@ -70,6 +106,7 @@ export function OcrTool() {
   const [isPreparing, setIsPreparing] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState<string>();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [resultTone, setResultTone] = useState<OcrResultTone>("ready");
 
   const previewUrlRef = useRef<string | null>(null);
   const extractedTextRef = useRef("");
@@ -90,6 +127,13 @@ export function OcrTool() {
   useEffect(() => {
     extractedTextRef.current = extractedText;
   }, [extractedText]);
+
+  useEffect(() => {
+    document.documentElement.dataset.ocrWorkspace = "active";
+    return () => {
+      delete document.documentElement.dataset.ocrWorkspace;
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -116,6 +160,7 @@ export function OcrTool() {
     setProgress(undefined);
     setCopyFeedback(undefined);
     setIsDownloading(false);
+    setResultTone("ready");
   }, [revokePreview]);
 
   const handleUpload = useCallback(
@@ -132,6 +177,10 @@ export function OcrTool() {
 
       try {
         assertSupportedOcrFile(file);
+        const sizeError = getOcrFileSizeError(file.size);
+        if (sizeError) {
+          throw new OcrExtractionError("OCR_FAILURE", sizeError);
+        }
 
         const isPdf = isOcrPdfFile(file);
         let previewUrl: string | null = null;
@@ -179,8 +228,29 @@ export function OcrTool() {
     [revokePreview],
   );
 
+  const handleInvalidFiles = useCallback((files: File[]) => {
+    if (files.length === 0) return;
+
+    revokePreview();
+    setUploadedFile(null);
+    setExtractedText("");
+    setResultTone("ready");
+    setOcrPhase(undefined);
+    setProgress(undefined);
+    setCopyFeedback(undefined);
+    setStatus("error");
+    setStatusMessage(OCR_UNSUPPORTED_FILE_MESSAGE);
+  }, [revokePreview]);
+
   const handleExtract = async () => {
     if (!uploadedFile || isBusy) return;
+
+    const sizeError = getOcrFileSizeError(uploadedFile.file.size);
+    if (sizeError) {
+      setStatus("error");
+      setStatusMessage(sizeError);
+      return;
+    }
 
     const attempt = createProcessAttempt("ocr");
 
@@ -211,11 +281,13 @@ export function OcrTool() {
         },
       );
 
+      const result = describeOcrResult(text);
       setExtractedText(text);
+      setResultTone(result.tone);
       attempt.success(1);
       setStatus("success");
       setOcrPhase("complete");
-      setStatusMessage("Complete — text extracted successfully!");
+      setStatusMessage(result.message);
       setProgress(undefined);
     } catch (error) {
       attempt.error("unknown");
@@ -266,32 +338,34 @@ export function OcrTool() {
       : "Ready to extract text from this document.";
 
   return (
-    <div className="ocr-premium space-y-5">
+    <div className="ocr-premium ux-fix01 space-y-5">
       <OcrProgressBanner
         status={isPreparing ? "loading" : status}
         phase={ocrPhase}
         message={isPreparing ? "Preparing file…" : statusMessage}
         progress={progress}
+        emphasis={resultTone === "ready" ? "review" : "limited"}
       />
 
       <ToolWorkspaceShell
         isEmpty={!uploadedFile}
         empty={
           <>
-            <FileDropZone
-              onFilesSelected={handleUpload}
+            <PremiumFileSelect
+              fromLabel="File"
+              toLabel="Text"
+              buttonLabel="Upload a file"
+              prompt="Upload or drag a file here."
+              formats="JPG, JPEG, PNG, WEBP, or PDF"
               accept={OCR_ACCEPTED_EXTENSIONS}
-              validateFile={isAcceptedOcrFile}
               multiple={false}
               disabled={isBusy}
-              label="Drop a file here for OCR"
-              hint="or click to browse — JPG, JPEG, PNG, WEBP, or PDF"
-              icon={<OcrDropIcon />}
-              className="ocr-drop"
+              validateFile={isAcceptedOcrFile}
+              onFilesSelected={(files) => {
+                void handleUpload(files);
+              }}
+              onInvalidFiles={handleInvalidFiles}
             />
-            <p className="text-center text-sm text-scanonix-muted">
-              Extract editable text from images and PDFs.
-            </p>
             <PrivacyNotice message={PRIVACY_MESSAGE} />
           </>
         }
@@ -303,7 +377,7 @@ export function OcrTool() {
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
                     <OcrDropIcon className="h-4 w-4" />
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-foreground">
                       {uploadedFile.file.name}
                     </p>
@@ -315,12 +389,46 @@ export function OcrTool() {
                         : ""}
                     </p>
                   </div>
+                  {hasResult ? null : (
+                    <button
+                      type="button"
+                      className="ocr-change-file"
+                      disabled={isBusy}
+                      onClick={resetTool}
+                    >
+                      Change
+                    </button>
+                  )}
+                </div>
+                <div className="ocr-mobile-action">
+                  <OcrLanguageSelect
+                    id="ocr-language-mobile"
+                    compact
+                    value={language}
+                    onChange={setLanguage}
+                    disabled={isBusy}
+                  />
+                  <ActionButton
+                    size="lg"
+                    className="w-full whitespace-nowrap"
+                    loading={status === "loading"}
+                    disabled={isBusy}
+                    onClick={() => {
+                      void handleExtract();
+                    }}
+                  >
+                    {status === "loading"
+                      ? "Extracting text…"
+                      : hasResult
+                        ? "Extract again"
+                        : "Extract text"}
+                  </ActionButton>
                 </div>
                 <div
                   className={
                     hasResult
-                      ? "hidden w-full sm:w-auto md:block"
-                      : "w-full sm:w-auto"
+                      ? "ocr-filebar-secondary hidden w-full sm:w-auto md:block"
+                      : "ocr-filebar-secondary w-full sm:w-auto"
                   }
                 >
                   <ActionButton
@@ -335,6 +443,9 @@ export function OcrTool() {
                 </div>
               </div>
 
+              <p className="ocr-mobile-note px-4 pt-3 text-[11px] leading-snug text-scanonix-muted">
+                Processed locally in this browser.
+              </p>
               {uploadedFile.isPdf ? (
                 <p className="px-4 pt-3 text-[11px] text-scanonix-muted">
                   Page 1 preview — OCR processes all pages in this PDF.
@@ -401,6 +512,7 @@ export function OcrTool() {
         controlPanel={
           uploadedFile ? (
             <ToolControlPanel
+              className="ocr-desktop-controls"
               aria-label="OCR controls"
               footer={
                 hasResult ? (
@@ -441,11 +553,17 @@ export function OcrTool() {
                     <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
                       Result
                     </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
-                      ✓ Text extracted
+                    <p className="mt-1.5 text-sm font-semibold text-foreground">
+                      {resultTone === "empty"
+                        ? "No text recognized"
+                        : resultTone === "limited"
+                          ? "Little text recognized"
+                          : "Text extracted"}
                     </p>
                     <p className="mt-1 text-xs text-scanonix-muted">
-                      Edit the text, then copy or download.
+                      {resultTone === "ready"
+                        ? "Check it for accuracy, then copy or download."
+                        : "Check the result before you use it."}
                     </p>
                   </div>
                   <p className="text-xs text-scanonix-muted">

@@ -2,16 +2,15 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import { Lock } from "lucide-react";
 import { CheckoutButton } from "@/components/billing/CheckoutButton";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { ProBadge } from "@/components/ui/ProBadge";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { SecurityToolWorkspace } from "@/components/tools/security/SecurityToolWorkspace";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import { useProAccess } from "@/hooks/useProAccess";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-wave4d.css";
 import {
   PROTECT_PDF_AES256_SUCCESS,
   PROTECT_PDF_PRIVACY_COPY,
@@ -37,8 +36,9 @@ import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 function ProtectAccessNote({ isAuthenticated }: { isAuthenticated: boolean }) {
   return (
     <div className="max-w-[36rem]">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
+      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
         Pro required
+        <ProBadge />
       </p>
       <p className="mt-1 text-sm leading-relaxed text-foreground">
         Password protection is available with Scanonix Pro.
@@ -75,10 +75,6 @@ function ProtectAccessNote({ isAuthenticated }: { isAuthenticated: boolean }) {
       </div>
     </div>
   );
-}
-
-function ProtectDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return <Lock className={className} aria-hidden="true" strokeWidth={1.75} />;
 }
 
 function PasswordField({
@@ -206,19 +202,18 @@ export function ProtectPdfTool() {
     setMessage(`${PROTECT_PDF_AES256_SUCCESS}. Passwords are never stored.`);
   }, [confirmPassword, file, password]);
 
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (file) return "ready";
-    return "idle";
-  }, [status, hasResult, file]);
+  const { loading, isAuthenticated, isPro } = useProAccess();
+  const showGate = !isPro;
 
-  return (
-    <SecurityToolWorkspace toolName="Protect PDF" gate="none">
-      {({ isPro, showGate, isAuthenticated }) => {
-        const stickyVisible = Boolean(file) && isPro;
-        const canProtect =
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-border bg-surface p-8 text-center text-foreground-muted">
+        Loading security workspace…
+      </div>
+    );
+  }
+
+  const canProtect =
           Boolean(file) &&
           Boolean(password) &&
           Boolean(confirmPassword) &&
@@ -240,195 +235,119 @@ export function ProtectPdfTool() {
             : "Encrypts with AES-256 and downloads automatically.";
 
         return (
-          <div className="protect-pdf-prototype space-y-5 overflow-x-hidden">
-            <ToolStatusBanner status={status} message={message} />
+          <div className="ux-wave4d overflow-x-hidden">
+            <div className="ux-wave4d-banner">
+              <ToolStatusBanner status={status} message={message} />
+            </div>
 
-            <ToolWorkspaceShell
-              isEmpty={!file}
-              empty={
-                <>
-                  <FileDropZone
-                    accept={ACCEPTED_PDF_EXTENSIONS}
-                    onFilesSelected={(files) => {
-                      const pdf = files.find(isAcceptedPdfFile);
-                      if (pdf) {
-                        void handleFileSelected(pdf);
-                      }
-                    }}
-                    disabled={false}
-                    label="Drop a PDF to protect"
-                    hint="Drop a PDF file or click to browse"
-                    icon={<ProtectDropIcon />}
-                    validateFile={isAcceptedPdfFile}
-                    className="protect-drop"
-                  />
-                  <div className="protect-privacy">
-                    <PrivacyNotice message={PROTECT_PDF_PRIVACY_COPY} />
-                  </div>
-                  {showGate ? (
+            {!file ? (
+              <div data-tool-workspace="empty">
+                <PremiumFileSelect
+                  fromLabel="PDF"
+                  toLabel="Locked"
+                  buttonLabel="Upload a PDF"
+                  prompt="Upload or drag a PDF here."
+                  formats="PDF"
+                  accept={ACCEPTED_PDF_EXTENSIONS}
+                  multiple={false}
+                  validateFile={isAcceptedPdfFile}
+                  onFilesSelected={(files) => {
+                    const pdf = files.find(isAcceptedPdfFile);
+                    if (pdf) void handleFileSelected(pdf);
+                  }}
+                />
+                <p className="ux-wave4d-note">PDF · Password is never stored</p>
+                <PrivacyNotice message={PROTECT_PDF_PRIVACY_COPY} />
+                {showGate ? (
+                  <div className="ux-wave4d-gate">
                     <ProtectAccessNote isAuthenticated={isAuthenticated} />
-                  ) : null}
-                </>
-              }
-              workArea={
-                file ? (
-                  <div className="w-full lg:max-w-[36rem]">
-                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-scanonix-orange/10 text-scanonix-orange">
-                          <ProtectDropIcon className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-foreground">
-                            {file.name}
-                          </p>
-                          <p className="truncate text-[11px] text-scanonix-muted">
-                            {formatFileSize(file.size)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className={stickyVisible ? "hidden lg:block" : undefined}>
-                        <ActionButton
-                          variant="outline"
-                          size="sm"
-                          className="w-full rounded-lg sm:w-auto"
-                          disabled={isBusy}
-                          onClick={resetTool}
-                        >
-                          {hasResult ? "Start over" : "Choose another PDF"}
-                        </ActionButton>
-                      </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="ux-workspace" data-tool-workspace="active">
+                <div className="ux-stage">
+                  <div className="ux-command">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-foreground">{file.name}</p>
+                      <p className="mt-0.5 truncate text-xs text-scanonix-muted">{formatFileSize(file.size)}</p>
                     </div>
+                    <div className="ux-command-actions">
+                      <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={resetTool}>
+                        {hasResult ? "Start over" : "Choose another PDF"}
+                      </ActionButton>
+                      <ActionButton
+                        size="lg"
+                        className="ux-command-primary"
+                        onClick={() => {
+                          void handleProtect();
+                        }}
+                        disabled={showGate || !canProtect}
+                        loading={isBusy}
+                      >
+                        {primaryLabel}
+                      </ActionButton>
+                    </div>
+                  </div>
 
-                    {hasExistingSignatures ? (
-                      <div className="mt-3 rounded-lg bg-amber-500/10 px-3.5 py-2.5">
-                        <p className="text-sm text-foreground">
-                          {DIGITAL_SIGNATURE_WARNING}
-                        </p>
-                        <p className="mt-1 text-xs text-scanonix-muted">
-                          Password protection rewrites the PDF and may invalidate
-                          existing signatures.
+                  {hasExistingSignatures ? (
+                    <div className="ux-wave4d-warning">
+                      <p className="text-sm text-foreground">{DIGITAL_SIGNATURE_WARNING}</p>
+                      <p className="mt-1 text-xs text-scanonix-muted">
+                        Password protection rewrites the PDF and may invalidate existing signatures.
+                      </p>
+                    </div>
+                  ) : null}
+
+                  <div className="ux-4d-settings">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium text-foreground">Password protection</p>
+                      <button
+                        type="button"
+                        className="shrink-0 rounded-lg px-2.5 py-1 text-sm font-medium text-foreground-secondary transition-colors hover:text-foreground disabled:opacity-50"
+                        aria-pressed={showPassword}
+                        aria-label={showPassword ? "Hide passwords" : "Show passwords"}
+                        disabled={isBusy}
+                        onClick={() => setShowPassword((current) => !current)}
+                      >
+                        {showPassword ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                    <PasswordField
+                      label="Password"
+                      value={password}
+                      onChange={setPassword}
+                      visible={showPassword}
+                      disabled={isBusy}
+                    />
+                    <PasswordField
+                      label="Confirm password"
+                      value={confirmPassword}
+                      onChange={setConfirmPassword}
+                      visible={showPassword}
+                      disabled={isBusy}
+                    />
+                    <p className="text-xs leading-relaxed text-scanonix-muted">At least 4 characters.</p>
+                    {!passwordsMatch ? (
+                      <p className="text-sm text-red-600 [[data-theme=dark]_&]:text-red-400">
+                        Passwords do not match.
+                      </p>
+                    ) : null}
+                    {hasResult ? (
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">Protected PDF downloaded</p>
+                        <p className="mt-1 text-xs leading-snug text-scanonix-muted">
+                          Your download should have started. Protect again with the same passwords or start over.
                         </p>
                       </div>
                     ) : null}
-
-                    <div className="mt-3 space-y-3 rounded-xl bg-surface-strong p-3.5 sm:p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-medium text-foreground">
-                          Password protection
-                        </p>
-                        <button
-                          type="button"
-                          className="protect-visibility shrink-0 rounded-lg px-2.5 py-1 text-sm font-medium text-foreground-secondary transition-colors hover:text-foreground disabled:opacity-50"
-                          aria-pressed={showPassword}
-                          aria-label={
-                            showPassword ? "Hide passwords" : "Show passwords"
-                          }
-                          disabled={isBusy}
-                          onClick={() =>
-                            setShowPassword((current) => !current)
-                          }
-                        >
-                          {showPassword ? "Hide" : "Show"}
-                        </button>
-                      </div>
-
-                      <PasswordField
-                        label="Password"
-                        value={password}
-                        onChange={setPassword}
-                        visible={showPassword}
-                        disabled={isBusy}
-                      />
-                      <PasswordField
-                        label="Confirm password"
-                        value={confirmPassword}
-                        onChange={setConfirmPassword}
-                        visible={showPassword}
-                        disabled={isBusy}
-                      />
-                      <p className="text-xs leading-relaxed text-scanonix-muted">
-                        At least 4 characters.
-                      </p>
-                      {!passwordsMatch ? (
-                        <p className="text-sm text-red-600 [[data-theme=dark]_&]:text-red-400">
-                          Passwords do not match.
-                        </p>
-                      ) : null}
-                      {hasResult ? (
-                        <div>
-                          <p className="text-sm font-semibold text-foreground">
-                            Protected PDF downloaded
-                          </p>
-                          <p className="mt-1 text-xs leading-snug text-scanonix-muted">
-                            Your download should have started. Protect again with
-                            the same passwords or start over.
-                          </p>
-                        </div>
-                      ) : null}
-                      <div className="protect-privacy">
-                        <PrivacyNotice message={PROTECT_PDF_PRIVACY_COPY} />
-                      </div>
-                    </div>
-
-                    <div className="mt-3 flex flex-col gap-2">
-                      <p className="text-[11px] leading-snug text-scanonix-muted">
-                        {protectHint}
-                      </p>
-                      <div className={stickyVisible ? "hidden lg:block" : undefined}>
-                        <ActionButton
-                          size="lg"
-                          className="w-full shadow-[var(--shadow-orange-sm)]"
-                          onClick={() => {
-                            void handleProtect();
-                          }}
-                          disabled={showGate || !canProtect}
-                          loading={isBusy}
-                        >
-                          {primaryLabel}
-                        </ActionButton>
-                      </div>
-                    </div>
+                    <p className="ux-wave4d-hint">{protectHint}</p>
+                    {showGate ? <ProtectAccessNote isAuthenticated={isAuthenticated} /> : null}
+                    <PrivacyNotice message={PROTECT_PDF_PRIVACY_COPY} />
                   </div>
-                ) : null
-              }
-            />
-
-            <ToolStickyMobileActionBar
-              visible={stickyVisible}
-              stickyUntil="lg"
-              phase={resultActionPhase}
-              primaryLabel={
-                isBusy
-                  ? "Protecting…"
-                  : hasResult
-                    ? "Protect again"
-                    : "Protect PDF"
-              }
-              primaryLoading={isBusy}
-              primaryDisabled={!canProtect}
-              showPrimaryOnError
-              onPrimaryClick={() => {
-                void handleProtect();
-              }}
-              secondaryLabel={
-                resultActionPhase === "ready" || resultActionPhase === "error"
-                  ? "Choose another PDF"
-                  : undefined
-              }
-              onSecondaryClick={
-                resultActionPhase === "ready" || resultActionPhase === "error"
-                  ? resetTool
-                  : undefined
-              }
-              secondaryDisabled={isBusy}
-              onStartOver={hasResult ? resetTool : undefined}
-              startOverLabel="Start over"
-              startOverDisabled={isBusy}
-            />
+                </div>
+              </div>
+            )}
           </div>
-        );
-      }}
-    </SecurityToolWorkspace>
   );
 }

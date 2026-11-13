@@ -23,8 +23,10 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
@@ -687,7 +689,7 @@ export function RedactPdfClientTool({
   );
 
   return (
-    <div className="redact-pdf-premium overflow-x-hidden">
+    <div className="redact-pdf-premium ux-fix01 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -731,24 +733,23 @@ export function RedactPdfClientTool({
         isEmpty={!uploadedPdf && !hasResult}
         empty={
           <>
-            <FileDropZone
-              className="redact-pdf-drop"
-              onFilesSelected={handleUpload}
+            <PremiumFileSelect
+              fromLabel="PDF"
+              toLabel="Hide"
+              buttonLabel="Upload a PDF"
+              prompt="Upload or drag a PDF here."
+              formats="PDF"
               accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPdfFile}
               multiple={false}
               disabled={isBusy}
+              validateFile={isAcceptedPdfFile}
               inputId="redact-pdf-client-input"
               inputDataAttributes={{ "data-redact-pdf-input": "true" }}
-              label="Drop a PDF here to redact"
-              hint="or click to browse — PDF, processed locally in your browser"
-              icon={<PdfDropIcon />}
+              onFilesSelected={(files) => {
+                void handleUpload(files);
+              }}
             />
             <PrivacyNotice message={REDACT_PRIVACY_COPY} />
-            <p className="text-sm text-scanonix-muted">{REDACT_PERMANENT_APPLIED_COPY}</p>
-            <p className="text-sm text-scanonix-muted">
-              {REDACT_SANITIZATION_LIMITATION_COPY}
-            </p>
           </>
         }
         workArea={

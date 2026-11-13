@@ -1,15 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { ProToolGate } from "@/components/plan/ProToolGate";
-import { FileDropZone } from "@/components/tools/FileDropZone";
 import { PdfToWordProgressBanner } from "@/components/tools/pdf-to-word/PdfToWordProgressBanner";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
-import "@/styles/simple-document-action-premium.css";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-wave4e.css";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
@@ -33,35 +31,6 @@ const PRIVACY_MESSAGE =
 interface UploadedPdfState {
   file: File;
   pageCount: number;
-}
-
-function PdfDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M14 2v6h6M16 13H8M16 17H8M10 9H8"
-      />
-    </svg>
-  );
 }
 
 export function PdfToWordTool() {
@@ -196,21 +165,12 @@ export function PdfToWordTool() {
     }
   }, [docxBlob, isDownloading, resultFileName]);
 
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (isReading || status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (uploadedPdf) return "ready";
-    return "idle";
-  }, [isReading, status, hasResult, uploadedPdf]);
-
-  const stickyVisible = Boolean(uploadedPdf);
   const primaryLabel = hasResult
     ? "Download Word Document"
     : status === "loading" || isReading
       ? isReading
-        ? "Reading PDF\u2026"
-        : "Converting\u2026"
+        ? "Reading PDF…"
+        : "Converting…"
       : "Convert to Word";
 
   return (
@@ -218,80 +178,52 @@ export function PdfToWordTool() {
       toolName="PDF to Word"
       description="Sign in and upgrade to Scanonix Pro to convert PDFs to editable Word documents with CloudConvert."
     >
-      <div className="simple-document-action-premium space-y-5 overflow-x-hidden">
-        <PdfToWordProgressBanner
-          status={isReading ? "loading" : status}
-          phase={phase}
-          message={isReading ? "Reading PDF\u2026" : statusMessage}
-        />
+      <div className="ux-wave4e overflow-x-hidden">
+        <div className="ux-wave4e-banner">
+          <PdfToWordProgressBanner
+            status={isReading ? "loading" : status}
+            phase={phase}
+            message={isReading ? "Reading PDF…" : statusMessage}
+          />
+        </div>
 
-        <ToolWorkspaceShell
-          isEmpty={!uploadedPdf}
-          empty={
-            <>
-              <FileDropZone
-                className="simple-doc-drop"
-                onFilesSelected={handleUpload}
-                accept={ACCEPTED_PDF_EXTENSIONS}
-                validateFile={isAcceptedPdfFile}
-                multiple={false}
-                disabled={isBusy}
-                label="Drop a PDF file here to convert"
-                hint="or click to browse \u2014 Pro feature, server-side conversion"
-                icon={<PdfDropIcon />}
-              />
-              <div className="simple-doc-privacy">
-                <PrivacyNotice message={PRIVACY_MESSAGE} />
-              </div>
-            </>
-          }
-          workArea={
-            uploadedPdf ? (
-              <div className="simple-doc-block w-full lg:max-w-[36rem]">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
-                      <PdfDropIcon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-foreground">
-                        {uploadedPdf.file.name}
-                      </p>
-                      <p className="truncate text-xs text-scanonix-muted">
-                        {formatFileSize(uploadedPdf.file.size)}
-                        {" \u00B7 "}
-                        {uploadedPdf.pageCount} page
-                        {uploadedPdf.pageCount === 1 ? "" : "s"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className={stickyVisible && hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
-                    <ActionButton
-                      variant="outline"
-                      size="sm"
-                      className="rounded-lg"
-                      disabled={isBusy}
-                      onClick={resetTool}
-                    >
-                      {hasResult ? "Start over" : "Choose another file"}
-                    </ActionButton>
-                  </div>
+        {!uploadedPdf ? (
+          <div data-tool-workspace="empty">
+            <PremiumFileSelect
+              fromLabel="PDF"
+              toLabel="Word"
+              buttonLabel="Upload a PDF"
+              prompt="Upload or drag a PDF here."
+              formats="PDF"
+              accept={ACCEPTED_PDF_EXTENSIONS}
+              multiple={false}
+              disabled={isBusy}
+              validateFile={isAcceptedPdfFile}
+              onFilesSelected={(files) => {
+                void handleUpload(files);
+              }}
+            />
+            <p className="ux-wave4e-note">Pro feature · Server-side conversion</p>
+            <PrivacyNotice message={PRIVACY_MESSAGE} />
+          </div>
+        ) : (
+          <div className="ux-workspace" data-tool-workspace="active">
+            <div className="ux-stage">
+              <div className="ux-command">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">{uploadedPdf.file.name}</p>
+                  <p className="mt-0.5 truncate text-xs text-scanonix-muted">
+                    {formatFileSize(uploadedPdf.file.size)} · {uploadedPdf.pageCount} page
+                    {uploadedPdf.pageCount === 1 ? "" : "s"}
+                  </p>
                 </div>
-
-                <p className="mt-4 text-sm leading-relaxed text-foreground">
-                  {hasResult
-                    ? "Word document ready to download."
-                    : status === "loading"
-                      ? "Converting via CloudConvert\u2026"
-                      : isReading
-                        ? "Reading PDF\u2026"
-                        : "Converts this PDF to an editable DOCX on Scanonix servers. Complex layouts may still need light editing afterward."}
-                </p>
-
-                <div className={stickyVisible ? "mt-5 hidden lg:block" : "mt-5"}>
+                <div className="ux-command-actions">
+                  <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={resetTool}>
+                    {hasResult ? "Start over" : "Choose another file"}
+                  </ActionButton>
                   <ActionButton
                     size="lg"
-                    className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
+                    className="ux-command-primary"
                     loading={hasResult ? isDownloading : status === "loading"}
                     disabled={hasResult ? isBusy || !docxBlob : !uploadedPdf || isBusy}
                     onClick={() => {
@@ -302,31 +234,24 @@ export function PdfToWordTool() {
                     {primaryLabel}
                   </ActionButton>
                 </div>
-
-                <div className="simple-doc-privacy mt-4">
+              </div>
+              <div className="ux-4e-copy">
+                <p className="text-sm leading-relaxed text-foreground">
+                  {hasResult
+                    ? "Word document ready to download."
+                    : status === "loading"
+                      ? "Converting via CloudConvert…"
+                      : isReading
+                        ? "Reading PDF…"
+                        : "Converts this PDF to an editable DOCX on Scanonix servers. Complex layouts may still need light editing afterward."}
+                </p>
+                <div className="mt-4">
                   <PrivacyNotice message={PRIVACY_MESSAGE} />
                 </div>
               </div>
-            ) : null
-          }
-        />
-
-        <ToolStickyMobileActionBar
-          visible={stickyVisible}
-          stickyUntil="lg"
-          phase={resultActionPhase}
-          primaryLabel={primaryLabel}
-          primaryLoading={hasResult ? isDownloading : status === "loading" || isReading}
-          primaryDisabled={hasResult ? isBusy || !docxBlob : !uploadedPdf || isBusy}
-          showPrimaryOnError
-          onPrimaryClick={() => {
-            if (hasResult) void handleDownload();
-            else void handleConvert();
-          }}
-          onStartOver={hasResult ? resetTool : undefined}
-          startOverLabel="Start over"
-          startOverDisabled={isBusy}
-        />
+            </div>
+          </div>
+        )}
       </div>
     </ProToolGate>
   );

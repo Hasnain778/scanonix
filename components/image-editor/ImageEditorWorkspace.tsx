@@ -148,7 +148,7 @@ const TOOLS: { id: EditorTool; label: string; icon: typeof Scaling }[] = [
 function toolBtnClass(active: boolean): string {
   return [
     "ie-focus-ring group relative flex shrink-0 flex-col items-center justify-center font-medium transition-[background,color,box-shadow] duration-150",
-    "min-h-12 min-w-[5.5rem] gap-1.5 rounded-[var(--ie-radius-md)] px-3 py-2.5 text-xs leading-tight",
+    "min-h-11 min-w-0 gap-0.5 rounded-[var(--ie-radius-md)] px-1.5 py-1 text-[10px] leading-tight",
     "lg:min-h-0 lg:min-w-0 lg:w-full lg:gap-1.5 lg:rounded-[var(--ie-radius-sm)] lg:px-1.5 lg:py-2.5 lg:text-[11px]",
     active
       ? "bg-[var(--ie-selected-muted)] text-[var(--ie-text)] max-lg:text-[var(--ie-accent)] lg:bg-transparent"
@@ -910,7 +910,7 @@ export function ImageEditorWorkspace() {
 
   const toolRail = (
     <nav
-      className="ie-scroll flex flex-nowrap gap-2 lg:h-full lg:min-h-0 lg:w-[72px] lg:flex-col lg:gap-1 lg:overflow-y-auto lg:overscroll-contain lg:border-r lg:border-[var(--ie-border-subtle)] lg:bg-[var(--ie-chrome)] lg:py-3 lg:pl-1.5 lg:pr-1.5"
+      className="ie-scroll flex flex-nowrap gap-0.5 lg:h-full lg:min-h-0 lg:w-[72px] lg:flex-col lg:gap-1 lg:overflow-y-auto lg:overscroll-contain lg:border-r lg:border-[var(--ie-border-subtle)] lg:bg-[var(--ie-chrome)] lg:py-3 lg:pl-1.5 lg:pr-1.5"
       aria-label="Editor tools"
     >
       {TOOLS.map((t) => {
@@ -1147,10 +1147,10 @@ export function ImageEditorWorkspace() {
         className="relative z-10 shrink-0 border-t border-[var(--ie-border-subtle)] bg-[var(--ie-chrome)] lg:hidden"
         style={{ paddingBottom: "max(0.35rem, env(safe-area-inset-bottom))" }}
       >
-        <div className="flex items-center gap-1 overflow-x-auto px-2 py-2">
+        <div className="flex items-center gap-1 overflow-x-auto px-1 py-1.5">
           <button
             type="button"
-            className="ie-focus-ring shrink-0 rounded-[var(--ie-radius-sm)] p-2 text-[var(--ie-text-muted)] disabled:opacity-35"
+            className="ie-focus-ring shrink-0 rounded-[var(--ie-radius-sm)] p-1 text-[var(--ie-text-muted)] disabled:opacity-35"
             disabled={!canUndo(history)}
             onClick={() => setHistory((h) => undo(h))}
             aria-label="Undo"
@@ -1159,19 +1159,19 @@ export function ImageEditorWorkspace() {
           </button>
           <button
             type="button"
-            className="ie-focus-ring shrink-0 rounded-[var(--ie-radius-sm)] p-2 text-[var(--ie-text-muted)] disabled:opacity-35"
+            className="ie-focus-ring shrink-0 rounded-[var(--ie-radius-sm)] p-1 text-[var(--ie-text-muted)] disabled:opacity-35"
             disabled={!canRedo(history)}
             onClick={() => setHistory((h) => redo(h))}
             aria-label="Redo"
           >
             <Redo2 className="h-4 w-4" strokeWidth={1.75} />
           </button>
-          <div className="min-w-0 flex-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="ie-tool-scroller min-w-0 flex-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {toolRail}
           </div>
           <button
             type="button"
-            className="ie-focus-ring shrink-0 rounded-[var(--ie-radius-sm)] p-2 text-[var(--ie-text-muted)]"
+            className="ie-focus-ring shrink-0 rounded-[var(--ie-radius-sm)] p-1 text-[var(--ie-text-muted)]"
             onClick={fitViewport}
             aria-label="Fit"
           >

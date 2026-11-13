@@ -64,6 +64,7 @@ export function ToolFinderRoot() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
+  const [homeSearchOpen, setHomeSearchOpen] = useState(false);
   const searchSubmitGuardRef = useRef(false);
 
   /**
@@ -114,6 +115,15 @@ export function ToolFinderRoot() {
     setQuery("");
     setSubmittedQuery("");
   }, [close]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const sync = () => setHomeSearchOpen(root.hasAttribute("data-home-search-open"));
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(root, { attributes: true, attributeFilter: ["data-home-search-open"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -336,20 +346,22 @@ export function ToolFinderRoot() {
           ) : null}
         </AnimatePresence>
 
-        <motion.button
-          type="button"
-          aria-expanded={open}
-          aria-controls="tool-finder-panel"
-          aria-label={open ? "Close Tool Finder" : "Open Tool Finder"}
-          onClick={open ? close : openPanel}
-          className="tool-finder-launcher pointer-events-auto flex h-14 items-center gap-2 rounded-full px-4 text-sm font-semibold backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 sm:px-5"
-          whileHover={reduceMotion ? undefined : { scale: 1.03 }}
-          whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-        >
-          <Sparkles className="tool-finder-launcher__icon h-5 w-5 text-scanonix-orange" aria-hidden="true" />
-          <span className="hidden sm:inline">Find a Tool</span>
-          <span className="sm:hidden">Tools</span>
-        </motion.button>
+        {homeSearchOpen ? null : (
+          <motion.button
+            type="button"
+            aria-expanded={open}
+            aria-controls="tool-finder-panel"
+            aria-label={open ? "Close Tool Finder" : "Open Tool Finder"}
+            onClick={open ? close : openPanel}
+            className="tool-finder-launcher pointer-events-auto flex h-14 items-center gap-2 rounded-full px-4 text-sm font-semibold backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-scanonix-orange/50 sm:px-5"
+            whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+          >
+            <Sparkles className="tool-finder-launcher__icon h-5 w-5 text-scanonix-orange" aria-hidden="true" />
+            <span className="hidden sm:inline">Find a Tool</span>
+            <span className="sm:hidden">Tools</span>
+          </motion.button>
+        )}
       </div>
     </>
   );

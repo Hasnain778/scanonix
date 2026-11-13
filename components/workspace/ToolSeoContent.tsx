@@ -3,13 +3,30 @@ import { getRelatedTools, getToolSeo, type ToolSeoEntry } from "@/constants/tool
 
 interface ToolSeoContentProps {
   toolId: string;
-  /** `panel` is the default boxed article. `editorial` is opt-in and used by the Merge PDF prototype. */
-  variant?: "panel" | "editorial";
+  /** `panel` is the default boxed article. `editorial` and `quiet` are opt-in. */
+  variant?: "panel" | "editorial" | "quiet";
   /** Visible editorial title. Does not replace SEO data, schema, or the page H1. */
   editorialIntro?: {
     eyebrow: string;
     heading: string;
   };
+}
+
+function QuietBlock({
+  title,
+  children,
+  wide = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  wide?: boolean;
+}) {
+  return (
+    <section className={wide ? "sm:col-span-2" : undefined}>
+      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+      <div className="mt-2">{children}</div>
+    </section>
+  );
 }
 
 function SeoSection({
@@ -158,6 +175,90 @@ export function ToolSeoContent({
             </SeoSection>
           )}
         </div>
+      </aside>
+    );
+  }
+
+  if (variant === "quiet") {
+    return (
+      <aside
+        aria-label={`About ${tool.h1}`}
+        className="mt-8 border-t border-border/70 pt-8 text-sm leading-relaxed text-foreground-muted"
+      >
+        <p className="max-w-2xl">{tool.pageDescription}</p>
+        <div className="mt-8 grid gap-8 sm:grid-cols-2">
+          <QuietBlock title="How to use">
+            <ol className="list-decimal space-y-1.5 pl-5">
+              {tool.howToSteps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+          </QuietBlock>
+          <QuietBlock title="Why use this tool">
+            <ul className="list-disc space-y-1.5 pl-5">
+              {tool.whyUse.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </QuietBlock>
+          {tool.useCases && tool.useCases.length > 0 ? (
+            <QuietBlock title="Common use cases">
+              <ul className="list-disc space-y-1.5 pl-5">
+                {tool.useCases.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </QuietBlock>
+          ) : null}
+          {tool.limitations && tool.limitations.length > 0 ? (
+            <QuietBlock title="Good to know">
+              <ul className="list-disc space-y-1.5 pl-5">
+                {tool.limitations.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </QuietBlock>
+          ) : null}
+          <QuietBlock title="Key features">
+            <ul className="list-disc space-y-1.5 pl-5">
+              {tool.keyFeatures.map((feature) => (
+                <li key={feature}>{feature}</li>
+              ))}
+            </ul>
+          </QuietBlock>
+          {tool.faqs.length > 0 ? (
+            <QuietBlock title="Frequently asked questions" wide>
+              <dl className="space-y-4">
+                {tool.faqs.map((faq) => (
+                  <div key={faq.question}>
+                    <dt className="font-medium text-foreground">{faq.question}</dt>
+                    <dd className="mt-1">{faq.answer}</dd>
+                  </div>
+                ))}
+              </dl>
+            </QuietBlock>
+          ) : null}
+        </div>
+        {relatedTools.length > 0 ? (
+          <div className="mt-8">
+            <h2 className="text-sm font-semibold text-foreground">Related tools</h2>
+            <ul className="mt-2 grid gap-3 sm:grid-cols-2">
+              {relatedTools.map((related) => (
+                <li key={related.id}>
+                  <Link
+                    href={related.path}
+                    className="font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
+                  >
+                    {related.h1}
+                  </Link>
+                  <span className="mt-1 block text-foreground-muted">
+                    {related.metaDescription}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </aside>
     );
   }

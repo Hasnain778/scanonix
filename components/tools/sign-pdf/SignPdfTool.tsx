@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Signature } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
@@ -348,7 +350,7 @@ export function SignPdfTool() {
   const stepIndex = SIGN_EDITOR_STEPS.findIndex((step) => step.id === editorStep);
 
   return (
-    <div className="sign-pdf-premium overflow-x-hidden">
+    <div className="sign-pdf-premium ux-fix01 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -391,16 +393,19 @@ export function SignPdfTool() {
         isEmpty={!uploadedPdf}
         empty={
           <>
-            <FileDropZone
-              className="sign-pdf-drop"
-              onFilesSelected={handleUpload}
+            <PremiumFileSelect
+              fromLabel="PDF"
+              toLabel="Sign"
+              buttonLabel="Upload a PDF"
+              prompt="Upload or drag a PDF here."
+              formats="PDF"
               accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPdfFile}
               multiple={false}
               disabled={isBusy}
-              label="Drop a PDF file here to sign"
-              hint="or click to browse — processed locally in your browser"
-              icon={<SignDropIcon />}
+              validateFile={isAcceptedPdfFile}
+              onFilesSelected={(files) => {
+                void handleUpload(files);
+              }}
             />
             <PrivacyNotice message={PRIVACY_MESSAGE} />
           </>

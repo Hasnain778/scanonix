@@ -1,0 +1,58 @@
+/*
+ * Wave 4E only. Scoped to .ux-wave4e on PDF to Word.
+ * Does not restyle Waves 1–4D or specialized editors.
+ */
+
+.ux-wave4e [data-tool-workspace="empty"] {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.85rem;
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .ux-wave4e [data-tool-workspace="empty"] {
+    min-height: calc(100svh - 14rem);
+    padding-top: 2rem;
+  }
+}
+
+.ux-wave4e [data-tool-workspace="empty"] > p {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.ux-wave4e-note,
+.ux-wave4e-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--foreground-muted, #8a8178);
+}
+
+.ux-wave4e-note {
+  max-width: 36rem;
+  text-align: center;
+}
+
+.ux-wave4e-banner {
+  width: min(100%, 68rem);
+  margin-inline: auto;
+}
+
+.ux-wave4e-banner:not(:empty) {
+  margin-bottom: 0.75rem;
+}
+
+.ux-wave4e .ux-4e-copy {
+  padding-inline: 0.35rem;
+}
+
+@media (max-width: 767px) {
+  .ux-wave4e ~ aside[aria-label^="About"] {
+    margin-top: 4.5rem;
+  }
+}

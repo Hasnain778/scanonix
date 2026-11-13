@@ -5,11 +5,13 @@ export function HomeHero() {
   return (
     <section
       id="home"
-      className="home-hero relative overflow-hidden border-b border-border pt-[calc(4rem+0.5rem)] pb-3 sm:pt-[calc(4.5rem+1rem)] sm:pb-5"
+      className="home-hero relative z-20 overflow-visible border-b border-border pt-[calc(4rem+0.5rem)] pb-3 sm:pt-[calc(4.5rem+1rem)] sm:pb-5"
     >
-      <div className="home-hero-mesh pointer-events-none absolute inset-0 z-0 opacity-80" aria-hidden="true" />
-      <div className="home-hero-glow pointer-events-none absolute inset-0 z-[1] opacity-70" aria-hidden="true" />
-      <HeroParallaxGlow />
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+        <div className="home-hero-mesh absolute inset-0 opacity-80" />
+        <div className="home-hero-glow absolute inset-0 z-[1] opacity-70" />
+        <HeroParallaxGlow />
+      </div>
 
       <div className="page-container relative z-10">
         <div className="mx-auto max-w-3xl text-center">
@@ -18,7 +20,7 @@ export function HomeHero() {
           </h1>
 
           <p className="home-hero-subcopy mx-auto mt-1.5 max-w-xl text-xs leading-relaxed text-foreground-muted sm:mt-2 sm:text-sm">
-            Merge, compress, convert, OCR, and edit files in your browser — fast and free to start.
+            Merge, split, OCR, and edit files in your browser. Some compression, conversion, and AI tools require server processing.
           </p>
 
           <div className="home-hero-search-wrap mt-3 sm:mt-5">

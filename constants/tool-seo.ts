@@ -360,6 +360,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     metaDescription:
       "Convert PDF pages to JPG, PNG, or WEBP images online. Export every page at high quality from your browser — ideal for slides, posts, and design assets.",
     h1: "Convert PDF to Images Online",
+    headerDescription: "Export PDF pages as JPG, PNG, or WEBP.",
     pageDescription:
       "Export PDF pages as JPG, PNG, or WEBP images with Scanonix. Upload a PDF, choose your output format, and download individual pages or a ZIP of all pages.",
     howToSteps: [
@@ -414,8 +415,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     metaDescription:
       "Convert JPG and PNG images to PDF online. Combine multiple photos into one PDF, reorder pages, and download from your browser.",
     h1: "Convert Images to PDF Online",
-    headerDescription:
-      "Turn JPG and PNG images into one PDF file. Upload multiple photos, set page order, and download a combined PDF from your browser.",
+    headerDescription: "Combine JPG and PNG images into one PDF.",
     pageDescription:
       "Convert images to PDF and combine several JPG or PNG files into a single document. Drag photos into the order you want, then download one shareable PDF.",
     howToSteps: [
@@ -1342,7 +1342,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       {
         question: "Does it include AI editing or background removal?",
         answer:
-          "Not in this release. Use dedicated Scanonix tools such as Image Upscaler or converters for specialised workflows.",
+          "Not in this release. Format conversion is available in the dedicated converter tools.",
       },
     ],
     relatedToolIds: [
@@ -1392,7 +1392,8 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       },
       {
         question: "Does resizing reduce quality?",
-        answer: "Downscaling usually looks sharp; upscaling may soften details unless you use Image Upscaler.",
+        answer:
+          "Downscaling usually looks sharp. Enlarging an image can soften details, and Image Upscaler is not currently available.",
       },
     ],
     relatedToolIds: ["image-compressor", "image-editor", "image-upscaler", "png-to-jpg", "heic-to-jpg"],
@@ -1589,36 +1590,40 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
   "image-upscaler": {
     id: "image-upscaler",
     path: "/tools/image-upscaler",
-    seoTitle: toolTitle("Image Upscaler Online", "Enlarge Images 2× or 4×"),
+    seoTitle: toolTitle("Image Upscaler", "Not currently available"),
     metaDescription:
-      "Upscale images online 2× or 4× with high-quality Lanczos resampling. Improve resolution for print and display use.",
+      "Image Upscaler is not currently available. New upscales are turned off, including for Pro subscribers.",
     h1: "Image Upscaler",
+    headerDescription:
+      "Image Upscaler is not currently available. New upscales are turned off.",
     pageDescription:
-      "Upscale images 2× or 4× with high-quality Lanczos resampling for sharper enlargements.",
+      "Image Upscaler is not currently available. The implementation uses Real-ESRGAN on Scanonix servers and requires Pro, and new upscales are turned off for every visitor.",
     howToSteps: [
-      "Upload a JPG or PNG image.",
-      "Choose 2× or 4× upscale factor.",
-      "Download the higher-resolution image.",
+      "Image Upscaler is not currently available.",
+      "New upscales are turned off, including for Pro subscribers.",
+      "Use Image Resizer to change pixel dimensions while upscaling is unavailable.",
     ],
     whyUse: [
-      "Rescue small assets for larger display or print.",
-      "Improve clarity before cropping or editing.",
-      "Use Lanczos resampling for cleaner enlargements.",
+      "This page explains that Image Upscaler is turned off.",
+      "It does not offer a free upscale, and upgrading does not turn it on.",
+      "The implementation uses Real-ESRGAN, not Lanczos resampling.",
     ],
     keyFeatures: [
-      "2× and 4× upscale options",
-      "Lanczos resampling",
-      "JPG and PNG support",
-      "Pro feature for heavy use",
+      "Not currently available",
+      "Real-ESRGAN on Scanonix servers",
+      "Requires Pro when it returns",
+      "New upscales are turned off",
     ],
     faqs: [
       {
-        question: "Can upscaling recover lost detail?",
-        answer: "Upscaling improves size and smoothness but cannot recreate detail that was never captured.",
+        question: "Is Image Upscaler available?",
+        answer:
+          "No. Image Upscaler is not currently available. New upscales are turned off for Free and Pro visitors.",
       },
       {
-        question: "Which images upscale best?",
-        answer: "Simple graphics and moderately sized photos upscale more cleanly than tiny low-quality JPEGs.",
+        question: "Does Image Upscaler use Lanczos?",
+        answer:
+          "No. The implementation uses Real-ESRGAN. The tool is turned off, so it does not process images right now.",
       },
     ],
     relatedToolIds: ["image-resizer", "image-compressor", "heic-to-jpg", "png-to-jpg"],
@@ -2388,7 +2393,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
       "Free OCR online: extract text from scanned PDFs, photos, and images in your browser. Upload a scan, choose the language, and copy or download editable text — processed locally on your device.",
     h1: "Online OCR for Scanned PDFs & Images",
     headerDescription:
-      "Run OCR on scanned documents and image files to pull out readable text. Upload a scan or photo, choose the document language, and copy or download the extracted text from your browser.",
+      "Read printed text from a JPG, JPEG, PNG, WEBP, or PDF you already have. Choose the document language, then copy or download the text. Recognition runs in your browser.",
     pageDescription:
       "Scanonix OCR turns scanned PDF pages, phone photos, and image files into copyable text. Upload a document scan or picture of printed text, select the language, and run OCR locally in your browser to extract the words without retyping. The result is plain text you can search, edit, paste into another app, or pass to PDF to Word or AI Translate when you need a different output format.",
     howToSteps: [
@@ -2731,7 +2736,7 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     path: "/tools/image",
     seoTitle: toolTitle("Image Tools Online", "Convert, Compress & Edit Images"),
     metaDescription:
-      "Browse Scanonix image tools online — convert PNG, JPG, WEBP, HEIC, and TIFF, compress, resize, and upscale images.",
+      "Browse Scanonix image tools online — convert PNG, JPG, WEBP, HEIC, and TIFF, compress, and resize images.",
     h1: "Image Tools",
     pageDescription:
       "Convert PNG, JPG, WEBP, HEIC, and TIFF images, compress and resize files, and prepare images for the web in one place.",
@@ -2743,18 +2748,18 @@ export const TOOL_SEO: Record<string, ToolSeoEntry> = {
     whyUse: [
       "Find every image converter and editor without searching multiple sites.",
       "Use consistent privacy-first workflows across tools.",
-      "Jump between compression, conversion, and upscaling quickly.",
+      "Jump between compression, conversion, and resizing quickly.",
     ],
     keyFeatures: [
       "Format converters for PNG, JPG, WEBP, HEIC, and TIFF",
-      "Compress, resize, and upscale utilities",
+      "Compress and resize utilities",
       "HEIC conversion for iPhone photos",
       "All tools linked from one hub",
     ],
     faqs: [
       {
         question: "Which image tool should I use first?",
-        answer: "Use HEIC to JPG for iPhone photos, Image Compressor to reduce size, and Image Upscaler to enlarge images.",
+        answer: "Use HEIC to JPG for iPhone photos and Image Compressor to reduce file size.",
       },
       {
         question: "Are image tools free?",

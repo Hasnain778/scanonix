@@ -3,7 +3,7 @@
  * Scoped to .image-converter-premium, which exists only inside ImageFormatConverterTool.
  */
 
-.image-converter-premium .converter-drop {
+.image-converter-premium .converter-drop:not(.ux-upload) {
   border-width: 1.5px;
   box-shadow: none;
   backdrop-filter: none;
@@ -12,28 +12,28 @@
 }
 
 @media (min-width: 640px) {
-  .image-converter-premium .converter-drop {
+  .image-converter-premium .converter-drop:not(.ux-upload) {
     padding: 1.7rem 2rem;
   }
 }
 
-.image-converter-premium .converter-drop > div {
+.image-converter-premium .converter-drop:not(.ux-upload) > div {
   width: 2.75rem;
   height: 2.75rem;
   margin-bottom: 0.6rem;
 }
 
-html[data-theme="bright"] .image-converter-premium .converter-drop {
+html[data-theme="bright"] .image-converter-premium .converter-drop:not(.ux-upload) {
   background: #fffcfa;
   border-color: color-mix(in srgb, var(--scanonix-orange) 42%, #e4dcd2);
 }
 
-html[data-theme="dark"] .image-converter-premium .converter-drop {
+html[data-theme="dark"] .image-converter-premium .converter-drop:not(.ux-upload) {
   background: #141210;
   border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
 }
 
-.image-converter-premium .converter-drop:hover {
+.image-converter-premium .converter-drop:not(.ux-upload):hover {
   box-shadow: none;
 }
 
@@ -42,9 +42,10 @@ html[data-theme="dark"] .image-converter-premium .converter-drop {
 }
 
 .image-converter-premium .converter-privacy p {
-  text-align: left;
+  text-align: center;
   line-height: 1.45;
   max-width: 36rem;
+  margin-inline: auto;
 }
 
 html[data-theme="bright"] .image-converter-premium .converter-options {
@@ -68,10 +69,27 @@ html[data-theme="dark"] .image-converter-premium .converter-options {
     height: 12.5rem;
   }
 
+  .image-converter-premium .ux-preview-stage.converter-queue .grid:has(> :only-child) article > .aspect-\[4\/3\] {
+    aspect-ratio: auto;
+    height: auto;
+    max-height: none;
+  }
+
+  .image-converter-premium .ux-preview-stage.converter-queue .grid:has(> :only-child) article img {
+    width: 100%;
+    height: auto;
+    max-height: 28rem;
+  }
+
   .image-converter-premium .converter-queue article img {
     object-fit: contain;
     object-position: center;
   }
+}
+
+.image-converter-premium .ux-stage .ux-preview-stage {
+  background: transparent;
+  padding: 0.35rem 0 0.15rem;
 }
 
 /* TIFF loaded workspace only. Other converters keep the single-column queue. */

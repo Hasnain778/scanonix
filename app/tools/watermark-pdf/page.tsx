@@ -1,6 +1,5 @@
 import { LazyWatermarkPdfClientTool } from "@/components/tools/lazy";
 import { ToolRoute } from "@/components/workspace";
-import { ToolIcon } from "@/components/ui/ToolIcon";
 import { createToolPageMetadata } from "@/lib/utils/tool-page";
 
 export const metadata = createToolPageMetadata("watermark-pdf");
@@ -9,9 +8,10 @@ export default function WatermarkPdfPage() {
   return (
     <ToolRoute
       toolId="watermark-pdf"
-      icon={<ToolIcon type="watermark-pdf" className="h-5 w-5" />}
-      headerCompact
+      headerDensity="app"
+      headerDescription="Place a text or image mark on selected pages."
       usageTone="quiet"
+      seoVariant="quiet"
     >
       <LazyWatermarkPdfClientTool />
     </ToolRoute>

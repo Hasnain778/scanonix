@@ -28,7 +28,7 @@ export const PRICING_CARDS: PricingCardConfig[] = [
     name: "Pro Monthly",
     price: "£9.99",
     period: "per month",
-    description: "4K upscaling, premium AI tools, and higher limits.",
+    description: "Premium AI tools and higher limits.",
     highlighted: true,
   },
   {

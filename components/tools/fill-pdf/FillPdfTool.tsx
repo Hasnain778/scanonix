@@ -10,8 +10,10 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
@@ -598,7 +600,7 @@ export function FillPdfTool() {
     ) : null;
 
   return (
-    <div className="fill-pdf-premium space-y-5 overflow-x-hidden">
+    <div className="fill-pdf-premium ux-fix01 space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF form…" : statusMessage}
@@ -608,16 +610,19 @@ export function FillPdfTool() {
         isEmpty={!uploadedPdf || !workspaceWithErrors}
         empty={
           <>
-            <FileDropZone
-              onFilesSelected={handleUpload}
+            <PremiumFileSelect
+              fromLabel="PDF"
+              toLabel="Form"
+              buttonLabel="Upload a PDF"
+              prompt="Upload or drag a PDF form here."
+              formats="PDF"
               accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPdfFile}
               multiple={false}
               disabled={isBusy}
-              label="Drop a PDF form here to fill fields"
-              hint="or click to browse — processed locally in your browser"
-              icon={<FillPdfDropIcon />}
-              className="fill-pdf-drop"
+              validateFile={isAcceptedPdfFile}
+              onFilesSelected={(files) => {
+                void handleUpload(files);
+              }}
             />
             <PrivacyNotice message={FILL_PDF_UI_PRIVACY_COPY} />
           </>

@@ -1,0 +1,147 @@
+/*
+ * Wave 4C only. Scoped to .ux-wave4c on Image Compressor, Image Resizer,
+ * Logo Vectorizer, Image to SVG, and Raster to Vector.
+ * Does not restyle Waves 1–4B.
+ */
+
+.ux-wave4c [data-tool-workspace="empty"] {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.85rem;
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .ux-wave4c [data-tool-workspace="empty"] {
+    min-height: calc(100svh - 14rem);
+    padding-top: 2rem;
+  }
+}
+
+.ux-wave4c [data-tool-workspace="empty"] > p {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.ux-wave4c-note,
+.ux-wave4c-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--foreground-muted, #8a8178);
+}
+
+.ux-wave4c-note {
+  max-width: 36rem;
+  text-align: center;
+}
+
+.ux-wave4c-hint {
+  padding-inline: 0.35rem;
+}
+
+.ux-wave4c-banner {
+  width: min(100%, 68rem);
+  margin-inline: auto;
+}
+
+.ux-wave4c-banner:not(:empty) {
+  margin-bottom: 0.75rem;
+}
+
+.ux-wave4c .ux-4c-settings,
+.ux-wave4c .ux-4c-result {
+  display: grid;
+  gap: 0.85rem;
+  padding-inline: 0.35rem;
+}
+
+.ux-wave4c .ux-4c-compare {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 720px) {
+  .ux-wave4c .ux-4c-compare {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.ux-wave4c .ux-4c-compare > div {
+  min-width: 0;
+}
+
+.ux-wave4c .ux-4c-kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground-muted, #8a8178);
+}
+
+.ux-wave4c .ux-stage .ux-4c-preview {
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  padding: 0.75rem;
+  border-radius: 0.9rem;
+  background-color: #efeae4;
+  background-image:
+    linear-gradient(45deg, rgba(20, 16, 12, 0.08) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(20, 16, 12, 0.08) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(20, 16, 12, 0.08) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(20, 16, 12, 0.08) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+}
+
+html[data-theme="dark"] .ux-wave4c .ux-stage .ux-4c-preview {
+  background-color: #2a2623;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.07) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.07) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.07) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.07) 75%);
+}
+
+.ux-wave4c .ux-stage .ux-4c-preview img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: min(22rem, 50svh);
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.ux-wave4c .ux-4c-stats {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ux-wave4c .ux-4c-stats > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.ux-wave4c .ux-4c-dimensions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 767px) {
+  .ux-wave4c ~ aside[aria-label^="About"] {
+    margin-top: 4.5rem;
+  }
+}

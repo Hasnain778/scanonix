@@ -2,15 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PdfPreviewGrid } from "@/components/tools/pdf-to-image/PdfPreviewGrid";
 import { PdfToImageOptionsPanel } from "@/components/tools/pdf-to-image/PdfToImageOptionsPanel";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import "@/styles/pdf-page-tools-premium.css";
+import "@/styles/ux-reset-file-pair.css";
 import {
   createProcessAttempt,
 } from "@/lib/analytics/process-lifecycle";
@@ -40,36 +38,13 @@ import type {
 } from "@/lib/tools/types";
 import { ACCEPTED_PDF_EXTENSIONS } from "@/lib/tools/types";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
+
+const PRIVACY_MESSAGE = "Processed in your browser. The PDF is not uploaded.";
 
 interface UploadedPdfState {
   file: File;
   pageCount: number;
   pdfBytes: ArrayBuffer;
-}
-
-function PdfDropIcon() {
-  return (
-    <svg
-      className="h-7 w-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"
-      />
-    </svg>
-  );
 }
 
 interface ImageDownloadState {
@@ -150,15 +125,6 @@ export function PdfToImageTool() {
     pagesToConvert.pages.length > 0 &&
     !pagesToConvert.error &&
     !isBusy;
-
-  /** Presentational adapter only — does not replace the ToolStatus state machine. */
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (canConvert) return "ready";
-    return "idle";
-  }, [status, hasResult, canConvert]);
 
   const handleUpload = useCallback(async (files: File[]) => {
     const file = files[0];
@@ -291,254 +257,129 @@ export function PdfToImageTool() {
     }
   };
 
-  const convertHint = pagesToConvert.error
-    ? pagesToConvert.error
-    : mode === "individual" && selectedPages.length === 0
-      ? "Select at least one page to continue."
-      : canConvert
-        ? `Ready to convert ${pagesToConvert.pages.length} page${pagesToConvert.pages.length === 1 ? "" : "s"} to ${format.toUpperCase()}.`
-        : "Configure your export options.";
-
   return (
-    <div className="pdf-page-tools-premium space-y-5">
+    <div className="ux-premium ux-reset-file pdf-page-tools-premium">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
         progress={progress}
       />
 
-      <ToolWorkspaceShell
-        isEmpty={!uploadedPdf}
-        empty={
-          <>
-            <FileDropZone
-              className="pdf-page-drop"
-              onFilesSelected={handleUpload}
-              accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPdfFile}
-              multiple={false}
-              disabled={isBusy}
-              label="Drop a PDF file here to convert"
-              hint="or click to browse — one PDF at a time"
-              icon={<PdfDropIcon />}
-            />
-            <PrivacyNotice />
-          </>
-        }
-        workArea={
-          uploadedPdf ? (
-            <div className="pdf-page-stage overflow-hidden">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.75}
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {uploadedPdf.file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(uploadedPdf.file.size)} ·{" "}
-                      {uploadedPdf.pageCount} page
-                      {uploadedPdf.pageCount === 1 ? "" : "s"}
-                    </p>
-                  </div>
-                </div>
-                <div className="w-full sm:w-auto">
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={clearPdf}
-                  >
-                    {hasResult ? "Start over" : "Remove PDF"}
-                  </ActionButton>
-                </div>
-              </div>
-
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
-                <PdfPreviewGrid
-                  key={`${uploadedPdf.file.name}-${uploadedPdf.pageCount}`}
-                  pdfBytes={uploadedPdf.pdfBytes}
-                  totalPages={uploadedPdf.pageCount}
-                  selectedPages={selectedPages}
-                  highlightedPages={highlightedPages}
-                  selectable={mode === "individual"}
-                  onTogglePage={togglePage}
-                  onSelectAll={() =>
-                    setSelectedPages(buildAllPagesList(uploadedPdf.pageCount))
-                  }
-                  onClearSelection={() => setSelectedPages([])}
-                  disabled={isBusy}
-                />
-              </div>
+      {!uploadedPdf ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            conversion="pdf-to-images"
+            buttonLabel="Upload a PDF"
+            prompt="Upload or drag a PDF here."
+            formats="PDF"
+            accept={ACCEPTED_PDF_EXTENSIONS}
+            multiple={false}
+            validateFile={isAcceptedPdfFile}
+            disabled={isBusy}
+            onFilesSelected={handleUpload}
+            onInvalidFiles={() => {
+              setStatus("error");
+              setStatusMessage("Choose a PDF file.");
+            }}
+          />
+          <PrivacyNotice message={PRIVACY_MESSAGE} />
+        </div>
+      ) : (
+        <div className="ux-workspace" data-tool-workspace="active">
+          <div className="ux-stage">
+          <div className="ux-command">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-foreground">
+                {uploadedPdf.file.name}
+              </p>
+              <p className="truncate text-xs text-foreground-muted">
+                {formatFileSize(uploadedPdf.file.size)} · {uploadedPdf.pageCount} page
+                {uploadedPdf.pageCount === 1 ? "" : "s"}
+              </p>
             </div>
-          ) : null
-        }
-        controlPanel={
-          uploadedPdf ? (
-            <ToolControlPanel
-              aria-label="PDF to image controls"
-              footer={
-                hasResult && downloadState ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full"
-                        loading={isDownloading}
-                        disabled={isBusy}
-                        onClick={() => {
-                          void handleDownload();
-                        }}
-                      >
-                        {downloadState.outputCount === 1
-                          ? "Download image"
-                          : "Download images (ZIP)"}
-                      </ActionButton>
-                    </div>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={handleChangeSettings}
-                    >
-                      Change settings
-                    </ActionButton>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      {convertHint}
-                    </p>
-                    <div
-                      className={
-                        resultActionPhase === "ready" ||
-                        resultActionPhase === "processing"
-                          ? "hidden lg:block"
-                          : undefined
-                      }
-                    >
-                      <ActionButton
-                        size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)]"
-                        loading={status === "loading"}
-                        disabled={!canConvert}
-                        onClick={handleConvert}
-                      >
-                        {status === "loading"
-                          ? "Converting…"
-                          : "Convert to images"}
-                      </ActionButton>
-                    </div>
-                  </div>
-                )
-              }
-            >
-              {hasResult && downloadState ? (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700">
-                      ✓ Conversion complete
-                    </p>
-                    <p className="mt-1 text-xs text-scanonix-muted">
-                      Your images are ready to download.
-                    </p>
-                  </div>
+            <div className="ux-command-actions">
+              <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={clearPdf}>
+                {hasResult ? "Start over" : "Remove PDF"}
+              </ActionButton>
+              {hasResult ? (
+                <ActionButton
+                  variant="ghost"
+                  size="sm"
+                  disabled={isBusy}
+                  onClick={handleChangeSettings}
+                >
+                  Change settings
+                </ActionButton>
+              ) : null}
+              <ActionButton
+                size="lg"
+                className="ux-command-primary"
+                loading={hasResult ? isDownloading : status === "loading"}
+                disabled={hasResult ? isBusy : !canConvert}
+                onClick={() => {
+                  if (hasResult) void handleDownload();
+                  else void handleConvert();
+                }}
+              >
+                {hasResult
+                  ? downloadState?.outputCount === 1
+                    ? "Download image"
+                    : "Download images (ZIP)"
+                  : status === "loading"
+                    ? "Converting…"
+                    : "Convert to images"}
+              </ActionButton>
+            </div>
+          </div>
 
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Images</dt>
-                      <dd className="font-semibold text-foreground">
-                        {downloadState.outputCount}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Format</dt>
-                      <dd className="font-semibold text-foreground">
-                        {format.toUpperCase()}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Package size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(downloadState.blob.size)}
-                      </dd>
-                    </div>
-                    <div className="min-w-0 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Filename</dt>
-                      <dd className="mt-0.5 truncate font-semibold text-foreground">
-                        {downloadState.filename}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  <PdfToImageOptionsPanel
-                    compact
-                    mode={mode}
-                    onModeChange={setMode}
-                    rangeInput={rangeInput}
-                    onRangeInputChange={setRangeInput}
-                    format={format}
-                    onFormatChange={setFormat}
-                    quality={quality}
-                    onQualityChange={setQuality}
-                    scale={scale}
-                    onScaleChange={setScale}
-                    rangeError={rangeError}
-                    disabled={isBusy}
-                  />
-                  <div className="border-t border-border/80 pt-4">
-                    <PrivacyNotice />
-                  </div>
-                </div>
-              )}
-            </ToolControlPanel>
-          ) : null
-        }
-      />
+          {hasResult && downloadState ? (
+            <p className="ux-result-line truncate">
+              {downloadState.outputCount} image{downloadState.outputCount === 1 ? "" : "s"}
+              {" · "}
+              {format.toUpperCase()}
+              {" · "}
+              {formatFileSize(downloadState.blob.size)}
+              {" · "}
+              {downloadState.filename}
+            </p>
+          ) : (
+            <>
+              <PdfToImageOptionsPanel
+                presentation="inline"
+                advancedDisclosure
+                mode={mode}
+                onModeChange={setMode}
+                rangeInput={rangeInput}
+                onRangeInputChange={setRangeInput}
+                format={format}
+                onFormatChange={setFormat}
+                quality={quality}
+                onQualityChange={setQuality}
+                scale={scale}
+                onScaleChange={setScale}
+                rangeError={rangeError}
+                disabled={isBusy}
+              />
+            </>
+          )}
 
-      <ToolStickyMobileActionBar
-        visible={Boolean(uploadedPdf)}
-        stickyUntil="lg"
-        phase={resultActionPhase}
-        primaryLabel={
-          hasResult
-            ? downloadState?.outputCount === 1
-              ? "Download image"
-              : "Download images"
-            : "Convert to images"
-        }
-        primaryLoading={hasResult ? isDownloading : status === "loading"}
-        primaryDisabled={hasResult ? isBusy : !canConvert || isBusy}
-        onPrimaryClick={() => {
-          if (hasResult) {
-            void handleDownload();
-          } else {
-            void handleConvert();
-          }
-        }}
-      />
+          <div className="ux-preview-stage">
+          <PdfPreviewGrid
+            key={uploadedPdf.file.name + "-" + uploadedPdf.pageCount}
+            pdfBytes={uploadedPdf.pdfBytes}
+            totalPages={uploadedPdf.pageCount}
+            selectedPages={selectedPages}
+            highlightedPages={highlightedPages}
+            selectable={mode === "individual"}
+            onTogglePage={togglePage}
+            onSelectAll={() => setSelectedPages(buildAllPagesList(uploadedPdf.pageCount))}
+            onClearSelection={() => setSelectedPages([])}
+            disabled={isBusy}
+          />
+          </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

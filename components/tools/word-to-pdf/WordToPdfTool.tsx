@@ -1,15 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { FileText } from "lucide-react";
+import { useCallback, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
-import "@/styles/simple-document-action-premium.css";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-wave4d.css";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
@@ -37,10 +34,6 @@ function isDocxFile(file: File): boolean {
 function isLegacyDocFile(file: File): boolean {
   const name = file.name.toLowerCase();
   return name.endsWith(".doc") || file.type === "application/msword";
-}
-
-function WordDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return <FileText className={className} aria-hidden="true" strokeWidth={1.75} />;
 }
 
 export function WordToPdfTool() {
@@ -98,110 +91,69 @@ export function WordToPdfTool() {
     setMessage(undefined);
   }, []);
 
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (file) return "ready";
-    return "idle";
-  }, [status, hasResult, file]);
-
-  const stickyVisible = Boolean(file);
   const primaryLabel = hasResult
     ? "Download PDF"
     : isBusy
-      ? "Converting\u2026"
+      ? "Converting…"
       : "Convert to PDF";
 
   return (
-    <div className="simple-document-action-premium space-y-5 overflow-x-hidden">
-      <ToolStatusBanner status={status} message={message} />
+    <div className="ux-wave4d overflow-x-hidden">
+      <div className="ux-wave4d-banner">
+        <ToolStatusBanner status={status} message={message} />
+      </div>
 
-      <ToolWorkspaceShell
-        isEmpty={!file}
-        empty={
-          <>
-            <FileDropZone
-              className="simple-doc-drop"
-              accept={ACCEPT_DOCX}
-              multiple={false}
-              icon={<WordDropIcon />}
-              label="Drop your Word document here"
-              hint=".docx only \u2014 up to 50MB (CloudConvert, plan limit applies)"
-              disabled={isBusy}
-              validateFile={(candidate) =>
-                isDocxFile(candidate) && !isLegacyDocFile(candidate)
-              }
-              onInvalidFiles={(files) => {
-                const legacy = files.find(isLegacyDocFile);
-                if (legacy) {
-                  setMessage(
-                    "Legacy .doc files are not supported. Save as .docx in Word and try again.",
-                  );
-                  setStatus("error");
-                  return;
-                }
-                setMessage("Only .docx Word documents are supported.");
+      {!file ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            fromLabel="DOCX"
+            toLabel="PDF"
+            buttonLabel="Upload a DOCX"
+            prompt="Upload or drag a Word document here."
+            formats="DOCX"
+            accept={ACCEPT_DOCX}
+            multiple={false}
+            disabled={isBusy}
+            validateFile={(candidate) => isDocxFile(candidate) && !isLegacyDocFile(candidate)}
+            onInvalidFiles={(files) => {
+              const legacy = files.find(isLegacyDocFile);
+              if (legacy) {
+                setMessage("Legacy .doc files are not supported. Save as .docx in Word and try again.");
                 setStatus("error");
-              }}
-              onFilesSelected={(files) => {
-                const docx = files[0];
-                if (docx) {
-                  setFile(docx);
-                  setResultBlob(null);
-                  setResultFileName(undefined);
-                  setStatus("idle");
-                  setMessage(undefined);
-                }
-              }}
-            />
-            <div className="simple-doc-privacy">
-              <PrivacyNotice message={PRIVACY_MESSAGE} />
-            </div>
-          </>
-        }
-        workArea={
-          file ? (
-            <div className="simple-doc-block w-full lg:max-w-[36rem]">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
-                    <WordDropIcon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {file.name}
-                    </p>
-                    <p className="truncate text-xs text-scanonix-muted">
-                      {formatFileSize(file.size)}
-                    </p>
-                  </div>
-                </div>
-                <div className={stickyVisible && hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg"
-                    disabled={isBusy}
-                    onClick={resetTool}
-                  >
-                    {hasResult ? "Start over" : "Choose another file"}
-                  </ActionButton>
-                </div>
+                return;
+              }
+              setMessage("Only .docx Word documents are supported.");
+              setStatus("error");
+            }}
+            onFilesSelected={(files) => {
+              const docx = files[0];
+              if (docx) {
+                setFile(docx);
+                setResultBlob(null);
+                setResultFileName(undefined);
+                setStatus("idle");
+                setMessage(undefined);
+              }
+            }}
+          />
+          <p className="ux-wave4d-note">.docx only — up to 50MB (CloudConvert, plan limit applies)</p>
+          <PrivacyNotice message={PRIVACY_MESSAGE} />
+        </div>
+      ) : (
+        <div className="ux-workspace" data-tool-workspace="active">
+          <div className="ux-stage">
+            <div className="ux-command">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{file.name}</p>
+                <p className="mt-0.5 truncate text-xs text-scanonix-muted">{formatFileSize(file.size)}</p>
               </div>
-
-              <p className="mt-4 text-sm leading-relaxed text-foreground">
-                {hasResult
-                  ? "PDF ready to download."
-                  : isBusy
-                    ? "Converting via CloudConvert\u2026"
-                    : "Converts this DOCX to a PDF on Scanonix servers."}
-              </p>
-
-              <div className={stickyVisible ? "mt-5 hidden lg:block" : "mt-5"}>
+              <div className="ux-command-actions">
+                <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={resetTool}>
+                  {hasResult ? "Start over" : "Choose another file"}
+                </ActionButton>
                 <ActionButton
                   size="lg"
-                  className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
+                  className="ux-command-primary"
                   loading={hasResult ? false : isBusy}
                   disabled={hasResult ? isBusy || !resultBlob : !file || isBusy}
                   onClick={() => {
@@ -212,31 +164,20 @@ export function WordToPdfTool() {
                   {primaryLabel}
                 </ActionButton>
               </div>
-
-              <div className="simple-doc-privacy mt-4">
-                <PrivacyNotice message={PRIVACY_MESSAGE} />
-              </div>
             </div>
-          ) : null
-        }
-      />
-
-      <ToolStickyMobileActionBar
-        visible={stickyVisible}
-        stickyUntil="lg"
-        phase={resultActionPhase}
-        primaryLabel={primaryLabel}
-        primaryLoading={!hasResult && isBusy}
-        primaryDisabled={hasResult ? isBusy || !resultBlob : !file || isBusy}
-        showPrimaryOnError
-        onPrimaryClick={() => {
-          if (hasResult) handleDownload();
-          else void handleConvert();
-        }}
-        onStartOver={hasResult ? resetTool : undefined}
-        startOverLabel="Start over"
-        startOverDisabled={isBusy}
-      />
+            <div className="ux-4d-settings">
+              <p className="text-sm leading-relaxed text-foreground">
+                {hasResult
+                  ? "PDF ready to download."
+                  : isBusy
+                    ? "Converting via CloudConvert…"
+                    : "Converts this DOCX to a PDF on Scanonix servers."}
+              </p>
+              <PrivacyNotice message={PRIVACY_MESSAGE} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

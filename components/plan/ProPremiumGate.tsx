@@ -24,7 +24,7 @@ function trackProGateUpgradeClick(toolSlug?: string): void {
 
 export function ProPremiumGate({
   title = "Pro AI feature",
-  description = "Upgrade to Scanonix Pro to use AI rewrite, translation, summary, and image upscaling.",
+  description = "Upgrade to Scanonix Pro to use AI rewrite, translation, and summary.",
   isAuthenticated = false,
   toolSlug,
 }: ProPremiumGateProps) {
@@ -51,7 +51,7 @@ export function ProPremiumGate({
             </li>
             <li className="flex items-center gap-2">
               <Lock className="h-4 w-4 shrink-0 text-scanonix-orange" aria-hidden="true" />
-              Image upscaling and advanced rewrite controls
+              Advanced rewrite, translation, and summary controls
             </li>
             <li className="flex items-center gap-2">
               <Lock className="h-4 w-4 shrink-0 text-scanonix-orange" aria-hidden="true" />

@@ -8,20 +8,16 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { Images } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import {
   ImagePreviewGrid,
   nextRotation,
 } from "@/components/tools/ImagePreviewGrid";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import "@/styles/ordered-collection-premium.css";
+import "@/styles/ux-reset-file-pair.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import { gateToolOperation } from "@/lib/plan/tool-gate";
@@ -38,7 +34,7 @@ import type {
 import { ACCEPTED_IMAGE_EXTENSIONS } from "@/lib/tools/types";
 
 const PRIVACY_MESSAGE =
-  "Your images are processed locally in your browser and never uploaded to any server. Scanonix does not store or access your documents.";
+  "Processed in your browser. Images are not uploaded.";
 
 const PAGE_SIZE_OPTIONS: {
   value: PageSize;
@@ -58,10 +54,6 @@ const ORIENTATION_OPTIONS: { value: PageOrientation; label: string }[] = [
   { value: "portrait", label: "Portrait" },
   { value: "landscape", label: "Landscape" },
 ];
-
-function ImageToPdfIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return <Images className={className} aria-hidden="true" strokeWidth={1.75} />;
-}
 
 function pageSizeLabel(pageSize: PageSize): string {
   switch (pageSize) {
@@ -102,15 +94,6 @@ export function ImageToPdfTool() {
     [images],
   );
 
-  /** Presentational adapter only — does not replace the ToolStatus state machine. */
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (images.length > 0) return "ready";
-    return "idle";
-  }, [status, hasResult, images.length]);
-
   useEffect(() => {
     imagesRef.current = images;
   }, [images]);
@@ -130,7 +113,13 @@ export function ImageToPdfTool() {
 
   const addFiles = useCallback((files: File[]) => {
     const accepted = files.filter(isAcceptedImageFile);
-    if (accepted.length === 0) return;
+    if (accepted.length === 0) {
+      if (files.length > 0) {
+        setStatus("error");
+        setStatusMessage("Choose a JPG, JPEG, or PNG image.");
+      }
+      return;
+    }
 
     const newImages: ImageItem[] = accepted.map((file) => ({
       id: createImageId(),
@@ -275,324 +264,196 @@ export function ImageToPdfTool() {
     }
   };
 
-  const generateHint =
-    images.length === 0
-      ? "Add images before generating a PDF."
-      : status === "loading"
-        ? progress
-          ? `Generating PDF… Page ${progress.current} of ${progress.total}`
-          : "Generating PDF…"
-        : `Ready to create ${images.length}-page PDF.`;
+  const resultSummary = showResultInspector && pdfBlob
+    ? [
+        `${images.length} page${images.length === 1 ? "" : "s"}`,
+        formatFileSize(pdfBlob.size),
+        pageSizeLabel(pageSize),
+        pageSize === "fit" ? null : orientation,
+        resultFilename,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : null;
 
   return (
-    <div className="ordered-collection-premium ordered-collection-split space-y-5 overflow-x-hidden">
+    <div className="ux-premium ux-reset-file ordered-collection-premium overflow-x-hidden">
       <ToolStatusBanner
         status={status}
         message={statusMessage}
         progress={progress}
       />
 
-      <ToolWorkspaceShell
-        isEmpty={images.length === 0}
-        empty={
-          <>
-            <FileDropZone
-              className="ordered-drop"
-              onFilesSelected={addFiles}
-              accept={ACCEPTED_IMAGE_EXTENSIONS}
-              validateFile={isAcceptedImageFile}
-              disabled={isBusy}
-              label="Drop images here to convert to PDF"
-              hint="or click to browse — JPG, JPEG, PNG"
-              icon={<ImageToPdfIcon />}
-            />
-            <PrivacyNotice message={PRIVACY_MESSAGE} />
-          </>
-        }
-        workArea={
-          images.length > 0 ? (
-            <div className="ordered-stage">
-              <div className="ordered-stage-bar flex flex-col gap-2.5 py-1 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <ImageToPdfIcon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {images.length} image{images.length === 1 ? "" : "s"}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(totalInputBytes)} · {images.length} PDF
-                      page{images.length === 1 ? "" : "s"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                  <input
-                    ref={addMoreInputRef}
-                    type="file"
-                    accept={ACCEPTED_IMAGE_EXTENSIONS}
-                    multiple
-                    className="sr-only"
-                    disabled={isBusy}
-                    onChange={handleAddMoreChange}
-                  />
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={() => addMoreInputRef.current?.click()}
-                  >
-                    Add more images
-                  </ActionButton>
-                  <div className="w-full sm:w-auto">
-                    <ActionButton
-                      variant="outline"
-                      size="sm"
-                      className="w-full rounded-lg sm:w-auto"
-                      disabled={isBusy}
-                      onClick={clearAll}
-                    >
-                      Start over
-                    </ActionButton>
-                  </div>
-                </div>
-              </div>
-
-              <div className="ordered-stage-note py-2">
-                <p className="text-sm font-semibold text-foreground">
-                  PDF page order
-                </p>
-                <p className="text-[11px] text-scanonix-muted">
-                  Each image becomes a PDF page in this order. Drag images to
-                  reorder PDF pages.
-                </p>
-              </div>
-
-              <div className="ordered-stage-grid">
-                <ImagePreviewGrid
-                  images={images}
-                  onRemove={removeImage}
-                  onRotate={rotateImage}
-                  onReorder={reorderImages}
-                  showHeading={false}
-                  disabled={isBusy}
-                />
-              </div>
+      {images.length === 0 ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            conversion="images-to-pdf"
+            buttonLabel="Upload images"
+            prompt="Upload or drag images here."
+            formats="JPG, JPEG, PNG"
+            accept={ACCEPTED_IMAGE_EXTENSIONS}
+            validateFile={isAcceptedImageFile}
+            disabled={isBusy}
+            onFilesSelected={addFiles}
+            onInvalidFiles={() => {
+              setStatus("error");
+              setStatusMessage("Choose a JPG, JPEG, or PNG image.");
+            }}
+          />
+          <PrivacyNotice message={PRIVACY_MESSAGE} />
+        </div>
+      ) : (
+        <div className="ux-workspace" data-tool-workspace="active">
+          <div className="ux-stage">
+          <div className="ux-command">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-foreground">
+                {images.length} image{images.length === 1 ? "" : "s"}
+              </p>
+              <p className="truncate text-xs text-foreground-muted">
+                {formatFileSize(totalInputBytes)} · {images.length} PDF page
+                {images.length === 1 ? "" : "s"}
+              </p>
             </div>
-          ) : null
-        }
-        controlPanel={
-          images.length > 0 ? (
-            <ToolControlPanel
-              aria-label="Image to PDF controls"
-              footer={
-                showResultInspector && pdfBlob ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full"
-                        loading={isDownloading}
+            <div className="ux-command-actions">
+              <input
+                ref={addMoreInputRef}
+                type="file"
+                accept={ACCEPTED_IMAGE_EXTENSIONS}
+                multiple
+                className="sr-only"
+                disabled={isBusy}
+                onChange={handleAddMoreChange}
+              />
+              <ActionButton
+                variant="ghost"
+                size="sm"
+                disabled={isBusy}
+                onClick={() => addMoreInputRef.current?.click()}
+              >
+                Add more
+              </ActionButton>
+              <ActionButton
+                variant="ghost"
+                size="sm"
+                disabled={isBusy}
+                onClick={clearAll}
+              >
+                Start over
+              </ActionButton>
+              {showResultInspector ? (
+                <ActionButton
+                  variant="ghost"
+                  size="sm"
+                  disabled={isBusy}
+                  onClick={handleChangeSettings}
+                >
+                  Change settings
+                </ActionButton>
+              ) : null}
+              <ActionButton
+                size="lg"
+                className="ux-command-primary"
+                loading={showResultInspector ? isDownloading : status === "loading"}
+                disabled={showResultInspector ? isBusy : images.length === 0 || isBusy}
+                onClick={() => {
+                  if (showResultInspector) {
+                    void handleDownload();
+                  } else {
+                    void handleGenerate();
+                  }
+                }}
+              >
+                {showResultInspector
+                  ? "Download PDF"
+                  : status === "loading"
+                    ? "Generating PDF…"
+                    : "Generate PDF"}
+              </ActionButton>
+            </div>
+          </div>
+
+          {resultSummary ? (
+            <p className="ux-result-line truncate">{resultSummary}</p>
+          ) : null}
+
+          <div className="ux-preview-stage space-y-3">
+            <p className="text-center text-sm text-foreground-muted">
+              Drag images to set the page order.
+            </p>
+            <ImagePreviewGrid
+              images={images}
+              onRemove={removeImage}
+              onRotate={rotateImage}
+              onReorder={reorderImages}
+              showHeading={false}
+              disabled={isBusy}
+            />
+          </div>
+
+          {resultSummary ? null : (
+            <details className="ux-setup">
+              <summary className="cursor-pointer text-sm text-foreground-muted">
+                Page setup
+                <span className="text-foreground">
+                  {" "}
+                  · {pageSizeLabel(pageSize)}
+                  {pageSize === "fit" ? "" : `, ${orientation}`}
+                </span>
+              </summary>
+              <div className="mt-3 space-y-3">
+                <div className="flex flex-wrap gap-1.5">
+                  {PAGE_SIZE_OPTIONS.map((option) => {
+                    const selected = pageSize === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
                         disabled={isBusy}
-                        onClick={() => {
-                          void handleDownload();
-                        }}
+                        aria-pressed={selected}
+                        onClick={() => setPageSize(option.value)}
+                        className={`rounded-lg border px-3 py-1.5 text-sm ${
+                          selected
+                            ? "border-foreground bg-surface-muted text-foreground"
+                            : "border-border text-foreground-muted hover:text-foreground"
+                        } ${isBusy ? "cursor-not-allowed opacity-50" : ""}`}
                       >
-                        Download PDF
-                      </ActionButton>
-                    </div>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={handleChangeSettings}
-                    >
-                      Change settings
-                    </ActionButton>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      {generateHint}
-                    </p>
-                    <div
-                      className={
-                        resultActionPhase === "ready" ||
-                        resultActionPhase === "processing" ||
-                        (hasResult && !showResultInspector)
-                          ? "hidden lg:block"
-                          : undefined
-                      }
-                    >
-                      <ActionButton
-                        size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)]"
-                        loading={status === "loading"}
-                        disabled={images.length === 0 || isBusy}
-                        onClick={() => {
-                          void handleGenerate();
-                        }}
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-foreground-muted">
+                  {PAGE_SIZE_OPTIONS.find((option) => option.value === pageSize)?.description}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {ORIENTATION_OPTIONS.map((option) => {
+                    const selected = orientation === option.value;
+                    const disabled = isBusy || pageSize === "fit";
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        disabled={disabled}
+                        aria-pressed={selected}
+                        onClick={() => setOrientation(option.value)}
+                        className={`rounded-lg border px-3 py-1.5 text-sm ${
+                          selected
+                            ? "border-foreground bg-surface-muted text-foreground"
+                            : "border-border text-foreground-muted hover:text-foreground"
+                        } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
                       >
-                        {status === "loading" ? "Generating PDF…" : "Generate PDF"}
-                      </ActionButton>
-                    </div>
-                  </div>
-                )
-              }
-            >
-              {showResultInspector && pdfBlob ? (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
-                      ✓ PDF created
-                    </p>
-                    <p className="mt-1 text-xs text-scanonix-muted">
-                      Your PDF is ready to download.
-                    </p>
-                  </div>
-
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Pages</dt>
-                      <dd className="font-semibold text-foreground">
-                        {images.length}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Output size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(pdfBlob.size)}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Page size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {pageSizeLabel(pageSize)}
-                      </dd>
-                    </div>
-                    {pageSize !== "fit" ? (
-                      <div className="flex justify-between gap-3 px-3 py-2.5">
-                        <dt className="text-scanonix-muted">Orientation</dt>
-                        <dd className="font-semibold capitalize text-foreground">
-                          {orientation}
-                        </dd>
-                      </div>
-                    ) : null}
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Format</dt>
-                      <dd className="font-semibold text-foreground">PDF</dd>
-                    </div>
-                    <div className="min-w-0 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Filename</dt>
-                      <dd className="mt-0.5 truncate font-semibold text-foreground">
-                        {resultFilename}
-                      </dd>
-                    </div>
-                  </dl>
+                        {option.label}
+                      </button>
+                    );
+                  })}
                 </div>
-              ) : (
-                <div className="space-y-5">
-                  <section className="space-y-2.5">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Page size
-                    </h2>
-                    <div className="grid gap-1.5">
-                      {PAGE_SIZE_OPTIONS.map((option) => {
-                        const selected = pageSize === option.value;
-                        return (
-                          <button
-                            key={option.value}
-                            type="button"
-                            disabled={isBusy}
-                            aria-pressed={selected}
-                            onClick={() => setPageSize(option.value)}
-                            className={`rounded-lg border px-3 py-2.5 text-left transition-colors ${
-                              selected
-                                ? "border-scanonix-orange bg-scanonix-orange/10 ring-2 ring-scanonix-orange/30"
-                                : "border-border bg-surface-muted/60 hover:border-scanonix-orange/40"
-                            } ${isBusy ? "cursor-not-allowed opacity-50" : ""}`}
-                          >
-                            <span className="block text-sm font-semibold text-foreground">
-                              {option.label}
-                            </span>
-                            <span className="mt-0.5 block text-[11px] text-scanonix-muted">
-                              {option.description}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {pageSize === "fit" ? (
-                      <p className="text-[11px] leading-snug text-scanonix-muted">
-                        Each PDF page follows its image size.
-                      </p>
-                    ) : null}
-                  </section>
-
-                  <section className="space-y-2.5 border-t border-border/80 pt-4">
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Orientation
-                    </h2>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {ORIENTATION_OPTIONS.map((option) => {
-                        const selected = orientation === option.value;
-                        const disabled = isBusy || pageSize === "fit";
-                        return (
-                          <button
-                            key={option.value}
-                            type="button"
-                            disabled={disabled}
-                            aria-pressed={selected}
-                            onClick={() => setOrientation(option.value)}
-                            className={`rounded-lg border px-3 py-2.5 text-center text-sm font-semibold transition-colors ${
-                              selected
-                                ? "border-scanonix-orange bg-scanonix-orange/10 ring-2 ring-scanonix-orange/30 text-foreground"
-                                : "border-border bg-surface-muted/60 text-foreground hover:border-scanonix-orange/40"
-                            } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
-                          >
-                            {option.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {pageSize === "fit" ? (
-                      <p className="text-[11px] leading-snug text-scanonix-muted">
-                        Orientation follows each image when using Fit Image.
-                      </p>
-                    ) : null}
-                  </section>
-
-                  <section className="space-y-2 border-t border-border/80 pt-4">
-                    <PrivacyNotice message={PRIVACY_MESSAGE} />
-                  </section>
-                </div>
-              )}
-            </ToolControlPanel>
-          ) : null
-        }
-      />
-
-      <ToolStickyMobileActionBar
-        visible={images.length > 0}
-        stickyUntil="lg"
-        phase={hasResult && !showResultInspector ? "ready" : resultActionPhase}
-        primaryLabel={showResultInspector ? "Download PDF" : "Generate PDF"}
-        primaryLoading={showResultInspector ? isDownloading : status === "loading"}
-        primaryDisabled={showResultInspector ? isBusy : images.length === 0 || isBusy}
-        onPrimaryClick={() => {
-          if (showResultInspector) {
-            void handleDownload();
-          } else {
-            void handleGenerate();
-          }
-        }}
-      />
+              </div>
+            </details>
+          )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

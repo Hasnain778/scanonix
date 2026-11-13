@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { FileImage } from "lucide-react";
 import type { ImageConverterDefinition } from "@/constants/image-tools";
 import { getToolSeo } from "@/constants/tool-seo";
 import { ConverterToolExtras } from "@/components/image-tools/ConverterToolExtras";
@@ -58,7 +57,10 @@ export function createImageConverterPage(config: ImageConverterDefinition) {
     return (
       <ToolRoute
         toolId={config.slug}
-        icon={<FileImage className="h-7 w-7" strokeWidth={1.75} aria-hidden="true" />}
+        headerDensity="app"
+        headerDescription={config.shortDescription}
+        usageTone="quiet"
+        seoVariant="quiet"
         showSeoContent
         jsonLd={<ConverterJsonLd config={config} />}
       >

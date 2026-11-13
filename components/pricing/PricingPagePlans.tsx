@@ -59,7 +59,6 @@ const PLANS: PlanTier[] = [
     highlighted: true,
     features: [
       "Everything in Free",
-      "4K image upscaling",
       "Higher AI usage (500 ops/month)",
       "Expanded security scans (500 ops/month)",
       "Expanded tool usage limits",

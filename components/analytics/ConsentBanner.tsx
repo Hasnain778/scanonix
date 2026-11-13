@@ -26,10 +26,10 @@ export function ConsentBanner() {
       role="dialog"
       aria-labelledby="consent-banner-title"
       aria-describedby="consent-banner-description"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center p-3 sm:p-4"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center p-2.5 sm:p-4"
     >
-      <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-border bg-surface-raised/95 p-4 shadow-2xl backdrop-blur-md sm:p-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+      <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-border bg-surface-raised/95 p-3 shadow-2xl backdrop-blur-md sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <div className="min-w-0 flex-1">
             <p
               id="consent-banner-title"
@@ -39,7 +39,7 @@ export function ConsentBanner() {
             </p>
             <p
               id="consent-banner-description"
-              className="mt-1.5 text-sm leading-relaxed text-scanonix-muted"
+              className="mt-1 text-sm leading-snug text-scanonix-muted sm:mt-1.5 sm:leading-relaxed"
             >
               We use optional analytics cookies to understand how Scanonix is used and improve
               our tools. No document content is sent to analytics.{" "}

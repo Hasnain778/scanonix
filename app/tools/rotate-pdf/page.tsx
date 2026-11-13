@@ -1,6 +1,5 @@
 import { LazyRotatePdfTool } from "@/components/tools/lazy";
 import { ToolRoute } from "@/components/workspace";
-import { ToolIcon } from "@/components/ui/ToolIcon";
 import { createToolPageMetadata } from "@/lib/utils/tool-page";
 
 export const metadata = createToolPageMetadata("rotate-pdf");
@@ -9,7 +8,10 @@ export default function RotatePdfPage() {
   return (
     <ToolRoute
       toolId="rotate-pdf"
-      icon={<ToolIcon type="rotate-pdf" className="h-7 w-7" />}
+      headerDensity="app"
+      headerDescription="Rotate PDF pages by 90°, 180°, or 270°."
+      usageTone="quiet"
+      seoVariant="quiet"
     >
       <LazyRotatePdfTool />
     </ToolRoute>

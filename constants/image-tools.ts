@@ -353,10 +353,9 @@ export const IMAGE_HUB_EDIT_TOOLS: ImageHubTool[] = [
   {
     id: "image-upscaler",
     title: "Image Upscaler",
-    description: "Enlarge images 2× or 4× with Lanczos resampling.",
+    description: "Not currently available.",
     href: "/tools/image-upscaler",
     fileSupport: "JPG, PNG, WEBP, HEIC",
-    badge: "Premium",
     kind: "edit",
   },
   {

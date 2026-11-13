@@ -19,11 +19,15 @@ interface ToolRouteProps {
   showSeoContent?: boolean;
   jsonLd?: ReactNode;
   /** Opt-in. Default `panel` keeps the current boxed article on every other tool. */
-  seoVariant?: "panel" | "editorial";
+  seoVariant?: "panel" | "editorial" | "quiet";
   /** Opt-in tighter intro. Default keeps the current header. */
   headerCompact?: boolean;
+  /** Opt-in app header. Default keeps the current header, including compact. */
+  headerDensity?: "default" | "app";
   /** Opt-in. Default keeps the raised usage banner. */
   usageTone?: "default" | "quiet";
+  /** Opt-in visible subtitle. Default keeps the SEO header description. */
+  headerDescription?: string;
   /** Opt-in visible intro for the editorial article. Schema and SEO data stay unchanged. */
   editorialIntro?: {
     eyebrow: string;
@@ -39,7 +43,9 @@ export function ToolRoute({
   jsonLd,
   seoVariant = "panel",
   headerCompact = false,
+  headerDensity = "default",
   usageTone = "default",
+  headerDescription,
   editorialIntro,
 }: ToolRouteProps) {
   const tool = getToolSeo(toolId);
@@ -103,11 +109,12 @@ export function ToolRoute({
       <ToolLayout>
         <ToolPageHeader
           title={tool.h1}
-          description={tool.headerDescription ?? tool.pageDescription}
+          description={headerDescription ?? tool.headerDescription ?? tool.pageDescription}
           icon={icon}
           showBreadcrumbs
           categoryBreadcrumb={categoryBreadcrumb}
           compact={headerCompact}
+          density={headerDensity}
         />
         <ToolUsageHeader tone={usageTone} />
         {children}

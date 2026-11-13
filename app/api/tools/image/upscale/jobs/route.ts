@@ -1,26 +1,25 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
-import sharp from "sharp";
 import { assertSupabaseConfigured, isSupabaseConfigured } from "@/config/env";
 import {
   limitReachedResponse,
   requirePremiumAiPlan,
   validateUploadSize,
 } from "@/lib/plan/access";
-import { consumeUsage } from "@/lib/plan/usage";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
 import {
-  upscaleJobInputPath,
-  storageExtFromMime,
-} from "@/lib/upscale-jobs/paths";
+  abortUnclaimedUpscaleJob,
+  chargeUpscaleJob,
+  closeUnchargedUpscaleJob,
+} from "@/lib/upscale-jobs/credits";
+import { inspectUpscaleInput } from "@/lib/upscale-jobs/inspect-input";
 import { createJob } from "@/lib/upscale-jobs/repository";
+import { authorizeUpscaleSubmission } from "@/lib/upscale-jobs/rollout-gate";
 import { isRunPodUpscaleTriggerConfigured } from "@/lib/upscale-jobs/runpod-trigger";
 import { uploadInput } from "@/lib/upscale-jobs/storage";
+import { submitPreparedUpscaleJob } from "@/lib/upscale-jobs/submit-job";
 import { triggerUpscaleWorkerAfterJobCreated } from "@/lib/upscale-jobs/trigger-worker";
-import {
-  readImageFromFormData,
-  type ImageToolFileInput,
-} from "@/lib/tools/shared/api-handler";
+import { readImageFromFormData } from "@/lib/tools/shared/api-handler";
 import { FREE_IMAGE_MAX_BYTES } from "@/lib/tools/shared/image-validate";
 
 export const dynamic = "force-dynamic";
@@ -65,16 +64,24 @@ export async function POST(request: Request) {
   });
   if (rateLimited) return rateLimited;
 
+  const access = await requirePremiumAiPlan(ROUTE);
+  if (access instanceof NextResponse) {
+    return access;
+  }
+
+  const rollout = authorizeUpscaleSubmission({
+    sessionUserId: access.user.id,
+    premiumEntitled: access.limits.allowPremiumAi,
+  });
+  if (!rollout.allowed) {
+    return rollout.response;
+  }
+
   let formData: FormData;
   try {
     formData = await request.formData();
   } catch {
     return NextResponse.json({ error: "Invalid multipart request." }, { status: 400 });
-  }
-
-  const access = await requirePremiumAiPlan(ROUTE);
-  if (access instanceof NextResponse) {
-    return access;
   }
 
   const maxBytes = Math.min(FREE_IMAGE_MAX_BYTES, access.limits.maxUploadBytes);
@@ -88,92 +95,60 @@ export async function POST(request: Request) {
     return uploadError;
   }
 
-  let usageCharged = false;
-  try {
-    const usage = await consumeUsage(access.user.id, access.plan);
-    if (!usage.allowed) {
-      return limitReachedResponse(ROUTE, "Tool operation limit reached for your current plan.", {
-        usageCount: usage.usageCount,
-        limit: usage.limit,
-        remaining: usage.remaining,
-        resetAt: usage.resetAt,
-      });
-    }
-    usageCharged = true;
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Could not authorize operation.",
-      },
-      { status: 500 },
-    );
-  }
-
   const factorRaw = Number(formData.get("factor") ?? 2);
   const scale: 2 | 4 = factorRaw === 4 ? 4 : 2;
 
+  let inspected: { width: number; height: number };
   try {
-    const jobId = await createUpscaleJobRecord(access.user.id, scale, fileInput, usageCharged);
-    await triggerUpscaleWorkerAfterJobCreated(jobId);
-    return NextResponse.json({ jobId }, { status: 201 });
+    inspected = await inspectUpscaleInput(fileInput.buffer, scale);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not create upscale job.";
-    const isWorkerDispatchFailure =
-      message.includes("Could not start upscaling worker") ||
-      message.includes("did not start in time");
-
     return NextResponse.json(
       {
-        error: message,
-        code: isWorkerDispatchFailure ? "WORKER_TRIGGER_FAILED" : "JOB_CREATE_FAILED",
+        error: error instanceof Error ? error.message : "Could not read image dimensions.",
+        code: "INVALID_IMAGE",
       },
-      { status: isWorkerDispatchFailure ? 503 : 500 },
+      { status: 400 },
     );
   }
-}
 
-async function createUpscaleJobRecord(
-  userId: string,
-  scale: 2 | 4,
-  fileInput: ImageToolFileInput,
-  usageCharged: boolean,
-): Promise<string> {
-  const inputMeta = await sharp(fileInput.buffer, { failOn: "none" }).metadata();
-  const inputWidth = inputMeta.width ?? 0;
-  const inputHeight = inputMeta.height ?? 0;
+  const submitted = await submitPreparedUpscaleJob(
+    {
+      userId: access.user.id,
+      scale,
+      file: fileInput,
+      width: inspected.width,
+      height: inspected.height,
+    },
+    {
+      createJobId: randomUUID,
+      uploadInput,
+      createJob,
+      chargeJob: (jobId) => chargeUpscaleJob(access.user.id, access.plan, jobId),
+      closeUnchargedJob: closeUnchargedUpscaleJob,
+      dispatchJob: triggerUpscaleWorkerAfterJobCreated,
+      failChargedJob: abortUnclaimedUpscaleJob,
+    },
+  );
 
-  if (inputWidth <= 0 || inputHeight <= 0) {
-    throw new Error("Could not read image dimensions.");
+  if (submitted.status === "created") {
+    return NextResponse.json({ jobId: submitted.jobId }, { status: 201 });
   }
 
-  const outputWidth = inputWidth * scale;
-  const outputHeight = inputHeight * scale;
-  if (outputWidth > 16_384 || outputHeight > 16_384) {
-    throw new Error("Upscaled output would exceed the maximum supported dimensions.");
+  if (submitted.status === "denied") {
+    return limitReachedResponse(ROUTE, "Tool operation limit reached for your current plan.", {
+      usageCount: submitted.usage.usageCount,
+      limit: submitted.usage.limit,
+      remaining: submitted.usage.remaining,
+      resetAt: submitted.usage.resetAt,
+    });
   }
 
-  const inputPixels = inputWidth * inputHeight;
-  if (inputPixels > 4_000_000) {
-    throw new Error("Image is too large to upscale safely on this server.");
-  }
-
-  const jobId = randomUUID();
-  const ext = storageExtFromMime(fileInput.mimeType);
-  const inputPath = upscaleJobInputPath(userId, jobId, ext);
-
-  await uploadInput(inputPath, fileInput.buffer, fileInput.mimeType);
-
-  const job = await createJob({
-    id: jobId,
-    userId,
-    scale,
-    inputStoragePath: inputPath,
-    inputMimeType: fileInput.mimeType,
-    inputWidth,
-    inputHeight,
-    inputSizeBytes: fileInput.file.size,
-    usageCharged,
-  });
-
-  return job.id;
+  const dispatchFailed = submitted.status === "dispatch_failed";
+  return NextResponse.json(
+    {
+      error: submitted.message,
+      code: dispatchFailed ? "WORKER_TRIGGER_FAILED" : "JOB_CREATE_FAILED",
+    },
+    { status: dispatchFailed ? 503 : 500 },
+  );
 }

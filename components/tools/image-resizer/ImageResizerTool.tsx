@@ -1,15 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Scaling } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
-import "@/styles/image-processing-premium.css";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-wave4c.css";
 import {
   createProcessAttempt,
   planErrorMessageToCode,
@@ -30,10 +27,6 @@ function isValidImageFile(file: File): boolean {
   return file.size > 0 && file.size <= FREE_IMAGE_MAX_BYTES;
 }
 
-function ResizeDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return <Scaling className={className} aria-hidden="true" strokeWidth={1.75} />;
-}
-
 function formatFromFileName(fileName?: string): string | undefined {
   if (!fileName) return undefined;
   const extension = fileName.split(".").pop()?.toUpperCase();
@@ -42,6 +35,13 @@ function formatFromFileName(fileName?: string): string | undefined {
   if (extension === "PNG") return "PNG";
   if (extension === "WEBP") return "WEBP";
   return extension;
+}
+
+function previewDisplayWidth(width: number, height: number, maxWidth = 480, maxHeight = 320): number {
+  if (width <= 0 || height <= 0) return maxWidth;
+  const longSide = Math.max(width, height);
+  const scale = Math.min(Math.max(240 / longSide, 1), maxWidth / width, maxHeight / height);
+  return Math.max(1, Math.round(width * scale));
 }
 
 export function ImageResizerTool() {
@@ -193,14 +193,6 @@ export function ImageResizerTool() {
     setMessage(undefined);
   }, [clearResultPreview, setFilePreview]);
 
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (status === "loading") return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (file) return "ready";
-    return "idle";
-  }, [status, hasResult, file]);
-
   const outputFormat = formatFromFileName(resultFileName);
   const requestedWidth = width ? Number(width) : undefined;
   const requestedHeight = height ? Number(height) : undefined;
@@ -209,276 +201,223 @@ export function ImageResizerTool() {
   const hasRequestedHeight =
     requestedHeight !== undefined && Number.isFinite(requestedHeight) && requestedHeight > 0;
 
+  const primaryLabel = hasResult ? "Download image" : isBusy ? "Resizing…" : "Resize image";
+
   return (
-    <div className="image-processing-premium space-y-5 overflow-x-hidden">
-      <ToolStatusBanner status={status} message={message} />
-
-      <ToolWorkspaceShell
-        isEmpty={!file}
-        empty={
-          <>
-            <FileDropZone
-              className="image-proc-drop"
-              accept={ACCEPT_IMAGES}
-              multiple={false}
-              label="Drop an image to resize"
-              hint={`JPG, PNG, WEBP or HEIC \u2014 up to ${MAX_MB}MB`}
-              disabled={isBusy}
-              validateFile={isValidImageFile}
-              icon={<ResizeDropIcon />}
-              onInvalidFiles={() => {
-                setMessage(`Please choose a supported image up to ${MAX_MB}MB.`);
-                setStatus("error");
-              }}
-              onFilesSelected={(files) => {
-                const image = files[0];
-                if (image) {
-                  setFilePreview(image);
-                  setFile(image);
-                  setResultBlob(null);
-                  clearResultPreview();
-                  setResultFileName(undefined);
-                  setStats(undefined);
-                  setStatus("idle");
-                  setMessage(undefined);
-                }
-              }}
-            />
-            <div className="image-proc-privacy">
-              <PrivacyNotice message={PRIVACY_MESSAGE} />
+    <div className="ux-wave4c overflow-x-hidden">
+      <div className="ux-wave4c-banner">
+        <ToolStatusBanner status={status} message={message} />
+      </div>
+      {!file ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            fromLabel="Image"
+            toLabel="Resized"
+            buttonLabel="Upload an image"
+            prompt="Upload or drag an image here."
+            formats="JPG, PNG, WEBP, HEIC"
+            accept={ACCEPT_IMAGES}
+            multiple={false}
+            disabled={isBusy}
+            validateFile={isValidImageFile}
+            onInvalidFiles={() => {
+              setMessage(`Please choose a supported image up to ${MAX_MB}MB.`);
+              setStatus("error");
+            }}
+            onFilesSelected={(files) => {
+              const image = files[0];
+              if (!image) return;
+              setFilePreview(image);
+              setFile(image);
+              setResultBlob(null);
+              clearResultPreview();
+              setResultFileName(undefined);
+              setStats(undefined);
+              setStatus("idle");
+              setMessage(undefined);
+            }}
+          />
+          <p className="ux-wave4c-note">JPG, PNG, WEBP or HEIC — up to {MAX_MB}MB</p>
+          <PrivacyNotice message={PRIVACY_MESSAGE} />
+        </div>
+      ) : (
+        <div className="ux-workspace" data-tool-workspace="active">
+          <div className="ux-stage">
+            <div className="ux-command">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{file.name}</p>
+                <p className="mt-0.5 truncate text-xs text-scanonix-muted">
+                  {formatFileSize(file.size)}
+                  {naturalSize ? ` · ${naturalSize.width} × ${naturalSize.height}px` : ""}
+                </p>
+              </div>
+              <div className="ux-command-actions">
+                <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={resetTool}>
+                  {hasResult ? "Start over" : "Choose another image"}
+                </ActionButton>
+                <ActionButton
+                  size="lg"
+                  className="ux-command-primary"
+                  loading={!hasResult && isBusy}
+                  disabled={hasResult ? isBusy || !resultBlob : !file || isBusy}
+                  onClick={() => {
+                    if (hasResult) handleDownload();
+                    else void handleResize();
+                  }}
+                >
+                  {primaryLabel}
+                </ActionButton>
+              </div>
             </div>
-          </>
-        }
-        workArea={
-          file ? (
-            <div className="image-proc-layout">
-              <div className="image-proc-stage min-w-0">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center text-scanonix-orange">
-                      <ResizeDropIcon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-foreground">
-                        {file.name}
-                      </p>
-                      <p className="truncate text-xs text-scanonix-muted">
-                        {formatFileSize(file.size)}
-                        {naturalSize
-                          ? ` \u00B7 ${naturalSize.width} \u00D7 ${naturalSize.height}px`
-                          : ""}
-                      </p>
-                    </div>
-                  </div>
-                  <div className={hasResult ? "hidden shrink-0 lg:block" : "shrink-0"}>
-                    <ActionButton
-                      variant="outline"
-                      size="sm"
-                      className="rounded-lg"
-                      disabled={isBusy}
-                      onClick={resetTool}
-                    >
-                      {hasResult ? "Start over" : "Choose another image"}
-                    </ActionButton>
-                  </div>
-                </div>
 
-                {hasResult && resultPreviewUrl ? (
-                  <div className="image-proc-preview">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={resultPreviewUrl} alt="Resized image preview" />
+            {hasResult && resultPreviewUrl ? (
+              <div>
+                <p className="ux-4c-kicker">Resized</p>
+                <div className="ux-4c-preview">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={resultPreviewUrl}
+                    alt="Resized image preview"
+                    style={
+                      stats?.width && stats?.height
+                        ? { width: previewDisplayWidth(stats.width, stats.height) }
+                        : undefined
+                    }
+                  />
+                </div>
+              </div>
+            ) : previewUrl ? (
+              <div>
+                <p className="ux-4c-kicker">Original</p>
+                <div className="ux-4c-preview">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl}
+                    alt="Original image preview"
+                    style={
+                      naturalSize
+                        ? { width: previewDisplayWidth(naturalSize.width, naturalSize.height) }
+                        : undefined
+                    }
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {hasResult && resultBlob && stats ? (
+              <div className="ux-4c-result">
+                <dl className="ux-4c-stats text-sm">
+                  {naturalSize ? (
+                    <div>
+                      <dt className="text-scanonix-muted">Original</dt>
+                      <dd className="font-semibold text-foreground">
+                        {naturalSize.width} × {naturalSize.height}px
+                      </dd>
+                    </div>
+                  ) : null}
+                  {hasRequestedWidth || hasRequestedHeight ? (
+                    <div>
+                      <dt className="text-scanonix-muted">Requested</dt>
+                      <dd className="font-semibold text-foreground">
+                        {hasRequestedWidth ? requestedWidth : "—"} × {hasRequestedHeight ? requestedHeight : "—"}px
+                      </dd>
+                    </div>
+                  ) : null}
+                  {stats.width && stats.height ? (
+                    <div>
+                      <dt className="text-scanonix-muted">Output</dt>
+                      <dd className="font-semibold text-foreground">
+                        {stats.width} × {stats.height}px
+                      </dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt className="text-scanonix-muted">Original size</dt>
+                    <dd className="font-semibold text-foreground">{formatFileSize(stats.originalSize)}</dd>
                   </div>
-                ) : previewUrl ? (
-                  <div className="image-proc-preview">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={previewUrl} alt="" />
+                  <div>
+                    <dt className="text-scanonix-muted">Output size</dt>
+                    <dd className="font-semibold text-foreground">{formatFileSize(stats.outputSize)}</dd>
                   </div>
+                  {stats.outputSize < stats.originalSize ? (
+                    <div>
+                      <dt className="text-scanonix-muted">Saved</dt>
+                      <dd className="font-semibold text-foreground">
+                        {Math.round(((stats.originalSize - stats.outputSize) / stats.originalSize) * 100)}
+                        % · {formatFileSize(stats.originalSize - stats.outputSize)}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {outputFormat ? (
+                    <div>
+                      <dt className="text-scanonix-muted">Output format</dt>
+                      <dd className="font-semibold text-foreground">{outputFormat}</dd>
+                    </div>
+                  ) : null}
+                  {resultFileName ? (
+                    <div>
+                      <dt className="shrink-0 text-scanonix-muted">Output file</dt>
+                      <dd className="min-w-0 truncate font-semibold text-foreground">{resultFileName}</dd>
+                    </div>
+                  ) : null}
+                </dl>
+                {stats.outputSize === stats.originalSize ? (
+                  <p className="text-sm leading-relaxed text-foreground" role="status">
+                    No size reduction. Resize changes dimensions; file size may stay similar.
+                  </p>
+                ) : null}
+                {stats.outputSize > stats.originalSize ? (
+                  <p className="text-sm leading-relaxed text-foreground" role="status">
+                    Output is larger by {formatFileSize(stats.outputSize - stats.originalSize)}. Resize targets
+                    dimensions, not compression.
+                  </p>
                 ) : null}
               </div>
-
-              <div className="image-proc-controls min-w-0">
-                {hasResult && resultBlob && stats ? (
-                  <div className="space-y-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <dl className="image-proc-stats text-sm">
-                      {naturalSize ? (
-                        <div>
-                          <dt className="text-scanonix-muted">Original</dt>
-                          <dd className="font-semibold text-foreground">
-                            {naturalSize.width} {"\u00D7"} {naturalSize.height}px
-                          </dd>
-                        </div>
-                      ) : null}
-                      {hasRequestedWidth || hasRequestedHeight ? (
-                        <div>
-                          <dt className="text-scanonix-muted">Requested</dt>
-                          <dd className="font-semibold text-foreground">
-                            {hasRequestedWidth ? requestedWidth : "\u2014"} {"\u00D7"}{" "}
-                            {hasRequestedHeight ? requestedHeight : "\u2014"}px
-                          </dd>
-                        </div>
-                      ) : null}
-                      {stats.width && stats.height ? (
-                        <div>
-                          <dt className="text-scanonix-muted">Output</dt>
-                          <dd className="font-semibold text-foreground">
-                            {stats.width} {"\u00D7"} {stats.height}px
-                          </dd>
-                        </div>
-                      ) : null}
-                      <div>
-                        <dt className="text-scanonix-muted">Original size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {formatFileSize(stats.originalSize)}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-scanonix-muted">Output size</dt>
-                        <dd className="font-semibold text-foreground">
-                          {formatFileSize(stats.outputSize)}
-                        </dd>
-                      </div>
-                      {stats.outputSize < stats.originalSize ? (
-                        <div>
-                          <dt className="text-scanonix-muted">Saved</dt>
-                          <dd className="font-semibold text-foreground">
-                            {Math.round(
-                              ((stats.originalSize - stats.outputSize) / stats.originalSize) * 100,
-                            )}
-                            %{" \u00B7 "}
-                            {formatFileSize(stats.originalSize - stats.outputSize)}
-                          </dd>
-                        </div>
-                      ) : null}
-                      {outputFormat ? (
-                        <div>
-                          <dt className="text-scanonix-muted">Output format</dt>
-                          <dd className="font-semibold text-foreground">{outputFormat}</dd>
-                        </div>
-                      ) : null}
-                      {resultFileName ? (
-                        <div>
-                          <dt className="shrink-0 text-scanonix-muted">Output file</dt>
-                          <dd className="min-w-0 truncate font-semibold text-foreground">
-                            {resultFileName}
-                          </dd>
-                        </div>
-                      ) : null}
-                    </dl>
-                    {stats.outputSize === stats.originalSize ? (
-                      <p className="text-sm leading-relaxed text-foreground" role="status">
-                        No size reduction. Resize changes dimensions; file size may stay similar.
-                      </p>
-                    ) : null}
-                    {stats.outputSize > stats.originalSize ? (
-                      <p className="text-sm leading-relaxed text-foreground" role="status">
-                        Output is larger by{" "}
-                        {formatFileSize(stats.outputSize - stats.originalSize)}. Resize targets
-                        dimensions, not compression.
-                      </p>
-                    ) : null}
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        size="lg"
-                        className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
-                        disabled={isBusy}
-                        onClick={handleDownload}
-                      >
-                        Download image
-                      </ActionButton>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-scanonix-muted">
-                        Dimensions
-                      </p>
-                      <div className="image-proc-dimensions mt-3">
-                        <label className="block min-w-0 space-y-1.5">
-                          <span className="text-sm font-medium text-foreground">Width (px)</span>
-                          <input
-                            type="number"
-                            min={1}
-                            max={10000}
-                            value={width}
-                            onChange={(event) => handleWidthChange(event.target.value)}
-                            disabled={isBusy}
-                            className="input-field"
-                          />
-                        </label>
-                        <label className="block min-w-0 space-y-1.5">
-                          <span className="text-sm font-medium text-foreground">Height (px)</span>
-                          <input
-                            type="number"
-                            min={1}
-                            max={10000}
-                            value={height}
-                            onChange={(event) => handleHeightChange(event.target.value)}
-                            disabled={isBusy}
-                            className="input-field"
-                          />
-                        </label>
-                      </div>
-                      <label className="mt-3 flex items-center gap-2 text-sm text-foreground">
-                        <input
-                          type="checkbox"
-                          checked={lockAspect}
-                          onChange={(event) => setLockAspect(event.target.checked)}
-                          disabled={isBusy}
-                          className="accent-scanonix-orange"
-                        />
-                        Maintain aspect ratio
-                      </label>
-                      <p className="mt-2 text-sm leading-relaxed text-scanonix-muted">
-                        Image fits within the requested dimensions.
-                      </p>
-                    </div>
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        size="lg"
-                        className="h-12 w-full shadow-[var(--shadow-orange-sm)]"
-                        loading={isBusy}
-                        disabled={!file || isBusy}
-                        onClick={() => {
-                          void handleResize();
-                        }}
-                      >
-                        {isBusy ? "Resizing\u2026" : "Resize image"}
-                      </ActionButton>
-                    </div>
-                  </div>
-                )}
-                <div className="image-proc-privacy mt-4">
-                  <PrivacyNotice message={PRIVACY_MESSAGE} />
+            ) : (
+              <div className="ux-4c-settings">
+                <div className="ux-4c-dimensions">
+                  <label className="block min-w-0 space-y-1.5">
+                    <span className="text-sm font-medium text-foreground">Width (px)</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10000}
+                      value={width}
+                      onChange={(event) => handleWidthChange(event.target.value)}
+                      disabled={isBusy}
+                      className="input-field"
+                    />
+                  </label>
+                  <label className="block min-w-0 space-y-1.5">
+                    <span className="text-sm font-medium text-foreground">Height (px)</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10000}
+                      value={height}
+                      onChange={(event) => handleHeightChange(event.target.value)}
+                      disabled={isBusy}
+                      className="input-field"
+                    />
+                  </label>
                 </div>
+                <label className="flex items-center gap-2 text-sm text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={lockAspect}
+                    onChange={(event) => setLockAspect(event.target.checked)}
+                    disabled={isBusy}
+                    className="accent-scanonix-orange"
+                  />
+                  Maintain aspect ratio
+                </label>
+                <p className="ux-wave4c-hint">Image fits within the requested dimensions.</p>
               </div>
-            </div>
-          ) : null
-        }
-      />
-
-      <ToolStickyMobileActionBar
-        visible={Boolean(file)}
-        stickyUntil="lg"
-        phase={resultActionPhase}
-        primaryLabel={hasResult ? "Download image" : isBusy ? "Resizing\u2026" : "Resize image"}
-        primaryLoading={!hasResult && isBusy}
-        primaryDisabled={hasResult ? isBusy || !resultBlob : !file || isBusy}
-        showPrimaryOnError
-        onPrimaryClick={() => {
-          if (hasResult) {
-            handleDownload();
-          } else {
-            void handleResize();
-          }
-        }}
-        onStartOver={hasResult ? resetTool : undefined}
-        startOverLabel="Start over"
-        startOverDisabled={isBusy}
-      />
+            )}
+            <PrivacyNotice message={PRIVACY_MESSAGE} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

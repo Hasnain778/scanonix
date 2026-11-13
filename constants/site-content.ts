@@ -137,7 +137,7 @@ export const WORKSPACES: Workspace[] = [
         available: true,
       },
       { name: "JPG to PNG", href: "/tools/jpg-to-png", available: true },
-      { name: "Image Upscaler", href: "/tools/image-upscaler", available: true },
+      { name: "Image Upscaler", href: "/tools/image-upscaler", available: false },
       { name: "Image Resizer", href: "/tools/image-resizer", available: true },
       { name: "Logo Vectorizer", href: "/tools/logo-vectorizer", available: true },
       { name: "Image to SVG", href: "/tools/image-to-svg", available: true },
@@ -296,9 +296,9 @@ export const PRICING_COMPARISON: PricingComparisonRow[] = [
   },
   {
     feature: "Image upscaling",
-    free: false,
-    pro: "2× and 4×",
-    business: "2× and 4×",
+    free: "Not available",
+    pro: "Not available",
+    business: "Not available",
   },
   {
     feature: "Cloud sync",

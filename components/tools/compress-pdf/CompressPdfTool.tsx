@@ -1,18 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FileArchive } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
 import { CompressDocumentOverview } from "@/components/tools/compress-pdf/CompressDocumentOverview";
 import { formatCompressPdfSavingsLabel } from "@/components/tools/compress-pdf/savings-label";
 import { CompressionLevelPanel } from "@/components/tools/compress-pdf/CompressionLevelPanel";
 import { CompressProgressBanner } from "@/components/tools/compress-pdf/CompressProgressBanner";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-wave4d.css";
 import { compressPdfViaServer } from "@/lib/tools/compress-pdf/client";
 import {
   type CompressionLevel,
@@ -46,12 +43,6 @@ interface UploadedPdfState {
   file: File;
   pageCount: number;
   pdfBytes: ArrayBuffer;
-}
-
-function CompressDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return (
-    <FileArchive className={className} aria-hidden="true" strokeWidth={1.75} />
-  );
 }
 
 export function CompressPdfTool() {
@@ -89,16 +80,6 @@ export function CompressPdfTool() {
       uploadedPdf.pageCount > LARGE_PDF_PAGES
     );
   }, [uploadedPdf]);
-
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (isCompressing || isReading) return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (uploadedPdf !== null) return "ready";
-    return "idle";
-  }, [isCompressing, isReading, hasResult, status, uploadedPdf]);
-
-  const stickyVisible = Boolean(uploadedPdf);
 
   const resetTool = useCallback(() => {
     compressedBlobRef.current = null;
@@ -247,268 +228,148 @@ export function CompressPdfTool() {
     uploadedPdf != null &&
     compressedBlob.size < uploadedPdf.file.size;
 
+  const primaryLabel = hasResult
+    ? "Download PDF"
+    : isCompressing
+      ? "Compressing…"
+      : "Compress PDF";
+
   return (
-    <div className="compress-pdf-prototype space-y-5 overflow-x-hidden">
-      <CompressProgressBanner
-        status={isReading ? "loading" : status}
-        phase={phase}
-        message={isReading ? "Reading PDF…" : statusMessage}
-        progress={progress}
-      />
+    <div className="ux-wave4d overflow-x-hidden">
+      <div className="ux-wave4d-banner">
+        <CompressProgressBanner
+          status={isReading ? "loading" : status}
+          phase={phase}
+          message={isReading ? "Reading PDF…" : statusMessage}
+          progress={progress}
+        />
+      </div>
 
-      <ToolWorkspaceShell
-        isEmpty={!uploadedPdf}
-        empty={
-          <>
-            <FileDropZone
-              className="compress-drop"
-              onFilesSelected={handleUpload}
-              accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPdfFile}
-              multiple={false}
-              disabled={isBusy}
-              label="Drop a PDF file here to compress"
-              hint="or click to browse — one PDF at a time"
-              icon={<CompressDropIcon />}
-            />
-            <PrivacyNotice message={PRIVACY_MESSAGE} />
-          </>
-        }
-        workArea={
-          uploadedPdf ? (
-            <div className="w-full max-w-[16.5rem] sm:max-w-[17rem] lg:max-w-[28rem]">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-scanonix-orange/10 text-scanonix-orange">
-                    <CompressDropIcon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {uploadedPdf.file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(uploadedPdf.file.size)} ·{" "}
-                      {uploadedPdf.pageCount} page
-                      {uploadedPdf.pageCount === 1 ? "" : "s"}
-                    </p>
-                  </div>
-                </div>
-                <div className="hidden shrink-0 lg:block">
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={resetTool}
-                  >
-                    {hasResult ? "Start over" : "Choose another PDF"}
-                  </ActionButton>
-                </div>
+      {!uploadedPdf ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            fromLabel="PDF"
+            toLabel="Smaller"
+            buttonLabel="Upload a PDF"
+            prompt="Upload or drag a PDF here."
+            formats="PDF"
+            accept={ACCEPTED_PDF_EXTENSIONS}
+            multiple={false}
+            disabled={isBusy}
+            validateFile={isAcceptedPdfFile}
+            onFilesSelected={(files) => {
+              void handleUpload(files);
+            }}
+          />
+          <p className="ux-wave4d-note">One PDF at a time</p>
+          <PrivacyNotice message={PRIVACY_MESSAGE} />
+        </div>
+      ) : (
+        <div className="ux-workspace" data-tool-workspace="active">
+          <div className="ux-stage">
+            <div className="ux-command">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {uploadedPdf.file.name}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-scanonix-muted">
+                  {formatFileSize(uploadedPdf.file.size)} · {uploadedPdf.pageCount} page
+                  {uploadedPdf.pageCount === 1 ? "" : "s"}
+                </p>
               </div>
-
-              {isLargePdf && (
-                <div className="mt-3 rounded-lg bg-amber-500/10 px-3 py-2 text-sm text-foreground">
-                  This is a large PDF. Server compression may take longer to
-                  complete.
-                </div>
-              )}
-
-              <div className="mt-3 w-fit max-w-full rounded-xl bg-surface-strong p-3 sm:p-4">
-                <CompressDocumentOverview
-                  pdfBytes={uploadedPdf.pdfBytes}
-                  pageCount={uploadedPdf.pageCount}
-                  fileName={uploadedPdf.file.name}
-                  level={level}
-                  isCompressing={isCompressing}
-                  compressedSize={compressedBlob?.size ?? null}
-                  hasResult={hasResult}
-                />
+              <div className="ux-command-actions">
+                <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={resetTool}>
+                  {hasResult ? "Start over" : "Choose another PDF"}
+                </ActionButton>
+                <ActionButton
+                  size="lg"
+                  className="ux-command-primary"
+                  loading={hasResult ? isDownloading : isCompressing}
+                  disabled={hasResult ? isBusy || !compressedBlob : isBusy}
+                  onClick={() => {
+                    if (hasResult) void handleDownload();
+                    else void handleCompress();
+                  }}
+                >
+                  {primaryLabel}
+                </ActionButton>
               </div>
             </div>
-          ) : null
-        }
-        controlPanel={
-          uploadedPdf ? (
-            <ToolControlPanel
-              aria-label="Compress PDF controls"
-              footer={
-                hasResult && compressedBlob ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full"
-                        loading={isDownloading}
-                        disabled={isBusy}
-                        onClick={() => {
-                          void handleDownload();
-                        }}
-                      >
-                        Download PDF
-                      </ActionButton>
-                    </div>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={handleChangeSettings}
-                    >
-                      Change settings
-                    </ActionButton>
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        variant="outline"
-                        size="lg"
-                        className="w-full"
-                        disabled={isBusy}
-                        onClick={resetTool}
-                      >
-                        Start over
-                      </ActionButton>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      {compressHint}
-                    </p>
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)]"
-                        loading={isCompressing}
-                        disabled={isBusy}
-                        onClick={() => {
-                          void handleCompress();
-                        }}
-                      >
-                        {isCompressing ? "Compressing…" : "Compress PDF"}
-                      </ActionButton>
-                    </div>
-                  </div>
-                )
-              }
-            >
-              {hasResult && compressedBlob ? (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <p
-                      className={`mt-1.5 text-sm font-semibold ${
-                        reduced
-                          ? "text-emerald-800 [[data-theme=dark]_&]:text-emerald-300"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {reduced ? "✓ Compression complete" : "No smaller file"}
-                    </p>
-                    <p className="mt-1 text-xs text-scanonix-muted">
-                      {reduced
-                        ? "Your compressed PDF is ready to download."
-                        : "This PDF is already well optimized. No smaller result was produced."}
-                    </p>
-                  </div>
 
-                  <dl className="space-y-2.5 text-sm">
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-scanonix-muted">Original size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(uploadedPdf.file.size)}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-scanonix-muted">Compressed size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(compressedBlob.size)}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-scanonix-muted">Saved</dt>
-                      <dd className="font-semibold text-foreground">
-                        {savingsPercent != null && savingsPercent > 0
-                          ? formatCompressPdfSavingsLabel(
-                              uploadedPdf.file.size,
-                              compressedBlob.size,
-                              savingsPercent,
-                            )
-                          : "No reduction"}
-                      </dd>
-                    </div>
-                    <div className="min-w-0">
-                      <dt className="text-scanonix-muted">Filename</dt>
-                      <dd className="mt-0.5 truncate font-semibold text-foreground">
-                        scanonix-compressed.pdf
-                      </dd>
-                    </div>
-                  </dl>
+            {isLargePdf ? (
+              <div className="ux-wave4d-warning text-sm text-foreground">
+                This is a large PDF. Server compression may take longer to complete.
+              </div>
+            ) : null}
+
+            <CompressDocumentOverview
+              pdfBytes={uploadedPdf.pdfBytes}
+              pageCount={uploadedPdf.pageCount}
+              fileName={uploadedPdf.file.name}
+              level={level}
+              isCompressing={isCompressing}
+              compressedSize={compressedBlob?.size ?? null}
+              hasResult={hasResult}
+            />
+
+            {hasResult && compressedBlob ? (
+              <div className="ux-4d-result">
+                <div>
+                  <p className="ux-wave4d-note text-left">
+                    {reduced ? "Compression complete" : "No smaller file"}
+                  </p>
+                  <p className="mt-1 text-sm text-foreground">
+                    {reduced
+                      ? "Your compressed PDF is ready to download."
+                      : "This PDF is already well optimized. No smaller result was produced."}
+                  </p>
                 </div>
-              ) : (
-                <div className="space-y-4">
+                <dl className="ux-4d-stats text-sm">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <FileArchive
-                        className="h-4 w-4 text-scanonix-orange"
-                        aria-hidden="true"
-                      />
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                        Settings
-                      </p>
-                    </div>
-                    <p className="mt-1.5 text-sm leading-snug text-scanonix-muted">
-                      Reduce PDF file size with server-side compression while
-                      preserving selectable text.
-                    </p>
+                    <dt className="text-scanonix-muted">Original size</dt>
+                    <dd className="font-semibold text-foreground">{formatFileSize(uploadedPdf.file.size)}</dd>
                   </div>
-
-                  <CompressionLevelPanel
-                    level={level}
-                    onLevelChange={setLevel}
-                    originalSize={uploadedPdf.file.size}
-                    disabled={isBusy}
-                    isPro={isPro}
-                  />
-
-                  <div className="compress-privacy">
-                    <PrivacyNotice message={PRIVACY_MESSAGE} />
+                  <div>
+                    <dt className="text-scanonix-muted">Compressed size</dt>
+                    <dd className="font-semibold text-foreground">{formatFileSize(compressedBlob.size)}</dd>
                   </div>
-                </div>
-              )}
-            </ToolControlPanel>
-          ) : null
-        }
-      />
+                  <div>
+                    <dt className="text-scanonix-muted">Saved</dt>
+                    <dd className="font-semibold text-foreground">
+                      {savingsPercent != null && savingsPercent > 0
+                        ? formatCompressPdfSavingsLabel(uploadedPdf.file.size, compressedBlob.size, savingsPercent)
+                        : "No reduction"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-scanonix-muted">Filename</dt>
+                    <dd className="min-w-0 truncate font-semibold text-foreground">scanonix-compressed.pdf</dd>
+                  </div>
+                </dl>
+                <ActionButton variant="ghost" size="sm" disabled={isBusy} onClick={handleChangeSettings}>
+                  Change settings
+                </ActionButton>
+              </div>
+            ) : (
+              <div className="ux-4d-settings">
+                <p className="text-sm leading-snug text-scanonix-muted">
+                  Reduce PDF file size with server-side compression while preserving selectable text.
+                </p>
+                <CompressionLevelPanel
+                  level={level}
+                  onLevelChange={setLevel}
+                  originalSize={uploadedPdf.file.size}
+                  disabled={isBusy}
+                  isPro={isPro}
+                />
+                <p className="ux-wave4d-hint">{compressHint}</p>
+              </div>
+            )}
 
-      <ToolStickyMobileActionBar
-        stickyUntil="lg"
-        visible={stickyVisible}
-        phase={resultActionPhase}
-        primaryLabel={hasResult ? "Download PDF" : "Compress PDF"}
-        primaryLoading={hasResult ? isDownloading : isCompressing}
-        primaryDisabled={hasResult ? isBusy || !compressedBlob : isBusy}
-        showPrimaryOnError
-        onPrimaryClick={() => {
-          if (hasResult) {
-            void handleDownload();
-          } else {
-            void handleCompress();
-          }
-        }}
-        secondaryLabel={
-          resultActionPhase === "ready" && uploadedPdf
-            ? "Choose another PDF"
-            : undefined
-        }
-        onSecondaryClick={
-          resultActionPhase === "ready" && uploadedPdf ? resetTool : undefined
-        }
-        secondaryDisabled={isBusy}
-        onStartOver={hasResult ? resetTool : undefined}
-        startOverLabel="Start over"
-        startOverDisabled={isBusy}
-      />
+            <PrivacyNotice message={PRIVACY_MESSAGE} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

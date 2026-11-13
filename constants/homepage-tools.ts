@@ -382,8 +382,9 @@ export const HOMEPAGE_TOOLS: HomepageTool[] = [
   {
     id: "image-upscaler",
     name: "Image Upscaler",
-    shortDescription: "Enlarge images 2× or 4× with Lanczos.",
-    description: "Upscale images 2× or 4× with high-quality Lanczos resampling.",
+    shortDescription: "Not currently available.",
+    description:
+      "Image Upscaler is not currently available. New upscales are turned off.",
     href: "/tools/image-upscaler",
     category: "image",
     icon: "convert",
@@ -740,7 +741,7 @@ export const HERO_QUICK_SUGGESTIONS = [
   "pdf-to-word",
   "image-to-pdf",
   "ai-translate",
-  "image-upscaler",
+  "image-compressor",
 ] as const;
 
 export function getPopularTools(): HomepageTool[] {
@@ -778,7 +779,6 @@ export const NAV_DROPDOWN_TOOLS: Record<
     tools: [
       { name: "Image Editor", href: "/tools/image-editor" },
       { name: "Image Compressor", href: "/tools/image-compressor" },
-      { name: "Image Upscaler", href: "/tools/image-upscaler" },
       { name: "Logo Vectorizer", href: "/tools/logo-vectorizer" },
       { name: "Image to SVG", href: "/tools/image-to-svg" },
       { name: "Raster to Vector", href: "/tools/raster-to-vector" },

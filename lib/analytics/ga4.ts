@@ -183,6 +183,9 @@ const GA_CONFIG = {
   allow_ad_personalization_signals: false,
 } as const;
 
+/** Last consent command queued in this page. Reject clears it so the next accept can update. */
+let analyticsConsentIsGranted = false;
+
 type GaDisableWindow = Window & Record<string, boolean | undefined>;
 
 function gaDisableWindow(): GaDisableWindow {
@@ -248,35 +251,50 @@ export function getLastSentRouteKey(): string | null {
   return gaRuntime().lastSentRouteKey;
 }
 
-/** Soft reset on withdrawal — preserves configured destinations to avoid stacking config on re-enable. */
+/**
+ * Soft reset on withdrawal. Keeps configured destinations and the last
+ * page-view route so a consent toggle cannot stack config or page views.
+ */
 export function resetGaRuntimeState(): void {
   if (!isBrowser()) return;
   const rt = gaRuntime();
   rt.ready = false;
   rt.activationComplete = false;
-  rt.lastSentRouteKey = null;
   debugLog("runtime state reset (config destinations preserved)");
 }
 
-/** Queue consent + config in dataLayer before gtag.js downloads (Google canonical order). */
+/**
+ * Queue the denied default, then the analytics grant, before gtag.js downloads.
+ * A repeat call after reject only sends the granted update. It does not
+ * repeat default, js, or config, and it does not grant advertising storage.
+ */
 export function bootstrapGaBeforeScript(): void {
   const measurementId = getMeasurementId();
   if (!measurementId || !isBrowser()) return;
 
   const rt = gaRuntime();
   if (rt.bootstrapComplete) {
-    debugLog("bootstrap skipped", "reason=already-complete");
+    if (!analyticsConsentIsGranted) {
+      enableAnalyticsTracking();
+      gtag("consent", "update", CONSENT_GRANTED);
+      analyticsConsentIsGranted = true;
+      debugLog("bootstrap", "analytics consent update re-queued");
+    } else {
+      debugLog("bootstrap skipped", "reason=already-complete");
+    }
     return;
   }
 
   initDataLayer();
   enableAnalyticsTracking();
-  gtag("consent", "default", CONSENT_GRANTED);
+  gtag("consent", "default", CONSENT_DENIED);
+  gtag("consent", "update", CONSENT_GRANTED);
   gtag("js", new Date());
   ensureMeasurementConfigured(measurementId);
 
   rt.bootstrapComplete = true;
-  debugLog("bootstrap", "dataLayer configured before gtag.js");
+  analyticsConsentIsGranted = true;
+  debugLog("bootstrap", "denied default and analytics update queued before gtag.js");
   debugLogDataLayer("after-bootstrap");
 }
 
@@ -286,6 +304,7 @@ export function disableAnalyticsTracking(): void {
 
   setGaDisabled(measurementId, true);
   resetGaRuntimeState();
+  analyticsConsentIsGranted = false;
 
   if (typeof window.gtag === "function") {
     gtag("consent", "update", CONSENT_DENIED);

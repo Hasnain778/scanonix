@@ -1343,6 +1343,11 @@ html[data-theme="bright"] .nav-link-premium--active {
   text-shadow: none;
 }
 
+/* Homepage search owns the lower viewport while its dropdown is open. */
+html[data-home-search-open] .tool-finder-launcher {
+  display: none;
+}
+
 /* Tool Finder launcher — theme-aware premium pill */
 .tool-finder-launcher {
   border: 1px solid color-mix(in srgb, var(--scanonix-orange) 38%, transparent);

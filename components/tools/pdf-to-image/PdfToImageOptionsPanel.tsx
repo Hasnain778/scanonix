@@ -20,6 +20,10 @@ interface PdfToImageOptionsPanelProps {
   disabled?: boolean;
   /** Compact vertical layout for sticky control rails */
   compact?: boolean;
+  /** Keep format visible and place quality and resolution behind a disclosure. */
+  advancedDisclosure?: boolean;
+  /** Inline controls for the two-tool workspace. Default keeps the stacked cards. */
+  presentation?: "stack" | "inline";
 }
 
 const MODES: {
@@ -79,17 +83,13 @@ function SectionLabel({
   children: string;
   compact: boolean;
 }) {
-  return (
-    <h2
-      className={
-        compact
-          ? "text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted"
-          : "text-lg font-semibold text-foreground"
-      }
-    >
-      {children}
-    </h2>
-  );
+  const className = compact
+    ? "text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted"
+    : "text-lg font-semibold text-foreground";
+  if (compact) {
+    return <p className={className}>{children}</p>;
+  }
+  return <h2 className={className}>{children}</h2>;
 }
 
 export function PdfToImageOptionsPanel({
@@ -106,7 +106,158 @@ export function PdfToImageOptionsPanel({
   rangeError,
   disabled = false,
   compact = false,
+  advancedDisclosure = false,
+  presentation = "stack",
 }: PdfToImageOptionsPanelProps) {
+  const qualityLabel = QUALITIES.find((option) => option.value === quality)?.label ?? "High";
+  const scaleLabel = SCALES.find((option) => option.value === scale)?.label ?? "2x";
+  const qualityAndSize = (
+    <>
+      <fieldset disabled={disabled}>
+        <legend className="mb-1.5 text-xs font-medium text-foreground">
+          Quality
+        </legend>
+        <div className="flex flex-wrap gap-1.5">
+          {QUALITIES.map((option) => (
+            <label
+              key={option.value}
+              className={chipClass(
+                quality === option.value,
+                disabled,
+                compact,
+              )}
+            >
+              <input
+                type="radio"
+                name="imageQuality"
+                value={option.value}
+                checked={quality === option.value}
+                onChange={() => onQualityChange(option.value)}
+                className="sr-only"
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+        {format === "png" && (
+          <p className="mt-1.5 text-[11px] text-scanonix-muted">
+            PNG is always lossless regardless of quality setting.
+          </p>
+        )}
+      </fieldset>
+
+      <fieldset disabled={disabled}>
+        <legend className="mb-1.5 text-xs font-medium text-foreground">
+          Resolution
+        </legend>
+        <div className="flex flex-wrap gap-1.5">
+          {SCALES.map((option) => (
+            <label
+              key={option.value}
+              className={chipClass(scale === option.value, disabled, compact)}
+            >
+              <input
+                type="radio"
+                name="imageScale"
+                value={option.value}
+                checked={scale === option.value}
+                onChange={() => onScaleChange(option.value)}
+                className="sr-only"
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+        <p className="mt-1.5 text-[11px] text-scanonix-muted">
+          Higher resolution produces sharper images with larger file sizes.
+        </p>
+      </fieldset>
+    </>
+  );
+  if (presentation === "inline") {
+    const modeHint = MODES.find((option) => option.value === mode)?.description;
+    return (
+      <div className="space-y-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <fieldset disabled={disabled} className="min-w-0">
+            <legend className="mb-1.5 text-xs text-foreground-muted">Pages</legend>
+            <div className="flex flex-wrap gap-1.5">
+              {MODES.map((option) => (
+                <label
+                  key={option.value}
+                  className={chipClass(mode === option.value, disabled, true)}
+                >
+                  <input
+                    type="radio"
+                    name="pdfToImageMode"
+                    value={option.value}
+                    checked={mode === option.value}
+                    onChange={() => onModeChange(option.value)}
+                    disabled={disabled}
+                    className="sr-only"
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <fieldset disabled={disabled} className="min-w-0">
+            <legend className="mb-1.5 text-xs text-foreground-muted">Format</legend>
+            <div className="flex flex-wrap gap-1.5">
+              {FORMATS.map((option) => (
+                <label
+                  key={option.value}
+                  className={chipClass(format === option.value, disabled, true)}
+                >
+                  <input
+                    type="radio"
+                    name="imageFormat"
+                    value={option.value}
+                    checked={format === option.value}
+                    onChange={() => onFormatChange(option.value)}
+                    className="sr-only"
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <details className="sm:ml-auto">
+            <summary className="cursor-pointer text-sm text-foreground-muted">
+              Quality and size
+              <span className="text-foreground"> · {qualityLabel}, {scaleLabel}</span>
+            </summary>
+            <div className="mt-3 space-y-3">{qualityAndSize}</div>
+          </details>
+        </div>
+        {modeHint ? (
+          <p className="text-xs text-foreground-muted">{modeHint}</p>
+        ) : null}
+        {mode === "ranges" ? (
+          <div>
+            <label htmlFor="image-page-ranges" className="mb-1.5 block text-xs text-foreground">
+              Page ranges
+            </label>
+            <input
+              id="image-page-ranges"
+              type="text"
+              value={rangeInput}
+              onChange={(event) => onRangeInputChange(event.target.value)}
+              disabled={disabled}
+              placeholder="e.g. 1-3, 5, 8-10"
+              className="w-full max-w-md rounded-lg border border-border bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-scanonix-muted/60 focus:border-foreground focus:outline-none disabled:opacity-50"
+            />
+            {rangeError ? (
+              <p className="mt-2 text-sm text-red-500" role="alert">
+                {rangeError}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className={compact ? "space-y-5" : "space-y-4"}>
       <section className={compact ? "space-y-2.5" : "rounded-2xl border border-border bg-surface p-4 sm:p-5"}>
@@ -238,65 +389,19 @@ export function PdfToImageOptionsPanel({
             </div>
           </fieldset>
 
-          <fieldset disabled={disabled}>
-            <legend className="mb-1.5 text-xs font-medium text-foreground">
-              Quality
-            </legend>
-            <div className="flex flex-wrap gap-1.5">
-              {QUALITIES.map((option) => (
-                <label
-                  key={option.value}
-                  className={chipClass(
-                    quality === option.value,
-                    disabled,
-                    compact,
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name="imageQuality"
-                    value={option.value}
-                    checked={quality === option.value}
-                    onChange={() => onQualityChange(option.value)}
-                    className="sr-only"
-                  />
-                  {option.label}
-                </label>
-              ))}
-            </div>
-            {format === "png" && (
-              <p className="mt-1.5 text-[11px] text-scanonix-muted">
-                PNG is always lossless regardless of quality setting.
-              </p>
-            )}
-          </fieldset>
-
-          <fieldset disabled={disabled}>
-            <legend className="mb-1.5 text-xs font-medium text-foreground">
-              Resolution
-            </legend>
-            <div className="flex flex-wrap gap-1.5">
-              {SCALES.map((option) => (
-                <label
-                  key={option.value}
-                  className={chipClass(scale === option.value, disabled, compact)}
-                >
-                  <input
-                    type="radio"
-                    name="imageScale"
-                    value={option.value}
-                    checked={scale === option.value}
-                    onChange={() => onScaleChange(option.value)}
-                    className="sr-only"
-                  />
-                  {option.label}
-                </label>
-              ))}
-            </div>
-            <p className="mt-1.5 text-[11px] text-scanonix-muted">
-              Higher resolution produces sharper images with larger file sizes.
-            </p>
-          </fieldset>
+          {advancedDisclosure ? (
+            <details className="rounded-xl border border-border px-3 py-3">
+              <summary className="cursor-pointer text-sm font-semibold text-foreground">
+                Quality and size
+                <span className="mt-0.5 block text-xs font-normal text-foreground-muted">
+                  {qualityLabel}, {scaleLabel}
+                </span>
+              </summary>
+              <div className="mt-4 space-y-3.5">{qualityAndSize}</div>
+            </details>
+          ) : (
+            qualityAndSize
+          )}
         </div>
       </section>
     </div>

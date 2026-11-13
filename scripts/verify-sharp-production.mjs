@@ -19,6 +19,34 @@ const SHARP_IMAGE_ROUTES = [
     route: "/api/tools/image/resize",
     nftPath: ".next/server/app/api/tools/image/resize/route.js.nft.json",
   },
+  {
+    route: "/api/tools/image/upscale",
+    nftPath: ".next/server/app/api/tools/image/upscale/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/image/upscale/jobs",
+    nftPath: ".next/server/app/api/tools/image/upscale/jobs/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/jpg-to-psd",
+    nftPath: ".next/server/app/api/tools/jpg-to-psd/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/png-to-psd",
+    nftPath: ".next/server/app/api/tools/png-to-psd/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/image-to-svg",
+    nftPath: ".next/server/app/api/tools/image-to-svg/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/logo-vectorizer",
+    nftPath: ".next/server/app/api/tools/logo-vectorizer/route.js.nft.json",
+  },
+  {
+    route: "/api/tools/raster-to-vector",
+    nftPath: ".next/server/app/api/tools/raster-to-vector/route.js.nft.json",
+  },
 ];
 
 const REQUIRED_NFT_MARKERS = [
@@ -103,12 +131,13 @@ function testNextConfigTracingIncludes() {
   );
   assert.match(configSource, /serverExternalPackages:\s*\["@react-pdf\/renderer"\]/);
   assert.match(configSource, /outputFileTracingIncludes:/);
-  assert.match(configSource, /\/api\/tools\/image\/compress/);
-  assert.match(configSource, /\/api\/tools\/image\/resize/);
+  for (const { route } of SHARP_IMAGE_ROUTES) {
+    assert.match(configSource, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
   assert.match(configSource, /node_modules\/@img\/sharp-linux-x64\/\*\*\/\*/);
   assert.match(configSource, /node_modules\/@img\/sharp-libvips-linux-x64\/\*\*\/\*/);
 
-  ok("next.config.ts defines targeted outputFileTracingIncludes for compress and resize routes");
+  ok("next.config.ts traces linux-x64 sharp and libvips for every sharp image route");
 }
 
 function testPackageJsonPin() {

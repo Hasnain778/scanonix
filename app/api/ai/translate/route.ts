@@ -11,7 +11,7 @@ import {
   requirePremiumAiPlan,
   validateUploadSize,
 } from "@/lib/plan/access";
-import { consumeUsage } from "@/lib/plan/usage";
+import { runWithReservedUsage } from "@/lib/ai/reserved-usage";
 import {
   checkRateLimit,
   enforceRateLimit,
@@ -89,32 +89,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: AI_TRANSLATION_UNAVAILABLE }, { status: 503 });
     }
 
-    const result = await translateTextAdvanced(
-      body.text ?? "",
-      sourceLanguage,
-      targetLanguage,
-    );
+    const reserved = await runWithReservedUsage({
+      userId: access.user.id,
+      plan: access.plan,
+      run: () => translateTextAdvanced(body.text ?? "", sourceLanguage, targetLanguage),
+    });
 
-    const usage = await consumeUsage(access.user.id, access.plan);
-    if (!usage.allowed) {
+    if (reserved.status === "denied") {
       return limitReachedResponse(
         route,
         "Tool operation limit reached for your current plan.",
         {
-          usageCount: usage.usageCount,
-          limit: usage.limit,
-          remaining: usage.remaining,
-          resetAt: usage.resetAt,
+          usageCount: reserved.usage.usageCount,
+          limit: reserved.usage.limit,
+          remaining: reserved.usage.remaining,
+          resetAt: reserved.usage.resetAt,
         },
       );
     }
 
     return NextResponse.json({
-      translatedText: result.translatedText,
-      detectedLanguage: result.detectedLanguage,
-      text: result.translatedText,
-      remaining: usage.remaining,
-      resetAt: usage.resetAt,
+      translatedText: reserved.value.translatedText,
+      detectedLanguage: reserved.value.detectedLanguage,
+      text: reserved.value.translatedText,
+      remaining: reserved.usage.remaining,
+      resetAt: reserved.usage.resetAt,
     });
   } catch (error) {
     if (error instanceof OpenAiError) {

@@ -8,20 +8,18 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { FileImage } from "lucide-react";
 import type { ImageConverterDefinition } from "@/constants/image-tools";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { ImagePreviewGrid } from "@/components/tools/ImagePreviewGrid";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
 import {
   TiffConverterQueue,
   type TiffPreviewView,
 } from "@/components/image-tools/TiffConverterQueue";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
 import "@/styles/image-converter-premium.css";
+import "@/styles/ux-reset-file-pair.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import {
@@ -52,12 +50,6 @@ interface DownloadState {
 
 interface ImageFormatConverterToolProps {
   config: ImageConverterDefinition;
-}
-
-function ConverterIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return (
-    <FileImage className={className} strokeWidth={1.75} aria-hidden="true" />
-  );
 }
 
 export function ImageFormatConverterTool({
@@ -537,9 +529,18 @@ export function ImageFormatConverterTool({
     </ActionButton>
   );
 
+  const formatLine =
+    config.from === "jpg"
+      ? "JPG, JPEG"
+      : config.from === "heic"
+        ? "HEIC, HEIF"
+        : config.from === "tiff"
+          ? "TIF, TIFF"
+          : fromLabel;
+
   return (
     <div
-      className={`image-converter-premium space-y-5 overflow-x-hidden${isTiff ? " tiff-workspace" : ""}`}
+      className={`ux-converter image-converter-premium overflow-x-hidden${isTiff ? " tiff-workspace" : ""}`}
     >
       <ToolStatusBanner
         status={status}
@@ -547,27 +548,31 @@ export function ImageFormatConverterTool({
         progress={progress}
       />
 
-      <ToolWorkspaceShell
-        isEmpty={images.length === 0}
-        empty={
-          <>
-            <FileDropZone
-              className="converter-drop"
-              onFilesSelected={addFiles}
-              accept={accept}
-              validateFile={validateFile}
-              disabled={isBusy}
-              label={`Drop ${fromLabel} images here`}
-              hint={`or click to browse \u2014 ${config.acceptExtensions} \u00B7 Output ${config.outputLabel}`}
-              icon={<ConverterIcon />}
-            />
-            <div className="converter-privacy">
-              <PrivacyNotice message={PRIVACY_MESSAGE} />
-            </div>
-          </>
-        }
-        workArea={
-          images.length > 0 ? (
+      {images.length === 0 ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            className="converter-drop"
+            fromLabel={fromLabel}
+            toLabel={config.outputLabel}
+            buttonLabel={`Upload ${fromLabel}`}
+            prompt={`Upload or drag a ${fromLabel} here.`}
+            formats={formatLine}
+            accept={accept}
+            validateFile={validateFile}
+            disabled={isBusy}
+            onFilesSelected={addFiles}
+            onInvalidFiles={() => {
+              setStatus("error");
+              setStatusMessage(`Choose a ${fromLabel} file.`);
+            }}
+          />
+          <div className="converter-privacy">
+            <PrivacyNotice message={PRIVACY_MESSAGE} />
+          </div>
+        </div>
+      ) : (
+        <div className={isTiff ? "space-y-4" : "ux-workspace"} data-tool-workspace="active">
+          <div className={isTiff ? undefined : "ux-stage"}>
             <div
               className={
                 isTiff
@@ -575,153 +580,146 @@ export function ImageFormatConverterTool({
                   : undefined
               }
             >
-              <div className={isTiff ? "tiff-main min-w-0 space-y-4" : "space-y-5"}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {images.length} image{images.length === 1 ? "" : "s"}
-                    <span className="font-normal text-scanonix-muted">
-                      {" \u00B7 "}
-                      {formatFileSize(totalInputBytes)}
-                    </span>
-                  </p>
-                  <p className="mt-0.5 text-xs text-scanonix-muted">
-                    {isTiff
-                      ? images.length > 1
-                        ? "Drag to reorder."
-                        : "Selected file"
-                      : "Drag to reorder."}
-                    {config.from === "heic"
-                      ? " HEIC previews may not display in every browser \u2014 filenames and order still apply."
-                      : ""}
-                  </p>
+              <div className={isTiff ? "tiff-main min-w-0 space-y-4" : "space-y-4"}>
+                <div className={isTiff ? "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" : "ux-command"}>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {images.length} image{images.length === 1 ? "" : "s"}
+                      <span className="font-normal text-scanonix-muted">
+                        {" \u00B7 "}
+                        {formatFileSize(totalInputBytes)}
+                      </span>
+                    </p>
+                    <p className="mt-0.5 text-xs text-scanonix-muted">
+                      {isTiff
+                        ? images.length > 1
+                          ? "Drag to reorder."
+                          : "Selected file"
+                        : "Drag to reorder."}
+                      {config.from === "heic"
+                        ? " HEIC previews may not display in every browser \u2014 filenames and order still apply."
+                        : ""}
+                    </p>
+                  </div>
+                  <div className={isTiff ? "flex w-full flex-col gap-2 sm:w-auto sm:flex-row" : "ux-command-actions"}>
+                    <input
+                      ref={addMoreInputRef}
+                      type="file"
+                      accept={accept}
+                      multiple
+                      className="sr-only"
+                      disabled={isBusy}
+                      onChange={handleAddMoreChange}
+                    />
+                    <ActionButton
+                      variant="ghost"
+                      size="sm"
+                      disabled={isBusy}
+                      onClick={() => addMoreInputRef.current?.click()}
+                    >
+                      Add more
+                    </ActionButton>
+                    <ActionButton
+                      variant="ghost"
+                      size="sm"
+                      disabled={isBusy}
+                      onClick={clearAll}
+                    >
+                      Start over
+                    </ActionButton>
+                    {isTiff ? null : desktopPrimary("ux-command-primary")}
+                  </div>
                 </div>
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                  <input
-                    ref={addMoreInputRef}
-                    type="file"
-                    accept={accept}
-                    multiple
-                    className="sr-only"
-                    disabled={isBusy}
-                    onChange={handleAddMoreChange}
-                  />
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={() => addMoreInputRef.current?.click()}
-                  >
-                    Add more
-                  </ActionButton>
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={clearAll}
-                  >
-                    Start over
-                  </ActionButton>
-                </div>
-              </div>
 
-              {isTiff ? (
-                <TiffConverterQueue
-                  images={images}
-                  previews={tiffPreviews}
-                  resultPreviewUrl={resultPreviewUrl}
-                  onRemove={removeImage}
-                  onReorder={reorderImages}
-                  onPreviewError={markTiffPreviewUnavailable}
-                  disabled={isBusy}
-                />
-              ) : (
-                <div className="converter-queue min-w-0">
-                  <ImagePreviewGrid
+                {isTiff ? (
+                  <TiffConverterQueue
                     images={images}
+                    previews={tiffPreviews}
+                    resultPreviewUrl={resultPreviewUrl}
                     onRemove={removeImage}
                     onReorder={reorderImages}
-                    showDimensions
-                    showHeading={false}
+                    onPreviewError={markTiffPreviewUnavailable}
                     disabled={isBusy}
                   />
-                </div>
-              )}
+                ) : (
+                  <div className="ux-preview-stage converter-queue min-w-0">
+                    <ImagePreviewGrid
+                      images={images}
+                      onRemove={removeImage}
+                      onReorder={reorderImages}
+                      showDimensions
+                      showHeading={false}
+                      disabled={isBusy}
+                    />
+                  </div>
+                )}
 
-              {!isTiff && showOptions ? (
-                <section
-                  className="converter-options max-w-xl space-y-4 rounded-xl border px-4 py-4"
-                  data-converter-options=""
-                  aria-label="Conversion options"
-                >
-                  {showQuality ? (
-                    <div className="space-y-2">
-                      <label
-                        htmlFor={`${config.slug}-quality`}
-                        className="block text-sm font-medium text-foreground"
-                      >
-                        Quality ({quality}%)
-                      </label>
-                      <input
-                        id={`${config.slug}-quality`}
-                        data-converter-control="quality"
-                        type="range"
-                        min={60}
-                        max={100}
-                        value={quality}
-                        disabled={isBusy}
-                        onChange={(event) => {
-                          invalidateResult();
-                          setQuality(Number(event.target.value));
-                        }}
-                        className="converter-quality w-full"
-                      />
-                    </div>
-                  ) : null}
-
-                  {needsBackground ? (
-                    <div className="space-y-2">
-                      <label
-                        htmlFor={`${config.slug}-background-color`}
-                        className="block text-sm font-medium text-foreground"
-                      >
-                        Background colour
-                      </label>
-                      <div className="flex items-center gap-3">
+                {!isTiff && showOptions ? (
+                  <section
+                    className="converter-options space-y-4 rounded-xl border border-border bg-surface px-4 py-4"
+                    data-converter-options=""
+                    aria-label="Conversion options"
+                  >
+                    {showQuality ? (
+                      <div className="space-y-2">
+                        <label
+                          htmlFor={`${config.slug}-quality`}
+                          className="block text-sm font-medium text-foreground"
+                        >
+                          Quality ({quality}%)
+                        </label>
                         <input
-                          id={`${config.slug}-background-color`}
-                          data-converter-control="background"
-                          type="color"
-                          value={backgroundColor}
+                          id={`${config.slug}-quality`}
+                          data-converter-control="quality"
+                          type="range"
+                          min={60}
+                          max={100}
+                          value={quality}
                           disabled={isBusy}
                           onChange={(event) => {
                             invalidateResult();
-                            setBackgroundColor(event.target.value);
+                            setQuality(Number(event.target.value));
                           }}
-                          className="h-10 w-14 cursor-pointer rounded-lg border border-border bg-transparent"
+                          className="converter-quality w-full"
                         />
-                        <span className="font-mono text-sm text-scanonix-muted">
-                          {backgroundColor}
-                        </span>
                       </div>
-                      {showTransparencyWarning ? (
-                        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-relaxed text-foreground">
-                          JPG does not support transparency. Transparent areas
-                          will be flattened onto your selected background colour.
-                        </p>
-                      ) : null}
-                    </div>
-                  ) : null}
-                </section>
-              ) : null}
+                    ) : null}
 
-              {!isTiff ? (
-                <div className="hidden lg:block">
-                  {desktopPrimary("h-12 min-w-56 px-8 shadow-[var(--shadow-orange-sm)]")}
-                </div>
-              ) : null}
+                    {needsBackground ? (
+                      <div className="space-y-2">
+                        <label
+                          htmlFor={`${config.slug}-background-color`}
+                          className="block text-sm font-medium text-foreground"
+                        >
+                          Background colour
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            id={`${config.slug}-background-color`}
+                            data-converter-control="background"
+                            type="color"
+                            value={backgroundColor}
+                            disabled={isBusy}
+                            onChange={(event) => {
+                              invalidateResult();
+                              setBackgroundColor(event.target.value);
+                            }}
+                            className="h-10 w-14 cursor-pointer rounded-lg border border-border bg-transparent"
+                          />
+                          <span className="font-mono text-sm text-scanonix-muted">
+                            {backgroundColor}
+                          </span>
+                        </div>
+                        {showTransparencyWarning ? (
+                          <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-relaxed text-foreground">
+                            JPG does not support transparency. Transparent areas
+                            will be flattened onto your selected background colour.
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </section>
+                ) : null}
               </div>
 
               {isTiff ? (
@@ -730,30 +728,21 @@ export function ImageFormatConverterTool({
                   aria-label="Conversion settings"
                 >
                   {tiffSettings}
-                  <div className="tiff-inspector-action hidden lg:block">
+                  <div className="tiff-inspector-action">
                     {desktopPrimary("h-12 w-full shadow-[var(--shadow-orange-sm)]")}
                   </div>
                 </aside>
               ) : null}
             </div>
-          ) : null
-        }
-      />
+          </div>
+        </div>
+      )}
 
       {images.length > 0 ? (
         <div className={isTiff ? "converter-privacy tiff-privacy" : "converter-privacy"}>
           <PrivacyNotice message={PRIVACY_MESSAGE} />
         </div>
       ) : null}
-
-      <ToolStickyMobileActionBar
-        visible={images.length > 0}
-        stickyUntil="lg"
-        primaryLabel={primaryLabel}
-        primaryLoading={hasResult ? isDownloading : status === "loading"}
-        primaryDisabled={hasResult ? isBusy : images.length === 0 || isBusy}
-        onPrimaryClick={runPrimary}
-      />
     </div>
   );
 }

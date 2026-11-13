@@ -1,6 +1,5 @@
 import { LazyCropPdfTool } from "@/components/tools/lazy";
 import { ToolRoute } from "@/components/workspace";
-import { ToolIcon } from "@/components/ui/ToolIcon";
 import { createToolPageMetadata } from "@/lib/utils/tool-page";
 
 export const metadata = createToolPageMetadata("crop-pdf");
@@ -9,9 +8,10 @@ export default function CropPdfPage() {
   return (
     <ToolRoute
       toolId="crop-pdf"
-      icon={<ToolIcon type="crop-pdf" className="h-5 w-5" />}
-      headerCompact
+      headerDensity="app"
+      headerDescription="Choose the area of each page to keep."
       usageTone="quiet"
+      seoVariant="quiet"
     >
       <LazyCropPdfTool />
     </ToolRoute>

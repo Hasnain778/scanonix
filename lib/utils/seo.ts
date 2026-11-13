@@ -94,7 +94,7 @@ export function createSoftwareApplicationJsonLd() {
     installUrl: PLAY_STORE_URL,
     sameAs: [PLAY_STORE_URL],
     description:
-      "Free online PDF, image, and AI document tools — merge, split, compress, convert, OCR, and more in your browser.",
+      "Free online PDF, image, and AI document tools. Merge, split, OCR, and edit files in your browser. Some compression, conversion, and AI tools require server processing.",
   };
 }
 

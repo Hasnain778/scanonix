@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Crop } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
 import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
@@ -326,7 +328,7 @@ export function CropPdfTool() {
     : null;
 
   return (
-    <div className="crop-pdf-premium space-y-5 overflow-x-hidden">
+    <div className="crop-pdf-premium ux-fix01 space-y-5 overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
@@ -336,16 +338,19 @@ export function CropPdfTool() {
         isEmpty={!uploadedPdf}
         empty={
           <>
-            <FileDropZone
-              onFilesSelected={handleUpload}
+            <PremiumFileSelect
+              fromLabel="PDF"
+              toLabel="Crop"
+              buttonLabel="Upload a PDF"
+              prompt="Upload or drag a PDF here."
+              formats="PDF"
               accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPdfFile}
               multiple={false}
               disabled={isBusy}
-              label="Drop a PDF file here to crop"
-              hint="or click to browse — processed locally in your browser"
-              icon={<CropDropIcon />}
-              className="crop-pdf-drop"
+              validateFile={isAcceptedPdfFile}
+              onFilesSelected={(files) => {
+                void handleUpload(files);
+              }}
             />
             <PrivacyNotice message={CROP_PRIVACY_COPY} />
           </>

@@ -7,6 +7,8 @@ interface OcrProgressBannerProps {
   phase?: OcrProgressPhase;
   message?: string;
   progress?: { current: number; total: number };
+  /** Completion tone. Limited means the text is kept but looks incomplete. */
+  emphasis?: "review" | "limited";
 }
 
 export function OcrProgressBanner({
@@ -14,14 +16,20 @@ export function OcrProgressBanner({
   phase,
   message,
   progress,
+  emphasis = "review",
 }: OcrProgressBannerProps) {
   if (status === "idle") {
     return null;
   }
 
+  const successClass =
+    emphasis === "limited"
+      ? "ocr-banner ocr-banner-limited border-scanonix-orange/40 bg-scanonix-orange/10 text-foreground"
+      : "ocr-banner ocr-banner-review border-border bg-surface text-foreground";
+
   const styles = {
     loading: "ocr-banner ocr-banner-loading border-scanonix-orange/40 bg-scanonix-orange/10 text-foreground",
-    success: "ocr-banner ocr-banner-success border-green-600/35 bg-green-500/10",
+    success: successClass,
     error: "ocr-banner ocr-banner-error border-red-500/40 bg-red-500/10",
   };
 
@@ -35,14 +43,14 @@ export function OcrProgressBanner({
 
   const defaultMessages = {
     loading: loadingMessage,
-    success: message ?? "Complete — text extracted successfully!",
+    success: message ?? "Text extracted. Check it for accuracy before you copy or download.",
     error: message ?? "Something went wrong. Please try again.",
   };
 
   return (
     <div
       className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${styles[status]}`}
-      role="status"
+      role={status === "error" ? "alert" : "status"}
       aria-live="polite"
     >
       {status === "loading" && (
@@ -64,22 +72,6 @@ export function OcrProgressBanner({
             className="opacity-75"
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-          />
-        </svg>
-      )}
-      {status === "success" && (
-        <svg
-          className="h-5 w-5 text-green-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 13l4 4L19 7"
           />
         </svg>
       )}

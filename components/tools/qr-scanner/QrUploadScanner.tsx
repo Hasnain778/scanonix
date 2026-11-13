@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ImageIcon } from "lucide-react";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
+import "@/styles/ux-reset-file-pair.css";
+import "@/styles/ux-fix01.css";
 import { decodeQrFromFile } from "@/lib/tools/qr-scanner/decode-qr";
 import {
   ACCEPTED_QR_SCANNER_EXTENSIONS,
@@ -15,10 +16,6 @@ interface QrUploadScannerProps {
   onStateChange: (state: QrScannerState, message?: string) => void;
   onDetected: (result: ParsedQrResult) => void;
   disabled?: boolean;
-}
-
-function ImageDropIcon() {
-  return <ImageIcon className="h-7 w-7" aria-hidden="true" strokeWidth={1.75} />;
 }
 
 export function QrUploadScanner({
@@ -80,25 +77,23 @@ export function QrUploadScanner({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-1">
-        <h3 className="text-base font-semibold text-foreground">Upload QR image</h3>
-        <p className="text-sm text-scanonix-muted">
-          JPG, JPEG, PNG, or WEBP · single image
-        </p>
-      </div>
-
       {!previewUrl ? (
-        <FileDropZone
-          onFilesSelected={handleUpload}
-          accept={ACCEPTED_QR_SCANNER_EXTENSIONS}
-          validateFile={isAcceptedQrScannerFile}
-          multiple={false}
-          disabled={disabled}
-          label="Drop an image containing a QR code"
-          hint="JPG, JPEG, PNG, or WEBP"
-          icon={<ImageDropIcon />}
-          className="qr-drop"
-        />
+        <div className="ux-fix01 ux-fix01-inline" data-tool-workspace="empty">
+          <PremiumFileSelect
+            fromLabel="Image"
+            toLabel="QR"
+            buttonLabel="Upload image"
+            prompt="Upload or drag a QR image here."
+            formats="JPG, JPEG, PNG, or WEBP"
+            accept={ACCEPTED_QR_SCANNER_EXTENSIONS}
+            multiple={false}
+            disabled={disabled}
+            validateFile={isAcceptedQrScannerFile}
+            onFilesSelected={(files) => {
+              void handleUpload(files);
+            }}
+          />
+        </div>
       ) : (
         <div className="qr-upload-preview overflow-hidden rounded-xl bg-black/40">
           <div className="flex aspect-[4/3] items-center justify-center p-4">

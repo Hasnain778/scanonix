@@ -111,6 +111,16 @@ export function ToolSearch({ suggestions = [], showSuggestions = true }: ToolSea
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [close]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (open && query.trim()) root.setAttribute("data-home-search-open", "");
+    else root.removeAttribute("data-home-search-open");
+  }, [open, query]);
+
+  useEffect(() => {
+    return () => document.documentElement.removeAttribute("data-home-search-open");
+  }, []);
+
   function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (!open && event.key === "ArrowDown" && query.trim()) {
       setOpen(true);

@@ -1,0 +1,88 @@
+/*
+ * Wave 4D only. Scoped to .ux-wave4d on Compress PDF, Protect PDF,
+ * Unlock PDF, Metadata Cleaner, and Word to PDF.
+ * Does not restyle Waves 1–4C.
+ */
+
+.ux-wave4d [data-tool-workspace="empty"] {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.85rem;
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .ux-wave4d [data-tool-workspace="empty"] {
+    min-height: calc(100svh - 14rem);
+    padding-top: 2rem;
+  }
+}
+
+.ux-wave4d [data-tool-workspace="empty"] > p {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.ux-wave4d-note,
+.ux-wave4d-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--foreground-muted, #8a8178);
+}
+
+.ux-wave4d-note {
+  max-width: 36rem;
+  text-align: center;
+}
+
+.ux-wave4d-hint {
+  padding-inline: 0.35rem;
+}
+
+.ux-wave4d-banner {
+  width: min(100%, 68rem);
+  margin-inline: auto;
+}
+
+.ux-wave4d-banner:not(:empty) {
+  margin-bottom: 0.75rem;
+}
+
+.ux-wave4d-gate {
+  width: min(100%, 36rem);
+}
+
+.ux-wave4d .ux-4d-settings,
+.ux-wave4d .ux-4d-result {
+  display: grid;
+  gap: 0.85rem;
+  padding-inline: 0.35rem;
+}
+
+.ux-wave4d .ux-4d-stats {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ux-wave4d .ux-4d-stats > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.ux-wave4d-warning {
+  border-radius: 0.75rem;
+  background: rgb(245 158 11 / 0.1);
+  padding: 0.65rem 0.85rem;
+}
+
+@media (max-width: 767px) {
+  .ux-wave4d ~ aside[aria-label^="About"] {
+    margin-top: 4.5rem;
+  }
+}

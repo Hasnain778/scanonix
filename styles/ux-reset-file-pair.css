@@ -1,0 +1,342 @@
+/*
+ * Wave 1 premium file tools. Scoped to .ux-premium.
+ * The conversion card follows the approved reference: paired marks,
+ * one prompt, format line, and one accent upload button.
+ * Orange replaces the reference accent. The annotated callout is not UI.
+ */
+
+.ux-premium [data-tool-workspace="empty"],
+.ux-converter [data-tool-workspace="empty"],
+.ux-pdf-pages [data-tool-workspace="empty"] {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.85rem;
+  /* Header margin is 8px. 24px here makes the subtitle-to-card gap 32px. */
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .ux-premium [data-tool-workspace="empty"],
+  .ux-converter [data-tool-workspace="empty"],
+  .ux-pdf-pages [data-tool-workspace="empty"] {
+    /* Header margin is 16px. 32px here makes the subtitle-to-card gap 48px.
+       The section stays tall enough that the guide begins after this workspace. */
+    min-height: calc(100svh - 14rem);
+    padding-top: 2rem;
+  }
+}
+
+.ux-upload {
+  width: min(100%, 40rem);
+  border: 1.5px dashed color-mix(in srgb, var(--scanonix-orange) 42%, var(--border, #d8d2cb));
+  border-radius: 1.75rem;
+  background: var(--surface, #fff);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, black 4%, transparent),
+    0 16px 40px color-mix(in srgb, black 6%, transparent);
+  padding: 2.75rem 1.5rem 2.25rem;
+  text-align: center;
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+html[data-theme="dark"] .ux-upload {
+  background: color-mix(in srgb, white 3.5%, #141311);
+  border-color: color-mix(in srgb, var(--scanonix-orange) 38%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 4%, transparent),
+    0 16px 34px color-mix(in srgb, black 32%, transparent);
+}
+
+html[data-theme="bright"] .ux-upload {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--scanonix-orange) 34%, #e4ddd4);
+  box-shadow:
+    0 1px 1px color-mix(in srgb, black 3%, transparent),
+    0 14px 32px color-mix(in srgb, black 5%, transparent);
+}
+
+.ux-upload.is-dragging {
+  border-style: solid;
+  border-color: var(--scanonix-orange);
+  background: color-mix(in srgb, var(--scanonix-orange) 8%, var(--surface, #fff));
+}
+
+.ux-upload.is-disabled {
+  opacity: 0.6;
+}
+
+.ux-upload-marks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.ux-upload-mark {
+  display: flex;
+  width: 3.25rem;
+  height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--scanonix-orange) 12%, transparent);
+  color: var(--scanonix-orange);
+}
+
+.ux-upload-mark svg,
+.ux-upload-chevron {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.ux-upload-chevron {
+  color: color-mix(in srgb, var(--foreground-muted, #8a8178) 80%, transparent);
+}
+
+.ux-upload-mark-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ux-upload-prompt {
+  margin: 1.35rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--foreground, inherit);
+}
+
+.ux-upload-formats {
+  margin: 0.4rem 0 0;
+  font-size: 0.84rem;
+  color: var(--foreground-muted, #8a8178);
+}
+
+.ux-upload-button {
+  display: inline-flex;
+  min-height: 2.85rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--scanonix-orange);
+  padding: 0 1.35rem;
+  color: var(--on-brand, #141210);
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--scanonix-orange) 28%, transparent);
+  transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.ux-upload-button svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.ux-upload-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--scanonix-orange) 88%, white);
+}
+
+.ux-upload-button:focus-visible {
+  outline: 3px solid var(--scanonix-orange);
+  outline-offset: 3px;
+}
+
+.ux-upload-button:disabled {
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ux-upload-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
+
+.ux-command {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ux-command-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ux-command-primary {
+  order: -1;
+  flex: 1 0 100%;
+  border-radius: 999px !important;
+}
+
+@media (min-width: 640px) {
+  .ux-command {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .ux-command-actions {
+    justify-content: flex-end;
+  }
+
+  .ux-command-primary {
+    order: 0;
+    flex: 0 0 auto;
+    min-width: 12.5rem;
+  }
+}
+
+.ux-premium .ux-preview-stage .grid,
+.ux-converter .ux-preview-stage .grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.ux-premium .ux-preview-stage .grid > *,
+.ux-converter .ux-preview-stage .grid > * {
+  width: min(100%, 18rem);
+  max-width: 18rem;
+  flex: 1 1 16rem;
+}
+
+.ux-premium .ux-preview-stage .grid:has(> :only-child) > *,
+.ux-converter .ux-preview-stage .grid:has(> :only-child) > * {
+  width: min(100%, 28rem);
+  max-width: 28rem;
+  flex-basis: 28rem;
+}
+
+.ux-workspace {
+  width: min(100%, 68rem);
+  margin-inline: auto;
+  min-width: 0;
+}
+
+.ux-stage {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid color-mix(in srgb, var(--border, #e8e2da) 88%, transparent);
+  border-radius: 1.35rem;
+  background: var(--surface, #fff);
+  padding: 0.85rem 0.85rem 1.1rem;
+  box-shadow:
+    0 1px 1px color-mix(in srgb, black 3%, transparent),
+    0 12px 28px color-mix(in srgb, black 5%, transparent);
+}
+
+html[data-theme="dark"] .ux-stage {
+  background: color-mix(in srgb, white 3.5%, #141311);
+  border-color: color-mix(in srgb, white 12%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 5%, transparent),
+    0 16px 34px color-mix(in srgb, black 34%, transparent);
+}
+
+.ux-stage .ux-command {
+  padding: 0.15rem 0.35rem 0.85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border, #e8e2da) 80%, transparent);
+}
+
+html[data-theme="dark"] .ux-stage .ux-command {
+  border-bottom-color: color-mix(in srgb, white 10%, transparent);
+}
+
+.ux-result-line {
+  margin: 0;
+  padding-inline: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--foreground-muted, #8a8178);
+}
+
+.ux-stage .ux-preview-stage {
+  border-radius: 1rem;
+  background: color-mix(in srgb, #141210 3%, #f7f4f0);
+  padding: 0.9rem 0.75rem 1rem;
+}
+
+html[data-theme="dark"] .ux-stage .ux-preview-stage {
+  background: color-mix(in srgb, black 32%, #1b1917);
+}
+
+.ux-setup {
+  padding: 0 0.35rem 0.1rem;
+}
+
+@media (max-width: 767px) {
+  .ux-premium ~ aside[aria-label^="About"],
+  .ux-converter ~ aside[aria-label^="About"],
+  .ux-pdf-pages ~ aside[aria-label^="About"] {
+    margin-top: 4.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .ux-upload-button,
+  .ux-command-primary {
+    scroll-margin-bottom: 19rem;
+  }
+}
+
+html[data-theme="dark"] .ux-premium .ux-preview-stage article,
+html[data-theme="dark"] .ux-converter .ux-preview-stage article {
+  background-color: #1c1917;
+  color: #fafafa;
+}
+
+html[data-theme="dark"] .ux-premium .ux-preview-stage article .border-t,
+html[data-theme="dark"] .ux-converter .ux-preview-stage article .border-t {
+  background-color: #1c1917;
+  border-top-color: rgba(255, 255, 255, 0.14);
+}
+
+html[data-theme="dark"] .ux-premium .ux-preview-stage article .border-t > p:first-child,
+html[data-theme="dark"] .ux-converter .ux-preview-stage article .border-t > p:first-child {
+  color: #fafafa;
+}
+
+html[data-theme="dark"] .ux-premium .ux-preview-stage article .border-t > p + p,
+html[data-theme="dark"] .ux-converter .ux-preview-stage article .border-t > p + p {
+  color: #d6d3d1;
+}
+
+html[data-theme="dark"] .ux-premium .ux-preview-stage article button[aria-label^="Rotate"],
+html[data-theme="dark"] .ux-converter .ux-preview-stage article button[aria-label^="Rotate"] {
+  color: #fafafa;
+  background-color: #2a2623;
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+html[data-theme="dark"] .ux-premium .ux-preview-stage article button[aria-label^="Rotate"]:focus-visible,
+html[data-theme="dark"] .ux-converter .ux-preview-stage article button[aria-label^="Rotate"]:focus-visible {
+  outline: 2px solid var(--scanonix-orange);
+  outline-offset: 2px;
+}
+
+html[data-theme="dark"] .ux-premium .ux-stage label:has(input[type="radio"]:not(:disabled):not(:checked)) {
+  color: #f5f5f4;
+  background-color: #2c2825;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+html[data-theme="dark"] .ux-premium .ux-stage label:has(input[type="radio"]:disabled) {
+  color: #a8a29e;
+  background-color: #1a1816;
+  border-color: rgba(255, 255, 255, 0.08);
+}

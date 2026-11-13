@@ -113,18 +113,39 @@ async function main(): Promise<void> {
     );
   });
 
-  await test("jobs route triggers worker only after createJob insert", () => {
+  await test("jobs route dispatches only after an uncharged job is created and charged", () => {
     const routeSource = readFileSync(
       join(process.cwd(), "app/api/tools/image/upscale/jobs/route.ts"),
       "utf8",
     );
+    const submitSource = readFileSync(
+      join(process.cwd(), "lib/upscale-jobs/submit-job.ts"),
+      "utf8",
+    );
 
-    assert.match(routeSource, /createUpscaleJobRecord/);
-    assert.match(routeSource, /triggerUpscaleWorkerAfterJobCreated\(jobId\)/);
+    assert.doesNotMatch(routeSource, /consumeUsage/);
+    assert.doesNotMatch(routeSource, /createUpscaleJobRecord/);
+    assert.doesNotMatch(routeSource, /usageCharged:\s*true/);
+    assert.doesNotMatch(routeSource, /triggerUpscaleWorkerAfterJobCreated\(/);
+    assert.match(routeSource, /chargeJob:\s*\(jobId\)\s*=>\s*chargeUpscaleJob/);
+    assert.match(routeSource, /dispatchJob:\s*triggerUpscaleWorkerAfterJobCreated/);
 
-    const createIndex = routeSource.indexOf("const jobId = await createUpscaleJobRecord");
-    const triggerIndex = routeSource.indexOf("await triggerUpscaleWorkerAfterJobCreated(jobId)");
-    assert.ok(createIndex >= 0 && triggerIndex > createIndex);
+    const configuredIndex = routeSource.indexOf("if (!isRunPodUpscaleTriggerConfigured())");
+    const premiumIndex = routeSource.indexOf("await requirePremiumAiPlan(ROUTE)");
+    const submitIndex = routeSource.indexOf("await submitPreparedUpscaleJob(");
+    assert.ok(configuredIndex >= 0 && premiumIndex > configuredIndex && submitIndex > premiumIndex);
+
+    const createIndex = submitSource.indexOf("await deps.createJob(");
+    const unchargedIndex = submitSource.indexOf("usageCharged: false");
+    const chargeIndex = submitSource.indexOf("await deps.chargeJob(jobId)");
+    const dispatchIndex = submitSource.indexOf("await deps.dispatchJob(jobId)");
+    assert.ok(
+      createIndex >= 0 &&
+        unchargedIndex > createIndex &&
+        chargeIndex > unchargedIndex &&
+        dispatchIndex > chargeIndex,
+    );
+    assert.doesNotMatch(submitSource, /void deps\.dispatchJob/);
   });
 
   await test("trigger failure returns WORKER_TRIGGER_FAILED without starting client poll success", () => {

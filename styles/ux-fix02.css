@@ -1,0 +1,74 @@
+/*
+ * UX-FIX-02. Short phone screens only.
+ * The stacked cookie banner is about 255px tall at 320px.
+ * These rules lift the upload action above that banner.
+ * Desktop card padding is unchanged.
+ */
+
+@media (max-width: 639px) and (max-height: 760px) {
+  .tool-shell {
+    padding-top: 4rem;
+  }
+
+  .tool-app-header {
+    margin-bottom: 0.25rem;
+  }
+
+  .tool-app-header h1 {
+    font-size: 1.65rem;
+    line-height: 1.15;
+  }
+
+  .tool-app-header p {
+    margin-top: 0.3rem;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
+
+  .ux-fix01 [data-tool-workspace="empty"] {
+    min-height: 0;
+    padding-top: 0.35rem;
+  }
+
+  .ux-upload {
+    padding: 1rem 0.95rem 0.85rem;
+  }
+
+  .ux-upload-mark {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+
+  .ux-upload-prompt {
+    margin-top: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .ux-upload-formats {
+    margin-top: 0.15rem;
+  }
+
+  .ux-upload-button {
+    margin-top: 0.65rem;
+  }
+
+  .qr-scanner-premium.space-y-5 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.35rem !important;
+  }
+
+  .qr-scanner-premium .qr-panel {
+    padding: 0.35rem 0.35rem 0.2rem !important;
+  }
+
+  .qr-scanner-premium [role="tablist"] {
+    padding: 0.2rem !important;
+  }
+
+  .qr-scanner-premium [role="tab"] {
+    min-height: 2.1rem !important;
+    gap: 0.3rem !important;
+    padding: 0.2rem 0.45rem !important;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+}

@@ -3,14 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileDigit } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { FileDropZone } from "@/components/tools/FileDropZone";
+import { PremiumFileSelect } from "@/components/tools/premium/PremiumFileSelect";
 import { PrivacyNotice } from "@/components/tools/PrivacyNotice";
-import type { ResultActionPhase } from "@/components/tools/result-action-types";
 import { ToolStatusBanner } from "@/components/tools/ToolStatusBanner";
-import { ToolStickyMobileActionBar } from "@/components/tools/ToolStickyMobileActionBar";
-import { ToolControlPanel } from "@/components/workspace/ToolControlPanel";
-import { ToolWorkspaceShell } from "@/components/workspace/ToolWorkspaceShell";
-import "@/styles/pdf-page-tools-premium.css";
+import "@/styles/ux-pdf-pages.css";
+import "@/styles/ux-reset-file-pair.css";
 import { createProcessAttempt } from "@/lib/analytics/process-lifecycle";
 import {
   addPageNumbersToPdf,
@@ -49,12 +46,6 @@ interface UploadedPdfState {
   file: File;
   bytes: ArrayBuffer;
   document: PageNumberDocumentState;
-}
-
-function PageNumbersDropIcon({ className = "h-7 w-7" }: { className?: string }) {
-  return (
-    <FileDigit className={className} aria-hidden="true" strokeWidth={1.75} />
-  );
 }
 
 export function AddPageNumbersTool() {
@@ -101,18 +92,6 @@ export function AddPageNumbersTool() {
         selection.pages.length,
       ),
     [uploadedPdf, pageCount, isExporting, selection.error, selection.pages.length],
-  );
-
-  const resultActionPhase: ResultActionPhase = useMemo(() => {
-    if (isExporting || isReadingPdf) return "processing";
-    if (hasResult) return "success";
-    if (status === "error") return "error";
-    if (uploadedPdf !== null && pageCount > 0) return "ready";
-    return "idle";
-  }, [isExporting, isReadingPdf, hasResult, status, uploadedPdf, pageCount]);
-
-  const stickyVisible = Boolean(
-    uploadedPdf && (hasResult || canExport || isExporting),
   );
 
   const numberingOptions: PageNumberOptions = useMemo(
@@ -556,66 +535,94 @@ export function AddPageNumbersTool() {
     </div>
   ) : null;
 
+  const primaryLabel = hasResult
+    ? "Download PDF"
+    : isExporting
+      ? "Adding…"
+      : "Add page numbers";
+
   return (
-    <div className="pdf-page-tools-premium space-y-5 overflow-x-hidden">
+    <div className="ux-pdf-pages overflow-x-hidden">
       <ToolStatusBanner
         status={isReadingPdf ? "loading" : status}
         message={isReadingPdf ? "Reading PDF…" : statusMessage}
       />
 
-      <ToolWorkspaceShell
-        isEmpty={!uploadedPdf}
-        empty={
-          <>
-            <FileDropZone
-              className="pdf-page-drop"
-              onFilesSelected={handleUpload}
-              accept={ACCEPTED_PDF_EXTENSIONS}
-              validateFile={isAcceptedPageNumbersPdfFile}
-              multiple={false}
-              disabled={isBusy}
-              label="Drop a PDF file here to add page numbers"
-              hint="or click to browse — processed locally in your browser"
-              icon={<PageNumbersDropIcon />}
-            />
-            <PrivacyNotice message={PAGE_NUMBERS_UI_PRIVACY_COPY} />
-          </>
-        }
-        workArea={
-          uploadedPdf ? (
-            <div className="pdf-page-stage overflow-hidden">
-              <div className="flex flex-col gap-2.5 border-b border-border/80 bg-surface-muted/40 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-scanonix-orange">
-                    <PageNumbersDropIcon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {uploadedPdf.file.name}
-                    </p>
-                    <p className="truncate text-[11px] text-scanonix-muted">
-                      {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
-                      {pageCount === 1 ? "" : "s"}
-                      {!allPages && selection.pages.length > 0
-                        ? ` · ${selection.pages.length} selected`
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-                <div className="w-full sm:w-auto">
-                  <ActionButton
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg sm:w-auto"
-                    disabled={isBusy}
-                    onClick={resetWorkspace}
-                  >
-                    {hasResult ? "Start over" : "Choose another PDF"}
-                  </ActionButton>
-                </div>
+      {!uploadedPdf ? (
+        <div data-tool-workspace="empty">
+          <PremiumFileSelect
+            fromLabel="PDF"
+            toLabel="1, 2, 3"
+            buttonLabel="Upload a PDF"
+            prompt="Upload or drag a PDF here."
+            formats="PDF"
+            accept={ACCEPTED_PDF_EXTENSIONS}
+            validateFile={isAcceptedPageNumbersPdfFile}
+            multiple={false}
+            disabled={isBusy}
+            onFilesSelected={handleUpload}
+            onInvalidFiles={() => {
+              setStatus("error");
+              setStatusMessage("Please upload a PDF file.");
+            }}
+          />
+          <PrivacyNotice message={PAGE_NUMBERS_UI_PRIVACY_COPY} />
+        </div>
+      ) : (
+        <div className="ux-workspace" data-tool-workspace="active">
+          <div className="ux-stage">
+            <div className="ux-command">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {uploadedPdf.file.name}
+                </p>
+                <p className="mt-0.5 text-xs text-scanonix-muted">
+                  {formatFileSize(uploadedPdf.file.size)} · {pageCount} page
+                  {pageCount === 1 ? "" : "s"}
+                  {!allPages && selection.pages.length > 0
+                    ? ` · ${selection.pages.length} selected`
+                    : ""}
+                </p>
               </div>
+              <div className="ux-command-actions">
+                <ActionButton
+                  variant="ghost"
+                  size="sm"
+                  disabled={isBusy}
+                  onClick={resetWorkspace}
+                >
+                  {hasResult ? "Start over" : "Choose another PDF"}
+                </ActionButton>
+                {hasResult ? (
+                  <ActionButton
+                    variant="ghost"
+                    size="sm"
+                    disabled={isBusy}
+                    onClick={handleChangeSettings}
+                  >
+                    Change settings
+                  </ActionButton>
+                ) : null}
+                <ActionButton
+                  size="lg"
+                  className="ux-command-primary"
+                  loading={hasResult ? isDownloading : isExporting}
+                  disabled={hasResult ? isBusy || !resultBlob : !canExport}
+                  onClick={() => {
+                    if (hasResult) {
+                      void handleDownload();
+                    } else {
+                      void handleExport();
+                    }
+                  }}
+                >
+                  {primaryLabel}
+                </ActionButton>
+              </div>
+            </div>
 
-              <div className="bg-surface-muted/30 p-3 sm:p-4">
+            <div className="ux-pdf-layout">
+              <div className="ux-pdf-preview">
                 <PageNumberThumbGrid
                   pdfBytes={uploadedPdf.bytes}
                   totalPages={pageCount}
@@ -628,121 +635,53 @@ export function AddPageNumbersTool() {
                   disabled={isBusy}
                 />
               </div>
-            </div>
-          ) : null
-        }
-        controlPanel={
-          uploadedPdf ? (
-            <ToolControlPanel
-              aria-label="Page number controls"
-              footer={
-                hasResult && resultBlob ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="hidden lg:block">
-                      <ActionButton
-                        size="lg"
-                        className="w-full"
-                        loading={isDownloading}
-                        disabled={isBusy}
-                        onClick={() => {
-                          void handleDownload();
-                        }}
-                      >
-                        Download PDF
-                      </ActionButton>
+              <section className="ux-pdf-settings" aria-label="Page number controls">
+                {hasResult && resultBlob ? (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
+                        Result
+                      </p>
+                      <p className="mt-1.5 text-sm font-semibold text-green-700 [[data-theme=dark]_&]:text-green-400">
+                        ✓ Page numbers added
+                      </p>
+                      <p className="mt-1 text-xs text-scanonix-muted">
+                        Your numbered PDF is ready to download.
+                      </p>
                     </div>
-                    <ActionButton
-                      variant="outline"
-                      size="lg"
-                      className="w-full"
-                      disabled={isBusy}
-                      onClick={handleChangeSettings}
-                    >
-                      Change settings
-                    </ActionButton>
+                    <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
+                      <div className="flex justify-between gap-3 px-3 py-2.5">
+                        <dt className="text-scanonix-muted">Pages numbered</dt>
+                        <dd className="font-semibold text-foreground">
+                          {selection.pages.length || pageCount}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-3 px-3 py-2.5">
+                        <dt className="text-scanonix-muted">File size</dt>
+                        <dd className="font-semibold text-foreground">
+                          {formatFileSize(resultBlob.size)}
+                        </dd>
+                      </div>
+                      <div className="min-w-0 px-3 py-2.5">
+                        <dt className="text-scanonix-muted">Filename</dt>
+                        <dd className="mt-0.5 truncate font-semibold text-foreground">
+                          {resultFilename}
+                        </dd>
+                      </div>
+                    </dl>
+                    <p className="ux-pdf-note">{exportHint}</p>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-[11px] leading-snug text-scanonix-muted">
-                      {exportHint}
-                    </p>
-                    <div
-                      className={
-                        stickyVisible ? "hidden lg:block" : undefined
-                      }
-                    >
-                      <ActionButton
-                        size="lg"
-                        className="w-full shadow-[var(--shadow-orange-sm)]"
-                        loading={isExporting}
-                        disabled={!canExport}
-                        onClick={handleExport}
-                      >
-                        {isExporting ? "Adding…" : "Add page numbers"}
-                      </ActionButton>
-                    </div>
-                  </div>
-                )
-              }
-            >
-              {hasResult && resultBlob ? (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-scanonix-muted">
-                      Result
-                    </p>
-                    <p className="mt-1.5 text-sm font-semibold text-green-700">
-                      ✓ Page numbers added
-                    </p>
-                    <p className="mt-1 text-xs text-scanonix-muted">
-                      Your numbered PDF is ready to download.
-                    </p>
-                  </div>
-
-                  <dl className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-surface-muted/60 text-sm">
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Pages numbered</dt>
-                      <dd className="font-semibold text-foreground">
-                        {selection.pages.length || pageCount}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">File size</dt>
-                      <dd className="font-semibold text-foreground">
-                        {formatFileSize(resultBlob.size)}
-                      </dd>
-                    </div>
-                    <div className="min-w-0 px-3 py-2.5">
-                      <dt className="text-scanonix-muted">Filename</dt>
-                      <dd className="mt-0.5 truncate font-semibold text-foreground">
-                        {resultFilename}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              ) : (
-                settingsBody
-              )}
-            </ToolControlPanel>
-          ) : null
-        }
-      />
-
-      <ToolStickyMobileActionBar
-        visible={stickyVisible}
-        stickyUntil="lg"
-        phase={resultActionPhase}
-        primaryLabel={hasResult ? "Download PDF" : "Add page numbers"}
-        primaryLoading={hasResult ? isDownloading : isExporting}
-        primaryDisabled={hasResult ? isBusy || !resultBlob : !canExport}
-        onPrimaryClick={() => {
-          if (hasResult) {
-            void handleDownload();
-          } else {
-            void handleExport();
-          }
-        }}
-      />
+                  <>
+                    {settingsBody}
+                    <p className="ux-pdf-note mt-4">{exportHint}</p>
+                  </>
+                )}
+              </section>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

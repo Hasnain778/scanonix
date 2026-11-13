@@ -40,6 +40,12 @@ import { FREE_IMAGE_MAX_BYTES } from "@/lib/tools/shared/image-validate";
 import type { ToolStatus } from "@/lib/tools/types";
 import { buildToolDownloadMeta } from "@/lib/analytics/download-meta";
 import "@/styles/image-upscaler-premium.css";
+import "@/styles/ux-fix01.css";
+
+/** Public page stays closed while the production rollout gate is closed. */
+function isImageUpscalerPubliclyAvailable(): boolean {
+  return false;
+}
 
 const ACCEPT_IMAGES = ".jpg,.jpeg,.png,.webp,.heic,.heif,image/*";
 const MAX_MB = Math.round(FREE_IMAGE_MAX_BYTES / (1024 * 1024));
@@ -382,6 +388,26 @@ export function ImageUpscalerTool() {
         : isBusy
           ? "Upscaling on Scanonix servers…"
           : `Ready to upscale at ${factor}× with Real-ESRGAN.`;
+
+  if (!isImageUpscalerPubliclyAvailable()) {
+    return (
+      <div className="ux-fix01-closed overflow-x-hidden">
+        <div className="ux-fix01-closed-card rounded-2xl border border-border bg-surface-muted px-5 py-6">
+          <p className="text-base font-semibold text-foreground">Image Upscaler is not available</p>
+          <p className="mt-2 text-sm leading-relaxed text-scanonix-muted">
+            Image Upscaler is not currently available. It uses Real-ESRGAN on Scanonix servers and
+            requires Pro. New upscales are turned off, including for Pro subscribers.
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-scanonix-muted">
+            <Link href="/tools/image-resizer" className="font-medium text-foreground underline">
+              Image Resizer
+            </Link>{" "}
+            can change pixel dimensions while upscaling is unavailable.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <PremiumAiToolGate toolName="Image Upscaler">

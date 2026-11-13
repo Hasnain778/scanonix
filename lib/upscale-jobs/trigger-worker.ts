@@ -6,6 +6,7 @@ import {
   type DispatchLogEvent,
   type DispatchOutcome,
 } from "./dispatch-claim";
+import { abortUnclaimedUpscaleJob, dispatchAbortKeepsJob } from "./credits";
 import { getJobById, updateJob } from "./repository";
 import { triggerRunPodPollOnce, type RunPodTriggerResult } from "./runpod-trigger";
 import type { UpscaleJobRecord } from "./types";
@@ -17,6 +18,7 @@ export interface DispatchDependencies {
   triggerRunPod: typeof triggerRunPodPollOnce;
   getJob: (jobId: string) => Promise<UpscaleJobRecord | null>;
   updateJob: typeof updateJob;
+  abortUnclaimedJob: (jobId: string, errorCode: string, errorMessage: string) => Promise<string>;
   sleep: (ms: number) => Promise<void>;
   logEvent: (event: DispatchLogEvent) => void;
 }
@@ -42,6 +44,7 @@ function defaultDependencies(): DispatchDependencies {
     triggerRunPod: triggerRunPodPollOnce,
     getJob: getJobById,
     updateJob,
+    abortUnclaimedJob: abortUnclaimedUpscaleJob,
     sleep: defaultSleep,
     logEvent: defaultLogEvent,
   };
@@ -76,29 +79,30 @@ async function markDispatchFailure(
   jobId: string,
   dispatchAttempts: number,
   errorMessage: string,
-): Promise<void> {
+): Promise<string> {
   try {
-    await deps.updateJob(jobId, {
-      status: "failed",
-      stage: "queued",
-      errorCode: "worker_trigger_failed",
-      errorMessage,
-      completedAt: new Date().toISOString(),
+    const outcome = await deps.abortUnclaimedJob(jobId, "worker_trigger_failed", errorMessage);
+    deps.logEvent({
+      jobId,
+      dispatchAttempt: dispatchAttempts,
+      outcome: dispatchAbortKeepsJob(outcome) ? "already_dispatched" : "failed",
+      message: errorMessage,
     });
+    return outcome;
   } catch (updateError) {
     console.error(
       "[upscale-jobs] Failed to mark job %s failed after dispatch error worker_trigger_failed: %s",
       jobId,
       updateError instanceof Error ? updateError.message : String(updateError),
     );
+    deps.logEvent({
+      jobId,
+      dispatchAttempt: dispatchAttempts,
+      outcome: "failed",
+      message: errorMessage,
+    });
+    return "not_found";
   }
-
-  deps.logEvent({
-    jobId,
-    dispatchAttempt: dispatchAttempts,
-    outcome: "failed",
-    message: errorMessage,
-  });
 }
 
 /**
@@ -114,6 +118,10 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
   const deps: DispatchDependencies = { ...defaultDependencies(), ...partialDeps };
   const runpodRequestIds: string[] = [];
   let lastJob: UpscaleJobRecord | null = await deps.getJob(jobId);
+
+  if (lastJob?.status === "failed" || lastJob?.status === "cancelled") {
+    return { ok: false, reason: "worker_trigger_failed", dispatchAttempts: 0 };
+  }
 
   if (isUpscaleJobDispatched(lastJob)) {
     deps.logEvent({
@@ -135,6 +143,14 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
     }
 
     lastJob = await deps.getJob(jobId);
+    if (lastJob?.status === "failed" || lastJob?.status === "cancelled") {
+      return {
+        ok: false,
+        reason: "worker_trigger_failed",
+        dispatchAttempts: attempt - 1,
+      };
+    }
+
     if (shouldSkipDispatchRetry(lastJob)) {
       deps.logEvent({
         jobId,
@@ -189,6 +205,10 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
   }
 
   lastJob = await deps.getJob(jobId);
+  if (lastJob?.status === "failed" || lastJob?.status === "cancelled") {
+    return { ok: false, reason: "worker_trigger_failed", dispatchAttempts: MAX_DISPATCH_ATTEMPTS };
+  }
+
   if (isUpscaleJobDispatched(lastJob)) {
     deps.logEvent({
       jobId,
@@ -202,7 +222,15 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
     return { ok: true, dispatchAttempts: MAX_DISPATCH_ATTEMPTS, runpodRequestIds };
   }
 
-  await markDispatchFailure(deps, jobId, MAX_DISPATCH_ATTEMPTS, WORKER_TRIGGER_ERROR_MESSAGE);
+  const abortOutcome = await markDispatchFailure(
+    deps,
+    jobId,
+    MAX_DISPATCH_ATTEMPTS,
+    WORKER_TRIGGER_ERROR_MESSAGE,
+  );
+  if (dispatchAbortKeepsJob(abortOutcome)) {
+    return { ok: true, dispatchAttempts: MAX_DISPATCH_ATTEMPTS, runpodRequestIds };
+  }
 
   return {
     ok: false,

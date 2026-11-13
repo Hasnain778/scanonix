@@ -89,6 +89,12 @@ html[data-theme="bright"] [data-image-editor-workspace] {
   background-clip: padding-box;
 }
 
+@media (max-width: 1023px) {
+  [data-image-editor-workspace] .ie-tool-scroller {
+    mask-image: linear-gradient(to right, #000 calc(100% - 1rem), transparent);
+  }
+}
+
 /* Premium range slider */
 [data-image-editor-workspace] .ie-slider {
   -webkit-appearance: none;

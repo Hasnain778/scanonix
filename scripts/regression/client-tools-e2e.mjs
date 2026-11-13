@@ -359,9 +359,15 @@ async function runWatermarkPdf(results) {
       { timeout: 30000 },
     );
     // Clear default "CONFIDENTIAL" so we do not append into an oversized string.
-    await textInput.click({ clickCount: 3 });
-    await page.keyboard.press("Backspace");
+    await textInput.click();
+    await page.keyboard.down("Control");
+    await page.keyboard.press("KeyA");
+    await page.keyboard.up("Control");
     await textInput.type("SCANONIX TEST");
+    const actualText = await textInput.evaluate((el) => el.value);
+    if (actualText !== "SCANONIX TEST") {
+      throw new Error(`Watermark text mismatch: ${actualText}`);
+    }
     const requireWatermarkClick = async (label) => {
       const clicked = await clickButtonContaining(page, label);
       if (!clicked) {

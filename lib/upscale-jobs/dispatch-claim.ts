@@ -35,7 +35,11 @@ export function isUpscaleJobDispatched(job: UpscaleJobRecord | null): boolean {
     return false;
   }
 
-  if (job.status !== "queued") {
+  if (job.status === "failed" || job.status === "cancelled") {
+    return false;
+  }
+
+  if (job.status === "processing" || job.status === "completed") {
     return true;
   }
 

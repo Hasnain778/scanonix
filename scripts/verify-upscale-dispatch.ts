@@ -355,6 +355,60 @@ async function main(): Promise<void> {
     assert.equal(job.worker_id, "runpod-realesrgan:token");
   });
 
+  for (const status of ["failed", "cancelled"] as const) {
+    await test(`K. ${status} before dispatch -> no RunPod trigger`, async () => {
+      let triggerCount = 0;
+      const job = baseJob({
+        status,
+        worker_id: "previous-worker",
+        started_at: "2026-08-10T02:52:00.000Z",
+      });
+
+      const outcome = await dispatchUpscaleWorkerWithClaimVerification(JOB_ID, {
+        sleep: async () => {},
+        logEvent: () => {},
+        getJob: async () => job,
+        updateJob: async () => job,
+        triggerRunPod: async () => {
+          triggerCount += 1;
+          return { ok: true as const, runpodJobId: "unexpected-trigger" };
+        },
+      });
+
+      assert.equal(isUpscaleJobDispatched(job), false);
+      assert.equal(outcome.ok, false);
+      assert.equal(outcome.dispatchAttempts, 0);
+      assert.equal(triggerCount, 0);
+    });
+  }
+
+  for (const status of ["failed", "cancelled"] as const) {
+    await test(`L. ${status} between retries -> no additional trigger`, async () => {
+      let triggerCount = 0;
+      let job = baseJob();
+
+      const outcome = await dispatchUpscaleWorkerWithClaimVerification(JOB_ID, {
+        sleep: async () => {
+          job = { ...job, status };
+        },
+        logEvent: () => {},
+        getJob: async () => job,
+        updateJob: async () => job,
+        triggerRunPod: async () => {
+          triggerCount += 1;
+          return {
+            ok: false as const,
+            message: "RunPod trigger failed with status 502.",
+            status: 502,
+          };
+        },
+      });
+
+      assert.equal(outcome.ok, false);
+      assert.equal(outcome.dispatchAttempts, 1);
+      assert.equal(triggerCount, 1);
+    });
+  }
   console.log(`\n${passed}/${passed} upscale dispatch checks passed.`);
 }
 

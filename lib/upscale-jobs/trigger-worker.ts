@@ -119,6 +119,10 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
   const runpodRequestIds: string[] = [];
   let lastJob: UpscaleJobRecord | null = await deps.getJob(jobId);
 
+  if (lastJob?.status === "failed" || lastJob?.status === "cancelled") {
+    return { ok: false, reason: "worker_trigger_failed", dispatchAttempts: 0 };
+  }
+
   if (isUpscaleJobDispatched(lastJob)) {
     deps.logEvent({
       jobId,
@@ -139,6 +143,14 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
     }
 
     lastJob = await deps.getJob(jobId);
+    if (lastJob?.status === "failed" || lastJob?.status === "cancelled") {
+      return {
+        ok: false,
+        reason: "worker_trigger_failed",
+        dispatchAttempts: attempt - 1,
+      };
+    }
+
     if (shouldSkipDispatchRetry(lastJob)) {
       deps.logEvent({
         jobId,
@@ -193,6 +205,10 @@ export async function dispatchUpscaleWorkerWithClaimVerification(
   }
 
   lastJob = await deps.getJob(jobId);
+  if (lastJob?.status === "failed" || lastJob?.status === "cancelled") {
+    return { ok: false, reason: "worker_trigger_failed", dispatchAttempts: MAX_DISPATCH_ATTEMPTS };
+  }
+
   if (isUpscaleJobDispatched(lastJob)) {
     deps.logEvent({
       jobId,
